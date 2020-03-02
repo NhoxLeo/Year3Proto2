@@ -24,9 +24,7 @@ public class StructureManager : MonoBehaviour
             if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << 10))
             {
                 if (currentStructure != null)
-                {
-                    float yPosition = currentStructure.position.y;
-
+                { 
                     Vector3 gridpos = new Vector3(
                         Mathf.Floor(hit.point.x),
                         Mathf.Floor(hit.point.y),
@@ -35,11 +33,11 @@ public class StructureManager : MonoBehaviour
 
                     currentStructure.position = new Vector3(
                         Mathf.Round(gridpos.x),
-                        Mathf.Round(yPosition),
+                        Mathf.Round(currentStructure.position.y),
                         Mathf.Round(gridpos.z)
                     );
 
-                    if (Input.GetMouseButtonDown(0))structureState = StructureState.SELECTING;
+                    if (Input.GetMouseButtonDown(0)) structureState = StructureState.SELECTING;
                 }
             }
         }
@@ -49,8 +47,11 @@ public class StructureManager : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    currentStructure = hit.transform;
-                    structureState = StructureState.MOVING;
+                    if (hit.transform.GetComponent<Structure>() != null)
+                    {
+                        currentStructure = hit.transform;
+                        structureState = StructureState.MOVING;
+                    }
                 }
             }
         }
