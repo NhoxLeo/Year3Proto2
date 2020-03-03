@@ -8,4 +8,9 @@ public class AttackStructure : Structure
     {
 
     }
+
+    public override void Check(GameObject gameobject)
+    {
+
+    }
 }
