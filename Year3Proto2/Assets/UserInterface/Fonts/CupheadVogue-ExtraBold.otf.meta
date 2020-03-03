@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bea3ece19712ff542a71449b3835a4e1
+guid: 4f1932ce7f890dd4aa23dda01c22213f
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -11,9 +11,10 @@ TrueTypeFontImporter:
   fontName: Cuphead Vogue
   fontNames:
   - Cuphead Vogue
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: bea3ece19712ff542a71449b3835a4e1, type: 3}
   customCharacters: 
-  fontRenderingMode: 0
+  fontRenderingMode: 1
   ascentCalculationMode: 1
   useLegacyBoundsCalculation: 0
   shouldRoundAdvanceValue: 1
