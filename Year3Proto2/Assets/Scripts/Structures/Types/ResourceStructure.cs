@@ -8,6 +8,7 @@ public class ResourceStructure : Structure
 
     public float productionTime = 10.0f;
     private float remainingTime;
+    private float amount = 1.0f;
 
     public ResourceStructure(ResourceType resourceType) : base(StructureType.RESOURCE)
     {

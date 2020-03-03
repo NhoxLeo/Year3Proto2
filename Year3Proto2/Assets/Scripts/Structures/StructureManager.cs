@@ -39,6 +39,11 @@ public class StructureManager : MonoBehaviour
                         Mathf.Round(gridpos.z)
                     );
                 }
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    structureState = StructureState.SELECTING;
+                }
             }
         }
         else if (structureState == StructureState.SELECTING)
