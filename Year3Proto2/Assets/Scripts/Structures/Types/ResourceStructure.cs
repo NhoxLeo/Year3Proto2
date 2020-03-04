@@ -34,4 +34,9 @@ public class ResourceStructure : Structure
     {
 
     }
+
+    private void Start()
+    {
+        StructureStart();
+    }
 }

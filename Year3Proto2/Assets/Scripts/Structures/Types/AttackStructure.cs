@@ -13,4 +13,9 @@ public class AttackStructure : Structure
     {
 
     }
+
+    private void Start()
+    {
+        StructureStart();
+    }
 }
