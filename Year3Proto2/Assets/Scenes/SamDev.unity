@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.29916605, g: 0.19928804, b: 0.14408742, a: 1}
+  m_IndirectSpecularColor: {r: 0.21759948, g: 0.10007401, b: 0.030969147, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -326,6 +326,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tile (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3596017079741575813, guid: a78c4e5611283ba4f91d5962e6e727a2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a78c4e5611283ba4f91d5962e6e727a2, type: 3}
@@ -1468,6 +1473,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tile (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 3596017079741575813, guid: a78c4e5611283ba4f91d5962e6e727a2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a78c4e5611283ba4f91d5962e6e727a2, type: 3}
 --- !u!1001 &1058964055
@@ -1536,6 +1546,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tile (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3596017079741575813, guid: a78c4e5611283ba4f91d5962e6e727a2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a78c4e5611283ba4f91d5962e6e727a2, type: 3}
@@ -1821,6 +1836,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tile (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3596017079741575813, guid: a78c4e5611283ba4f91d5962e6e727a2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a78c4e5611283ba4f91d5962e6e727a2, type: 3}

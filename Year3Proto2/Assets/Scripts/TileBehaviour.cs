@@ -44,7 +44,7 @@ public class TileBehaviour : MonoBehaviour
             {
                 adjacentTiles.Add(TileCode.north, hit.collider.GetComponentInParent<TileBehaviour>());
                 hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.forward * .8f, Color.green, 2f);
+                Debug.DrawRay(tileCollider.transform.position, Vector3.forward * .8f, Color.green, 5f);
             }
         }
         // East
@@ -55,7 +55,7 @@ public class TileBehaviour : MonoBehaviour
             {
                 adjacentTiles.Add(TileCode.east, hit.collider.GetComponentInParent<TileBehaviour>());
                 hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.right * .8f, Color.green, 2f);
+                Debug.DrawRay(tileCollider.transform.position, Vector3.right * .8f, Color.green, 5f);
             }
         }
         // South
@@ -66,7 +66,7 @@ public class TileBehaviour : MonoBehaviour
             {
                 adjacentTiles.Add(TileCode.south, hit.collider.GetComponentInParent<TileBehaviour>());
                 hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.back * .8f, Color.green, 2f);
+                Debug.DrawRay(tileCollider.transform.position, Vector3.back * .8f, Color.green, 5f);
             }
         }
         // West
@@ -77,7 +77,7 @@ public class TileBehaviour : MonoBehaviour
             {
                 adjacentTiles.Add(TileCode.west, hit.collider.GetComponentInParent<TileBehaviour>());
                 hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.left * .8f, Color.green, 2f);
+                Debug.DrawRay(tileCollider.transform.position, Vector3.left * .8f, Color.green, 5f);
             }
         }
 
