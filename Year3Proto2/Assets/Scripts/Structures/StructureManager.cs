@@ -15,6 +15,8 @@ public class StructureManager : MonoBehaviour
     private Vector3 previousPosition;
     private StructureState structureState = StructureState.SELECTING;
 
+    public Transform tileHighlight;
+
     private void Update()
     {
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -52,6 +54,8 @@ public class StructureManager : MonoBehaviour
                                 structureState = StructureState.SELECTING;
                                 structure.GetComponent<Structure>().attachedTile = hit.transform.gameObject;
                                 hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject);
+
+                                tileHighlight.gameObject.SetActive(false);
                             }
                         }
                     }
@@ -71,8 +75,14 @@ public class StructureManager : MonoBehaviour
                         structure.GetComponent<Structure>().attachedTile = null;
                         previousPosition = structure.position;
                         structureState = StructureState.MOVING;
+
+                        tileHighlight.gameObject.SetActive(false);
                     }
                 }
+
+                float yPos = tileHighlight.position.y;
+
+                tileHighlight.position = new Vector3(hit.point.x, yPos, hit.point.y);
             }
         }
     }
