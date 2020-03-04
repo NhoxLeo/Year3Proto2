@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.2994176, g: 0.20086232, b: 0.15346085, a: 1}
+  m_IndirectSpecularColor: {r: 0.2991552, g: 0.20069459, b: 0.1533867, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -247,7 +247,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &384483110
 GameObject:
@@ -343,90 +343,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &637162295
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2222203279779732698, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_Name
-      value: Tower
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2222203279779732702, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6666015888139470507, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: structureName
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6666015888139470507, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: remaining
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6666015888139470507, guid: 5d955a070b85499489b9057d48326531,
-        type: 3}
-      propertyPath: productionTime
-      value: 10
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5d955a070b85499489b9057d48326531, type: 3}
 --- !u!1 &824134859
 GameObject:
   m_ObjectHideFlags: 1
@@ -472,7 +388,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1596127533
 GameObject:
@@ -509,8 +425,6 @@ MonoBehaviour:
   icon: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
   displayName: Wood Resource
   productionTime: 10
-  remainingTime: 10
-  placed: 0
 --- !u!65 &1596127535
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -583,7 +497,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1713689005
 PrefabInstance:
@@ -630,7 +544,7 @@ PrefabInstance:
     - target: {fileID: 6682673742629214380, guid: b4e402da27b88dd42a80771d0025ed75,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6682673742629214380, guid: b4e402da27b88dd42a80771d0025ed75,
         type: 3}

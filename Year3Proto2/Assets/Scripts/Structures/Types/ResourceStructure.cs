@@ -7,8 +7,8 @@ public class ResourceStructure : Structure
     public readonly ResourceType resourceType;
 
     public float productionTime = 10.0f;
-    public float remainingTime;
-    public bool placed = false;
+    private float remainingTime;
+    private float amount = 1.0f;
 
     public ResourceStructure(ResourceType resourceType) : base(StructureType.RESOURCE)
     {
@@ -28,5 +28,10 @@ public class ResourceStructure : Structure
     public ResourceType GetResourceType()
     {
         return resourceType;
+    }
+
+    public override void Check(GameObject gameobject)
+    {
+
     }
 }
