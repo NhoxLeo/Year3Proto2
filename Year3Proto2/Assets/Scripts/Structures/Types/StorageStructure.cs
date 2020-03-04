@@ -13,4 +13,9 @@ public class StorageStructure : Structure
     {
 
     }
+
+    private void Start()
+    {
+        StructureStart();
+    }
 }
