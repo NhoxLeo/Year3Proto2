@@ -10,11 +10,6 @@ public class ResourceStructure : Structure
     private float remainingTime;
     private float amount = 1.0f;
 
-    public ResourceStructure(ResourceType resourceType) : base(StructureType.RESOURCE)
-    {
-        this.resourceType = resourceType;
-        remainingTime = productionTime;
-    }
     private void Update()
     {
         remainingTime -= Time.deltaTime;
@@ -35,7 +30,7 @@ public class ResourceStructure : Structure
 
     }
 
-    private void Start()
+    protected void ResourceStart()
     {
         StructureStart();
     }

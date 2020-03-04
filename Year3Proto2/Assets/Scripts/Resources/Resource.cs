@@ -3,12 +3,12 @@ using UnityEngine;
 
 public enum ResourceType
 {
-    WOOD,
-    ORE,
-    FOOD
+    wood,
+    metal,
+    food
 }
 
-public class Resource : MonoBehaviour
+public class Resource
 {
     private ResourceType resourceType;
 }

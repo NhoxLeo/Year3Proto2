@@ -4,26 +4,23 @@ using UnityEngine;
 
 public class EnvironmentStructure : Structure
 {
-
-    private readonly ResourceType resourceType;
-
-    public EnvironmentStructure(ResourceType resourceType) : base(StructureType.ENVIRONMENT)
+    public enum EnvironmentType
     {
-        this.resourceType = resourceType;
+        forest
     }
 
+    protected EnvironmentType environmentType;
+    
     public override void Check(GameObject gameobject)
     {
         
     }
 
-    public ResourceType GetResourceType()
-    {
-        return resourceType;
-    }
 
-    private void Start()
+
+    protected void EnvironmentStart()
     {
         StructureStart();
+        structureType = StructureType.environment;
     }
 }
