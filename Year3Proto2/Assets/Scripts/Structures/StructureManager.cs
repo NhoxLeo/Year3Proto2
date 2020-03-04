@@ -10,23 +10,19 @@ public enum StructureState
 
 public class StructureManager : MonoBehaviour
 {
-    private List<Structure> structures;
     private Transform structure;
-    private Vector3 previousPosition;
     private StructureState structureState = StructureState.SELECTING;
+
+    public Transform tileHighlight;
 
     private void Update()
     {
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        int groundLayer = LayerMask.NameToLayer("Ground");
-        int structureLayer = LayerMask.NameToLayer("Structure");
-        groundLayer = 1 << groundLayer;
-        structureLayer = 1 << structureLayer;
         RaycastHit hit;
 
         if (structureState == StructureState.MOVING)
         {
-            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, groundLayer))
+            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
             {
                 if (structure != null)
                 {
@@ -39,13 +35,23 @@ public class StructureManager : MonoBehaviour
                             Vector3 hitPos = hit.point;
                             hitPos.y = structure.position.y;
                             structure.position = hitPos;
+                            
+                            if(tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
                         }
                         else // if the tile we hit does not have an attached object...
                         {
-                            Vector3 stuctPos = structure.position;
-                            stuctPos.x = hit.transform.position.x;
-                            stuctPos.z = hit.transform.position.z;
-                            structure.position = stuctPos;
+                            Vector3 structPos = structure.position;
+                            structPos.x = hit.transform.position.x;
+                            structPos.z = hit.transform.position.z;
+
+                            Vector3 highlightPos = structPos;
+                            highlightPos.y = 0.501f;
+
+                            structure.position = structPos;
+                            tileHighlight.position = highlightPos;
+
+                            if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
+
                             // If the user clicked the LMB...
                             if (Input.GetMouseButtonDown(0))
                             {
@@ -66,7 +72,7 @@ public class StructureManager : MonoBehaviour
         }
         else if (structureState == StructureState.SELECTING)
         {
-            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, structureLayer))
+            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -74,10 +80,19 @@ public class StructureManager : MonoBehaviour
                     {
                         structure = hit.transform;
                         structure.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
-                        previousPosition = structure.position;
                         structureState = StructureState.MOVING;
                     }
                 }
+            }
+
+            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+            {
+                Vector3 highlightpos = tileHighlight.position;
+                highlightpos.x = hit.transform.position.x;
+                highlightpos.y = 0.501f;
+                highlightpos.z = hit.transform.position.z;
+
+                tileHighlight.position = highlightpos;
             }
         }
     }
