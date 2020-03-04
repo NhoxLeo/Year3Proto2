@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentStructure : Structure
+public abstract class EnvironmentStructure : Structure
 {
     public enum EnvironmentType
     {
@@ -10,13 +10,6 @@ public class EnvironmentStructure : Structure
     }
 
     protected EnvironmentType environmentType;
-    
-    public override void Check(GameObject gameobject)
-    {
-        
-    }
-
-
 
     protected void EnvironmentStart()
     {
