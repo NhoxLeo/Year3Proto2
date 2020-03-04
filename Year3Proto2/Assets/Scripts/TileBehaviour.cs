@@ -29,6 +29,8 @@ public class TileBehaviour : MonoBehaviour
         // Cast 4 rays to get adjacent tiles, store them
         int tcLayer = LayerMask.NameToLayer("TileCollider");
         tcLayer = 1 << tcLayer;
+        Color colour = Color.green;
+        colour.a = .1f;
         // North
         if (Physics.Raycast(tileCollider.transform.position, Vector3.forward, out RaycastHit hit, 2f, tcLayer))
         {
@@ -36,7 +38,7 @@ public class TileBehaviour : MonoBehaviour
             if (hit.collider.name == "TileCollider")
             {
                 adjacentTiles.Add(TileCode.north, hit.collider.GetComponentInParent<TileBehaviour>());
-                //adjacentTiles[TileCode.north].transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
             }
         }
         // East
@@ -46,7 +48,7 @@ public class TileBehaviour : MonoBehaviour
             if (hit.collider.name == "TileCollider")
             {
                 adjacentTiles.Add(TileCode.east, hit.collider.GetComponentInParent<TileBehaviour>());
-                //adjacentTiles[TileCode.east].transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
             }
         }
         // South
@@ -56,7 +58,7 @@ public class TileBehaviour : MonoBehaviour
             if (hit.collider.name == "TileCollider")
             {
                 adjacentTiles.Add(TileCode.south, hit.collider.GetComponentInParent<TileBehaviour>());
-                //adjacentTiles[TileCode.south].transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
             }
         }
         // West
@@ -66,7 +68,7 @@ public class TileBehaviour : MonoBehaviour
             if (hit.collider.name == "TileCollider")
             {
                 adjacentTiles.Add(TileCode.west, hit.collider.GetComponentInParent<TileBehaviour>());
-                //adjacentTiles[TileCode.west].transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
             }
         }
 
