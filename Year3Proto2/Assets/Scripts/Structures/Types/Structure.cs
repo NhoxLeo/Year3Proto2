@@ -5,12 +5,14 @@ public enum StructureType
     environment,
     attack,
     storage,
-    defense
+    defense,
+    longhaus
 };
 
 public abstract class Structure : MonoBehaviour
 {
     public Sprite icon;
+    public float sitHeight;
     public string displayName;
     public GameObject attachedTile;
 
@@ -18,18 +20,11 @@ public abstract class Structure : MonoBehaviour
 
     protected void StructureStart()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1<< LayerMask.NameToLayer("Ground")))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
         {
             hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(gameObject, true);
         }
     }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.GetType() == typeof(Structure)) Check(other.gameObject);
-    }
-
-    public abstract void Check(GameObject gameobject);
 
     public StructureType GetStructureType()
     {

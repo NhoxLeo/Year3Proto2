@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StorageStructure : Structure
+public abstract class StorageStructure : Structure
 {
-    public override void Check(GameObject gameobject)
-    {
+    protected ResourceType resourceType;
+    public int storage;
 
-    }
-
-    private void Start()
+    protected void StorageStart()
     {
         StructureStart();
+        structureType = StructureType.storage;
+    }
+
+    public ResourceType GetResourceType()
+    {
+        return resourceType;
     }
 }
