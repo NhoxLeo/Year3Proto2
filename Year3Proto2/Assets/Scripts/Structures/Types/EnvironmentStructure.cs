@@ -21,4 +21,9 @@ public class EnvironmentStructure : Structure
     {
         return resourceType;
     }
+
+    private void Start()
+    {
+        StructureStart();
+    }
 }

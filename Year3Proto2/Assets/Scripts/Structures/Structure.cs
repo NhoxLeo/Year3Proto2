@@ -12,11 +12,22 @@ public abstract class Structure : MonoBehaviour
 {
     public Sprite icon;
     public string displayName;
+    public GameObject attachedTile;
 
     private StructureType structureType;
     public Structure(StructureType structureType)
     {
         this.structureType = structureType;
+    }
+
+    protected void StructureStart()
+    {
+        int groundLayer = LayerMask.NameToLayer("Ground");
+        groundLayer = 1 << groundLayer;
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, groundLayer))
+        {
+            attachedTile = hit.transform.gameObject;
+        }
     }
 
     private void OnTriggerStay(Collider other)
