@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TowerBehaviour : MonoBehaviour
+public class TowerBehaviour : AttackStructure
 {
     [Header("Tower")]
 
@@ -19,6 +19,7 @@ public class TowerBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        AttackStart();
         towerAttackCooldown = 1f / towerAttackSpeed;
         towerAttackDelay = 0f;
         enemiesWithinRange = new List<GameObject>();

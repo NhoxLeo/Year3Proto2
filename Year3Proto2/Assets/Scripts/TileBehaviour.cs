@@ -83,7 +83,7 @@ public class TileBehaviour : MonoBehaviour
 
         if (Physics.Raycast(tileCollider.transform.position, Vector3.up, out hit, 1.6f, structLayer))
         {
-            attachedStructure = hit.transform.gameObject;
+            Attach(hit.transform.gameObject, true);
         }
 
         // Turn on the collider
@@ -101,13 +101,21 @@ public class TileBehaviour : MonoBehaviour
         return attachedStructure;
     }
 
-    public void Attach(GameObject _structure)
+    public void Attach(GameObject _structure, bool _alsoAttachSelf = false)
     {
+        if (_alsoAttachSelf)
+        {
+            _structure.GetComponent<Structure>().attachedTile = gameObject;
+        }
         attachedStructure = _structure;
     }
 
-    public void Detach()
+    public void Detach(bool _alsoDetachSelf = false)
     {
+        if (_alsoDetachSelf)
+        {
+            attachedStructure.GetComponent<Structure>().attachedTile = null;
+        }
         attachedStructure = null;
     }
 }

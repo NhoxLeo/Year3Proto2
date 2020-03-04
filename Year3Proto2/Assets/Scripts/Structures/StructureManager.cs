@@ -49,9 +49,15 @@ public class StructureManager : MonoBehaviour
                             // If the user clicked the LMB...
                             if (Input.GetMouseButtonDown(0))
                             {
+                                hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                                if (structure.GetComponent<Structure>().GetStructureType() == StructureType.resource)
+                                {
+                                    if (structure.GetComponent<ResourceStructure>().GetResourceType() == ResourceType.wood)
+                                    {
+                                        structure.GetComponent<LumberMill>().CalculateTileBonus();
+                                    }
+                                }
                                 structureState = StructureState.SELECTING;
-                                structure.GetComponent<Structure>().attachedTile = hit.transform.gameObject;
-                                hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject);
                             }
                         }
                     }
@@ -67,8 +73,7 @@ public class StructureManager : MonoBehaviour
                     if (hit.transform.GetComponent<Structure>() != null)
                     {
                         structure = hit.transform;
-                        structure.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach();
-                        structure.GetComponent<Structure>().attachedTile = null;
+                        structure.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
                         previousPosition = structure.position;
                         structureState = StructureState.MOVING;
                     }

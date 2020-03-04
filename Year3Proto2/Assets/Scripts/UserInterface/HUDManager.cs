@@ -35,8 +35,10 @@ public class HUDManager : MonoBehaviour
         string foodSign = (Mathf.Sign(foodDelta) == 1) ? "+" : "";
         foodText.text = game.playerData.rFood.ToString() + " (" + foodSign + foodDelta.ToString() + ")";
 
-        string woodSign = (Mathf.Sign(woodDelta) == 1) ? "+" : "";
-        woodText.text = game.playerData.rWood.ToString() + " (" + woodSign + woodDelta.ToString() + ")";
+        float woodVel = game.GetWoodVelocity(10);
+        string woodSign = (Mathf.Sign(woodVel) == 1) ? "+" : "";
+        float woodVelDP = Mathf.Round(woodVel * 10f) * .1f;
+        woodText.text = game.playerData.rWood.ToString() + " (" + woodSign + woodVelDP.ToString() + ")";
 
         string metalSign = (Mathf.Sign(metalDelta) == 1) ? "+" : "";
         metalText.text = game.playerData.rMetal.ToString() + " (" + metalSign + metalDelta.ToString() + ")";
