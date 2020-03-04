@@ -7,7 +7,7 @@ using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
-    //private GameManager game;
+    private GameManager game;
     private TMP_Text foodText;
     private TMP_Text woodText;
     private TMP_Text metalText;
@@ -23,6 +23,7 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
+        game = FindObjectOfType<GameManager>();
         foodText = transform.Find("ResourceBar/Food/FoodText").GetComponent<TMP_Text>();
         woodText = transform.Find("ResourceBar/Wood/WoodText").GetComponent<TMP_Text>();
         metalText = transform.Find("ResourceBar/Metal/MetalText").GetComponent<TMP_Text>();
@@ -32,13 +33,13 @@ public class HUDManager : MonoBehaviour
     void Update()
     {
         string foodSign = (Mathf.Sign(foodDelta) == 1) ? "+" : "";
-        foodText.text = foodTotal.ToString() + " (" + foodSign + foodDelta.ToString() + ")";
+        foodText.text = game.playerData.rFood.ToString() + " (" + foodSign + foodDelta.ToString() + ")";
 
         string woodSign = (Mathf.Sign(woodDelta) == 1) ? "+" : "";
-        woodText.text = woodTotal.ToString() + " (" + woodSign + woodDelta.ToString() + ")";
+        woodText.text = game.playerData.rWood.ToString() + " (" + woodSign + woodDelta.ToString() + ")";
 
         string metalSign = (Mathf.Sign(metalDelta) == 1) ? "+" : "";
-        metalText.text = metalTotal.ToString() + " (" + metalSign + metalDelta.ToString() + ")";
+        metalText.text = game.playerData.rMetal.ToString() + " (" + metalSign + metalDelta.ToString() + ")";
 
 
     }
