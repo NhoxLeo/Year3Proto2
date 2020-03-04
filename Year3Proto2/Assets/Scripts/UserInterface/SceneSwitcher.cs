@@ -78,6 +78,11 @@ public class SceneSwitcher : MonoBehaviour
             isSwitching = false;
         }
 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneSwitch(curScene);
+        }
+
     }
 
     public void SceneSwitch(string scene)
