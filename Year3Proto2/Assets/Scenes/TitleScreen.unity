@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.2990379, g: 0.20305148, b: 0.15872729, a: 1}
+  m_IndirectSpecularColor: {r: 0.29837015, g: 0.16446817, b: 0.16003025, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1209,7 +1209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.03137255}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.02745098}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1644,6 +1644,7 @@ GameObject:
   - component: {fileID: 1834162206}
   - component: {fileID: 1834162209}
   - component: {fileID: 1834162207}
+  - component: {fileID: 1834162208}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1683,6 +1684,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!225 &1834162208
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834162205}
+  m_Enabled: 1
+  m_Alpha: 0.8
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!222 &1834162209
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2026,7 +2039,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: fcf597e6f2990894c9a3e1dbfbf896e2, type: 2}
+  sharedProfile: {fileID: 11400000, guid: ad4dd3f2f95618549b22854554c2a600, type: 2}
 --- !u!1 &2103980335082998336
 GameObject:
   m_ObjectHideFlags: 0
