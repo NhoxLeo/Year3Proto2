@@ -22,7 +22,7 @@ public abstract class Structure : MonoBehaviour
         groundLayer = 1 << groundLayer;
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, groundLayer))
         {
-            attachedTile = hit.transform.gameObject;
+            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(gameObject, true);
         }
     }
 
