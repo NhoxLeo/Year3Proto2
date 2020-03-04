@@ -15,7 +15,12 @@ public class StructureManager : MonoBehaviour
     private Vector3 previousPosition;
     private StructureState structureState = StructureState.SELECTING;
 
-    public Transform tileHighlight;
+    public GameObject tileHighlight;
+
+    private void Start()
+    {
+        tileHighlight = Instantiate(tileHighlight, transform);
+    }
 
     private void Update()
     {
@@ -41,21 +46,29 @@ public class StructureManager : MonoBehaviour
                             Vector3 hitPos = hit.point;
                             hitPos.y = structure.position.y;
                             structure.position = hitPos;
+
+                            tileHighlight.gameObject.SetActive(false);
                         }
                         else // if the tile we hit does not have an attached object...
                         {
-                            Vector3 stuctPos = structure.position;
-                            stuctPos.x = hit.transform.position.x;
-                            stuctPos.z = hit.transform.position.z;
-                            structure.position = stuctPos;
+                            Vector3 structPos = structure.position;
+                            structPos.x = hit.transform.position.x;
+                            structPos.z = hit.transform.position.z;
+
+                            Vector3 highlightPos = structPos;
+                            highlightPos.y = 0.501f;
+
+                            structure.position = structPos;
+                            tileHighlight.transform.position = highlightPos;
+
+                            tileHighlight.gameObject.SetActive(true);
+
                             // If the user clicked the LMB...
                             if (Input.GetMouseButtonDown(0))
                             {
                                 structureState = StructureState.SELECTING;
                                 structure.GetComponent<Structure>().attachedTile = hit.transform.gameObject;
                                 hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject);
-
-                                tileHighlight.gameObject.SetActive(false);
                             }
                         }
                     }
@@ -76,13 +89,18 @@ public class StructureManager : MonoBehaviour
                         previousPosition = structure.position;
                         structureState = StructureState.MOVING;
 
-                        tileHighlight.gameObject.SetActive(false);
                     }
                 }
+            }
 
-                float yPos = tileHighlight.position.y;
+            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, groundLayer))
+            {
+                Vector3 highlightpos = tileHighlight.transform.position;
+                highlightpos.x = hit.transform.position.x;
+                highlightpos.y = 0.501f;
+                highlightpos.z = hit.transform.position.z;
 
-                tileHighlight.position = new Vector3(hit.point.x, yPos, hit.point.y);
+                tileHighlight.transform.position = highlightpos;
             }
         }
     }
