@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 public enum StructureType
 {
-    RESOURCE,
-    ENVIRONMENT,
-    ATTACK,
-    STORAGE,
-    DEFENSE
+    resource,
+    environment,
+    attack,
+    storage,
+    defense
 };
 
 public abstract class Structure : MonoBehaviour
@@ -14,17 +14,13 @@ public abstract class Structure : MonoBehaviour
     public string displayName;
     public GameObject attachedTile;
 
-    private StructureType structureType;
-    public Structure(StructureType structureType)
-    {
-        this.structureType = structureType;
-    }
+    protected StructureType structureType;
 
     protected void StructureStart()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1<< LayerMask.NameToLayer("Ground")))
         {
-            attachedTile = hit.transform.gameObject;
+            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(gameObject, true);
         }
     }
 

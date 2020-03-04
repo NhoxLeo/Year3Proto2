@@ -4,18 +4,14 @@ using UnityEngine;
 
 public class AttackStructure : Structure
 {
-    public AttackStructure() : base(StructureType.ATTACK)
-    {
-
-    }
-
     public override void Check(GameObject gameobject)
     {
 
     }
 
-    private void Start()
+    protected void AttackStart()
     {
         StructureStart();
+        structureType = StructureType.attack;
     }
 }
