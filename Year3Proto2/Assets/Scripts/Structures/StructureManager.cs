@@ -11,7 +11,8 @@ public enum StructureState
 public class StructureManager : MonoBehaviour
 {
     private List<Structure> structures;
-    private Transform currentStructure;
+    private Transform structure;
+    private Vector3 previousPosition;
     private StructureState structureState = StructureState.SELECTING;
 
     private void Update()
@@ -23,9 +24,8 @@ public class StructureManager : MonoBehaviour
         {
             if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << 10))
             {
-                if (currentStructure != null)
+                if (structure != null)
                 {
-                    float yPosition = currentStructure.position.y;
 
                     Vector3 gridpos = new Vector3(
                         Mathf.Floor(hit.point.x),
@@ -33,13 +33,16 @@ public class StructureManager : MonoBehaviour
                         Mathf.Floor(hit.point.z)
                     );
 
-                    currentStructure.position = new Vector3(
+                    structure.position = new Vector3(
                         Mathf.Round(gridpos.x),
-                        Mathf.Round(yPosition),
+                        Mathf.Round(structure.position.y),
                         Mathf.Round(gridpos.z)
                     );
+                }
 
-                    if (Input.GetMouseButtonDown(0))structureState = StructureState.SELECTING;
+                if (Input.GetMouseButtonDown(0))
+                {
+                    structureState = StructureState.SELECTING;
                 }
             }
         }
@@ -49,8 +52,12 @@ public class StructureManager : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    currentStructure = hit.transform;
-                    structureState = StructureState.MOVING;
+                    if (hit.transform.GetComponent<ResourceStructure>() != null)
+                    {
+                        structure = hit.transform;
+                        previousPosition = structure.position;
+                        structureState = StructureState.MOVING;
+                    }
                 }
             }
         }
