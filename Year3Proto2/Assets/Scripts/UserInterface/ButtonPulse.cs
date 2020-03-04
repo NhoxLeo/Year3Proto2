@@ -5,17 +5,6 @@ using DG.Tweening;
 
 public class ButtonPulse : MonoBehaviour
 {
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
     public void ButtonClick()
     {
         transform.DOKill(true);
