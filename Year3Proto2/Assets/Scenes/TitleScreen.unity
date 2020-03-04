@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.29853734, g: 0.1609428, b: 0.15378605, a: 1}
+  m_IndirectSpecularColor: {r: 0.2987089, g: 0.16050076, b: 0.15294562, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -319,7 +319,7 @@ PrefabInstance:
     - target: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_Name
-      value: Button (2)
+      value: ButtonExit
       objectReference: {fileID: 0}
     - target: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -479,7 +479,7 @@ PrefabInstance:
     - target: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_Name
-      value: Button (1)
+      value: ButtonTut
       objectReference: {fileID: 0}
     - target: {fileID: 8179312044486000854, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -5359,8 +5359,9 @@ GameObject:
   - component: {fileID: 845090932}
   - component: {fileID: 845090934}
   - component: {fileID: 845090933}
+  - component: {fileID: 845090935}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: DecorRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5421,6 +5422,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 845090931}
   m_CullTransparentMesh: 0
+--- !u!225 &845090935
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845090931}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &899568525 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
@@ -5439,6 +5452,7 @@ GameObject:
   - component: {fileID: 938813596}
   - component: {fileID: 938813595}
   - component: {fileID: 938813594}
+  - component: {fileID: 938813599}
   - component: {fileID: 938813598}
   m_Layer: 5
   m_Name: Canvas
@@ -5549,6 +5563,18 @@ MonoBehaviour:
   fadePanel: {fileID: 1127486488}
   fadeTime: 1
   clickSound: {fileID: 0}
+--- !u!114 &938813599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938813593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d18672e32b0b8418b05b4c5146f61a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &999189864
 GameObject:
   m_ObjectHideFlags: 0
@@ -5799,7 +5825,7 @@ PrefabInstance:
     - target: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_Name
-      value: Button
+      value: ButtonStart
       objectReference: {fileID: 0}
     - target: {fileID: 8179312044486000854, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -5998,8 +6024,9 @@ GameObject:
   - component: {fileID: 1368058806}
   - component: {fileID: 1368058808}
   - component: {fileID: 1368058807}
+  - component: {fileID: 1368058809}
   m_Layer: 5
-  m_Name: Image
+  m_Name: DecorLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6060,6 +6087,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1368058805}
   m_CullTransparentMesh: 0
+--- !u!225 &1368058809
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368058805}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1542852679
 GameObject:
   m_ObjectHideFlags: 0
@@ -6612,7 +6651,7 @@ GameObject:
   - component: {fileID: 2040693596}
   - component: {fileID: 2040693595}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Divider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
