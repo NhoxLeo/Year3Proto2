@@ -9,8 +9,9 @@ public class AttackStructure : Structure
 
     }
 
-    private void Start()
+    protected void AttackStart()
     {
         StructureStart();
+        structureType = StructureType.attack;
     }
 }

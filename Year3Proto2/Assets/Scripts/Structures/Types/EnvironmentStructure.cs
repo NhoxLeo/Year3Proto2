@@ -23,4 +23,9 @@ public class EnvironmentStructure : Structure
         StructureStart();
         structureType = StructureType.environment;
     }
+
+    public EnvironmentType GetEnvironmentType()
+    {
+        return environmentType;
+    }
 }

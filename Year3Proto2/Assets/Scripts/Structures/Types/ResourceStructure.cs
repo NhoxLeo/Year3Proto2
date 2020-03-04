@@ -4,21 +4,7 @@ using UnityEngine;
 
 public class ResourceStructure : Structure
 {
-    public readonly ResourceType resourceType;
-
-    public float productionTime = 10.0f;
-    private float remainingTime;
-    private float amount = 1.0f;
-
-    private void Update()
-    {
-        remainingTime -= Time.deltaTime;
-
-        if (remainingTime <= 0.0f) 
-        {
-            remainingTime = productionTime;
-        }
-    }
+    protected ResourceType resourceType;
 
     public ResourceType GetResourceType()
     {
@@ -33,5 +19,6 @@ public class ResourceStructure : Structure
     protected void ResourceStart()
     {
         StructureStart();
+        structureType = StructureType.resource;
     }
 }
