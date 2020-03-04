@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackStructure : Structure
+public class StorageStructure : Structure
 {
-    public AttackStructure() : base(StructureType.ATTACK)
+    public StorageStructure() : base(StructureType.STORAGE)
     {
 
     }

@@ -12,8 +12,18 @@ public class EnvironmentStructure : Structure
         this.resourceType = resourceType;
     }
 
+    public override void Check(GameObject gameobject)
+    {
+        
+    }
+
     public ResourceType GetResourceType()
     {
         return resourceType;
+    }
+
+    private void Start()
+    {
+        StructureStart();
     }
 }
