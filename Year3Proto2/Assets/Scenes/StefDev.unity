@@ -3115,7 +3115,7 @@ PrefabInstance:
         type: 3}
       propertyPath: tileHighlight
       value: 
-      objectReference: {fileID: 8701907497129688328, guid: 429a66a377bd4e444891caffb6c27c73,
+      objectReference: {fileID: 8701907497129688332, guid: 429a66a377bd4e444891caffb6c27c73,
         type: 3}
     - target: {fileID: 7626114356415375197, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
         type: 3}
@@ -3125,7 +3125,7 @@ PrefabInstance:
     - target: {fileID: 7626114356415375197, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.501
       objectReference: {fileID: 0}
     - target: {fileID: 7626114356415375197, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
         type: 3}

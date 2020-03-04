@@ -22,9 +22,7 @@ public abstract class Structure : MonoBehaviour
 
     protected void StructureStart()
     {
-        int groundLayer = LayerMask.NameToLayer("Ground");
-        groundLayer = 1 << groundLayer;
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, groundLayer))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1<< LayerMask.NameToLayer("Ground")))
         {
             attachedTile = hit.transform.gameObject;
         }
