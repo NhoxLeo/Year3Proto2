@@ -30,5 +30,10 @@ public abstract class Structure : MonoBehaviour
     {
         return structureType;
     }
+
+    public virtual bool IsStructure(string _structureName)
+    {
+        return false;
+    }
 }
 

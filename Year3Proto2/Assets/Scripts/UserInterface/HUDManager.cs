@@ -35,7 +35,7 @@ public class HUDManager : MonoBehaviour
         string foodSign = (Mathf.Sign(foodDelta) == 1) ? "+" : "";
         foodText.text = game.playerData.GetResource(ResourceType.food).ToString() + " (" + foodSign + foodDelta.ToString() + ")";
 
-        float woodVel = game.GetWoodVelocity(10);
+        float woodVel = game.GetWoodVelocity(1);
         string woodSign = (Mathf.Sign(woodVel) == 1) ? "+" : "";
         float woodVelDP = Mathf.Round(woodVel * 10f) * .1f;
         woodText.text = game.playerData.GetResource(ResourceType.wood).ToString() + " (" + woodSign + woodVelDP.ToString() + ")";

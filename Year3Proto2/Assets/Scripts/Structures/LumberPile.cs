@@ -22,4 +22,9 @@ public class LumberPile : StorageStructure
     {
         FindObjectOfType<GameManager>().CalculateStorageMaximum();
     }
+
+    public override bool IsStructure(string _structureName)
+    {
+        return _structureName == "Lumber Pile";
+    }
 }
