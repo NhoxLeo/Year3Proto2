@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackStructure : Structure
+public abstract class AttackStructure : Structure
 {
-    public override void Check(GameObject gameobject)
+    public enum AttackType
     {
-
+        magmaLauncher
     }
 
+    protected AttackType attackType;
+
+    public AttackType GetAttackType()
+    {
+        return attackType;
+    }
     protected void AttackStart()
     {
         StructureStart();

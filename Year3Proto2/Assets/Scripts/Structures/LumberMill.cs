@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LumberMill : ResourceStructure
 {
-    private float tileBonus = 0f;
+    private int tileBonus = 0;
     public bool wasPlacedOnForest = false;
     public float productionTime = 3f;
     private float remainingTime = 3f;
@@ -26,13 +26,18 @@ public class LumberMill : ResourceStructure
         if (remainingTime <= 0f)
         {
             remainingTime = productionTime;
-            FindObjectOfType<GameManager>().AddWood(batchSize);
+            FindObjectOfType<GameManager>().AddBatch(new Batch(tileBonus, resourceType));
         }
     }
 
     public void CalculateTileBonus()
     {
-        float calculatedTileBonus = 1f;
+        tileBonus = 1;
+        if (wasPlacedOnForest)
+        {
+            tileBonus++;
+        }
+
 
         // If the Lumber Mill is placed on a tile...
         if (attachedTile)
@@ -55,16 +60,13 @@ public class LumberMill : ResourceStructure
                             // If the environment structure is a forest...
                             if (adjStructure.GetComponent<EnvironmentStructure>().GetEnvironmentType() == EnvironmentStructure.EnvironmentType.forest)
                             {
-                                calculatedTileBonus++;
+                                tileBonus++;
                             }
                         }
                     }
                 }
             }   
         }
-        tileBonus = calculatedTileBonus;
-        Debug.Log(tileBonus);
+        Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
     }
-
-
 }
