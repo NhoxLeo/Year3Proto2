@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentStructure : Structure
+public abstract class EnvironmentStructure : Structure
 {
-
-    private readonly ResourceType resourceType;
-
-    public EnvironmentStructure(ResourceType resourceType) : base(StructureType.ENVIRONMENT)
+    public enum EnvironmentType
     {
-        this.resourceType = resourceType;
+        forest
     }
 
-    public ResourceType GetResourceType()
+    protected EnvironmentType environmentType;
+
+    protected void EnvironmentStart()
     {
-        return resourceType;
+        StructureStart();
+        structureType = StructureType.environment;
+    }
+
+    public EnvironmentType GetEnvironmentType()
+    {
+        return environmentType;
     }
 }
