@@ -43,16 +43,32 @@ public class StructureManager : MonoBehaviour
                     // If we hit a tile...
                     if (hit.collider.name.Contains("Tile"))
                     {
+                        bool canPlaceHere = false;
                         // If the tile we hit has an attached object...
-                        if (hit.transform.GetComponent<TileBehaviour>().GetAttached())
+                        GameObject attached = hit.transform.GetComponent<TileBehaviour>().GetAttached();
+                        if (attached)
                         {
                             Vector3 hitPos = hit.point;
                             hitPos.y = structure.GetComponent<Structure>().sitHeight;
                             structure.position = hitPos;
                             
                             if(tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+
+                            if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
+                            {
+                                if (structure.GetComponent<Structure>().IsStructure("Lumber Mill"))
+                                {
+                                    // Special condition: Lumber Mills can be placed on Forest Environment
+                                    canPlaceHere = true;
+                                }
+                            }
                         }
                         else // if the tile we hit does not have an attached object...
+                        {
+                            canPlaceHere = true;
+
+                        }
+                        if (canPlaceHere)
                         {
                             Vector3 structPos = structure.position;
                             structPos.x = hit.transform.position.x;
@@ -70,19 +86,31 @@ public class StructureManager : MonoBehaviour
                             if (Input.GetMouseButtonDown(0))
                             {
                                 // Attach the structure to the tile and vica versa
-                                hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
-                                // If the structure is of the resource type
-                                if (structure.GetComponent<Structure>().GetStructureType() == StructureType.resource)
+                                if (attached)
                                 {
-                                    // If the structure is a Lumber Mill
-                                    if (structure.GetComponent<ResourceStructure>().GetResourceType() == ResourceType.wood)
+                                    attached.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                }
+                                hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                                if (structure.GetComponent<Structure>().IsStructure("Lumber Mill"))
+                                {
+                                    if (attached)
                                     {
-                                        // Recalculate the Lumber Mill's tile bonus
-                                        structure.GetComponent<LumberMill>().CalculateTileBonus();
+                                        if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
+                                        {
+                                            // The structure is being placed on a forest
+                                            Destroy(attached);
+                                            gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
+                                            structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
+                                            structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                        }
                                     }
                                 }
-                                FindObjectOfType<GameManager>().CalculateStorageMaximum();
+                                else if (structure.GetComponent<Structure>().GetStructureType() == StructureType.storage)
+                                {
+                                    gameMan.CalculateStorageMaximum();
+                                }
                                 structureState = StructManState.selecting;
+                                gameMan.OnStructurePlace();
                             }
                         }
                     }
@@ -94,11 +122,11 @@ public class StructureManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 // replace with attempt cost
-                if (gameMan.playerData.GetResource(ResourceType.wood) >= 20)
+                if (gameMan.playerData.GetResource(ResourceType.wood) >= 40)
                 {
-                    gameMan.playerData.DeductResource(ResourceType.wood, 20);
-                    GameObject LPinstance = Instantiate(structureDict["Lumber Pile"], Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-                    structure = LPinstance.transform;
+                    gameMan.playerData.DeductResource(ResourceType.wood, 40);
+                    GameObject LMinstance = Instantiate(structureDict["Lumber Mill"], Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+                    structure = LMinstance.transform;
                     // Put the manager back into moving mode.
                     structureState = StructManState.moving;
                 }
@@ -106,11 +134,11 @@ public class StructureManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 // replace with attempt cost
-                if (gameMan.playerData.GetResource(ResourceType.wood) >= 40)
+                if (gameMan.playerData.GetResource(ResourceType.wood) >= 20)
                 {
-                    gameMan.playerData.DeductResource(ResourceType.wood, 40);
-                    GameObject LMinstance = Instantiate(structureDict["Lumber Mill"], Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-                    structure = LMinstance.transform;
+                    gameMan.playerData.DeductResource(ResourceType.wood, 20);
+                    GameObject LPinstance = Instantiate(structureDict["Lumber Pile"], Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+                    structure = LPinstance.transform;
                     // Put the manager back into moving mode.
                     structureState = StructManState.moving;
                 }

@@ -26,6 +26,12 @@ public class CameraController : MonoBehaviour
     private Vector3 south;
     private Vector3 west;
 
+    private float scrollOffset = 0f;
+    private float scrollMax = 3f;
+    private float scrollMin = -10f;
+
+    Vector3 cameraZoomMidPoint;
+
 
     // Start is called before the first frame update
     void Start()
@@ -35,26 +41,36 @@ public class CameraController : MonoBehaviour
         east = Vector3.RotateTowards(Vector3.back, Vector3.right, quarterPi, 5f).normalized;
         south = Vector3.RotateTowards(Vector3.back, Vector3.left, quarterPi, 5f).normalized;
         west = Vector3.RotateTowards(Vector3.forward, Vector3.left, quarterPi, 5f).normalized;
+        cameraZoomMidPoint = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
+        float mouseScroll = 0;
+        mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
+        scrollOffset += mouseScroll;
+
+        if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }
+        if (scrollOffset < scrollMin) { scrollOffset = scrollMin; }
+
         if (Input.GetKey(moveNorth))
         {
-            transform.position += north * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += north * Time.deltaTime * sensitivity;
         }
         if (Input.GetKey(moveEast))
         {
-            transform.position += east * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += east * Time.deltaTime * sensitivity;
         }
         if (Input.GetKey(moveSouth))
         {
-            transform.position += south * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += south * Time.deltaTime * sensitivity;
         }
         if (Input.GetKey(moveWest))
         {
-            transform.position += west * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += west * Time.deltaTime * sensitivity;
         }
+
+        transform.position = cameraZoomMidPoint + transform.forward * scrollOffset * .5f;
     }
 }

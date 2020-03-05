@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 
 public enum EnemyState
@@ -10,62 +8,76 @@ public enum EnemyState
     ACTION
 }
 
-public abstract class Enemy : MonoBehaviour
+public abstract class Enemy<T>: MonoBehaviour
 {
     private Transform target = null;
-    private Tween tween;
-    private EnemyState enemyState;
-    private float speed = 2.0f;
+    private EnemyState enemyState = EnemyState.IDLE;
 
-    public abstract void Action(GameObject gameObject);
+    private float yPosition;
+    private float speed = 0.25f;
 
-    public void Walk()
-    {
-        if (enemyState != EnemyState.WALK)
-        {
-            tween = transform.DOMoveY(0.75f, 0.25f).SetLoops(-1, LoopType.Yoyo);
-            enemyState = EnemyState.WALK;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (target == null) return;
-        if(other.transform == target) Action(target.gameObject);
-    }
+    public abstract void Action(T t);
 
     private void Update()
     {
-        transform.position += transform.forward * speed * Time.deltaTime;
+        switch (enemyState)
+        {
+            case EnemyState.ACTION:
+                Action(target.GetComponent<T>());
+                break;
+            case EnemyState.WALK:
+                if (target.GetComponent<Structure>().attachedTile == null) Next();
+                transform.position += transform.forward * speed * Time.deltaTime;
+                break;
+            case EnemyState.IDLE:
+                yPosition = transform.position.y;
+                transform.DOMoveY(yPosition + (speed / 2.0f), 0.25f).SetLoops(-1, LoopType.Yoyo);
+
+                Next();
+
+                if (target == null)
+                {
+                    transform.DOKill(false);
+                    Destroy(gameObject);
+                }
+                break;
+        }
     }
 
     public void Next()
     {
         float closestDistanceSqr = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
-        foreach (Structure potentialTarget in FindObjectsOfType<Structure>())
+
+        foreach (GameObject @object in FindObjectsOfType<GameObject>())
         {
-            Vector3 directionToTarget = potentialTarget.transform.position - currentPosition;
-            float dSqrToTarget = directionToTarget.sqrMagnitude;
-            if (dSqrToTarget < closestDistanceSqr)
+            if (@object.GetComponent<T>() != null)
             {
-                closestDistanceSqr = dSqrToTarget;
-                target = potentialTarget.transform;
+                if (@object.GetComponent<Structure>().attachedTile != null)
+                {
+                    Vector3 directionToTarget = @object.transform.position - currentPosition;
+                    float dSqrToTarget = directionToTarget.sqrMagnitude;
+                    if (dSqrToTarget < closestDistanceSqr)
+                    {
+                        closestDistanceSqr = dSqrToTarget;
+                        transform.LookAt(@object.transform);
+                        enemyState = EnemyState.WALK;
+
+                        target = @object.transform;
+                    }
+                }
             }
         }
     }
 
-    public Transform GetTarget()
+    private void OnTriggerEnter(Collider other)
     {
-        return target;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if(target != null)
+        if (other.transform == target && target != null)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, target.position);
+            enemyState = EnemyState.ACTION; 
+
+            transform.DOKill(false);
+            transform.DOMoveY(yPosition, 0.25f);
         }
     }
 }
