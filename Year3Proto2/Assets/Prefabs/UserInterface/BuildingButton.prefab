@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2203557016330713281}
   - component: {fileID: 2945052394925961421}
   m_Layer: 5
-  m_Name: IconArcher
+  m_Name: BuildingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
