@@ -2,17 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Raider : Enemy
+public class Raider : Enemy<ResourceStructure>
 {
-
-    private void Start()
+    public override void Action(ResourceStructure resourceStructure)
     {
-        Walk();
-        Next();
-        Debug.Log(GetTarget());
-    }
-    public override void Action(GameObject gameObject)
-    {
-        if (gameObject == null) Next();
+        //Steal resources from the resource structure...
     }
 }
