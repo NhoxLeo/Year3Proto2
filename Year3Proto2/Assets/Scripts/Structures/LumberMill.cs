@@ -15,6 +15,7 @@ public class LumberMill : ResourceStructure
     void Start()
     {
         ResourceStart();
+        wasPlacedOnForest = false;
         resourceType = ResourceType.wood;
     }
 
@@ -26,7 +27,7 @@ public class LumberMill : ResourceStructure
         if (remainingTime <= 0f)
         {
             remainingTime = productionTime;
-            FindObjectOfType<GameManager>().AddBatch(new Batch(tileBonus, resourceType));
+            FindObjectOfType<GameManager>().AddBatch(new Batch(tileBonus * batchSize, resourceType));
         }
     }
 
@@ -68,5 +69,10 @@ public class LumberMill : ResourceStructure
             }   
         }
         Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
+    }
+
+    public override bool IsStructure(string _structureName)
+    {
+        return _structureName == "Lumber Mill";
     }
 }

@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private float batchMaxAge = 10.0f;
+    private float batchMaxAge = 3.0f;
 
     private List<Batch> recentBatches;
 
@@ -201,5 +201,15 @@ public class GameManager : MonoBehaviour
         playerData.SetMaximum(ResourceType.wood, newWoodMax);
         playerData.SetMaximum(ResourceType.metal, newMetalMax);
         playerData.SetMaximum(ResourceType.food, newFoodMax);
+    }
+
+    public void OnStructurePlace()
+    {
+        // Update all Lumber Mills
+        LumberMill[] lumberMills = FindObjectsOfType<LumberMill>();
+        foreach (LumberMill lumberMill in lumberMills)
+        {
+            lumberMill.CalculateTileBonus();
+        }
     }
 }
