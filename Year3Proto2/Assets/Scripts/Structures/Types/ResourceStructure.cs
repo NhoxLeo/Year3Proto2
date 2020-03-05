@@ -2,41 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResourceStructure : Structure
+public abstract class ResourceStructure : Structure
 {
-    public readonly ResourceType resourceType;
+    protected ResourceType resourceType;
 
-    public float productionTime = 10.0f;
-    private float remainingTime;
-    private float amount = 1.0f;
-
-    public ResourceStructure(ResourceType resourceType) : base(StructureType.RESOURCE)
+    protected void ResourceStart()
     {
-        this.resourceType = resourceType;
-        remainingTime = productionTime;
-    }
-    private void Update()
-    {
-        remainingTime -= Time.deltaTime;
-
-        if (remainingTime <= 0.0f) 
-        {
-            remainingTime = productionTime;
-        }
+        StructureStart();
+        structureType = StructureType.resource;
     }
 
     public ResourceType GetResourceType()
     {
         return resourceType;
-    }
-
-    public override void Check(GameObject gameobject)
-    {
-
-    }
-
-    private void Start()
-    {
-        StructureStart();
     }
 }
