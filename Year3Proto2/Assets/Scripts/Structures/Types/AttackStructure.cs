@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class AttackStructure : Structure
 {
-    private GameObject target = null;
+    protected GameObject target = null;
     protected List<GameObject> enemies;
 
     protected void AttackStart()
@@ -34,6 +34,7 @@ public abstract class AttackStructure : Structure
                         nearestEnemy = enemy;
                     }
                 }
+
                 if(nearestEnemy != null) target = nearestEnemy;
             }
             else 
@@ -49,7 +50,6 @@ public abstract class AttackStructure : Structure
     {
         if (!enemies.Contains(other.gameObject) && other.gameObject.GetComponent<Enemy>() != null)
         {
-            Debug.Log(other.name);
             enemies.Add(other.gameObject);
         }
     }
