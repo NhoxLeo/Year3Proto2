@@ -43,37 +43,9 @@ public class BuildPanel : MonoBehaviour
     [Serializable]
     public struct TooltipInfo
     {
-        [Header("Archer")]
-        public string ArcherHeading;
-        public string ArcherDescription;
+        public string[] heading;
+        public string[] description;
 
-        [Header("Catapult")]
-        public string CatapultHeading;
-        public string CatapultDescription;
-
-        [Header("Farm")]
-        public string FarmHeading;
-        public string FarmDescription;
-
-        [Header("FoodStorage")]
-        public string FoodStorageHeading;
-        public string FoodStorageDescription;
-
-        [Header("LumberMill")]
-        public string MillHeading;
-        public string MillDescription;
-
-        [Header("WoodStorage")]
-        public string WoodStorageHeading;
-        public string WoodStorageDescription;
-
-        [Header("Mine")]
-        public string MineHeading;
-        public string MineDescription;
-
-        [Header("OreStorage")]
-        public string OreStorageHeading;
-        public string OreStorageDescription;
     }
     [SerializeField]
     private TooltipInfo toolInfo;
@@ -100,8 +72,8 @@ public class BuildPanel : MonoBehaviour
         buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.0f);
         buildTipCanvas = buildTip.GetComponent<CanvasGroup>();
         buildTipHeading = buildTip.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
-    }
 
+    }
 
     void LateUpdate()
     {
@@ -157,52 +129,9 @@ public class BuildPanel : MonoBehaviour
         else
         {
             ShowTooltip();
-        }
 
-        switch (tooltipID)
-        {
-            case Buildings.Archer:
-                tooltipHeading.text = toolInfo.ArcherHeading;
-                tooltipDescription.text = toolInfo.ArcherDescription;
-                break;
-
-            case Buildings.Catapult:
-                tooltipHeading.text = toolInfo.CatapultHeading;
-                tooltipDescription.text = toolInfo.CatapultDescription;
-                break;
-
-            case Buildings.Farm:
-                tooltipHeading.text = toolInfo.FarmHeading;
-                tooltipDescription.text = toolInfo.FarmDescription;
-                break;
-
-            case Buildings.Silo:
-                tooltipHeading.text = toolInfo.FoodStorageHeading;
-                tooltipDescription.text = toolInfo.FoodStorageDescription;
-                break;
-
-            case Buildings.LumberMill:
-                tooltipHeading.text = toolInfo.MillHeading;
-                tooltipDescription.text = toolInfo.MillDescription;
-                break;
-
-            case Buildings.LumberPile:
-                tooltipHeading.text = toolInfo.WoodStorageHeading;
-                tooltipDescription.text = toolInfo.WoodStorageDescription;
-                break;
-
-            case Buildings.Mine:
-                tooltipHeading.text = toolInfo.MineHeading;
-                tooltipDescription.text = toolInfo.MineDescription;
-                break;
-
-            case Buildings.MetalStorage:
-                tooltipHeading.text = toolInfo.OreStorageHeading;
-                tooltipDescription.text = toolInfo.OreStorageDescription;
-                break;
-
-            default:
-                break;
+            tooltipHeading.text = toolInfo.heading[(int)tooltipID];
+            tooltipDescription.text = toolInfo.description[(int)tooltipID];
         }
     }
 
@@ -235,9 +164,11 @@ public class BuildPanel : MonoBehaviour
             indiPos.x = targetPos.x;
             buildIndicator.transform.localPosition = indiPos;
 
+            buildTip.transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);
             buildTipTransform.DOSizeDelta(new Vector2(276.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
             buildTipCanvas.DOKill(true);
             buildTipCanvas.DOFade(1.0f, 0.15f);
+            buildTipHeading.text = toolInfo.heading[(int)selectedBuilding];
 
             structMan.BuyBuilding(selectedBuilding);
         }

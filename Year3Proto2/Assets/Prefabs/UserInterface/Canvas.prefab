@@ -3806,26 +3806,27 @@ MonoBehaviour:
   tooltipID: 0
   selectedBuilding: 0
   toolInfo:
-    ArcherHeading: Archer Tower
-    ArcherDescription: Fires upon enemies with medium damage and attack speed.
-    CatapultHeading: Catapult
-    CatapultDescription: Fires a fireball in an arc that explodes with an area of
+    heading:
+    - 
+    - Archer Tower
+    - Catapult
+    - Farm
+    - Granary
+    - Lumber Mill
+    - Lumber Pile
+    - Mine
+    - Metal Storage
+    description:
+    - 
+    - Fires upon a single enemy target at a medium fire rate and damage.
+    - Fires a large fireball projectile in an arc. Damages enemies in an area of
       effect.
-    FarmHeading: Farm
-    FarmDescription: Collects Food from nearby wheat tiles. +1 bonus if built on
-      wheat.
-    FoodStorageHeading: Granary
-    FoodStorageDescription: Stores collected Food. Increases Food capacity.
-    MillHeading: Lumber Mill
-    MillDescription: Collects Wood from nearby forest tiles. +1 bonus if built on
-      a forest.
-    WoodStorageHeading: Lumber Pile
-    WoodStorageDescription: Stores collected wood. Increases Wood storage capacity.
-    MineHeading: Mine
-    MineDescription: Collects Metal from nearby ore tiles. +1 bonus if placed on
-      an ore tile.
-    OreStorageHeading: Metal Storage
-    OreStorageDescription: Stores collected Metal. Increases Metal storage capacity
+    - Collects Food from nearby crop tiles. +1 bonus if constructed on crops.
+    - Stores collected Food. Increases maximum Food storage capacity.
+    - Collects Wood from nearby forest tiles. +1 bonus if constructed on forest.
+    - Stores collected Wood. Increases maximum Wood storage capacity
+    - Collects Metal from nearby ore tiles. +1 bonus if constructed on ore.
+    - Stores collected Metal. Increases maximum Metal storage capacity.
 --- !u!114 &3228721109103862829
 MonoBehaviour:
   m_ObjectHideFlags: 0
