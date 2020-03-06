@@ -26,14 +26,15 @@ public class BuildPanel : MonoBehaviour
         MetalStorage
     }
 
-    public Buildings tooltipID;
+    public Buildings tooltipSelected;
     private GameObject tooltipBox;
     private RectTransform toolTransform;
     private CanvasGroup toolCanvas;
     private TMP_Text tooltipHeading;
     private TMP_Text tooltipDescription;
+    private float tooltipTimer;
 
-    public Buildings selectedBuilding;
+    public Buildings buildingSelected;
     private GameObject buildIndicator;
     private GameObject buildTip;
     private RectTransform buildTipTransform;
@@ -75,12 +76,21 @@ public class BuildPanel : MonoBehaviour
 
     }
 
-    void LateUpdate()
+    void Update()
     {
-        Vector2 mousePos = Input.mousePosition;
-        Vector3 toolPos = tooltipBox.transform.position;
-        toolPos.x = mousePos.x;
-        tooltipBox.transform.position = toolPos;
+        //Vector2 mousePos = Input.mousePosition;
+        //Vector3 toolPos = tooltipBox.transform.position;
+        //toolPos.x = mousePos.x;
+        //tooltipBox.transform.position = toolPos;
+
+        if (tooltipSelected == Buildings.None)
+        {
+            tooltipTimer += Time.unscaledDeltaTime;
+        }
+        else
+        {
+            tooltipTimer = 0.0f;
+        }
     }
 
 
@@ -99,7 +109,7 @@ public class BuildPanel : MonoBehaviour
     public void ShowPanel()
     {
         transform.DOKill(true);
-        transform.DOPunchScale(new Vector3(0.05f, 0.05f, 0.0f), 0.25f, 1, 0.5f);
+        transform.DOPunchScale(new Vector3(0.05f, 0.05f, 0.0f), 0.275f, 1, 0.5f);
 
         canvas.DOKill(true);
         canvas.DOFade(1.0f, 0.2f);
@@ -123,9 +133,9 @@ public class BuildPanel : MonoBehaviour
 
     public void SetTooltip(int tool)
     {
-        tooltipID = (Buildings)tool;
+        tooltipSelected = (Buildings)tool;
 
-        if (tooltipID == Buildings.None)
+        if (tooltipSelected == Buildings.None)
         {
             HideTooltip();
         }
@@ -133,23 +143,34 @@ public class BuildPanel : MonoBehaviour
         {
             ShowTooltip();
 
-            tooltipHeading.text = toolInfo.heading[(int)tooltipID];
-            tooltipDescription.text = toolInfo.description[(int)tooltipID];
+            tooltipHeading.text = toolInfo.heading[(int)tooltipSelected];
+            tooltipDescription.text = toolInfo.description[(int)tooltipSelected];
+
+            float targetPos = transform.Find("PanelMask").GetChild(tool + 7).transform.localPosition.x;
+            if (tooltipTimer > 0.15f)
+            {
+                tooltipBox.transform.DOLocalMoveX(targetPos, 0.0f);
+            }
+            else
+            {
+                tooltipBox.transform.DOLocalMoveX(targetPos, 0.15f).SetEase(Ease.OutQuint);
+            }
+
         }
     }
 
     public void SelectBuilding(int buildingType)
     {
-        if ((Buildings)buildingType == selectedBuilding)
+        if ((Buildings)buildingType == buildingSelected)
         {
-            selectedBuilding = Buildings.None;
+            buildingSelected = Buildings.None;
         }
         else
         {
-            selectedBuilding = (Buildings)buildingType;
+            buildingSelected = (Buildings)buildingType;
         }
 
-        if (selectedBuilding == Buildings.None)
+        if (buildingSelected == Buildings.None)
         {
             buildIndicator.SetActive(false);
 
@@ -162,6 +183,8 @@ public class BuildPanel : MonoBehaviour
         else
         {
             buildIndicator.SetActive(true);
+            buildIndicator.transform.DOKill(true);
+            buildIndicator.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0.0f), 0.15f, 1, 0.5f);
             Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
             Vector2 indiPos = buildIndicator.transform.localPosition;
             indiPos.x = targetPos.x;
@@ -172,9 +195,9 @@ public class BuildPanel : MonoBehaviour
             buildTipTransform.DOSizeDelta(new Vector2(276.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
             buildTipCanvas.DOKill(true);
             buildTipCanvas.DOFade(1.0f, 0.15f);
-            buildTipHeading.text = toolInfo.heading[(int)selectedBuilding];
+            buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
 
-            structMan.BuyBuilding(selectedBuilding);
+            structMan.BuyBuilding(buildingSelected);
         }
 
     }
