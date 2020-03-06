@@ -178,26 +178,32 @@ public class BuildPanel : MonoBehaviour
             buildTipCanvas.DOKill(true);
             buildTipCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
 
-            //structMan.RefundBuilding(selectedBuilding);
+            structMan.ResetBuilding();
         }
         else
         {
-            buildIndicator.SetActive(true);
-            buildIndicator.transform.DOKill(true);
-            buildIndicator.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0.0f), 0.15f, 1, 0.5f);
-            Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
-            Vector2 indiPos = buildIndicator.transform.localPosition;
-            indiPos.x = targetPos.x;
-            buildIndicator.transform.localPosition = indiPos;
+            structMan.ResetBuilding();
+            if (structMan.SetBuilding(buildingSelected))
+            {
+                buildIndicator.SetActive(true);
+                buildIndicator.transform.DOKill(true);
+                buildIndicator.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0.0f), 0.15f, 1, 0.5f);
+                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
+                Vector2 indiPos = buildIndicator.transform.localPosition;
+                indiPos.x = targetPos.x;
+                buildIndicator.transform.localPosition = indiPos;
 
-            buildTip.transform.DOKill(true);
-            buildTip.transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);
-            buildTipTransform.DOSizeDelta(new Vector2(276.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
-            buildTipCanvas.DOKill(true);
-            buildTipCanvas.DOFade(1.0f, 0.15f);
-            buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
-
-            structMan.BuyBuilding(buildingSelected);
+                buildTip.transform.DOKill(true);
+                buildTip.transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);
+                buildTipTransform.DOSizeDelta(new Vector2(276.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
+                buildTipCanvas.DOKill(true);
+                buildTipCanvas.DOFade(1.0f, 0.15f);
+                buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
+            }
+            else
+            {
+                buildingSelected = Buildings.None;
+            }
         }
 
     }

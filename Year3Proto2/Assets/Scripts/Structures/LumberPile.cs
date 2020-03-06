@@ -10,6 +10,7 @@ public class LumberPile : StorageStructure
         StorageStart();
         resourceType = ResourceType.wood;
         storage = 1000;
+        structureName = "Lumber Pile";
     }
 
     // Update is called once per frame
@@ -21,10 +22,5 @@ public class LumberPile : StorageStructure
     public void OnPlace()
     {
         FindObjectOfType<GameManager>().CalculateStorageMaximum();
-    }
-
-    public override bool IsStructure(string _structureName)
-    {
-        return _structureName == "Lumber Pile";
     }
 }
