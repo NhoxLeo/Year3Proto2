@@ -12,6 +12,7 @@ public class BuildPanel : MonoBehaviour
     private CanvasGroup canvas;
     private RectTransform rTrans;
 
+    private StructureManager structMan;
     public enum Buildings
     {
         None,
@@ -31,11 +32,13 @@ public class BuildPanel : MonoBehaviour
     private CanvasGroup toolCanvas;
     private TMP_Text tooltipHeading;
     private TMP_Text tooltipDescription;
-    private StructureManager structMan;
 
     public Buildings selectedBuilding;
     private GameObject buildIndicator;
-    private CanvasGroup buildIndicatorCanvas;
+    private GameObject buildTip;
+    private RectTransform buildTipTransform;
+    private CanvasGroup buildTipCanvas;
+    private TMP_Text buildTipHeading;
 
     [Serializable]
     public struct TooltipInfo
@@ -91,9 +94,12 @@ public class BuildPanel : MonoBehaviour
         toolCanvas.alpha = 0.0f;
 
         buildIndicator = transform.Find("PanelMask/BuildingIndicator").gameObject;
-        buildIndicatorCanvas = buildIndicator.GetComponent<CanvasGroup>();
         buildIndicator.SetActive(false);
-        //buildIndicatorCanvas.alpha = 0.0f;
+        buildTip = GameObject.Find("SelectedBuilding");
+        buildTipTransform = buildTip.GetComponent<RectTransform>();
+        buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.0f);
+        buildTipCanvas = buildTip.GetComponent<CanvasGroup>();
+        buildTipHeading = buildTip.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
     }
 
 
@@ -214,42 +220,41 @@ public class BuildPanel : MonoBehaviour
         if (selectedBuilding == Buildings.None)
         {
             buildIndicator.SetActive(false);
+
+            buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
+            buildTipCanvas.DOKill(true);
+            buildTipCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
+
             //structMan.RefundBuilding(selectedBuilding);
         }
         else
         {
             buildIndicator.SetActive(true);
-
-            structMan.BuyBuilding(selectedBuilding);
-
             Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
             Vector2 indiPos = buildIndicator.transform.localPosition;
             indiPos.x = targetPos.x;
             buildIndicator.transform.localPosition = indiPos;
 
-            Debug.Log(targetPos);
-        }
+            buildTipTransform.DOSizeDelta(new Vector2(276.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
+            buildTipCanvas.DOKill(true);
+            buildTipCanvas.DOFade(1.0f, 0.15f);
 
+            structMan.BuyBuilding(selectedBuilding);
+        }
 
     }
 
     private void ShowTooltip()
     {
-        //tooltipBox.SetActive(true);
         toolTransform.DOSizeDelta(new Vector2(276.0f, 158.0f), 0.25f).SetEase(Ease.OutQuint);
         toolCanvas.DOKill(true);
         toolCanvas.DOFade(1.0f, 0.15f);
-
-        Debug.Log("Showing Tooltip");
     }
 
     private void HideTooltip()
     {
-        //tooltipBox.SetActive(false);
         toolTransform.DOSizeDelta(new Vector2(64.0f, 158.0f), 0.25f).SetEase(Ease.OutQuint);
         toolCanvas.DOKill(true);
         toolCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
-
-        Debug.Log("Hiding Tooltip");
     }
 }
