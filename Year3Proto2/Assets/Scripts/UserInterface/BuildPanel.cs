@@ -12,7 +12,7 @@ public class BuildPanel : MonoBehaviour
     private CanvasGroup canvas;
     private RectTransform rTrans;
 
-    public enum Tooltip
+    public enum Buildings
     {
         None,
         Archer,
@@ -22,14 +22,19 @@ public class BuildPanel : MonoBehaviour
         LumberMill,
         LumberPile,
         Mine,
-        OreStorage
+        MetalStorage
     }
-    public Tooltip tooltipID;
+
+    public Buildings tooltipID;
     private GameObject tooltipBox;
     private RectTransform toolTransform;
     private CanvasGroup toolCanvas;
     private TMP_Text tooltipHeading;
     private TMP_Text tooltipDescription;
+
+    public Buildings selectedBuilding;
+    private GameObject buildIndicator;
+    private CanvasGroup buildIndicatorCanvas;
 
     [Serializable]
     public struct TooltipInfo
@@ -82,6 +87,11 @@ public class BuildPanel : MonoBehaviour
         toolCanvas = tooltipBox.GetComponent<CanvasGroup>();
         toolTransform.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
         toolCanvas.alpha = 0.0f;
+
+        buildIndicator = transform.Find("PanelMask/BuildingIndicator").gameObject;
+        buildIndicatorCanvas = buildIndicator.GetComponent<CanvasGroup>();
+        buildIndicator.SetActive(false);
+        //buildIndicatorCanvas.alpha = 0.0f;
     }
 
 
@@ -130,9 +140,9 @@ public class BuildPanel : MonoBehaviour
 
     public void SetTooltip(int tool)
     {
-        tooltipID = (Tooltip)tool;
+        tooltipID = (Buildings)tool;
 
-        if (tooltipID == Tooltip.None)
+        if (tooltipID == Buildings.None)
         {
             HideTooltip();
         }
@@ -143,42 +153,42 @@ public class BuildPanel : MonoBehaviour
 
         switch (tooltipID)
         {
-            case Tooltip.Archer:
+            case Buildings.Archer:
                 tooltipHeading.text = toolInfo.ArcherHeading;
                 tooltipDescription.text = toolInfo.ArcherDescription;
                 break;
 
-            case Tooltip.Catapult:
+            case Buildings.Catapult:
                 tooltipHeading.text = toolInfo.CatapultHeading;
                 tooltipDescription.text = toolInfo.CatapultDescription;
                 break;
 
-            case Tooltip.Farm:
+            case Buildings.Farm:
                 tooltipHeading.text = toolInfo.FarmHeading;
                 tooltipDescription.text = toolInfo.FarmDescription;
                 break;
 
-            case Tooltip.Silo:
+            case Buildings.Silo:
                 tooltipHeading.text = toolInfo.FoodStorageHeading;
                 tooltipDescription.text = toolInfo.FoodStorageDescription;
                 break;
 
-            case Tooltip.LumberMill:
+            case Buildings.LumberMill:
                 tooltipHeading.text = toolInfo.MillHeading;
                 tooltipDescription.text = toolInfo.MillDescription;
                 break;
 
-            case Tooltip.LumberPile:
+            case Buildings.LumberPile:
                 tooltipHeading.text = toolInfo.WoodStorageHeading;
                 tooltipDescription.text = toolInfo.WoodStorageDescription;
                 break;
 
-            case Tooltip.Mine:
+            case Buildings.Mine:
                 tooltipHeading.text = toolInfo.MineHeading;
                 tooltipDescription.text = toolInfo.MineDescription;
                 break;
 
-            case Tooltip.OreStorage:
+            case Buildings.MetalStorage:
                 tooltipHeading.text = toolInfo.OreStorageHeading;
                 tooltipDescription.text = toolInfo.OreStorageDescription;
                 break;
@@ -186,6 +196,36 @@ public class BuildPanel : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public void SelectBuilding(int buildingType)
+    {
+        if ((Buildings)buildingType == selectedBuilding)
+        {
+            selectedBuilding = Buildings.None;
+        }
+        else
+        {
+            selectedBuilding = (Buildings)buildingType;
+        }
+
+        if (selectedBuilding == Buildings.None)
+        {
+            buildIndicator.SetActive(false);
+        }
+        else
+        {
+            buildIndicator.SetActive(true);
+
+            Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
+            Vector2 indiPos = buildIndicator.transform.localPosition;
+            indiPos.x = targetPos.x;
+            buildIndicator.transform.localPosition = indiPos;
+
+            Debug.Log(targetPos);
+        }
+
+
     }
 
     private void ShowTooltip()
