@@ -2,10 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Invader : Enemy<AttackStructure>
+public class Invader : Enemy
 {
-    public override void Action(AttackStructure t)
+    private void Start()
     {
-        //Targets attack towers.
+        //The structures that it will attack...
+        structureTypes = new List<StructureType>(new[] { 
+            StructureType.attack,
+            StructureType.resource
+        }); 
+    }
+
+    public override void Action(Structure structure)
+    {
+
     }
 }
