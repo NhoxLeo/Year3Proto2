@@ -172,11 +172,7 @@ public class BuildPanel : MonoBehaviour
 
         if (buildingSelected == Buildings.None)
         {
-            buildIndicator.SetActive(false);
-
-            buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
-            buildTipCanvas.DOKill(true);
-            buildTipCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
+            UINoneSelected();
 
             structMan.ResetBuilding();
         }
@@ -206,6 +202,17 @@ public class BuildPanel : MonoBehaviour
             }
         }
 
+    }
+
+    public void UINoneSelected()
+    {
+        buildIndicator.SetActive(false);
+
+        buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
+        buildTipCanvas.DOKill(true);
+        buildTipCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
+
+        buildingSelected = Buildings.None;
     }
 
     private void ShowTooltip()
