@@ -38,6 +38,8 @@ public struct StructureDefinition
 public class StructureManager : MonoBehaviour
 {
     private Structure structure;
+    private TileBehaviour structureOldTile;
+    private bool structureFromStore;
     public Transform tileHighlight;
     private StructManState structureState = StructManState.selecting;
     public Dictionary<string, StructureDefinition> structureDict;
@@ -114,7 +116,7 @@ public class StructureManager : MonoBehaviour
                                 // If the user clicked the LMB...
                                 if (Input.GetMouseButtonDown(0))
                                 {
-                                    if (BuyBuilding())
+                                    if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                     {
                                         // Attach the structure to the tile and vica versa
                                         if (attached)
@@ -140,14 +142,21 @@ public class StructureManager : MonoBehaviour
                                         {
                                             gameMan.CalculateStorageMaximum();
                                         }
-                                        structureState = StructManState.selecting;
                                         gameMan.OnStructurePlace();
-                                        FindObjectOfType<BuildPanel>().SelectBuilding(0);
+                                        if (structureFromStore)
+                                        {
+                                            FindObjectOfType<BuildPanel>().UINoneSelected();
+                                        }
+                                        structureState = StructManState.selecting;
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (Input.GetMouseButtonDown(1))
+                {
+                    ResetBuilding();
                 }
             }
             else if (structureState == StructManState.selecting)
@@ -165,7 +174,9 @@ public class StructureManager : MonoBehaviour
                             if (hit.transform.GetComponent<Structure>().GetStructureType() != StructureType.environment
                                 && hit.transform.GetComponent<Structure>().GetStructureName() != "Longhaus")
                             {
+                                structureFromStore = false;
                                 structure = hit.transform.GetComponent<Structure>();
+                                structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
                                 // Detach the structure from it's tile, and vica versa.
                                 structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
                                 // Put the manager back into moving mode.
@@ -193,6 +204,7 @@ public class StructureManager : MonoBehaviour
         if (isOverUI)
         {
             if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+            HideBuilding();
         }
     }
 
@@ -203,7 +215,7 @@ public class StructureManager : MonoBehaviour
 
     public bool BuyBuilding()
     {
-        if (structure)
+        if (structure && structureFromStore)
         {
             return gameMan.playerData.AttemptPurchase(structureDict[structure.GetStructureName()].resourceCost);
         }
@@ -214,6 +226,7 @@ public class StructureManager : MonoBehaviour
     {
         if (structureState != StructManState.moving)
         {
+            structureFromStore = true;
             GameObject LPinstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
             structure = LPinstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
@@ -223,6 +236,14 @@ public class StructureManager : MonoBehaviour
         return false;
     }
 
+    private void HideBuilding()
+    {
+        if (structure && structureState == StructManState.moving)
+        {
+            structure.transform.position = Vector3.down * 10f;
+        }
+    }
+
     public bool SetBuilding(BuildPanel.Buildings _buildingID)
     {
         return SetBuilding(IDToStructureName(_buildingID));
@@ -230,10 +251,35 @@ public class StructureManager : MonoBehaviour
 
     public void ResetBuilding()
     {
-        if (structureState == StructManState.moving && structure)
+        if (structure)
         {
-            Destroy(structure.gameObject);
-            structureState = StructManState.selecting;
+            if (structureState == StructManState.moving)
+            {
+                if (structureFromStore)
+                {
+                    Destroy(structure.gameObject);
+                    FindObjectOfType<BuildPanel>().UINoneSelected();
+                }
+                else
+                {
+                    Vector3 structPos = structure.transform.position;
+                    structPos.x = structureOldTile.transform.position.x;
+                    structPos.y = structure.sitHeight;
+                    structPos.z = structureOldTile.transform.position.z;
+                    structure.transform.position = structPos;
+                    structureOldTile.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                    structureOldTile = null;
+                }
+                structureState = StructManState.selecting;
+            }
+            else
+            {
+                //Debug.LogError("ResetBuilding() when structureState is selecting");
+            }
+        }
+        else
+        {
+            //Debug.LogError("ResetBuilding() when there is no structure");
         }
     }
 
