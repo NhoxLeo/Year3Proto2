@@ -28,17 +28,15 @@ public class BuildPanel : MonoBehaviour
 
     public Buildings tooltipSelected;
     private GameObject tooltipBox;
-    private RectTransform toolTransform;
-    private CanvasGroup toolCanvas;
+    private Tooltip tooltip;
     private TMP_Text tooltipHeading;
     private TMP_Text tooltipDescription;
     private float tooltipTimer;
 
     public Buildings buildingSelected;
     private GameObject buildIndicator;
-    private GameObject buildTip;
-    private RectTransform buildTipTransform;
-    private CanvasGroup buildTipCanvas;
+    private GameObject buildTipBox;
+    private Tooltip buildTip;
     private TMP_Text buildTipHeading;
 
     [Serializable]
@@ -59,20 +57,15 @@ public class BuildPanel : MonoBehaviour
         rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
+        tooltip = tooltipBox.GetComponent<Tooltip>();
         tooltipHeading = transform.Find("BuildPanelTooltip/PanelMask/Heading").GetComponent<TMP_Text>();
         tooltipDescription = transform.Find("BuildPanelTooltip/PanelMask/Description").GetComponent<TMP_Text>();
-        toolTransform = tooltipBox.GetComponent<RectTransform>();
-        toolCanvas = tooltipBox.GetComponent<CanvasGroup>();
-        toolTransform.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
-        toolCanvas.alpha = 0.0f;
 
         buildIndicator = transform.Find("PanelMask/BuildingIndicator").gameObject;
         buildIndicator.SetActive(false);
-        buildTip = GameObject.Find("SelectedBuilding");
-        buildTipTransform = buildTip.GetComponent<RectTransform>();
-        buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.0f);
-        buildTipCanvas = buildTip.GetComponent<CanvasGroup>();
-        buildTipHeading = buildTip.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
+        buildTipBox = GameObject.Find("SelectedBuilding");
+        buildTip = buildTipBox.GetComponent<Tooltip>();
+        buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
     }
 
@@ -137,11 +130,11 @@ public class BuildPanel : MonoBehaviour
 
         if (tooltipSelected == Buildings.None)
         {
-            HideTooltip();
+            tooltip.showTooltip = false;
         }
         else
         {
-            ShowTooltip();
+            tooltip.showTooltip = true;
 
             tooltipHeading.text = toolInfo.heading[(int)tooltipSelected];
             tooltipDescription.text = toolInfo.description[(int)tooltipSelected];
@@ -173,10 +166,7 @@ public class BuildPanel : MonoBehaviour
         if (buildingSelected == Buildings.None)
         {
             buildIndicator.SetActive(false);
-
-            buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
-            buildTipCanvas.DOKill(true);
-            buildTipCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
+            buildTip.showTooltip = false;
 
             //structMan.RefundBuilding(selectedBuilding);
         }
@@ -190,29 +180,12 @@ public class BuildPanel : MonoBehaviour
             indiPos.x = targetPos.x;
             buildIndicator.transform.localPosition = indiPos;
 
-            buildTip.transform.DOKill(true);
-            buildTip.transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);
-            buildTipTransform.DOSizeDelta(new Vector2(276.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
-            buildTipCanvas.DOKill(true);
-            buildTipCanvas.DOFade(1.0f, 0.15f);
+            buildTip.showTooltip = true;
+            buildTip.PulseTip();
             buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
 
             structMan.BuyBuilding(buildingSelected);
         }
 
-    }
-
-    private void ShowTooltip()
-    {
-        toolTransform.DOSizeDelta(new Vector2(276.0f, 158.0f), 0.25f).SetEase(Ease.OutQuint);
-        toolCanvas.DOKill(true);
-        toolCanvas.DOFade(1.0f, 0.15f);
-    }
-
-    private void HideTooltip()
-    {
-        toolTransform.DOSizeDelta(new Vector2(64.0f, 158.0f), 0.25f).SetEase(Ease.OutQuint);
-        toolCanvas.DOKill(true);
-        toolCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
     }
 }
