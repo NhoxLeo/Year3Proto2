@@ -21,100 +21,116 @@ public class Batch
     }
 }
 
-public class GameManager : MonoBehaviour
+public struct PlayerData
 {
-    public struct PlayerData
+    private int rWood;
+    private int rMetal;
+    private int rFood;
+
+    private int rWoodMax;
+    private int rMetalMax;
+    private int rFoodMax;
+
+    public PlayerData(int _startAmount, int _maxAmount)
     {
-        private int rWood;
-        private int rMetal;
-        private int rFood;
+        rWood = _startAmount;
+        rMetal = _startAmount;
+        rFood = _startAmount;
 
-        private int rWoodMax;
-        private int rMetalMax;
-        private int rFoodMax;
+        rWoodMax = _maxAmount;
+        rMetalMax = _maxAmount;
+        rFoodMax = _maxAmount;
+    }
 
-        public PlayerData(int _startAmount, int _maxAmount)
+    public void AddBatch(Batch _batch)
+    {
+        switch (_batch.type)
         {
-            rWood = _startAmount;
-            rMetal = _startAmount;
-            rFood = _startAmount;
-
-            rWoodMax = _maxAmount;
-            rMetalMax = _maxAmount;
-            rFoodMax = _maxAmount;
-        }
-
-        public void AddBatch(Batch _batch)
-        {
-            switch (_batch.type)
-            {
-                case ResourceType.wood:
-                    rWood += _batch.amount;
-                    if (rWood > rWoodMax) { rWood = rWoodMax; }
-                    break;
-                case ResourceType.metal:
-                    rMetal += _batch.amount;
-                    if (rMetal > rMetalMax) { rMetal = rMetalMax; }
-                    break;
-                case ResourceType.food:
-                    rFood += _batch.amount;
-                    if (rFood > rFoodMax) { rFood = rFoodMax; }
-                    break;
-            }
-        }
-
-        public int GetResource(ResourceType _type)
-        {
-            int value = 0;
-            switch (_type)
-            {
-                case ResourceType.wood:
-                    value = rWood;
-                    break;
-                case ResourceType.metal:
-                    value = rMetal;
-                    break;
-                case ResourceType.food:
-                    value = rFood;
-                    break;
-            }
-            return value;
-        }
-
-        public void SetMaximum(ResourceType _type, int _newMax)
-        {
-            switch (_type)
-            {
-                case ResourceType.wood:
-                    rWoodMax = _newMax;
-                    break;
-                case ResourceType.metal:
-                    rMetalMax = _newMax;
-                    break;
-                case ResourceType.food:
-                    rFoodMax = _newMax;
-                    break;
-            }
-        }
-
-        public void DeductResource(ResourceType _type, int _deduction)
-        {
-            switch (_type)
-            {
-                case ResourceType.wood:
-                    rWood -= _deduction;
-                    break;
-                case ResourceType.metal:
-                    rMetal -= _deduction;
-                    break;
-                case ResourceType.food:
-                    rFood -= _deduction;
-                    break;
-            }
+            case ResourceType.wood:
+                rWood += _batch.amount;
+                if (rWood > rWoodMax) { rWood = rWoodMax; }
+                break;
+            case ResourceType.metal:
+                rMetal += _batch.amount;
+                if (rMetal > rMetalMax) { rMetal = rMetalMax; }
+                break;
+            case ResourceType.food:
+                rFood += _batch.amount;
+                if (rFood > rFoodMax) { rFood = rFoodMax; }
+                break;
         }
     }
 
+    public int GetResource(ResourceType _type)
+    {
+        int value = 0;
+        switch (_type)
+        {
+            case ResourceType.wood:
+                value = rWood;
+                break;
+            case ResourceType.metal:
+                value = rMetal;
+                break;
+            case ResourceType.food:
+                value = rFood;
+                break;
+        }
+        return value;
+    }
 
+    public void SetMaximum(ResourceType _type, int _newMax)
+    {
+        switch (_type)
+        {
+            case ResourceType.wood:
+                rWoodMax = _newMax;
+                break;
+            case ResourceType.metal:
+                rMetalMax = _newMax;
+                break;
+            case ResourceType.food:
+                rFoodMax = _newMax;
+                break;
+        }
+    }
+
+    public void DeductResource(ResourceType _type, int _deduction)
+    {
+        switch (_type)
+        {
+            case ResourceType.wood:
+                rWood -= _deduction;
+                break;
+            case ResourceType.metal:
+                rMetal -= _deduction;
+                break;
+            case ResourceType.food:
+                rFood -= _deduction;
+                break;
+        }
+    }
+
+    public bool CanAfford(ResourceBundle _cost)
+    {
+        return rWood >= _cost.woodCost && rMetal >= _cost.metalCost && rFood >= _cost.foodCost;
+    }
+
+    public bool AttemptPurchase(ResourceBundle _cost)
+    {
+        if (CanAfford(_cost))
+        {
+            rWood -= _cost.woodCost;
+            rMetal -= _cost.metalCost;
+            rFood -= _cost.foodCost;
+            return true;
+        }
+        else return false;
+    }
+}
+
+public class GameManager : MonoBehaviour
+{
     private float batchMaxAge = 3.0f;
 
     private List<Batch> recentBatches;
