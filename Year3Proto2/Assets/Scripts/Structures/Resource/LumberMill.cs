@@ -17,6 +17,7 @@ public class LumberMill : ResourceStructure
         ResourceStart();
         wasPlacedOnForest = false;
         resourceType = ResourceType.wood;
+        structureName = "Lumber Mill";
     }
 
     // Update is called once per frame
@@ -66,7 +67,7 @@ public class LumberMill : ResourceStructure
                         }
                     }
                 }
-            }   
+            }
         }
         Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
     }
