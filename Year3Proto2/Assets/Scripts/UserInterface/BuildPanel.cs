@@ -98,6 +98,9 @@ public class BuildPanel : MonoBehaviour
 
     public void ShowPanel()
     {
+        transform.DOKill(true);
+        transform.DOPunchScale(new Vector3(0.05f, 0.05f, 0.0f), 0.25f, 1, 0.5f);
+
         canvas.DOKill(true);
         canvas.DOFade(1.0f, 0.2f);
         canvas.interactable = true;
@@ -164,6 +167,7 @@ public class BuildPanel : MonoBehaviour
             indiPos.x = targetPos.x;
             buildIndicator.transform.localPosition = indiPos;
 
+            buildTip.transform.DOKill(true);
             buildTip.transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);
             buildTipTransform.DOSizeDelta(new Vector2(276.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
             buildTipCanvas.DOKill(true);
