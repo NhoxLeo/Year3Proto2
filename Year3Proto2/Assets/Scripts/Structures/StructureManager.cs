@@ -35,7 +35,6 @@ public struct StructureDefinition
 
 }
 
-
 public class StructureManager : MonoBehaviour
 {
 
@@ -145,6 +144,7 @@ public class StructureManager : MonoBehaviour
                                     }
                                     structureState = StructManState.selecting;
                                     gameMan.OnStructurePlace();
+                                    FindObjectOfType<BuildPanel>().SelectBuilding(0);
                                 }
                             }
                         }
@@ -240,5 +240,48 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    public void BuyBuilding(BuildPanel.Buildings _buildingID)
+    {
+        BuyBuilding(IDToStructureName(_buildingID));
+    }
+
     //public void ReturnBuilding
+    public static string IDToStructureName(BuildPanel.Buildings _buildingID)
+    {
+        switch (_buildingID)
+        {
+            case BuildPanel.Buildings.None:
+                Debug.LogError("0 is not a building.");
+                return "ERROR";
+                break;
+            case BuildPanel.Buildings.Archer:
+                return "ERROR";
+                break;
+            case BuildPanel.Buildings.Catapult:
+                return "ERROR";
+                break;
+            case BuildPanel.Buildings.Farm:
+                return "ERROR";
+                break;
+            case BuildPanel.Buildings.Silo:
+                return "ERROR";
+                break;
+            case BuildPanel.Buildings.LumberMill:
+                return "Lumber Mill";
+                break;
+            case BuildPanel.Buildings.LumberPile:
+                return "Lumber Pile";
+                break;
+            case BuildPanel.Buildings.Mine:
+                return "ERROR";
+                break;
+            case BuildPanel.Buildings.MetalStorage:
+                return "ERROR";
+                break;
+            default:
+                Debug.LogError("default is not a building.");
+                return "ERROR";
+                break;
+        }
+    }
 }

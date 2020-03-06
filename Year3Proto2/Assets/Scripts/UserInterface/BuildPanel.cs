@@ -31,6 +31,7 @@ public class BuildPanel : MonoBehaviour
     private CanvasGroup toolCanvas;
     private TMP_Text tooltipHeading;
     private TMP_Text tooltipDescription;
+    private StructureManager structMan;
 
     public Buildings selectedBuilding;
     private GameObject buildIndicator;
@@ -78,6 +79,7 @@ public class BuildPanel : MonoBehaviour
     {
         canvas = GetComponent<CanvasGroup>();
         rTrans = GetComponent<RectTransform>();
+        structMan = FindObjectOfType<StructureManager>();
         rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
@@ -212,10 +214,13 @@ public class BuildPanel : MonoBehaviour
         if (selectedBuilding == Buildings.None)
         {
             buildIndicator.SetActive(false);
+            //structMan.RefundBuilding(selectedBuilding);
         }
         else
         {
             buildIndicator.SetActive(true);
+
+            structMan.BuyBuilding(selectedBuilding);
 
             Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
             Vector2 indiPos = buildIndicator.transform.localPosition;

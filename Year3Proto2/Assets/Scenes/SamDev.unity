@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.2987469, g: 0.2023677, b: 0.15103875, a: 1}
+  m_IndirectSpecularColor: {r: 0.21759948, g: 0.10007401, b: 0.030969147, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6161,6 +6161,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 657850157}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &814606429 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7708582129550609650, guid: baca440b2bf69734497f80ed08a4d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 817593755}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f8d26ee7bde805408f8719783c4528b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &815407829 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3596017079741575809, guid: a78c4e5611283ba4f91d5962e6e727a2,
@@ -6426,38 +6438,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 2133901531}
+      objectReference: {fileID: 814606429}
     - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: BuyBuilding
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: SelectBuilding
       objectReference: {fileID: 0}
     - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2895436143092347054, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
-      value: Lumber Mill
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3228721109103862829, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -6668,41 +6675,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8729362961574503815, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8729362961574503815, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8729362961574503815, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8729362961574503815, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 2133901531}
-    - target: {fileID: 8729362961574503815, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: BuyBuilding
-      objectReference: {fileID: 0}
-    - target: {fileID: 8729362961574503815, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 8729362961574503815, guid: baca440b2bf69734497f80ed08a4d9ce,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
-      value: Lumber Pile
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: baca440b2bf69734497f80ed08a4d9ce, type: 3}
