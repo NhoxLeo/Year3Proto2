@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LumberMill : ResourceStructure
+public class Farm : ResourceStructure
 {
     private int tileBonus = 0;
-    public bool wasPlacedOnForest = false;
+    public bool wasPlacedOnPlains = false;
     public float productionTime = 3f;
     private float remainingTime = 3f;
     private int batchSize = 5;
-
 
     // Start is called before the first frame update
     void Start()
     {
         ResourceStart();
-        wasPlacedOnForest = false;
-        resourceType = ResourceType.wood;
-        structureName = "Lumber Mill";
+        wasPlacedOnPlains = false;
+        resourceType = ResourceType.food;
+        structureName = "Farm";
     }
 
     // Update is called once per frame
@@ -31,10 +30,11 @@ public class LumberMill : ResourceStructure
             FindObjectOfType<GameManager>().AddBatch(new Batch(tileBonus * batchSize, resourceType));
         }
     }
+
     public void CalculateTileBonus()
     {
         tileBonus = 1;
-        if (wasPlacedOnForest)
+        if (wasPlacedOnPlains)
         {
             tileBonus++;
         }
@@ -53,7 +53,7 @@ public class LumberMill : ResourceStructure
                     // If there is a structure on the tile...
                     if (adjStructure)
                     {
-                        if (adjStructure.GetComponent<Structure>().IsStructure("Forest Environment"))
+                        if (adjStructure.GetComponent<Structure>().IsStructure("Plains Environment"))
                         { tileBonus++; }
                     }
                 }

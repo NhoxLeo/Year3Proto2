@@ -6,7 +6,9 @@ public abstract class EnvironmentStructure : Structure
 {
     public enum EnvironmentType
     {
-        forest
+        forest,
+        hill,
+        plains
     }
 
     protected EnvironmentType environmentType;

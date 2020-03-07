@@ -151,6 +151,38 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    int recentMetal
+    {
+        get
+        {
+            int runningTotal = 0;
+            foreach (Batch batch in recentBatches)
+            {
+                if (batch.type == ResourceType.metal)
+                {
+                    runningTotal += batch.amount;
+                }
+            }
+            return runningTotal;
+        }
+    }
+
+    int recentFood
+    {
+        get
+        {
+            int runningTotal = 0;
+            foreach (Batch batch in recentBatches)
+            {
+                if (batch.type == ResourceType.food)
+                {
+                    runningTotal += batch.amount;
+                }
+            }
+            return runningTotal;
+        }
+    }
+
     public PlayerData playerData;
 
     // Start is called before the first frame update
@@ -190,6 +222,16 @@ public class GameManager : MonoBehaviour
         return recentWood * _seconds / batchMaxAge;
     }
 
+    public float GetMetalVelocity(int _seconds)
+    {
+        return recentMetal * _seconds / batchMaxAge;
+    }
+
+    public float GetFoodVelocity(int _seconds)
+    {
+        return recentFood * _seconds / batchMaxAge;
+    }
+
     public void CalculateStorageMaximum()
     {
         int newWoodMax = Longhaus.woodStorage;
@@ -226,6 +268,18 @@ public class GameManager : MonoBehaviour
         foreach (LumberMill lumberMill in lumberMills)
         {
             lumberMill.CalculateTileBonus();
+        }
+        // Update all Mines
+        Mine[] mines = FindObjectsOfType<Mine>();
+        foreach (Mine mine in mines)
+        {
+            mine.CalculateTileBonus();
+        }
+        // Update all Farms
+        Farm[] farms = FindObjectsOfType<Farm>();
+        foreach (Farm farm in farms)
+        {
+            farm.CalculateTileBonus();
         }
     }
 }

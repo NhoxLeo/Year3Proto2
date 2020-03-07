@@ -19,7 +19,7 @@ public class BuildPanel : MonoBehaviour
         Archer,
         Catapult,
         Farm,
-        Silo,
+        Granary,
         LumberMill,
         LumberPile,
         Mine,

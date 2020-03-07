@@ -50,9 +50,13 @@ public class StructureManager : MonoBehaviour
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            //     NAME                                                 NAME                                         wC  mC  fC
-            { "Lumber Mill", new StructureDefinition(Resources.Load("Lumber Mill") as GameObject, new ResourceBundle(100, 0, 0)) },
-            { "Lumber Pile", new StructureDefinition(Resources.Load("Lumber Pile") as GameObject, new ResourceBundle(100, 0, 0)) }
+            // NAME                                                     NAME                                               wC  mC  fC
+            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(100, 0, 0)) },
+            { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(100, 0, 0)) },
+            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(0, 100, 0)) },
+            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(0, 100, 0)) },
+            { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(0, 0, 100)) },
+            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(0, 0, 100)) }
         };
         gameMan = FindObjectOfType<GameManager>();
     }
@@ -88,6 +92,22 @@ public class StructureManager : MonoBehaviour
                                 if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
                                 {
                                     if (structure.IsStructure("Lumber Mill"))
+                                    {
+                                        // Special condition: Lumber Mills can be placed on Forest Environment
+                                        canPlaceHere = true;
+                                    }
+                                }
+                                if (attached.GetComponent<Structure>().IsStructure("Hill Environment"))
+                                {
+                                    if (structure.IsStructure("Mine"))
+                                    {
+                                        // Special condition: Lumber Mills can be placed on Hill Environment
+                                        canPlaceHere = true;
+                                    }
+                                }
+                                if (attached.GetComponent<Structure>().IsStructure("Plains Environment"))
+                                {
+                                    if (structure.IsStructure("Farm"))
                                     {
                                         // Special condition: Lumber Mills can be placed on Forest Environment
                                         canPlaceHere = true;
@@ -135,6 +155,34 @@ public class StructureManager : MonoBehaviour
                                                     gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
                                                     structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
                                                     structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                }
+                                            }
+                                        }
+                                        else if (structure.IsStructure("Mine"))
+                                        {
+                                            if (attached)
+                                            {
+                                                if (attached.GetComponent<Structure>().IsStructure("Hill Environment"))
+                                                {
+                                                    // The structure is being placed on a forest
+                                                    Destroy(attached);
+                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
+                                                    structure.GetComponent<Mine>().wasPlacedOnHills = true;
+                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("HillMaterial") as Material;
+                                                }
+                                            }
+                                        }
+                                        else if (structure.IsStructure("Farm"))
+                                        {
+                                            if (attached)
+                                            {
+                                                if (attached.GetComponent<Structure>().IsStructure("Plains Environment"))
+                                                {
+                                                    // The structure is being placed on a forest
+                                                    Destroy(attached);
+                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
+                                                    structure.GetComponent<Farm>().wasPlacedOnPlains = true;
+                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("PlainsMaterial") as Material;
                                                 }
                                             }
                                         }
@@ -290,26 +338,26 @@ public class StructureManager : MonoBehaviour
         switch (_buildingID)
         {
             case BuildPanel.Buildings.None:
-                Debug.LogError("0 is not a building.");
+                Debug.LogError("IDToStructureName called None");
                 return "ERROR";
             case BuildPanel.Buildings.Archer:
                 return "ERROR";
             case BuildPanel.Buildings.Catapult:
                 return "ERROR";
             case BuildPanel.Buildings.Farm:
-                return "ERROR";
-            case BuildPanel.Buildings.Silo:
-                return "ERROR";
+                return "Farm";
+            case BuildPanel.Buildings.Granary:
+                return "Granary";
             case BuildPanel.Buildings.LumberMill:
                 return "Lumber Mill";
             case BuildPanel.Buildings.LumberPile:
                 return "Lumber Pile";
             case BuildPanel.Buildings.Mine:
-                return "ERROR";
+                return "Mine";
             case BuildPanel.Buildings.MetalStorage:
-                return "ERROR";
+                return "Metal Storage";
             default:
-                Debug.LogError("default is not a building.");
+                Debug.LogError("IDToStructureName called default");
                 return "ERROR";
         }
     }
