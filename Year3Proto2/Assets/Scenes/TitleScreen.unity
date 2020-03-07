@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.29886195, g: 0.16058648, b: 0.15298901, a: 1}
+  m_IndirectSpecularColor: {r: 0.29905114, g: 0.16259134, b: 0.15599881, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5820,7 +5820,7 @@ PrefabInstance:
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
-      value: DavidDev
+      value: SamDev
       objectReference: {fileID: 0}
     - target: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
