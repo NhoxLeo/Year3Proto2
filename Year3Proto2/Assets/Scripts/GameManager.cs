@@ -57,8 +57,26 @@ public struct PlayerData
             case ResourceType.food:
                 rFood += _batch.amount;
                 if (rFood > rFoodMax) { rFood = rFoodMax; }
+                if (rFood < 0)
+                {
+                    //lose condition
+                }
                 break;
         }
+    }
+
+    public bool ResourceIsFull(ResourceType _type)
+    {
+        switch(_type)
+        {
+            case ResourceType.wood:
+                return (rWood == rWoodMax);
+            case ResourceType.metal:
+                return (rMetal == rMetalMax);
+            case ResourceType.food:
+                return (rFood == rFoodMax);
+        }
+        return false;
     }
 
     public int GetResource(ResourceType _type)
@@ -150,7 +168,6 @@ public class GameManager : MonoBehaviour
             return runningTotal;
         }
     }
-
     int recentMetal
     {
         get
@@ -166,7 +183,6 @@ public class GameManager : MonoBehaviour
             return runningTotal;
         }
     }
-
     int recentFood
     {
         get
