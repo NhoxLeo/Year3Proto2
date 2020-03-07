@@ -7,6 +7,9 @@ using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
+    public Color gainColour;
+    public Color lossColour;
+    public Color fullColour;
     private GameManager game;
     private TMP_Text foodText;
     private TMP_Text woodText;
@@ -26,15 +29,51 @@ public class HUDManager : MonoBehaviour
         string foodSign = (Mathf.Sign(foodVel) == 1) ? "+" : "";
         float foodVelDP = Mathf.Round(foodVel * 10f) * .1f;
         foodText.text = game.playerData.GetResource(ResourceType.food).ToString() + " (" + foodSign + foodVelDP.ToString() + ")";
+        if (Mathf.Sign(foodVel) == 1)
+        {
+            foodText.color = gainColour;
+        }
+        else
+        {
+            foodText.color = lossColour;
+        }
+        if (game.playerData.ResourceIsFull(ResourceType.food))
+        {
+            foodText.color = fullColour;
+        }
 
         float woodVel = game.GetWoodVelocity(1);
         string woodSign = (Mathf.Sign(woodVel) == 1) ? "+" : "";
         float woodVelDP = Mathf.Round(woodVel * 10f) * .1f;
         woodText.text = game.playerData.GetResource(ResourceType.wood).ToString() + " (" + woodSign + woodVelDP.ToString() + ")";
+        if (Mathf.Sign(woodVel) == 1)
+        {
+            woodText.color = gainColour;
+        }
+        else
+        {
+            woodText.color = lossColour;
+        }
+        if (game.playerData.ResourceIsFull(ResourceType.wood))
+        {
+            woodText.color = fullColour;
+        }
 
-        float metalVel = game.GetWoodVelocity(1);
+        float metalVel = game.GetMetalVelocity(1);
         string metalSign = (Mathf.Sign(metalVel) == 1) ? "+" : "";
         float metalVelDP = Mathf.Round(metalVel * 10f) * .1f;
         metalText.text = game.playerData.GetResource(ResourceType.metal).ToString() + " (" + metalSign + metalVelDP.ToString() + ")";
+        if (Mathf.Sign(metalVel) == 1)
+        {
+            metalText.color = gainColour;
+        }
+        else
+        {
+            metalText.color = lossColour;
+        }
+        if (game.playerData.ResourceIsFull(ResourceType.metal))
+        {
+            metalText.color = fullColour;
+        }
     }
 }

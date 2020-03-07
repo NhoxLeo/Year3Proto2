@@ -4,12 +4,7 @@ using UnityEngine;
 
 public class LumberMill : ResourceStructure
 {
-    private int tileBonus = 0;
     public bool wasPlacedOnForest = false;
-    public float productionTime = 3f;
-    private float remainingTime = 3f;
-    private int batchSize = 5;
-
 
     // Start is called before the first frame update
     void Start()
@@ -23,13 +18,7 @@ public class LumberMill : ResourceStructure
     // Update is called once per frame
     void Update()
     {
-        remainingTime -= Time.deltaTime;
-
-        if (remainingTime <= 0f)
-        {
-            remainingTime = productionTime;
-            FindObjectOfType<GameManager>().AddBatch(new Batch(tileBonus * batchSize, resourceType));
-        }
+        ResourceUpdate();
     }
     public void CalculateTileBonus()
     {
@@ -61,4 +50,6 @@ public class LumberMill : ResourceStructure
         }
         Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
     }
+
+
 }

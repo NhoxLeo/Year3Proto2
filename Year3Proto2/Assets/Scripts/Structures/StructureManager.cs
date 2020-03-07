@@ -5,6 +5,7 @@ using UnityEngine;
 public enum StructManState
 {
     selecting,
+    selected,
     moving
 };
 
@@ -38,9 +39,11 @@ public struct StructureDefinition
 public class StructureManager : MonoBehaviour
 {
     private Structure structure;
+    private Structure selectedStructure;
     private TileBehaviour structureOldTile;
     private bool structureFromStore;
     public Transform tileHighlight;
+    public Transform selectedTileHighlight;
     private StructManState structureState = StructManState.selecting;
     public Dictionary<string, StructureDefinition> structureDict;
     private GameManager gameMan;
@@ -130,8 +133,10 @@ public class StructureManager : MonoBehaviour
                                 Vector3 highlightPos = structPos;
                                 highlightPos.y = 0.501f;
                                 tileHighlight.position = highlightPos;
+                                selectedTileHighlight.position = highlightPos;
 
                                 if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
+                                if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
 
                                 // If the user clicked the LMB...
                                 if (Input.GetMouseButtonDown(0))
@@ -196,7 +201,7 @@ public class StructureManager : MonoBehaviour
                                             FindObjectOfType<BuildPanel>().UINoneSelected();
                                             FindObjectOfType<BuildPanel>().ResetBuildingSelected();
                                         }
-                                        structureState = StructManState.selecting;
+                                        structureState = StructManState.selected;
                                     }
                                 }
                             }
@@ -209,6 +214,84 @@ public class StructureManager : MonoBehaviour
                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
                 }
             }
+            else if (structureState == StructManState.selected)
+            {
+                // If the player clicks the LMB...
+                if (Input.GetMouseButtonDown(0))
+                {
+                    // If the player has clicked on a structure...
+                    if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
+                    {
+                        Structure hitStructure = hit.transform.GetComponent<Structure>();
+                        // If the hit transform has a structure component... (SHOULD ALWAYS)
+                        if (hitStructure)
+                        {
+                            if (hitStructure == selectedStructure)
+                            {
+                                // If the structure is NOT an environment structure, and not the longhaus
+                                if (hitStructure.GetStructureType() != StructureType.environment
+                                    && hitStructure.GetStructureName() != "Longhaus")
+                                {
+                                    structureFromStore = false;
+                                    structure = hitStructure;
+                                    structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
+                                    // Detach the structure from it's tile, and vica versa.
+                                    structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                    // Put the manager back into moving mode.
+                                    structureState = StructManState.moving;
+                                }
+                            }
+                            else
+                            {
+                                selectedStructure = hitStructure;
+                                if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+                                Vector3 highlightpos = selectedTileHighlight.position;
+                                highlightpos.x = selectedStructure.attachedTile.transform.position.x;
+                                highlightpos.y = 0.501f;
+                                highlightpos.z = selectedStructure.attachedTile.transform.position.z;
+                                selectedTileHighlight.position = highlightpos;
+                            }
+                        }
+                        else // The hit transform hasn't got a structure component
+                        {
+                            Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
+                        }
+                    }
+                    else
+                    {
+                        if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+                        structureState = StructManState.selecting;
+                    }
+                }
+
+                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                {
+                    Vector3 highlightpos = tileHighlight.position;
+                    highlightpos.x = hit.transform.position.x;
+                    highlightpos.y = 0.501f;
+                    highlightpos.z = hit.transform.position.z;
+
+                    tileHighlight.position = highlightpos;
+                }
+
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    // increases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().IncreaseFoodAllocation();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    // decreases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().DecreaseFoodAllocation();
+                    }
+                }
+            }
             else if (structureState == StructManState.selecting)
             {
                 // If the player clicks the LMB...
@@ -217,21 +300,21 @@ public class StructureManager : MonoBehaviour
                     // If the player has clicked on a structure...
                     if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
                     {
+                        Structure hitStructure = hit.transform.GetComponent<Structure>();
                         // If the hit transform has a structure component... (SHOULD ALWAYS)
-                        if (hit.transform.GetComponent<Structure>())
+                        if (hitStructure)
                         {
-                            // If the structure is NOT an environment structure, and not the longhaus
-                            if (hit.transform.GetComponent<Structure>().GetStructureType() != StructureType.environment
-                                && hit.transform.GetComponent<Structure>().GetStructureName() != "Longhaus")
-                            {
-                                structureFromStore = false;
-                                structure = hit.transform.GetComponent<Structure>();
-                                structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
-                                // Detach the structure from it's tile, and vica versa.
-                                structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
-                                // Put the manager back into moving mode.
-                                structureState = StructManState.moving;
-                            }
+                            selectedStructure = hitStructure;
+
+                            if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+                            Vector3 highlightpos = selectedTileHighlight.position;
+                            highlightpos.x = selectedStructure.attachedTile.transform.position.x;
+                            highlightpos.y = 0.501f;
+                            highlightpos.z = selectedStructure.attachedTile.transform.position.z;
+                            selectedTileHighlight.position = highlightpos;
+
+                            structureState = StructManState.selected;
                         }
                         else // The hit transform hasn't got a structure component
                         {
@@ -320,7 +403,7 @@ public class StructureManager : MonoBehaviour
                     structureOldTile.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
                     structureOldTile = null;
                 }
-                structureState = StructManState.selecting;
+                structureState = StructManState.selected;
             }
             else
             {

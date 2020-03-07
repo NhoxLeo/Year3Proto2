@@ -4,11 +4,7 @@ using UnityEngine;
 
 public class Farm : ResourceStructure
 {
-    private int tileBonus = 0;
     public bool wasPlacedOnPlains = false;
-    public float productionTime = 3f;
-    private float remainingTime = 3f;
-    private int batchSize = 5;
 
     // Start is called before the first frame update
     void Start()
@@ -22,13 +18,7 @@ public class Farm : ResourceStructure
     // Update is called once per frame
     void Update()
     {
-        remainingTime -= Time.deltaTime;
-
-        if (remainingTime <= 0f)
-        {
-            remainingTime = productionTime;
-            FindObjectOfType<GameManager>().AddBatch(new Batch(tileBonus * batchSize, resourceType));
-        }
+        ResourceUpdate();
     }
 
     public void CalculateTileBonus()
