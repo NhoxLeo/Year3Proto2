@@ -88,9 +88,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5341910814397929026}
+  - component: {fileID: 5341910814397929054}
   - component: {fileID: 5341910814397929025}
   - component: {fileID: 5341910814397929024}
-  - component: {fileID: 5341910814397929054}
   - component: {fileID: 8877098868935940557}
   m_Layer: 9
   m_Name: Tree
@@ -114,6 +114,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5341910814397929054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5341910814397929053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef8d33a43ba51964c8d3e73b50757d21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  structureName: 
+  icon: {fileID: 0}
+  sitHeight: 1
+  displayName: 
+  attachedTile: {fileID: 0}
 --- !u!33 &5341910814397929025
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -161,22 +178,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &5341910814397929054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5341910814397929053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef8d33a43ba51964c8d3e73b50757d21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  icon: {fileID: 0}
-  sitHeight: 1
-  displayName: 
-  attachedTile: {fileID: 0}
 --- !u!136 &8877098868935940557
 CapsuleCollider:
   m_ObjectHideFlags: 0
