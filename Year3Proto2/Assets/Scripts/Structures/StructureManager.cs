@@ -168,7 +168,7 @@ public class StructureManager : MonoBehaviour
                                                     Destroy(attached);
                                                     gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
                                                     structure.GetComponent<Mine>().wasPlacedOnHills = true;
-                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("HillMaterial") as Material;
                                                 }
                                             }
                                         }
@@ -182,7 +182,7 @@ public class StructureManager : MonoBehaviour
                                                     Destroy(attached);
                                                     gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
                                                     structure.GetComponent<Farm>().wasPlacedOnPlains = true;
-                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("PlainsMaterial") as Material;
                                                 }
                                             }
                                         }
