@@ -71,6 +71,8 @@ public class LumberMill : ResourceStructure
         }
         Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
     }
+
+    /*
     public void CalculateTileBonus()
     {
         tileBonus = 1;
@@ -100,9 +102,6 @@ public class LumberMill : ResourceStructure
             }
         }
         Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
-
-    public override bool IsStructure(string _structureName)
-    {
-        return _structureName == "Lumber Mill";
     }
+    */
 }
