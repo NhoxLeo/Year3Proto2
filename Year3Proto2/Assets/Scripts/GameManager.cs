@@ -57,8 +57,26 @@ public struct PlayerData
             case ResourceType.food:
                 rFood += _batch.amount;
                 if (rFood > rFoodMax) { rFood = rFoodMax; }
+                if (rFood < 0)
+                {
+                    //lose condition
+                }
                 break;
         }
+    }
+
+    public bool ResourceIsFull(ResourceType _type)
+    {
+        switch(_type)
+        {
+            case ResourceType.wood:
+                return (rWood == rWoodMax);
+            case ResourceType.metal:
+                return (rMetal == rMetalMax);
+            case ResourceType.food:
+                return (rFood == rFoodMax);
+        }
+        return false;
     }
 
     public int GetResource(ResourceType _type)
@@ -150,6 +168,36 @@ public class GameManager : MonoBehaviour
             return runningTotal;
         }
     }
+    int recentMetal
+    {
+        get
+        {
+            int runningTotal = 0;
+            foreach (Batch batch in recentBatches)
+            {
+                if (batch.type == ResourceType.metal)
+                {
+                    runningTotal += batch.amount;
+                }
+            }
+            return runningTotal;
+        }
+    }
+    int recentFood
+    {
+        get
+        {
+            int runningTotal = 0;
+            foreach (Batch batch in recentBatches)
+            {
+                if (batch.type == ResourceType.food)
+                {
+                    runningTotal += batch.amount;
+                }
+            }
+            return runningTotal;
+        }
+    }
 
     public PlayerData playerData;
 
@@ -190,6 +238,16 @@ public class GameManager : MonoBehaviour
         return recentWood * _seconds / batchMaxAge;
     }
 
+    public float GetMetalVelocity(int _seconds)
+    {
+        return recentMetal * _seconds / batchMaxAge;
+    }
+
+    public float GetFoodVelocity(int _seconds)
+    {
+        return recentFood * _seconds / batchMaxAge;
+    }
+
     public void CalculateStorageMaximum()
     {
         int newWoodMax = Longhaus.woodStorage;
@@ -226,6 +284,18 @@ public class GameManager : MonoBehaviour
         foreach (LumberMill lumberMill in lumberMills)
         {
             lumberMill.CalculateTileBonus();
+        }
+        // Update all Mines
+        Mine[] mines = FindObjectsOfType<Mine>();
+        foreach (Mine mine in mines)
+        {
+            mine.CalculateTileBonus();
+        }
+        // Update all Farms
+        Farm[] farms = FindObjectsOfType<Farm>();
+        foreach (Farm farm in farms)
+        {
+            farm.CalculateTileBonus();
         }
     }
 }

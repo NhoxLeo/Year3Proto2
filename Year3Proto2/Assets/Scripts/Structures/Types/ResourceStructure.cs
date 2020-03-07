@@ -5,15 +5,50 @@ using UnityEngine;
 public abstract class ResourceStructure : Structure
 {
     protected ResourceType resourceType;
+    protected int foodAllocation;
+    protected int foodAllocationMin = 1;
+    protected int foodAllocationMax = 5;
+    protected int tileBonus = 0;
+    public float productionTime = 3f;
+    protected float remainingTime = 3f;
+    protected int batchSize = 2;
 
     protected void ResourceStart()
     {
         StructureStart();
         structureType = StructureType.resource;
+        foodAllocation = 3;
+    }
+
+    protected void ResourceUpdate()
+    {
+        remainingTime -= Time.deltaTime;
+
+        if (remainingTime <= 0f)
+        {
+            remainingTime = productionTime;
+            GameManager game = FindObjectOfType<GameManager>();
+            game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
+            game.AddBatch(new Batch(-foodAllocation, ResourceType.food));
+        }
     }
 
     public ResourceType GetResourceType()
     {
         return resourceType;
+    }
+
+    public void IncreaseFoodAllocation()
+    {
+        foodAllocation++;
+        if (foodAllocation > foodAllocationMax) { foodAllocation = foodAllocationMax; }
+        Debug.Log(gameObject + " foodAllocation is " + foodAllocation);
+    }
+
+    public void DecreaseFoodAllocation()
+    {
+        foodAllocation--;
+        if (foodAllocation < foodAllocationMin) { foodAllocation = foodAllocationMin; }
+        Debug.Log(gameObject + " foodAllocation is " + foodAllocation);
     }
 }

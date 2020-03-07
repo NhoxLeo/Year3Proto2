@@ -71,7 +71,7 @@ public class SceneSwitcher : MonoBehaviour
             }
             else
             {
-                SceneManager.LoadScene(targetScene, LoadSceneMode.Single);
+                SceneManager.LoadScene(targetScene);
                 Debug.Log("Switched from " + curScene + " to " + targetScene);
             }
 

@@ -106,6 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb02668d7ebb1f746928c3495d73f5af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  structureName: 
   icon: {fileID: 0}
   sitHeight: 0.75
   displayName: 
