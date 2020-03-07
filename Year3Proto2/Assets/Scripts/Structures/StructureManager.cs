@@ -37,16 +37,13 @@ public struct StructureDefinition
 
 public class StructureManager : MonoBehaviour
 {
-
-    private Transform structure;
-    private StructManState structureState = StructManState.selecting;
-
+    private Structure structure;
+    private TileBehaviour structureOldTile;
+    private bool structureFromStore;
     public Transform tileHighlight;
-
+    private StructManState structureState = StructManState.selecting;
     public Dictionary<string, StructureDefinition> structureDict;
-
     private GameManager gameMan;
-
     public bool isOverUI = false;
 
     private void Start()
@@ -67,11 +64,12 @@ public class StructureManager : MonoBehaviour
 
         if (!isOverUI)
         {
+            if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
             if (structureState == StructManState.moving)
             {
                 if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
                 {
-                    if (structure != null)
+                    if (structure.transform != null)
                     {
                         // If we hit a tile...
                         if (hit.collider.name.Contains("Tile"))
@@ -82,14 +80,14 @@ public class StructureManager : MonoBehaviour
                             if (attached)
                             {
                                 Vector3 hitPos = hit.point;
-                                hitPos.y = structure.GetComponent<Structure>().sitHeight;
-                                structure.position = hitPos;
+                                hitPos.y = structure.sitHeight;
+                                structure.transform.position = hitPos;
 
                                 if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
 
                                 if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
                                 {
-                                    if (structure.GetComponent<Structure>().IsStructure("Lumber Mill"))
+                                    if (structure.IsStructure("Lumber Mill"))
                                     {
                                         // Special condition: Lumber Mills can be placed on Forest Environment
                                         canPlaceHere = true;
@@ -103,11 +101,11 @@ public class StructureManager : MonoBehaviour
                             }
                             if (canPlaceHere)
                             {
-                                Vector3 structPos = structure.position;
+                                Vector3 structPos = structure.transform.position;
                                 structPos.x = hit.transform.position.x;
-                                structPos.y = structure.GetComponent<Structure>().sitHeight;
+                                structPos.y = structure.sitHeight;
                                 structPos.z = hit.transform.position.z;
-                                structure.position = structPos;
+                                structure.transform.position = structPos;
 
                                 Vector3 highlightPos = structPos;
                                 highlightPos.y = 0.501f;
@@ -118,69 +116,51 @@ public class StructureManager : MonoBehaviour
                                 // If the user clicked the LMB...
                                 if (Input.GetMouseButtonDown(0))
                                 {
-                                    // Attach the structure to the tile and vica versa
-                                    if (attached)
+                                    if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                     {
-                                        attached.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
-                                    }
-                                    hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
-                                    if (structure.GetComponent<Structure>().IsStructure("Lumber Mill"))
-                                    {
+                                        // Attach the structure to the tile and vica versa
                                         if (attached)
                                         {
-                                            if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
+                                            attached.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                        }
+                                        hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                                        if (structure.IsStructure("Lumber Mill"))
+                                        {
+                                            if (attached)
                                             {
-                                                // The structure is being placed on a forest
-                                                Destroy(attached);
-                                                gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
-                                                structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
-                                                structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
+                                                {
+                                                    // The structure is being placed on a forest
+                                                    Destroy(attached);
+                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
+                                                    structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
+                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                }
                                             }
                                         }
+                                        else if (structure.GetStructureType() == StructureType.storage)
+                                        {
+                                            gameMan.CalculateStorageMaximum();
+                                        }
+                                        gameMan.OnStructurePlace();
+                                        if (structureFromStore)
+                                        {
+                                            FindObjectOfType<BuildPanel>().UINoneSelected();
+                                        }
+                                        structureState = StructManState.selecting;
                                     }
-                                    else if (structure.GetComponent<Structure>().GetStructureType() == StructureType.storage)
-                                    {
-                                        gameMan.CalculateStorageMaximum();
-                                    }
-                                    structureState = StructManState.selecting;
-                                    gameMan.OnStructurePlace();
-                                    FindObjectOfType<BuildPanel>().SelectBuilding(0);
                                 }
                             }
                         }
                     }
                 }
+                if (Input.GetMouseButtonDown(1))
+                {
+                    ResetBuilding();
+                }
             }
             else if (structureState == StructManState.selecting)
             {
-                /*
-                if (Input.GetKeyDown(KeyCode.Alpha1))
-                {
-                    
-                    // replace with attempt cost
-                    if (gameMan.playerData.GetResource(ResourceType.wood) >= structureDict["Lumber Mill"].resourceCost.woodCost)
-                    {
-                        gameMan.playerData.DeductResource(ResourceType.wood, structureDict["Lumber Mill"].resourceCost.woodCost);
-                        GameObject LMinstance = Instantiate(structureDict["Lumber Mill"].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-                        structure = LMinstance.transform;
-                        // Put the manager back into moving mode.
-                        structureState = StructManState.moving;
-                    }
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha2))
-                {
-                    // replace with attempt cost
-                    if (gameMan.playerData.GetResource(ResourceType.wood) >= structureDict["Lumber Pile"].resourceCost.woodCost)
-                    {
-                        gameMan.playerData.DeductResource(ResourceType.wood, structureDict["Lumber Pile"].resourceCost.woodCost);
-                        GameObject LPinstance = Instantiate(structureDict["Lumber Pile"].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-                        structure = LPinstance.transform;
-                        // Put the manager back into moving mode.
-                        structureState = StructManState.moving;
-                    }
-                }
-                */
-
                 // If the player clicks the LMB...
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -190,12 +170,15 @@ public class StructureManager : MonoBehaviour
                         // If the hit transform has a structure component... (SHOULD ALWAYS)
                         if (hit.transform.GetComponent<Structure>())
                         {
-                            // If the structure is NOT an environment structure.
-                            if (hit.transform.GetComponent<Structure>().GetStructureType() != StructureType.environment)
+                            // If the structure is NOT an environment structure, and not the longhaus
+                            if (hit.transform.GetComponent<Structure>().GetStructureType() != StructureType.environment
+                                && hit.transform.GetComponent<Structure>().GetStructureName() != "Longhaus")
                             {
-                                structure = hit.transform;
+                                structureFromStore = false;
+                                structure = hit.transform.GetComponent<Structure>();
+                                structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
                                 // Detach the structure from it's tile, and vica versa.
-                                structure.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
                                 // Put the manager back into moving mode.
                                 structureState = StructManState.moving;
                             }
@@ -218,7 +201,11 @@ public class StructureManager : MonoBehaviour
                 }
             }
         }
-
+        if (isOverUI)
+        {
+            if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+            HideBuilding();
+        }
     }
 
     public void SetIsOverUI(bool _isOverUI)
@@ -226,26 +213,76 @@ public class StructureManager : MonoBehaviour
         isOverUI = _isOverUI;
     }
 
-    public void BuyBuilding(string _building)
+    public bool BuyBuilding()
+    {
+        if (structure && structureFromStore)
+        {
+            return gameMan.playerData.AttemptPurchase(structureDict[structure.GetStructureName()].resourceCost);
+        }
+        return false;
+    }
+
+    public bool SetBuilding(string _building)
     {
         if (structureState != StructManState.moving)
         {
-            if (gameMan.playerData.AttemptPurchase(structureDict[_building].resourceCost))
-            {
-                GameObject LPinstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-                structure = LPinstance.transform;
-                // Put the manager back into moving mode.
-                structureState = StructManState.moving;
-            }
+            structureFromStore = true;
+            GameObject LPinstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+            structure = LPinstance.GetComponent<Structure>();
+            // Put the manager back into moving mode.
+            structureState = StructManState.moving;
+            return true;
+        }
+        return false;
+    }
+
+    private void HideBuilding()
+    {
+        if (structure && structureState == StructManState.moving)
+        {
+            structure.transform.position = Vector3.down * 10f;
         }
     }
 
-    public void BuyBuilding(BuildPanel.Buildings _buildingID)
+    public bool SetBuilding(BuildPanel.Buildings _buildingID)
     {
-        BuyBuilding(IDToStructureName(_buildingID));
+        return SetBuilding(IDToStructureName(_buildingID));
     }
 
-    //public void ReturnBuilding
+    public void ResetBuilding()
+    {
+        if (structure)
+        {
+            if (structureState == StructManState.moving)
+            {
+                if (structureFromStore)
+                {
+                    Destroy(structure.gameObject);
+                    FindObjectOfType<BuildPanel>().UINoneSelected();
+                }
+                else
+                {
+                    Vector3 structPos = structure.transform.position;
+                    structPos.x = structureOldTile.transform.position.x;
+                    structPos.y = structure.sitHeight;
+                    structPos.z = structureOldTile.transform.position.z;
+                    structure.transform.position = structPos;
+                    structureOldTile.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                    structureOldTile = null;
+                }
+                structureState = StructManState.selecting;
+            }
+            else
+            {
+                //Debug.LogError("ResetBuilding() when structureState is selecting");
+            }
+        }
+        else
+        {
+            //Debug.LogError("ResetBuilding() when there is no structure");
+        }
+    }
+
     public static string IDToStructureName(BuildPanel.Buildings _buildingID)
     {
         switch (_buildingID)
@@ -253,35 +290,25 @@ public class StructureManager : MonoBehaviour
             case BuildPanel.Buildings.None:
                 Debug.LogError("0 is not a building.");
                 return "ERROR";
-                break;
             case BuildPanel.Buildings.Archer:
                 return "ERROR";
-                break;
             case BuildPanel.Buildings.Catapult:
                 return "ERROR";
-                break;
             case BuildPanel.Buildings.Farm:
                 return "ERROR";
-                break;
             case BuildPanel.Buildings.Silo:
                 return "ERROR";
-                break;
             case BuildPanel.Buildings.LumberMill:
                 return "Lumber Mill";
-                break;
             case BuildPanel.Buildings.LumberPile:
                 return "Lumber Pile";
-                break;
             case BuildPanel.Buildings.Mine:
                 return "ERROR";
-                break;
             case BuildPanel.Buildings.MetalStorage:
                 return "ERROR";
-                break;
             default:
                 Debug.LogError("default is not a building.");
                 return "ERROR";
-                break;
         }
     }
 }

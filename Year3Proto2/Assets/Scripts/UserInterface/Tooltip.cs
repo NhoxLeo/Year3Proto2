@@ -8,11 +8,12 @@ public class Tooltip : MonoBehaviour
     public bool showTooltip;
     private bool tipShown;
 
+    private CanvasGroup canvas;
     private RectTransform rTransform;
     private float width;
     private float height;
 
-    private CanvasGroup canvas;
+    private Sequence pulseSeq;
 
     void Start()
     {
@@ -23,6 +24,7 @@ public class Tooltip : MonoBehaviour
 
         canvas = GetComponent<CanvasGroup>();
         canvas.alpha = 0.0f;
+
     }
 
 
@@ -44,8 +46,8 @@ public class Tooltip : MonoBehaviour
 
     private void ShowTip()
     {
-        transform.DOKill(true);
-        transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);
+        PulseTip();
+
         rTransform.DOSizeDelta(new Vector2(width, height), 0.25f).SetEase(Ease.OutQuint);
         canvas.DOKill(true);
         canvas.DOFade(1.0f, 0.15f);
@@ -60,7 +62,10 @@ public class Tooltip : MonoBehaviour
 
     public void PulseTip()
     {
-        transform.DOKill(true);
-        transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);
+        pulseSeq.Kill(true);
+        pulseSeq = DOTween.Sequence()
+            .Append(transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f));
+
+        pulseSeq.Play();
     }
 }

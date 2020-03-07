@@ -135,7 +135,6 @@ public class BuildPanel : MonoBehaviour
         else
         {
             tooltip.showTooltip = true;
-
             tooltipHeading.text = toolInfo.heading[(int)tooltipSelected];
             tooltipDescription.text = toolInfo.description[(int)tooltipSelected];
 
@@ -165,27 +164,43 @@ public class BuildPanel : MonoBehaviour
 
         if (buildingSelected == Buildings.None)
         {
-            buildIndicator.SetActive(false);
-            buildTip.showTooltip = false;
-
-            //structMan.RefundBuilding(selectedBuilding);
+            UINoneSelected();
+            structMan.ResetBuilding();
         }
         else
         {
-            buildIndicator.SetActive(true);
-            buildIndicator.transform.DOKill(true);
-            buildIndicator.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0.0f), 0.15f, 1, 0.5f);
-            Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
-            Vector2 indiPos = buildIndicator.transform.localPosition;
-            indiPos.x = targetPos.x;
-            buildIndicator.transform.localPosition = indiPos;
+            structMan.ResetBuilding();
 
-            buildTip.showTooltip = true;
-            buildTip.PulseTip();
-            buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
+            if (structMan.SetBuilding(buildingSelected))
+            {
+                buildIndicator.SetActive(true);
+                buildIndicator.transform.DOKill(true);
+                buildIndicator.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0.0f), 0.15f, 1, 0.5f);
+                float targetX = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition.x;
+                buildIndicator.transform.DOLocalMoveX(targetX, 0.0f);
 
-            structMan.BuyBuilding(buildingSelected);
+                buildTip.showTooltip = true;
+                buildTip.PulseTip();
+                buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
+            }
+            else
+            {
+                buildingSelected = Buildings.None;
+            }
+
         }
+    }
 
+    public void UINoneSelected()
+    {
+        buildIndicator.SetActive(false);
+        buildTip.showTooltip = false;
+
+        buildingSelected = Buildings.None;
+    }
+
+    public void ResetBuildingSelected()
+    {
+        buildingSelected = Buildings.None;
     }
 }
