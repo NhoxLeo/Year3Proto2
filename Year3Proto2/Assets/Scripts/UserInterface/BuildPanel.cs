@@ -173,7 +173,6 @@ public class BuildPanel : MonoBehaviour
         if (buildingSelected == Buildings.None)
         {
             UINoneSelected();
-
             structMan.ResetBuilding();
         }
         else
@@ -211,7 +210,10 @@ public class BuildPanel : MonoBehaviour
         buildTipTransform.DOSizeDelta(new Vector2(64.0f, 76.0f), 0.25f).SetEase(Ease.OutQuint);
         buildTipCanvas.DOKill(true);
         buildTipCanvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
+    }
 
+    public void ResetBuildingSelected()
+    {
         buildingSelected = Buildings.None;
     }
 
