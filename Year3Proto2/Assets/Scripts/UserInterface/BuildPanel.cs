@@ -71,10 +71,6 @@ public class BuildPanel : MonoBehaviour
 
     void Update()
     {
-        //Vector2 mousePos = Input.mousePosition;
-        //Vector3 toolPos = tooltipBox.transform.position;
-        //toolPos.x = mousePos.x;
-        //tooltipBox.transform.position = toolPos;
 
         if (tooltipSelected == Buildings.None)
         {
@@ -135,6 +131,7 @@ public class BuildPanel : MonoBehaviour
         else
         {
             tooltip.showTooltip = true;
+
             tooltipHeading.text = toolInfo.heading[(int)tooltipSelected];
             tooltipDescription.text = toolInfo.description[(int)tooltipSelected];
 
@@ -164,20 +161,23 @@ public class BuildPanel : MonoBehaviour
 
         if (buildingSelected == Buildings.None)
         {
+            buildTip.showTooltip = false;
+
             UINoneSelected();
             structMan.ResetBuilding();
         }
         else
         {
             structMan.ResetBuilding();
-
             if (structMan.SetBuilding(buildingSelected))
             {
                 buildIndicator.SetActive(true);
                 buildIndicator.transform.DOKill(true);
                 buildIndicator.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0.0f), 0.15f, 1, 0.5f);
-                float targetX = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition.x;
-                buildIndicator.transform.DOLocalMoveX(targetX, 0.0f);
+                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
+                Vector2 indiPos = buildIndicator.transform.localPosition;
+                indiPos.x = targetPos.x;
+                buildIndicator.transform.localPosition = indiPos;
 
                 buildTip.showTooltip = true;
                 buildTip.PulseTip();
@@ -187,16 +187,15 @@ public class BuildPanel : MonoBehaviour
             {
                 buildingSelected = Buildings.None;
             }
-
         }
+
     }
 
     public void UINoneSelected()
     {
         buildIndicator.SetActive(false);
-        buildTip.showTooltip = false;
 
-        buildingSelected = Buildings.None;
+        buildTip.showTooltip = false;
     }
 
     public void ResetBuildingSelected()
