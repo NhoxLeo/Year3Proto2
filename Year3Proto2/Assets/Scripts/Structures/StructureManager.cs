@@ -146,6 +146,7 @@ public class StructureManager : MonoBehaviour
                                         if (structureFromStore)
                                         {
                                             FindObjectOfType<BuildPanel>().UINoneSelected();
+                                            FindObjectOfType<BuildPanel>().ResetBuildingSelected();
                                         }
                                         structureState = StructManState.selecting;
                                     }
@@ -157,6 +158,7 @@ public class StructureManager : MonoBehaviour
                 if (Input.GetMouseButtonDown(1))
                 {
                     ResetBuilding();
+                    FindObjectOfType<BuildPanel>().ResetBuildingSelected();
                 }
             }
             else if (structureState == StructManState.selecting)
