@@ -41,6 +41,7 @@ public class StructureManager : MonoBehaviour
     private Structure structure;
     private Structure selectedStructure;
     private TileBehaviour structureOldTile;
+    private BuildingInfo buildingInfo;
     private bool structureFromStore;
     public Transform tileHighlight;
     public Transform selectedTileHighlight;
@@ -64,6 +65,7 @@ public class StructureManager : MonoBehaviour
             //{ "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(100, 100, 0)) }
         };
         gameMan = FindObjectOfType<GameManager>();
+        buildingInfo = FindObjectOfType<BuildingInfo>();
     }
 
     private void Update()
@@ -205,6 +207,8 @@ public class StructureManager : MonoBehaviour
                                         }
                                         structureState = StructManState.selected;
                                         selectedStructure = structure;
+                                        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                                        buildingInfo.showPanel = true;
                                     }
                                 }
                             }
@@ -215,6 +219,12 @@ public class StructureManager : MonoBehaviour
                 {
                     ResetBuilding();
                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                    Vector3 highlightPos = structure.transform.position;
+                    highlightPos.y = 0.501f;
+                    tileHighlight.position = highlightPos;
+                    selectedTileHighlight.position = highlightPos;
+                    buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                    buildingInfo.showPanel = true;
                 }
             }
             else if (structureState == StructManState.selected)
@@ -242,6 +252,7 @@ public class StructureManager : MonoBehaviour
                                     structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
                                     // Put the manager back into moving mode.
                                     structureState = StructManState.moving;
+                                    buildingInfo.showPanel = false;
                                 }
                             }
                             else
@@ -254,6 +265,9 @@ public class StructureManager : MonoBehaviour
                                 highlightpos.y = 0.501f;
                                 highlightpos.z = selectedStructure.attachedTile.transform.position.z;
                                 selectedTileHighlight.position = highlightpos;
+
+                                buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                                buildingInfo.showPanel = true;
                             }
                         }
                         else // The hit transform hasn't got a structure component
@@ -266,6 +280,8 @@ public class StructureManager : MonoBehaviour
                         if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
                         selectedStructure = null;
                         structureState = StructManState.selecting;
+                        //buildingInfo.SetTargetBuilding(null, "null");
+                        buildingInfo.showPanel = false;
                     }
                 }
 
@@ -279,7 +295,7 @@ public class StructureManager : MonoBehaviour
                     tileHighlight.position = highlightpos;
                 }
 
-                if (Input.GetKeyDown(KeyCode.UpArrow))
+                if (Input.GetKeyDown(KeyCode.RightArrow))
                 {
                     // increases the food allocation of the selected structure.
                     if (selectedStructure.GetStructureType() == StructureType.resource)
@@ -287,12 +303,28 @@ public class StructureManager : MonoBehaviour
                         selectedStructure.GetComponent<ResourceStructure>().IncreaseFoodAllocation();
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.DownArrow))
+                if (Input.GetKeyDown(KeyCode.LeftArrow))
                 {
                     // decreases the food allocation of the selected structure.
                     if (selectedStructure.GetStructureType() == StructureType.resource)
                     {
                         selectedStructure.GetComponent<ResourceStructure>().DecreaseFoodAllocation();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    // increases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMax();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    // decreases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMin();
                     }
                 }
             }
@@ -319,6 +351,9 @@ public class StructureManager : MonoBehaviour
                             selectedTileHighlight.position = highlightpos;
 
                             structureState = StructManState.selected;
+
+                            buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                            buildingInfo.showPanel = true;
                         }
                         else // The hit transform hasn't got a structure component
                         {
