@@ -189,7 +189,7 @@ public class BuildingInfo : MonoBehaviour
         rTrans.pivot = pivot;
 
         // Close info panel if out of bounds or covering build panel
-        if (transform.localPosition.x < -1000.0f || transform.localPosition.x > 1024.0f)
+        if (transform.localPosition.x < -930.0f || transform.localPosition.x > 930.0f)
         {
             showPanel = false;
         }
