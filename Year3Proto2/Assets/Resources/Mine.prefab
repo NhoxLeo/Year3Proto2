@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4905507190924755431}
   - component: {fileID: 830304707501132278}
-  - component: {fileID: 2585013102929583325}
-  - component: {fileID: 4491260979876113173}
-  - component: {fileID: 777591054574737560}
+  - component: {fileID: 8605508258123150373}
+  - component: {fileID: 1554772620198688529}
+  - component: {fileID: 9197065362836635141}
   m_Layer: 9
   m_Name: Mine
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 3859869729079456503}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -53,15 +53,15 @@ MonoBehaviour:
   attachedTile: {fileID: 0}
   productionTime: 3
   wasPlacedOnHills: 0
---- !u!33 &2585013102929583325
+--- !u!33 &8605508258123150373
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3859869729079456503}
-  m_Mesh: {fileID: 5310632328066384851, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
---- !u!23 &4491260979876113173
+  m_Mesh: {fileID: 5753519771242574417, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
+--- !u!23 &1554772620198688529
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -79,7 +79,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2733559608502156935, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
+  - {fileID: -5332975026261694481, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -100,7 +100,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &777591054574737560
+--- !u!64 &9197065362836635141
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,4 +113,4 @@ MeshCollider:
   serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 5310632328066384851, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
+  m_Mesh: {fileID: 5753519771242574417, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
