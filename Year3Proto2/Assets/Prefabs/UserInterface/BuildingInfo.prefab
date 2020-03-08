@@ -1152,10 +1152,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a11ba5691c36fd4696f517af71a002c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetBuilding: {fileID: 0}
   defenceSprite: {fileID: 21300000, guid: b3bc01ee67c814b44a0d76dedbaf7e21, type: 3}
   foodSprite: {fileID: 21300000, guid: e5c02d87f0813c944a0adecf277545ac, type: 3}
-  woodSprite: {fileID: 21300000, guid: 017e6e3eb3a6f254495c46f7ea5ebbc9, type: 3}
-  metalSprite: {fileID: 21300000, guid: 86cb29ee8be42a543b0ef4fa49cae6b2, type: 3}
+  woodSprite: {fileID: 21300000, guid: 86cb29ee8be42a543b0ef4fa49cae6b2, type: 3}
+  metalSprite: {fileID: 21300000, guid: 017e6e3eb3a6f254495c46f7ea5ebbc9, type: 3}
+  buildingName: 
 --- !u!1 &5593073932314056941
 GameObject:
   m_ObjectHideFlags: 0
@@ -1896,12 +1898,12 @@ PrefabInstance:
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -115.06998
+      value: 6.930023
       objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -70.60003
+      value: -182.60004
       objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
@@ -1916,22 +1918,22 @@ PrefabInstance:
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
-        type: 3}
-      propertyPath: m_AnchorMax.x
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
-      propertyPath: m_AnchorMax.y
+      propertyPath: m_AnchorMax.x
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}

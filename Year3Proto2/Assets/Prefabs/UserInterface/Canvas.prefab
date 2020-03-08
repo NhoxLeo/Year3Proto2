@@ -1495,9 +1495,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9981c0b68b5a7144dad08f40b6e07b5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gainColour: {r: 0.55398625, g: 0.8867924, b: 0.12130654, a: 1}
-  lossColour: {r: 0.9528302, g: 0.25282767, b: 0.04045032, a: 1}
-  fullColour: {r: 0, g: 0.37446833, b: 1, a: 1}
+  gainColour: {r: 0, g: 0, b: 0, a: 0}
+  lossColour: {r: 0, g: 0, b: 0, a: 0}
+  fullColour: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &3092289189487640258
 GameObject:
   m_ObjectHideFlags: 0
@@ -6477,6 +6477,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BuildingInfo
+      objectReference: {fileID: 0}
+    - target: {fileID: 7360375270873997706, guid: 974d1115c8e96d941a2e3ba6f639db93,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 974d1115c8e96d941a2e3ba6f639db93, type: 3}
