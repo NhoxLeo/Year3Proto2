@@ -95,7 +95,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = farm.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + farm.productionTime.ToString("0") + "s";
-                foodValueText.text = farm.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
 
                 tool.height = 162.0f;
                 break;

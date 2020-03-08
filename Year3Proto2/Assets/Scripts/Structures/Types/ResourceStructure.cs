@@ -70,7 +70,7 @@ public abstract class ResourceStructure : Structure
         return foodAllocation;
     }
 
-    public int GetProductionVolume()
+    public virtual int GetProductionVolume()
     {
         return tileBonus * batchSize * foodAllocation;
     }
