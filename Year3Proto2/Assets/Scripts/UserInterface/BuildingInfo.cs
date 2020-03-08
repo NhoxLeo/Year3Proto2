@@ -93,8 +93,9 @@ public class BuildingInfo : MonoBehaviour
                 Farm farm = targetBuilding.GetComponent<Farm>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Production Rate";
-                //statValueText.text = farm.productionAmount;
+                statValueText.text = farm.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + farm.productionTime.ToString("0") + "s";
+                foodValueText.text = farm.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
 
                 tool.height = 162.0f;
                 break;
@@ -114,9 +115,9 @@ public class BuildingInfo : MonoBehaviour
                 LumberMill mill = targetBuilding.GetComponent<LumberMill>();
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Production Rate";
-                //statValueText.text = mill.productionAmount;
+                statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
-                //foodValueText.text = mill.foodAllocation;
+                foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
 
                 tool.height = 252.0f;
                 break;
@@ -136,9 +137,9 @@ public class BuildingInfo : MonoBehaviour
                 Mine mine = targetBuilding.GetComponent<Mine>();
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Production Rate";
-                //statValueText.text = mine.productionAmount;
+                statValueText.text = mine.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mine.productionTime.ToString("0") + "s";
-                //foodValueText.text = mine.foodAllocation;
+                foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
 
                 tool.height = 252.0f;
                 break;

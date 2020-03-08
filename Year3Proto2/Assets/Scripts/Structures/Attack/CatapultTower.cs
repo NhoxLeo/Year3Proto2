@@ -8,15 +8,21 @@ public class CatapultTower : AttackStructure
     private GameObject spawnedBoulder;
 
     private float speed = 0.6f; 
-    private float radius = 1.0f;
     private float arcFactor = 0.45f;
     private float distanceTravelled;
 
     private Vector3 current;
     private Vector3 origin;
 
-    void Start() {
+
+    void Start()
+    {
         AttackStart();
+    }
+
+    private void Update()
+    {
+        AttackUpdate();
     }
 
     public override void Attack(GameObject target)
