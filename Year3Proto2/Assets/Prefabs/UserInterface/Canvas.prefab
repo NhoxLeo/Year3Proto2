@@ -1495,9 +1495,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9981c0b68b5a7144dad08f40b6e07b5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gainColour: {r: 0, g: 0, b: 0, a: 0}
-  lossColour: {r: 0, g: 0, b: 0, a: 0}
-  fullColour: {r: 0, g: 0, b: 0, a: 0}
+  gainColour: {r: 0.30209878, g: 0.5377358, b: 0, a: 1}
+  lossColour: {r: 0.6886792, g: 0, b: 0, a: 1}
+  fullColour: {r: 0.18580887, g: 0, b: 0.754717, a: 1}
 --- !u!1 &3092289189487640258
 GameObject:
   m_ObjectHideFlags: 0

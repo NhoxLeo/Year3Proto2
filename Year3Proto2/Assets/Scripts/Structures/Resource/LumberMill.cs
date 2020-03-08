@@ -48,7 +48,7 @@ public class LumberMill : ResourceStructure
                 }
             }
         }
-        Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
+        //Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
     }
 
 
