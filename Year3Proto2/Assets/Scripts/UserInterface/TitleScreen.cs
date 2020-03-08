@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 
 public class TitleScreen : MonoBehaviour
@@ -56,11 +54,5 @@ public class TitleScreen : MonoBehaviour
         titleSequence.Insert(2.8f, decorRight.transform.DOLocalMoveX(decorRightX, 1.0f).SetEase(Ease.OutQuint));
 
         titleSequence.Insert(2.95f, divider.transform.DOScaleX(1.0f, 1.0f).SetEase(Ease.OutQuint));
-    }
-
-
-    void Update()
-    {
-        
     }
 }

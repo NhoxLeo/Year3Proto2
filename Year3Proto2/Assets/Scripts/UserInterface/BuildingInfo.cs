@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
 
 public class BuildingInfo : MonoBehaviour
 {
     private Tooltip tool;
     public GameObject targetBuilding;
+    public string buildingName;
 
     public Sprite defenceSprite;
     public Sprite foodSprite;
@@ -23,8 +21,6 @@ public class BuildingInfo : MonoBehaviour
 
     private GameObject foodComponent;
     private TMP_Text foodValueText;
-
-    public string buildingName;
 
     void Start()
     {
@@ -54,8 +50,7 @@ public class BuildingInfo : MonoBehaviour
 
     }
 
-
-    private void SetInfo()
+    public void SetInfo()
     {
         switch (buildingName)
         {
@@ -64,8 +59,10 @@ public class BuildingInfo : MonoBehaviour
                 ArcherTower archer = targetBuilding.GetComponent<ArcherTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Attack Power";
+                //statValueText.text = archer.damage;
+                statInfoText.text = "Single target";
 
-                tool.height = 256.0f;
+                tool.height = 252.0f;
                 break;
 
             case "Catapult Tower":
@@ -73,8 +70,10 @@ public class BuildingInfo : MonoBehaviour
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Attack Power";
+                //statValueText.text = catapult.damage;
+                statInfoText.text = "AOE Damage";
 
-                tool.height = 256.0f;
+                tool.height = 252.0f;
                 break;
 
             case "Farm":
@@ -82,8 +81,10 @@ public class BuildingInfo : MonoBehaviour
                 Farm farm = targetBuilding.GetComponent<Farm>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Production Rate";
+                //statValueText.text = farm.productionAmount;
+                statInfoText.text = "Every " + farm.productionTime.ToString("0") + "s";
 
-                tool.height = 158.0f;
+                tool.height = 162.0f;
                 break;
 
             case "Granary":
@@ -93,7 +94,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = granary.storage.ToString();
 
-                tool.height = 158.0f;
+                tool.height = 162.0f;
                 break;
 
             case "Lumber Mill":
@@ -101,8 +102,11 @@ public class BuildingInfo : MonoBehaviour
                 LumberMill mill = targetBuilding.GetComponent<LumberMill>();
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Production Rate";
+                //statValueText.text = mill.productionAmount;
+                statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
+                //foodValueText.text = mill.foodAllocation;
 
-                tool.height = 256.0f;
+                tool.height = 252.0f;
                 break;
 
             case "Lumber Pile":
@@ -112,7 +116,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = pile.storage.ToString();
 
-                tool.height = 158.0f;
+                tool.height = 162.0f;
                 break;
 
             case "Mine":
@@ -120,9 +124,11 @@ public class BuildingInfo : MonoBehaviour
                 Mine mine = targetBuilding.GetComponent<Mine>();
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Production Rate";
-                mine.IncreaseFoodAllocation();
+                //statValueText.text = mine.productionAmount;
+                statInfoText.text = "Every " + mine.productionTime.ToString("0") + "s";
+                //foodValueText.text = mine.foodAllocation;
 
-                tool.height = 256.0f;
+                tool.height = 252.0f;
                 break;
 
             case "Metal Storage":
@@ -132,8 +138,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = metStore.storage.ToString();
 
-                
-                tool.height = 158.0f;
+                tool.height = 162.0f;
                 break;
 
             default:
@@ -154,7 +159,6 @@ public class BuildingInfo : MonoBehaviour
 
     public void AllocateFood(int amount)
     {
-
         switch (buildingName)
         {
             case "Archer Tower":
@@ -165,12 +169,6 @@ public class BuildingInfo : MonoBehaviour
             case "Catapult Tower":
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
 
-                break;
-
-            case "Farm":
-                Farm farm = targetBuilding.GetComponent<Farm>();
-                if (amount > 0) { farm.IncreaseFoodAllocation(); }
-                else { farm.DecreaseFoodAllocation(); }
                 break;
 
             case "Lumber Mill":
@@ -189,6 +187,8 @@ public class BuildingInfo : MonoBehaviour
 
                 break;
         }
+
+        SetInfo();
     }
     
 }

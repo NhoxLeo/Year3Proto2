@@ -173,7 +173,7 @@ public class BuildPanel : MonoBehaviour
             {
                 buildIndicator.SetActive(true);
                 buildIndicator.transform.DOKill(true);
-                buildIndicator.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0.0f), 0.15f, 1, 0.5f);
+                buildIndicator.transform.DOPunchScale(new Vector3(0.25f, 0.25f, 0.0f), 0.15f, 1, 0.5f);
                 Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
                 Vector2 indiPos = buildIndicator.transform.localPosition;
                 indiPos.x = targetPos.x;
