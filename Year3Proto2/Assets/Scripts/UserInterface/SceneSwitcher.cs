@@ -22,7 +22,6 @@ public class SceneSwitcher : MonoBehaviour
         curScene = SceneManager.GetActiveScene().name;
         GlobalData.curScene = curScene;
         Debug.Log("Current scene: " + curScene);
-
     }
 
     void Start()
@@ -88,7 +87,7 @@ public class SceneSwitcher : MonoBehaviour
     }
 
 
-    public void StartFade()
+    private void StartFade()
     {
         if (!isSwitching && !isFading)
         {
@@ -108,7 +107,7 @@ public class SceneSwitcher : MonoBehaviour
         }
     }
 
-    public void ExitFade()
+    private void ExitFade()
     {
         isFading = true;
         isSwitching = false;

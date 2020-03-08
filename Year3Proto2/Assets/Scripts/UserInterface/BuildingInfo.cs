@@ -4,7 +4,11 @@ using TMPro;
 
 public class BuildingInfo : MonoBehaviour
 {
+    public bool showPanel;
+    private RectTransform rTrans;
     private Tooltip tool;
+    private BuildPanel buildPanel;
+
     public GameObject targetBuilding;
     public string buildingName;
 
@@ -13,18 +17,20 @@ public class BuildingInfo : MonoBehaviour
     public Sprite woodSprite;
     public Sprite metalSprite;
 
-    private TMP_Text headingText;
-    private TMP_Text statHeadingText;
-    private TMP_Text statValueText;
-    private TMP_Text statInfoText;
+    private TMP_Text headingText;               // Text showing name of building
+    private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
+    private TMP_Text statValueText;             // Text showing value of stat
+    private TMP_Text statInfoText;              // Additional info shown next to stat value
     private Image statIcon;
 
     private GameObject foodComponent;
-    private TMP_Text foodValueText;
+    private TMP_Text foodValueText;             // Text showing current food allocation
 
     void Start()
     {
+        rTrans = GetComponent<RectTransform>();
         tool = GetComponent<Tooltip>();
+        buildPanel = FindObjectOfType<BuildPanel>();
 
         headingText = transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
         statHeadingText = transform.Find("PanelMask/Stat/StatHeading").GetComponent<TMP_Text>();
@@ -39,19 +45,25 @@ public class BuildingInfo : MonoBehaviour
     }
 
 
-    void Update()
+    void LateUpdate()
     {
+        tool.showTooltip = showPanel;
+
         headingText.text = buildingName;
+
+        SetPosition();
 
         if (Input.GetKeyDown(KeyCode.K))
         {
             SetInfo();
         }
-
     }
 
     public void SetInfo()
     {
+        if (targetBuilding == null)
+            return;
+
         switch (buildingName)
         {
             case "Archer Tower":
@@ -149,6 +161,50 @@ public class BuildingInfo : MonoBehaviour
         tool.SetHeight();
     }
 
+    private void SetPosition()
+    {
+        if (targetBuilding == null)
+            return;
+
+        // Position info panel near target building
+        Vector3 pos = Camera.main.WorldToScreenPoint(targetBuilding.transform.position);
+        transform.position = pos;
+
+        // Adjust position of info panel if near edge of bounds
+        float xPivot = -0.25f;
+        float yPivot = 0.5f;
+
+        if (transform.localPosition.y < -220f)
+        {
+            xPivot = 0.5f;
+            yPivot = -0.3f;
+        }
+        else if (transform.localPosition.x > 576.0f)
+        {
+            xPivot = 1.25f;
+        }
+
+        float dt = Time.unscaledDeltaTime;
+        Vector2 pivot = new Vector2(Mathf.Lerp(rTrans.pivot.x, xPivot, dt * 10.0f), Mathf.Lerp(rTrans.pivot.y, yPivot, dt * 10.0f));
+        rTrans.pivot = pivot;
+
+        // Close info panel if out of bounds or covering build panel
+        if (transform.localPosition.x < -1000.0f || transform.localPosition.x > 1024.0f)
+        {
+            showPanel = false;
+        }
+
+        if (buildPanel.showPanel && transform.localPosition.y < -420.0f)
+        {
+            showPanel = false;
+        }
+        else if (transform.localPosition.y < -520.0f)
+        {
+            showPanel = false;
+        }
+
+    }
+
     public void SetTargetBuilding(GameObject building, string name)
     {
         targetBuilding = building;
@@ -159,6 +215,9 @@ public class BuildingInfo : MonoBehaviour
 
     public void AllocateFood(int amount)
     {
+        if (targetBuilding == null)
+            return;
+
         switch (buildingName)
         {
             case "Archer Tower":
