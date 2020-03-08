@@ -14,12 +14,12 @@ public abstract class Enemy: MonoBehaviour
     private Structure target = null;
     private EnemyState enemyState = EnemyState.IDLE;
 
-    private float yPosition;
-
     public float health = 10.0f;
 
+    protected float yPosition;
     protected float speed = 0.6f;
     protected float jumpHeight = 0.1f;
+    protected bool action = false;
 
     protected List<StructureType> structureTypes;
 
@@ -30,7 +30,18 @@ public abstract class Enemy: MonoBehaviour
         switch (enemyState)
         {
             case EnemyState.ACTION:
-                Action(target);
+                if (target == null)
+                {
+                    action = false;
+                    enemyState = EnemyState.WALK;
+
+                    transform.DOKill(false);
+                    transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
+                }
+                else
+                {
+                    Action(target);
+                }
                 break;
             case EnemyState.WALK:
                 if (target.attachedTile == null) Next();

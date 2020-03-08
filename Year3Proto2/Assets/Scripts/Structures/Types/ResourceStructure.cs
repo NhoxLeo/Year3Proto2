@@ -7,11 +7,12 @@ public abstract class ResourceStructure : Structure
     protected ResourceType resourceType;
     protected int foodAllocation;
     protected int foodAllocationMin = 1;
-    protected int foodAllocationMax = 5;
+    static protected int foodAllocationMax = 5;
     protected int tileBonus = 0;
     public float productionTime = 3f;
     protected float remainingTime = 3f;
     protected int batchSize = 2;
+
 
     protected void ResourceStart()
     {
@@ -22,6 +23,7 @@ public abstract class ResourceStructure : Structure
 
     protected void ResourceUpdate()
     {
+        StructureUpdate();
         remainingTime -= Time.deltaTime;
 
         if (remainingTime <= 0f)
@@ -52,5 +54,29 @@ public abstract class ResourceStructure : Structure
         foodAllocation--;
         if (foodAllocation < foodAllocationMin) { foodAllocation = foodAllocationMin; }
         Debug.Log(debug + foodAllocation);
+    }
+    public void SetFoodAllocationMax()
+    {
+        foodAllocation = foodAllocationMax;
+    }
+
+    public void SetFoodAllocationMin()
+    {
+        foodAllocation = foodAllocationMin;
+    }
+
+    public int GetFoodAllocation()
+    {
+        return foodAllocation;
+    }
+
+    public int GetProductionVolume()
+    {
+        return tileBonus * batchSize * foodAllocation;
+    }
+
+    public static int GetFoodAllocationMax()
+    {
+        return foodAllocationMax;
     }
 }
