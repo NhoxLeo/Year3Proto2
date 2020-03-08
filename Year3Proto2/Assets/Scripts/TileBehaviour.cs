@@ -14,7 +14,7 @@ public class TileBehaviour : MonoBehaviour
 
     public Dictionary<TileCode, TileBehaviour> adjacentTiles;
 
-    private GameObject attachedStructure;
+    public GameObject attachedStructure;
 
     // Start is called before the first frame update
     void Start()

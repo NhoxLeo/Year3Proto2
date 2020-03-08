@@ -22,6 +22,7 @@ public abstract class ResourceStructure : Structure
 
     protected void ResourceUpdate()
     {
+        StructureUpdate();
         remainingTime -= Time.deltaTime;
 
         if (remainingTime <= 0f)
