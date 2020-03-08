@@ -206,3 +206,7 @@ MonoBehaviour:
   moveSouth: 115
   moveWest: 97
   sensitivity: 3
+  xAxisMax: 0
+  xAxisMin: -9
+  zAxisMax: 0
+  zAxisMin: -9

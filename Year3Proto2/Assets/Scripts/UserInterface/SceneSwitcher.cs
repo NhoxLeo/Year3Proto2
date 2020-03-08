@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using DG.Tweening;
-using TMPro;
 
 public class SceneSwitcher : MonoBehaviour
 {
@@ -12,7 +8,7 @@ public class SceneSwitcher : MonoBehaviour
     public GameObject fadePanel;
     public float fadeTime = 0.5f;
     private float fadeInDelay = 0.25f;
-    private Image fadeImage;
+    private CanvasGroup canvas;
     private string targetScene;
     private string curScene;
     private bool isFading;
@@ -41,7 +37,7 @@ public class SceneSwitcher : MonoBehaviour
             fadePanel = GameObject.Find("FadePanel(Clone)");
         }
         fadePanel.SetActive(true);
-        fadeImage = fadePanel.GetComponent<Image>();
+        canvas = fadePanel.GetComponent<CanvasGroup>();
 
         Invoke("ExitFade", fadeInDelay);
     }
@@ -96,8 +92,7 @@ public class SceneSwitcher : MonoBehaviour
     {
         if (!isSwitching && !isFading)
         {
-            Vector4 initialColor = fadeImage.color;
-            fadeImage.DOFade(1, fadeTime / 1.0f).SetEase(Ease.InOutSine);
+            canvas.DOFade(1.0f, fadeTime).SetEase(Ease.InOutSine);
 
             isSwitching = true;
             fadeTimeCur = fadeTime;
@@ -118,8 +113,7 @@ public class SceneSwitcher : MonoBehaviour
         isFading = true;
         isSwitching = false;
         fadeTimeCur = fadeTime;
-        Vector4 initialColor = fadeImage.color;
-        fadeImage.DOFade(0, fadeTime).SetEase(Ease.InOutSine);
+        canvas.DOFade(0.0f, fadeTime).SetEase(Ease.InOutSine);
     }
 
     public void QuitGame()
