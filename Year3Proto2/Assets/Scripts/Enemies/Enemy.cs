@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public enum EnemyState
 {
@@ -8,30 +9,47 @@ public enum EnemyState
     ACTION
 }
 
-public abstract class Enemy<T>: MonoBehaviour
+public abstract class Enemy: MonoBehaviour
 {
-    private Transform target = null;
+    private Structure target = null;
     private EnemyState enemyState = EnemyState.IDLE;
 
-    private float yPosition;
-    private float speed = 0.25f;
+    public float health = 10.0f;
 
-    public abstract void Action(T t);
+    protected float yPosition;
+    protected float speed = 0.6f;
+    protected float jumpHeight = 0.1f;
+    protected bool action = false;
+
+    protected List<StructureType> structureTypes;
+
+    public abstract void Action(Structure structure);
 
     private void Update()
     {
         switch (enemyState)
         {
             case EnemyState.ACTION:
-                Action(target.GetComponent<T>());
+                if (target == null)
+                {
+                    action = false;
+                    enemyState = EnemyState.WALK;
+
+                    transform.DOKill(false);
+                    transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
+                }
+                else
+                {
+                    Action(target);
+                }
                 break;
             case EnemyState.WALK:
-                if (target.GetComponent<Structure>().attachedTile == null) Next();
+                if (target.attachedTile == null) Next();
                 transform.position += transform.forward * speed * Time.deltaTime;
                 break;
             case EnemyState.IDLE:
                 yPosition = transform.position.y;
-                transform.DOMoveY(yPosition + (speed / 2.0f), 0.25f).SetLoops(-1, LoopType.Yoyo);
+                transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
 
                 Next();
 
@@ -49,21 +67,22 @@ public abstract class Enemy<T>: MonoBehaviour
         float closestDistanceSqr = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
 
-        foreach (GameObject @object in FindObjectsOfType<GameObject>())
+        foreach (Structure structure in FindObjectsOfType<Structure>())
         {
-            if (@object.GetComponent<T>() != null)
+            if (structureTypes.Contains(structure.GetStructureType()))
             {
-                if (@object.GetComponent<Structure>().attachedTile != null)
+                if (structure.attachedTile != null)
                 {
-                    Vector3 directionToTarget = @object.transform.position - currentPosition;
+                    Vector3 directionToTarget = structure.transform.position - currentPosition;
                     float dSqrToTarget = directionToTarget.sqrMagnitude;
                     if (dSqrToTarget < closestDistanceSqr)
                     {
                         closestDistanceSqr = dSqrToTarget;
-                        transform.LookAt(@object.transform);
+                        transform.LookAt(structure.transform);
+
                         enemyState = EnemyState.WALK;
 
-                        target = @object.transform;
+                        target = structure;
                     }
                 }
             }
@@ -72,12 +91,22 @@ public abstract class Enemy<T>: MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform == target && target != null)
+        if (other.gameObject == target.gameObject && target != null)
         {
+            Debug.Log(target.name);
             enemyState = EnemyState.ACTION; 
 
             transform.DOKill(false);
             transform.DOMoveY(yPosition, 0.25f);
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if(target != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, target.transform.position);
         }
     }
 }

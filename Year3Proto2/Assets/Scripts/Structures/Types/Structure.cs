@@ -11,10 +11,13 @@ public enum StructureType
 
 public abstract class Structure : MonoBehaviour
 {
+    public string structureName;
     public Sprite icon;
     public float sitHeight;
     public string displayName;
     public GameObject attachedTile;
+
+    protected float health = 100.0f;
 
     protected StructureType structureType;
 
@@ -26,14 +29,38 @@ public abstract class Structure : MonoBehaviour
         }
     }
 
+    protected void StructureUpdate()
+    {
+        if(health <= 0.0f)
+        {
+            attachedTile.GetComponent<TileBehaviour>().Detach(true);
+            Destroy(gameObject);
+        }
+    }
+
     public StructureType GetStructureType()
     {
         return structureType;
     }
 
-    public virtual bool IsStructure(string _structureName)
+    public bool IsStructure(string _structureName)
     {
-        return false;
+        return _structureName == structureName;
+    }
+
+    public string GetStructureName()
+    {
+        return structureName;
+    }
+
+    public void Damage(float amount)
+    {
+        health -= amount;
+    }
+
+    public float GetHealth()
+    {
+        return health;
     }
 }
 

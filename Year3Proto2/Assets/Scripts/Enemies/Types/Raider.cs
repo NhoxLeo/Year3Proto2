@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Raider : Enemy<ResourceStructure>
+public class Raider : Enemy
 {
-    public override void Action(ResourceStructure resourceStructure)
+    public override void Action(Structure structure)
     {
-        //Steal resources from the resource structure...
+        throw new System.NotImplementedException();
     }
 }
