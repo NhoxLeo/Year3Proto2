@@ -10,8 +10,8 @@ public class Tooltip : MonoBehaviour
 
     private CanvasGroup canvas;
     private RectTransform rTransform;
-    private float width;
-    private float height;
+    public float width;
+    public float height;
 
     private Sequence pulseSeq;
 
@@ -24,7 +24,8 @@ public class Tooltip : MonoBehaviour
 
         canvas = GetComponent<CanvasGroup>();
         canvas.alpha = 0.0f;
-
+        canvas.interactable = false;
+        canvas.blocksRaycasts = false;
     }
 
 
@@ -51,6 +52,9 @@ public class Tooltip : MonoBehaviour
         rTransform.DOSizeDelta(new Vector2(width, height), 0.25f).SetEase(Ease.OutQuint);
         canvas.DOKill(true);
         canvas.DOFade(1.0f, 0.15f);
+
+        canvas.interactable = true;
+        canvas.blocksRaycasts = true;
     }
 
     private void HideTip()
@@ -58,6 +62,9 @@ public class Tooltip : MonoBehaviour
         rTransform.DOSizeDelta(new Vector2(64.0f, height), 0.25f).SetEase(Ease.OutQuint);
         canvas.DOKill(true);
         canvas.DOFade(0.0f, 0.15f).SetEase(Ease.OutQuint);
+
+        canvas.interactable = false;
+        canvas.blocksRaycasts = false;
     }
 
     public void PulseTip()
