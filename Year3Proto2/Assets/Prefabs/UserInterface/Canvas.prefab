@@ -1495,12 +1495,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9981c0b68b5a7144dad08f40b6e07b5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodTotal: 12
-  foodDelta: 1
-  woodTotal: 12
-  woodDelta: 1
-  metalTotal: 5
-  metalDelta: 1
+  gainColour: {r: 0.55398625, g: 0.8867924, b: 0.12130654, a: 1}
+  lossColour: {r: 0.9528302, g: 0.25282767, b: 0.04045032, a: 1}
+  fullColour: {r: 0, g: 0.37446833, b: 1, a: 1}
 --- !u!1 &3092289189487640258
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ using UnityEngine;
 public enum StructManState
 {
     selecting,
+    selected,
     moving
 };
 
@@ -38,9 +39,11 @@ public struct StructureDefinition
 public class StructureManager : MonoBehaviour
 {
     private Structure structure;
+    private Structure selectedStructure;
     private TileBehaviour structureOldTile;
     private bool structureFromStore;
     public Transform tileHighlight;
+    public Transform selectedTileHighlight;
     private StructManState structureState = StructManState.selecting;
     public Dictionary<string, StructureDefinition> structureDict;
     private GameManager gameMan;
@@ -50,9 +53,13 @@ public class StructureManager : MonoBehaviour
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            //     NAME                                                 NAME                                         wC  mC  fC
-            { "Lumber Mill", new StructureDefinition(Resources.Load("Lumber Mill") as GameObject, new ResourceBundle(100, 0, 0)) },
-            { "Lumber Pile", new StructureDefinition(Resources.Load("Lumber Pile") as GameObject, new ResourceBundle(100, 0, 0)) }
+            // NAME                                                     NAME                                               wC  mC  fC
+            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(100, 0, 0)) },
+            { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(100, 0, 0)) },
+            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(0, 100, 0)) },
+            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(0, 100, 0)) },
+            { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(0, 0, 100)) },
+            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(0, 0, 100)) }
         };
         gameMan = FindObjectOfType<GameManager>();
     }
@@ -93,6 +100,22 @@ public class StructureManager : MonoBehaviour
                                         canPlaceHere = true;
                                     }
                                 }
+                                if (attached.GetComponent<Structure>().IsStructure("Hill Environment"))
+                                {
+                                    if (structure.IsStructure("Mine"))
+                                    {
+                                        // Special condition: Lumber Mills can be placed on Hill Environment
+                                        canPlaceHere = true;
+                                    }
+                                }
+                                if (attached.GetComponent<Structure>().IsStructure("Plains Environment"))
+                                {
+                                    if (structure.IsStructure("Farm"))
+                                    {
+                                        // Special condition: Lumber Mills can be placed on Forest Environment
+                                        canPlaceHere = true;
+                                    }
+                                }
                             }
                             else // if the tile we hit does not have an attached object...
                             {
@@ -110,8 +133,10 @@ public class StructureManager : MonoBehaviour
                                 Vector3 highlightPos = structPos;
                                 highlightPos.y = 0.501f;
                                 tileHighlight.position = highlightPos;
+                                selectedTileHighlight.position = highlightPos;
 
                                 if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
+                                if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
 
                                 // If the user clicked the LMB...
                                 if (Input.GetMouseButtonDown(0))
@@ -138,6 +163,34 @@ public class StructureManager : MonoBehaviour
                                                 }
                                             }
                                         }
+                                        else if (structure.IsStructure("Mine"))
+                                        {
+                                            if (attached)
+                                            {
+                                                if (attached.GetComponent<Structure>().IsStructure("Hill Environment"))
+                                                {
+                                                    // The structure is being placed on a forest
+                                                    Destroy(attached);
+                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
+                                                    structure.GetComponent<Mine>().wasPlacedOnHills = true;
+                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("HillMaterial") as Material;
+                                                }
+                                            }
+                                        }
+                                        else if (structure.IsStructure("Farm"))
+                                        {
+                                            if (attached)
+                                            {
+                                                if (attached.GetComponent<Structure>().IsStructure("Plains Environment"))
+                                                {
+                                                    // The structure is being placed on a forest
+                                                    Destroy(attached);
+                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
+                                                    structure.GetComponent<Farm>().wasPlacedOnPlains = true;
+                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("PlainsMaterial") as Material;
+                                                }
+                                            }
+                                        }
                                         else if (structure.GetStructureType() == StructureType.storage)
                                         {
                                             gameMan.CalculateStorageMaximum();
@@ -148,7 +201,7 @@ public class StructureManager : MonoBehaviour
                                             FindObjectOfType<BuildPanel>().UINoneSelected();
                                             FindObjectOfType<BuildPanel>().ResetBuildingSelected();
                                         }
-                                        structureState = StructManState.selecting;
+                                        structureState = StructManState.selected;
                                     }
                                 }
                             }
@@ -161,6 +214,84 @@ public class StructureManager : MonoBehaviour
                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
                 }
             }
+            else if (structureState == StructManState.selected)
+            {
+                // If the player clicks the LMB...
+                if (Input.GetMouseButtonDown(0))
+                {
+                    // If the player has clicked on a structure...
+                    if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
+                    {
+                        Structure hitStructure = hit.transform.GetComponent<Structure>();
+                        // If the hit transform has a structure component... (SHOULD ALWAYS)
+                        if (hitStructure)
+                        {
+                            if (hitStructure == selectedStructure)
+                            {
+                                // If the structure is NOT an environment structure, and not the longhaus
+                                if (hitStructure.GetStructureType() != StructureType.environment
+                                    && hitStructure.GetStructureName() != "Longhaus")
+                                {
+                                    structureFromStore = false;
+                                    structure = hitStructure;
+                                    structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
+                                    // Detach the structure from it's tile, and vica versa.
+                                    structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                    // Put the manager back into moving mode.
+                                    structureState = StructManState.moving;
+                                }
+                            }
+                            else
+                            {
+                                selectedStructure = hitStructure;
+                                if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+                                Vector3 highlightpos = selectedTileHighlight.position;
+                                highlightpos.x = selectedStructure.attachedTile.transform.position.x;
+                                highlightpos.y = 0.501f;
+                                highlightpos.z = selectedStructure.attachedTile.transform.position.z;
+                                selectedTileHighlight.position = highlightpos;
+                            }
+                        }
+                        else // The hit transform hasn't got a structure component
+                        {
+                            Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
+                        }
+                    }
+                    else
+                    {
+                        if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+                        structureState = StructManState.selecting;
+                    }
+                }
+
+                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                {
+                    Vector3 highlightpos = tileHighlight.position;
+                    highlightpos.x = hit.transform.position.x;
+                    highlightpos.y = 0.501f;
+                    highlightpos.z = hit.transform.position.z;
+
+                    tileHighlight.position = highlightpos;
+                }
+
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    // increases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().IncreaseFoodAllocation();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    // decreases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().DecreaseFoodAllocation();
+                    }
+                }
+            }
             else if (structureState == StructManState.selecting)
             {
                 // If the player clicks the LMB...
@@ -169,21 +300,21 @@ public class StructureManager : MonoBehaviour
                     // If the player has clicked on a structure...
                     if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
                     {
+                        Structure hitStructure = hit.transform.GetComponent<Structure>();
                         // If the hit transform has a structure component... (SHOULD ALWAYS)
-                        if (hit.transform.GetComponent<Structure>())
+                        if (hitStructure)
                         {
-                            // If the structure is NOT an environment structure, and not the longhaus
-                            if (hit.transform.GetComponent<Structure>().GetStructureType() != StructureType.environment
-                                && hit.transform.GetComponent<Structure>().GetStructureName() != "Longhaus")
-                            {
-                                structureFromStore = false;
-                                structure = hit.transform.GetComponent<Structure>();
-                                structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
-                                // Detach the structure from it's tile, and vica versa.
-                                structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
-                                // Put the manager back into moving mode.
-                                structureState = StructManState.moving;
-                            }
+                            selectedStructure = hitStructure;
+
+                            if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+                            Vector3 highlightpos = selectedTileHighlight.position;
+                            highlightpos.x = selectedStructure.attachedTile.transform.position.x;
+                            highlightpos.y = 0.501f;
+                            highlightpos.z = selectedStructure.attachedTile.transform.position.z;
+                            selectedTileHighlight.position = highlightpos;
+
+                            structureState = StructManState.selected;
                         }
                         else // The hit transform hasn't got a structure component
                         {
@@ -272,7 +403,7 @@ public class StructureManager : MonoBehaviour
                     structureOldTile.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
                     structureOldTile = null;
                 }
-                structureState = StructManState.selecting;
+                structureState = StructManState.selected;
             }
             else
             {
@@ -290,26 +421,26 @@ public class StructureManager : MonoBehaviour
         switch (_buildingID)
         {
             case BuildPanel.Buildings.None:
-                Debug.LogError("0 is not a building.");
+                Debug.LogError("IDToStructureName called None");
                 return "ERROR";
             case BuildPanel.Buildings.Archer:
                 return "ERROR";
             case BuildPanel.Buildings.Catapult:
                 return "ERROR";
             case BuildPanel.Buildings.Farm:
-                return "ERROR";
-            case BuildPanel.Buildings.Silo:
-                return "ERROR";
+                return "Farm";
+            case BuildPanel.Buildings.Granary:
+                return "Granary";
             case BuildPanel.Buildings.LumberMill:
                 return "Lumber Mill";
             case BuildPanel.Buildings.LumberPile:
                 return "Lumber Pile";
             case BuildPanel.Buildings.Mine:
-                return "ERROR";
+                return "Mine";
             case BuildPanel.Buildings.MetalStorage:
-                return "ERROR";
+                return "Metal Storage";
             default:
-                Debug.LogError("default is not a building.");
+                Debug.LogError("IDToStructureName called default");
                 return "ERROR";
         }
     }
