@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7034308899583468506
+--- !u!1 &53662582760956294
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,11 +8,11 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5078937573345330373}
-  - component: {fileID: 5854403674607872145}
-  - component: {fileID: 7093899850506386675}
-  - component: {fileID: 2026567767310915927}
-  - component: {fileID: 6743089589687070116}
+  - component: {fileID: 8430537201359463650}
+  - component: {fileID: 385804532918573137}
+  - component: {fileID: 5572838029965962192}
+  - component: {fileID: 4233399490860001852}
+  - component: {fileID: 4687414033504787728}
   m_Layer: 9
   m_Name: Longhaus
   m_TagString: Untagged
@@ -20,35 +20,44 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5078937573345330373
+--- !u!4 &8430537201359463650
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7034308899583468506}
+  m_GameObject: {fileID: 53662582760956294}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.7, z: 0.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5854403674607872145
-MeshFilter:
+--- !u!114 &385804532918573137
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7034308899583468506}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &7093899850506386675
+  m_GameObject: {fileID: 53662582760956294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eae01c40e61b8ee419547c8ec913d5bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  structureName: 
+  icon: {fileID: 0}
+  sitHeight: 0.5
+  displayName: 
+  attachedTile: {fileID: 0}
+--- !u!23 &5572838029965962192
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7034308899583468506}
+  m_GameObject: {fileID: 53662582760956294}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -60,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7ff95dbcb43e5944181eb9760d142079, type: 2}
+  - {fileID: 8074988016216164882, guid: e3b4b05da4c9fd24f9016f6c1b0c6dfe, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,33 +90,25 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &2026567767310915927
-BoxCollider:
+--- !u!33 &4233399490860001852
+MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7034308899583468506}
+  m_GameObject: {fileID: 53662582760956294}
+  m_Mesh: {fileID: 4577368211018818353, guid: e3b4b05da4c9fd24f9016f6c1b0c6dfe, type: 3}
+--- !u!64 &4687414033504787728
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53662582760956294}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6743089589687070116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7034308899583468506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eae01c40e61b8ee419547c8ec913d5bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  structureName: 
-  icon: {fileID: 0}
-  sitHeight: 0.85
-  displayName: 
-  attachedTile: {fileID: 0}
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4577368211018818353, guid: e3b4b05da4c9fd24f9016f6c1b0c6dfe, type: 3}

@@ -21,6 +21,18 @@ public class CameraController : MonoBehaviour
     [SerializeField] [Tooltip("Rate of movement for the camera")]
     private float sensitivity;
 
+    [SerializeField] [Tooltip("xAxis maximum")]
+    private float xAxisMax;
+
+    [SerializeField] [Tooltip("xAxis minimum")]
+    private float xAxisMin;
+
+    [SerializeField] [Tooltip("zAxis maximum")]
+    private float zAxisMax;
+
+    [SerializeField] [Tooltip("zAxis minimum")]
+    private float zAxisMin;
+
     private Vector3 north;
     private Vector3 east;
     private Vector3 south;
@@ -70,6 +82,11 @@ public class CameraController : MonoBehaviour
         {
             cameraZoomMidPoint += west * Time.deltaTime * sensitivity;
         }
+
+        if (cameraZoomMidPoint.x > xAxisMax) { cameraZoomMidPoint.x = xAxisMax; }
+        if (cameraZoomMidPoint.x < xAxisMin) { cameraZoomMidPoint.x = xAxisMin; }
+        if (cameraZoomMidPoint.z > zAxisMax) { cameraZoomMidPoint.z = zAxisMax; }
+        if (cameraZoomMidPoint.z < zAxisMin) { cameraZoomMidPoint.z = zAxisMin; }
 
         transform.position = cameraZoomMidPoint + transform.forward * scrollOffset * .5f;
     }

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3803442735499707365
+--- !u!1 &3859869729079456503
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,11 +8,11 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3803442735499707385}
-  - component: {fileID: 3803442735499707384}
-  - component: {fileID: 3803442735499707387}
-  - component: {fileID: 3803442735499707386}
-  - component: {fileID: 201534408481598612}
+  - component: {fileID: 4905507190924755431}
+  - component: {fileID: 830304707501132278}
+  - component: {fileID: 8605508258123150373}
+  - component: {fileID: 1554772620198688529}
+  - component: {fileID: 9197065362836635141}
   m_Layer: 9
   m_Name: Mine
   m_TagString: Untagged
@@ -20,35 +20,54 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3803442735499707385
+--- !u!4 &4905507190924755431
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3803442735499707365}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 0.6, y: 1, z: 0.6}
+  m_GameObject: {fileID: 3859869729079456503}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3803442735499707384
+--- !u!114 &830304707501132278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3859869729079456503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c152aedb453f2c4480724bd8d845a58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  structureName: 
+  icon: {fileID: 0}
+  sitHeight: 0.5
+  displayName: 
+  attachedTile: {fileID: 0}
+  productionTime: 3
+  wasPlacedOnHills: 0
+--- !u!33 &8605508258123150373
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3803442735499707365}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &3803442735499707387
+  m_GameObject: {fileID: 3859869729079456503}
+  m_Mesh: {fileID: 5753519771242574417, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
+--- !u!23 &1554772620198688529
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3803442735499707365}
+  m_GameObject: {fileID: 3859869729079456503}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -60,7 +79,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+  - {fileID: -5332975026261694481, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,35 +100,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &3803442735499707386
-BoxCollider:
+--- !u!64 &9197065362836635141
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3803442735499707365}
+  m_GameObject: {fileID: 3859869729079456503}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &201534408481598612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3803442735499707365}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c152aedb453f2c4480724bd8d845a58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  structureName: 
-  icon: {fileID: 0}
-  sitHeight: 1
-  displayName: 
-  attachedTile: {fileID: 0}
-  wasPlacedOnHills: 0
-  productionTime: 3
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5753519771242574417, guid: 4cf26f2ac22901e4ea4319323ce0dabe, type: 3}

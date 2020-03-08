@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Farm : ResourceStructure
+public class LumberMill : ResourceStructure
 {
-    public bool wasPlacedOnPlains = false;
+    public bool wasPlacedOnForest = false;
 
     // Start is called before the first frame update
     void Start()
     {
         ResourceStart();
-        wasPlacedOnPlains = false;
-        resourceType = ResourceType.food;
-        structureName = "Farm";
+        wasPlacedOnForest = false;
+        resourceType = ResourceType.wood;
+        structureName = "Lumber Mill";
     }
 
     // Update is called once per frame
@@ -20,11 +20,10 @@ public class Farm : ResourceStructure
     {
         ResourceUpdate();
     }
-
     public void CalculateTileBonus()
     {
         tileBonus = 1;
-        if (wasPlacedOnPlains)
+        if (wasPlacedOnForest)
         {
             tileBonus++;
         }
@@ -43,12 +42,14 @@ public class Farm : ResourceStructure
                     // If there is a structure on the tile...
                     if (adjStructure)
                     {
-                        if (adjStructure.GetComponent<Structure>().IsStructure("Plains Environment"))
+                        if (adjStructure.GetComponent<Structure>().IsStructure("Forest Environment"))
                         { tileBonus++; }
                     }
                 }
             }
         }
-        Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
+        //Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
     }
+
+
 }
