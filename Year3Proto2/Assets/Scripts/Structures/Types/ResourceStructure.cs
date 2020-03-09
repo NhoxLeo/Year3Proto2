@@ -121,13 +121,15 @@ public abstract class ResourceStructure : Structure
                         if (adjStructure.GetComponent<Structure>().IsStructure(adjStructType))
                         {
                             newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                            //newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.green);
                         }
                         else
                         {
                             newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                            //newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.red);
                         }
+                    }
+                    else
+                    {
+                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                     }
                     newTileHighlight.SetActive(false);
                 }
