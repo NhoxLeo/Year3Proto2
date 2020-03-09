@@ -38,6 +38,19 @@ public struct StructureDefinition
 
 public class StructureManager : MonoBehaviour
 {
+
+    public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
+    {
+        { BuildPanel.Buildings.Archer, "Archer Tower" },
+        { BuildPanel.Buildings.Catapult, "Catapult Tower" },
+        { BuildPanel.Buildings.Farm, "Farm" },
+        { BuildPanel.Buildings.Granary, "Granary" },
+        { BuildPanel.Buildings.LumberMill, "Lumber Mill" },
+        { BuildPanel.Buildings.LumberPile, "Lumber Pile" },
+        { BuildPanel.Buildings.Mine, "Mine" },
+        { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
+    };
+
     private Structure structure;
     private Structure selectedStructure;
     private TileBehaviour structureOldTile;
@@ -55,14 +68,14 @@ public class StructureManager : MonoBehaviour
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                     NAME                                               wC  mC  fC
-            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(100, 0, 0)) },
-            { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(100, 0, 0)) },
-            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(0, 100, 0)) },
-            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(0, 100, 0)) },
-            { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(0, 0, 100)) },
-            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(0, 0, 100)) },
-            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(100, 100, 0)) },
-            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(100, 100, 0)) }
+            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(80, 20, 0)) },
+            { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(200, 0, 0)) },
+            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(50, 80, 0)) },
+            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(130, 20, 0)) },
+            { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40, 10, 0)) },
+            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(150, 0, 0)) },
+            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150, 80, 0)) },
+            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(120, 200, 0)) }
         };
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
@@ -78,6 +91,7 @@ public class StructureManager : MonoBehaviour
             if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
             if (structureState == StructManState.moving)
             {
+                if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
                 if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
                 {
                     if (structure.transform != null)
@@ -95,30 +109,22 @@ public class StructureManager : MonoBehaviour
                                 structure.transform.position = hitPos;
 
                                 if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+                                if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
 
                                 if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
                                 {
-                                    if (structure.IsStructure("Lumber Mill"))
-                                    {
-                                        // Special condition: Lumber Mills can be placed on Forest Environment
-                                        canPlaceHere = true;
-                                    }
+                                    // Special condition: Lumber Mills can be placed on Forest Environment
+                                    if (structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
                                 }
                                 if (attached.GetComponent<Structure>().IsStructure("Hill Environment"))
                                 {
-                                    if (structure.IsStructure("Mine"))
-                                    {
-                                        // Special condition: Lumber Mills can be placed on Hill Environment
-                                        canPlaceHere = true;
-                                    }
+                                    // Special condition: Lumber Mills can be placed on Hill Environment
+                                    if (structure.IsStructure("Mine")) { canPlaceHere = true; }
                                 }
                                 if (attached.GetComponent<Structure>().IsStructure("Plains Environment"))
                                 {
-                                    if (structure.IsStructure("Farm"))
-                                    {
-                                        // Special condition: Lumber Mills can be placed on Forest Environment
-                                        canPlaceHere = true;
-                                    }
+                                    // Special condition: Lumber Mills can be placed on Forest Environment
+                                    if (structure.IsStructure("Farm")) { canPlaceHere = true; }
                                 }
                             }
                             else // if the tile we hit does not have an attached object...
@@ -148,11 +154,9 @@ public class StructureManager : MonoBehaviour
                                     if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                     {
                                         // Attach the structure to the tile and vica versa
-                                        if (attached)
-                                        {
-                                            attached.GetComponent<Structure>().attachedTile.Detach(true);
-                                        }
+                                        if (attached) { attached.GetComponent<Structure>().attachedTile.Detach(true); }
                                         hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                                        structure.OnPlace();
                                         if (structure.IsStructure("Lumber Mill"))
                                         {
                                             if (attached)
@@ -195,20 +199,14 @@ public class StructureManager : MonoBehaviour
                                                 }
                                             }
                                         }
-                                        else if (structure.GetStructureType() == StructureType.storage)
-                                        {
-                                            gameMan.CalculateStorageMaximum();
-                                        }
                                         gameMan.OnStructurePlace();
                                         if (structureFromStore)
                                         {
                                             FindObjectOfType<BuildPanel>().UINoneSelected();
                                             FindObjectOfType<BuildPanel>().ResetBuildingSelected();
                                         }
+                                        SelectStructure(structure);
                                         structureState = StructManState.selected;
-                                        selectedStructure = structure;
-                                        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
-                                        buildingInfo.showPanel = true;
                                     }
                                 }
                             }
@@ -219,12 +217,16 @@ public class StructureManager : MonoBehaviour
                 {
                     ResetBuilding();
                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
-                    Vector3 highlightPos = structure.transform.position;
-                    highlightPos.y = 0.501f;
-                    tileHighlight.position = highlightPos;
-                    selectedTileHighlight.position = highlightPos;
-                    buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
-                    buildingInfo.showPanel = true;
+                    if (structureFromStore)
+                    {
+                        DeselectStructure();
+                        structureState = StructManState.selecting;
+                    }
+                    else
+                    {
+                        SelectStructure(structure);
+                        structureState = StructManState.selected;
+                    }
                 }
             }
             else if (structureState == StructManState.selected)
@@ -242,8 +244,7 @@ public class StructureManager : MonoBehaviour
                             if (hitStructure == selectedStructure)
                             {
                                 // If the structure is NOT an environment structure, and not the longhaus
-                                if (hitStructure.GetStructureType() != StructureType.environment
-                                    && hitStructure.GetStructureName() != "Longhaus")
+                                if (hitStructure.GetStructureType() != StructureType.environment && hitStructure.GetStructureName() != "Longhaus")
                                 {
                                     structureFromStore = false;
                                     structure = hitStructure;
@@ -257,17 +258,7 @@ public class StructureManager : MonoBehaviour
                             }
                             else
                             {
-                                selectedStructure = hitStructure;
-                                if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
-
-                                Vector3 highlightpos = selectedTileHighlight.position;
-                                highlightpos.x = selectedStructure.attachedTile.transform.position.x;
-                                highlightpos.y = 0.501f;
-                                highlightpos.z = selectedStructure.attachedTile.transform.position.z;
-                                selectedTileHighlight.position = highlightpos;
-
-                                buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
-                                buildingInfo.showPanel = true;
+                                SelectStructure(hitStructure);
                             }
                         }
                         else // The hit transform hasn't got a structure component
@@ -277,11 +268,8 @@ public class StructureManager : MonoBehaviour
                     }
                     else
                     {
-                        if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
-                        selectedStructure = null;
+                        DeselectStructure();
                         structureState = StructManState.selecting;
-                        //buildingInfo.SetTargetBuilding(null, "null");
-                        buildingInfo.showPanel = false;
                     }
                 }
 
@@ -340,20 +328,8 @@ public class StructureManager : MonoBehaviour
                         // If the hit transform has a structure component... (SHOULD ALWAYS)
                         if (hitStructure)
                         {
-                            selectedStructure = hitStructure;
-
-                            if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
-
-                            Vector3 highlightpos = selectedTileHighlight.position;
-                            highlightpos.x = selectedStructure.attachedTile.transform.position.x;
-                            highlightpos.y = 0.501f;
-                            highlightpos.z = selectedStructure.attachedTile.transform.position.z;
-                            selectedTileHighlight.position = highlightpos;
-
+                            SelectStructure(hitStructure);
                             structureState = StructManState.selected;
-
-                            buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
-                            buildingInfo.showPanel = true;
                         }
                         else // The hit transform hasn't got a structure component
                         {
@@ -376,6 +352,7 @@ public class StructureManager : MonoBehaviour
         if (isOverUI)
         {
             if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+            if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
             HideBuilding();
         }
     }
@@ -398,6 +375,7 @@ public class StructureManager : MonoBehaviour
     {
         if (structureState != StructManState.moving)
         {
+            DeselectStructure();
             structureFromStore = true;
             GameObject LPinstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
             structure = LPinstance.GetComponent<Structure>();
@@ -421,7 +399,7 @@ public class StructureManager : MonoBehaviour
 
     public bool SetBuilding(BuildPanel.Buildings _buildingID)
     {
-        return SetBuilding(IDToStructureName(_buildingID));
+        return SetBuilding(StructureNames[_buildingID]);
     }
 
     public void ResetBuilding()
@@ -447,43 +425,36 @@ public class StructureManager : MonoBehaviour
                 }
                 structureState = StructManState.selected;
             }
-            else
-            {
-                //Debug.LogError("ResetBuilding() when structureState is selecting");
-            }
-        }
-        else
-        {
-            //Debug.LogError("ResetBuilding() when there is no structure");
         }
     }
 
-    public static string IDToStructureName(BuildPanel.Buildings _buildingID)
+    public void SelectStructure(Structure _structure)
     {
-        switch (_buildingID)
+        DeselectStructure();
+        selectedStructure = _structure;
+
+        selectedStructure.OnSelected();
+
+        if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+        Vector3 highlightpos = selectedTileHighlight.position;
+        highlightpos.x = selectedStructure.attachedTile.transform.position.x;
+        highlightpos.y = 0.501f;
+        highlightpos.z = selectedStructure.attachedTile.transform.position.z;
+        selectedTileHighlight.position = highlightpos;
+
+        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+        buildingInfo.showPanel = true;
+    }
+
+    public void DeselectStructure()
+    {
+        if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+        if (selectedStructure)
         {
-            case BuildPanel.Buildings.None:
-                Debug.LogError("IDToStructureName called None");
-                return "ERROR";
-            case BuildPanel.Buildings.Archer:
-                return "Archer Tower";
-            case BuildPanel.Buildings.Catapult:
-                return "Catapult Tower";
-            case BuildPanel.Buildings.Farm:
-                return "Farm";
-            case BuildPanel.Buildings.Granary:
-                return "Granary";
-            case BuildPanel.Buildings.LumberMill:
-                return "Lumber Mill";
-            case BuildPanel.Buildings.LumberPile:
-                return "Lumber Pile";
-            case BuildPanel.Buildings.Mine:
-                return "Mine";
-            case BuildPanel.Buildings.MetalStorage:
-                return "Metal Storage";
-            default:
-                Debug.LogError("IDToStructureName called default");
-                return "ERROR";
+            selectedStructure.OnDeselected();
+            selectedStructure = null;
         }
+        buildingInfo.showPanel = false;
     }
 }
