@@ -10,7 +10,8 @@ public class Invader : Enemy
     {
         structureTypes = new List<StructureType>(new[] { 
             StructureType.attack,
-            StructureType.resource
+            StructureType.resource,
+            StructureType.longhaus
         }); 
     }
 
