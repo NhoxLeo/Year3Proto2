@@ -18,6 +18,7 @@ public class CatapultTower : AttackStructure
     void Start()
     {
         AttackStart();
+        structureName = "Catapult Tower";
     }
 
     private void Update()

@@ -9,7 +9,7 @@ public enum EnemyState
     ACTION
 }
 
-public abstract class Enemy: MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
     private Structure target = null;
     private EnemyState enemyState = EnemyState.IDLE;

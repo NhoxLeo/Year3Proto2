@@ -60,9 +60,9 @@ public class StructureManager : MonoBehaviour
             { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(0, 100, 0)) },
             { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(0, 100, 0)) },
             { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(0, 0, 100)) },
-            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(0, 0, 100)) }//,
-            //{ "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(100, 100, 0)) },
-            //{ "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(100, 100, 0)) }
+            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(0, 0, 100)) },
+            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(100, 100, 0)) },
+            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(100, 100, 0)) }
         };
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
@@ -463,9 +463,9 @@ public class StructureManager : MonoBehaviour
                 Debug.LogError("IDToStructureName called None");
                 return "ERROR";
             case BuildPanel.Buildings.Archer:
-                return "ERROR";
+                return "Archer Tower";
             case BuildPanel.Buildings.Catapult:
-                return "ERROR";
+                return "Catapult Tower";
             case BuildPanel.Buildings.Farm:
                 return "Farm";
             case BuildPanel.Buildings.Granary:

@@ -12,6 +12,7 @@ public class ArcherTower : AttackStructure
     void Start()
     {
         AttackStart();
+        structureName = "Archer Tower";
     }
 
     private void Update()

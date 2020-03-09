@@ -49,19 +49,8 @@ public abstract class AttackStructure : Structure
 
     public abstract void Attack(GameObject target);
 
-    private void OnTriggerEnter(Collider other)
+    public List<GameObject> GetEnemies()
     {
-        if (!enemies.Contains(other.gameObject) && other.gameObject.GetComponent<Enemy>() != null)
-        {
-            enemies.Add(other.gameObject);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (enemies.Contains(other.gameObject) && other.gameObject.GetComponent<Enemy>() != null)
-        {
-            enemies.Remove(other.gameObject);
-        }
+        return enemies;
     }
 }
