@@ -9,17 +9,17 @@ public enum EnemyState
     ACTION
 }
 
-public abstract class Enemy: MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
     private Structure target = null;
     private EnemyState enemyState = EnemyState.IDLE;
 
-    private float yPosition;
-
     public float health = 10.0f;
 
+    protected float yPosition;
     protected float speed = 0.6f;
     protected float jumpHeight = 0.1f;
+    protected bool action = false;
 
     protected List<StructureType> structureTypes;
 
@@ -30,17 +30,35 @@ public abstract class Enemy: MonoBehaviour
         switch (enemyState)
         {
             case EnemyState.ACTION:
-                Action(target);
+                if (target == null)
+                {
+                    action = false;
+                    enemyState = EnemyState.WALK;
+
+                    transform.DOKill(false);
+                    transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
+                }
+                else
+                {
+                    Action(target);
+                }
                 break;
             case EnemyState.WALK:
-                if (target.attachedTile == null) Next();
-                transform.position += transform.forward * speed * Time.deltaTime;
+                if (target)
+                {
+                    if (target.attachedTile == null)
+                    {
+                        if (!Next()) { target = null; }
+                    }
+                    transform.position += transform.forward * speed * Time.deltaTime;
+                }
+                Next();
                 break;
             case EnemyState.IDLE:
                 yPosition = transform.position.y;
                 transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
 
-                Next();
+                if (!Next()) { target = null; }
 
                 if (target == null)
                 {
@@ -51,7 +69,7 @@ public abstract class Enemy: MonoBehaviour
         }
     }
 
-    public void Next()
+    public bool Next()
     {
         float closestDistanceSqr = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
@@ -76,17 +94,21 @@ public abstract class Enemy: MonoBehaviour
                 }
             }
         }
+        return closestDistanceSqr != Mathf.Infinity;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == target.gameObject && target != null)
+        if (target)
         {
-            Debug.Log(target.name);
-            enemyState = EnemyState.ACTION; 
+            if (other.gameObject == target.gameObject)
+            {
+                Debug.Log(target.name);
+                enemyState = EnemyState.ACTION; 
 
-            transform.DOKill(false);
-            transform.DOMoveY(yPosition, 0.25f);
+                transform.DOKill(false);
+                transform.DOMoveY(yPosition, 0.25f);
+            }
         }
     }
 

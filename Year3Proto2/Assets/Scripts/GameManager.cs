@@ -297,5 +297,12 @@ public class GameManager : MonoBehaviour
         {
             farm.CalculateTileBonus();
         }
+
+        // Update all enemies
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
+        foreach (Enemy enemy in enemies)
+        {
+            enemy.Next();
+        }
     }
 }

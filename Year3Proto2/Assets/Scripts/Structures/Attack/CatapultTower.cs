@@ -8,15 +8,22 @@ public class CatapultTower : AttackStructure
     private GameObject spawnedBoulder;
 
     private float speed = 0.6f; 
-    private float radius = 1.0f;
     private float arcFactor = 0.45f;
     private float distanceTravelled;
 
     private Vector3 current;
     private Vector3 origin;
 
-    void Start() {
+
+    void Start()
+    {
         AttackStart();
+        structureName = "Catapult Tower";
+    }
+
+    private void Update()
+    {
+        AttackUpdate();
     }
 
     public override void Attack(GameObject target)
@@ -38,7 +45,7 @@ public class CatapultTower : AttackStructure
             float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
             spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
 
-            if (Vector3.Distance(spawnedBoulder.transform.position, target.transform.position) < 0.01f)
+            if (Vector3.Distance(spawnedBoulder.transform.position, target.transform.position) < 0.05f)
             {
                 enemies.Remove(target);
 

@@ -41,6 +41,7 @@ public class StructureManager : MonoBehaviour
     private Structure structure;
     private Structure selectedStructure;
     private TileBehaviour structureOldTile;
+    private BuildingInfo buildingInfo;
     private bool structureFromStore;
     public Transform tileHighlight;
     public Transform selectedTileHighlight;
@@ -59,11 +60,12 @@ public class StructureManager : MonoBehaviour
             { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(0, 100, 0)) },
             { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(0, 100, 0)) },
             { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(0, 0, 100)) },
-            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(0, 0, 100)) }//,
-            //{ "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(100, 100, 0)) },
-            //{ "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(100, 100, 0)) }
+            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(0, 0, 100)) },
+            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(100, 100, 0)) },
+            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(100, 100, 0)) }
         };
         gameMan = FindObjectOfType<GameManager>();
+        buildingInfo = FindObjectOfType<BuildingInfo>();
     }
 
     private void Update()
@@ -148,7 +150,7 @@ public class StructureManager : MonoBehaviour
                                         // Attach the structure to the tile and vica versa
                                         if (attached)
                                         {
-                                            attached.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                            attached.GetComponent<Structure>().attachedTile.Detach(true);
                                         }
                                         hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
                                         if (structure.IsStructure("Lumber Mill"))
@@ -205,6 +207,8 @@ public class StructureManager : MonoBehaviour
                                         }
                                         structureState = StructManState.selected;
                                         selectedStructure = structure;
+                                        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                                        buildingInfo.showPanel = true;
                                     }
                                 }
                             }
@@ -215,6 +219,12 @@ public class StructureManager : MonoBehaviour
                 {
                     ResetBuilding();
                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                    Vector3 highlightPos = structure.transform.position;
+                    highlightPos.y = 0.501f;
+                    tileHighlight.position = highlightPos;
+                    selectedTileHighlight.position = highlightPos;
+                    buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                    buildingInfo.showPanel = true;
                 }
             }
             else if (structureState == StructManState.selected)
@@ -237,11 +247,12 @@ public class StructureManager : MonoBehaviour
                                 {
                                     structureFromStore = false;
                                     structure = hitStructure;
-                                    structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
+                                    structureOldTile = structure.attachedTile;
                                     // Detach the structure from it's tile, and vica versa.
-                                    structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                    structure.attachedTile.Detach(true);
                                     // Put the manager back into moving mode.
                                     structureState = StructManState.moving;
+                                    buildingInfo.showPanel = false;
                                 }
                             }
                             else
@@ -254,6 +265,9 @@ public class StructureManager : MonoBehaviour
                                 highlightpos.y = 0.501f;
                                 highlightpos.z = selectedStructure.attachedTile.transform.position.z;
                                 selectedTileHighlight.position = highlightpos;
+
+                                buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                                buildingInfo.showPanel = true;
                             }
                         }
                         else // The hit transform hasn't got a structure component
@@ -266,6 +280,8 @@ public class StructureManager : MonoBehaviour
                         if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
                         selectedStructure = null;
                         structureState = StructManState.selecting;
+                        //buildingInfo.SetTargetBuilding(null, "null");
+                        buildingInfo.showPanel = false;
                     }
                 }
 
@@ -279,7 +295,7 @@ public class StructureManager : MonoBehaviour
                     tileHighlight.position = highlightpos;
                 }
 
-                if (Input.GetKeyDown(KeyCode.UpArrow))
+                if (Input.GetKeyDown(KeyCode.RightArrow))
                 {
                     // increases the food allocation of the selected structure.
                     if (selectedStructure.GetStructureType() == StructureType.resource)
@@ -287,12 +303,28 @@ public class StructureManager : MonoBehaviour
                         selectedStructure.GetComponent<ResourceStructure>().IncreaseFoodAllocation();
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.DownArrow))
+                if (Input.GetKeyDown(KeyCode.LeftArrow))
                 {
                     // decreases the food allocation of the selected structure.
                     if (selectedStructure.GetStructureType() == StructureType.resource)
                     {
                         selectedStructure.GetComponent<ResourceStructure>().DecreaseFoodAllocation();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    // increases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMax();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    // decreases the food allocation of the selected structure.
+                    if (selectedStructure.GetStructureType() == StructureType.resource)
+                    {
+                        selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMin();
                     }
                 }
             }
@@ -319,6 +351,9 @@ public class StructureManager : MonoBehaviour
                             selectedTileHighlight.position = highlightpos;
 
                             structureState = StructManState.selected;
+
+                            buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+                            buildingInfo.showPanel = true;
                         }
                         else // The hit transform hasn't got a structure component
                         {
@@ -368,6 +403,9 @@ public class StructureManager : MonoBehaviour
             structure = LPinstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
             structureState = StructManState.moving;
+            if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+            selectedStructure = null;
+            buildingInfo.showPanel = false;
             return true;
         }
         return false;
@@ -428,9 +466,9 @@ public class StructureManager : MonoBehaviour
                 Debug.LogError("IDToStructureName called None");
                 return "ERROR";
             case BuildPanel.Buildings.Archer:
-                return "ERROR";
+                return "Archer Tower";
             case BuildPanel.Buildings.Catapult:
-                return "ERROR";
+                return "Catapult Tower";
             case BuildPanel.Buildings.Farm:
                 return "Farm";
             case BuildPanel.Buildings.Granary:

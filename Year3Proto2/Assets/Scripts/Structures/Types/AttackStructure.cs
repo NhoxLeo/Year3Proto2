@@ -14,12 +14,15 @@ public abstract class AttackStructure : Structure
         enemies = new List<GameObject>();
     }
 
-    private void Update()
+    protected void AttackUpdate()
     {
-        if(enemies.Count > 0)
+        StructureUpdate();
+
+        if (enemies.Count > 0)
         {
-            if(target == null)
+            if (target == null)
             {
+
                 float closestDistanceSqr = Mathf.Infinity;
                 Vector3 currentPosition = transform.position;
 
@@ -35,30 +38,19 @@ public abstract class AttackStructure : Structure
                     }
                 }
 
-                if(nearestEnemy != null) target = nearestEnemy;
+                if (nearestEnemy != null) target = nearestEnemy;
             }
-            else 
+            else
             {
-                Attack(target); 
+                Attack(target);
             }
         }
     }
 
     public abstract void Attack(GameObject target);
 
-    private void OnTriggerEnter(Collider other)
+    public List<GameObject> GetEnemies()
     {
-        if (!enemies.Contains(other.gameObject) && other.gameObject.GetComponent<Enemy>() != null)
-        {
-            enemies.Add(other.gameObject);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (enemies.Contains(other.gameObject) && other.gameObject.GetComponent<Enemy>() != null)
-        {
-            enemies.Remove(other.gameObject);
-        }
+        return enemies;
     }
 }
