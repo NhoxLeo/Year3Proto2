@@ -32,14 +32,12 @@ public class Mine : ResourceStructure
         // If the Lumber Mill is placed on a tile...
         if (attachedTile)
         {
-            TileBehaviour tileBehaviour = attachedTile.GetComponent<TileBehaviour>();
-
             // For each possible tile
             for (int i = 0; i < 4; i++)
             {
-                if (tileBehaviour.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
+                if (attachedTile.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    GameObject adjStructure = tileBehaviour.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
+                    GameObject adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
                     // If there is a structure on the tile...
                     if (adjStructure)
                     {

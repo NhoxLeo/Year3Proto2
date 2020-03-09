@@ -71,7 +71,7 @@ public class BuildingInfo : MonoBehaviour
                 ArcherTower archer = targetBuilding.GetComponent<ArcherTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Attack Power";
-                //statValueText.text = archer.damage;
+                statValueText.text = archer.arrowDamage.ToString("0");
                 statInfoText.text = "Single target";
 
                 tool.height = 252.0f;

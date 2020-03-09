@@ -105,7 +105,7 @@ public class TileBehaviour : MonoBehaviour
     {
         if (_alsoAttachSelf)
         {
-            _structure.GetComponent<Structure>().attachedTile = gameObject;
+            _structure.GetComponent<Structure>().attachedTile = this;
         }
         attachedStructure = _structure;
     }
