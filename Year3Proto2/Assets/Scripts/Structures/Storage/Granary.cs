@@ -16,10 +16,10 @@ public class Granary : StorageStructure
     // Update is called once per frame
     void Update()
     {
-
+        StructureUpdate();
     }
 
-    public void OnPlace()
+    public override void OnPlace()
     {
         FindObjectOfType<GameManager>().CalculateStorageMaximum();
     }

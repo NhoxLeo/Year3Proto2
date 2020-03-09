@@ -15,7 +15,7 @@ public abstract class Structure : MonoBehaviour
     public Sprite icon;
     public float sitHeight;
     public string displayName;
-    public GameObject attachedTile;
+    public TileBehaviour attachedTile;
 
     protected float health = 100.0f;
 
@@ -33,7 +33,7 @@ public abstract class Structure : MonoBehaviour
     {
         if(health <= 0.0f)
         {
-            attachedTile.GetComponent<TileBehaviour>().Detach(true);
+            attachedTile.Detach(true);
             Destroy(gameObject);
         }
     }
@@ -61,6 +61,34 @@ public abstract class Structure : MonoBehaviour
     public float GetHealth()
     {
         return health;
+    }
+
+    private void OnDestroy()
+    {
+        if (attachedTile)
+        {
+            attachedTile.Detach(true);
+        }
+    }
+
+    public virtual void OnPlace()
+    {
+
+    }
+
+    public virtual void OnAnyPlaced()
+    {
+
+    }
+
+    public virtual void OnSelected()
+    {
+
+    }
+
+    public virtual void OnDeselected()
+    {
+
     }
 }
 
