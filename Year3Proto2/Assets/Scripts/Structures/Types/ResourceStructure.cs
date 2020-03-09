@@ -55,6 +55,7 @@ public abstract class ResourceStructure : Structure
         if (foodAllocation < foodAllocationMin) { foodAllocation = foodAllocationMin; }
         Debug.Log(debug + foodAllocation);
     }
+
     public void SetFoodAllocationMax()
     {
         foodAllocation = foodAllocationMax;

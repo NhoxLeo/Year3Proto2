@@ -150,7 +150,7 @@ public class StructureManager : MonoBehaviour
                                         // Attach the structure to the tile and vica versa
                                         if (attached)
                                         {
-                                            attached.GetComponent<Structure>().attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                            attached.GetComponent<Structure>().attachedTile.Detach(true);
                                         }
                                         hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
                                         if (structure.IsStructure("Lumber Mill"))
@@ -247,9 +247,9 @@ public class StructureManager : MonoBehaviour
                                 {
                                     structureFromStore = false;
                                     structure = hitStructure;
-                                    structureOldTile = structure.attachedTile.GetComponent<TileBehaviour>();
+                                    structureOldTile = structure.attachedTile;
                                     // Detach the structure from it's tile, and vica versa.
-                                    structure.attachedTile.GetComponent<TileBehaviour>().Detach(true);
+                                    structure.attachedTile.Detach(true);
                                     // Put the manager back into moving mode.
                                     structureState = StructManState.moving;
                                     buildingInfo.showPanel = false;

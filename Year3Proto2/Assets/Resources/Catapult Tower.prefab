@@ -186,4 +186,4 @@ MonoBehaviour:
   sitHeight: 0.75
   displayName: 
   attachedTile: {fileID: 0}
-  boulder: {fileID: 4549095011785381545, guid: 0416ee26af62c4243886562404841d1f, type: 3}
+  boulder: {fileID: 3151625167024170116, guid: 2f2d89cd2313f7d4b82200f467619bb7, type: 3}
