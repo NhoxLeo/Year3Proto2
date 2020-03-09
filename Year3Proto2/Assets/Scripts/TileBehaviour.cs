@@ -14,7 +14,7 @@ public class TileBehaviour : MonoBehaviour
 
     public Dictionary<TileCode, TileBehaviour> adjacentTiles;
 
-    public GameObject attachedStructure;
+    public Structure attachedStructure;
 
     // Start is called before the first frame update
     void Start()
@@ -83,7 +83,7 @@ public class TileBehaviour : MonoBehaviour
 
         if (Physics.Raycast(tileCollider.transform.position, Vector3.up, out hit, 1.6f, structLayer))
         {
-            Attach(hit.transform.gameObject, true);
+            Attach(hit.transform.GetComponent<Structure>(), true);
         }
 
         // Turn on the collider
@@ -96,16 +96,17 @@ public class TileBehaviour : MonoBehaviour
 
     }
 
-    public GameObject GetAttached()
+    public Structure GetAttached()
     {
         return attachedStructure;
     }
 
-    public void Attach(GameObject _structure, bool _alsoAttachSelf = false)
+    public void Attach(Structure _structure, bool _alsoAttachSelf = false)
     {
         if (_alsoAttachSelf)
         {
-            _structure.GetComponent<Structure>().attachedTile = this;
+            _structure.attachedTile = this;
+            _structure.isPlaced = true;
         }
         attachedStructure = _structure;
     }
@@ -114,7 +115,8 @@ public class TileBehaviour : MonoBehaviour
     {
         if (_alsoDetachSelf)
         {
-            attachedStructure.GetComponent<Structure>().attachedTile = null;
+            attachedStructure.attachedTile = null;
+            attachedStructure.isPlaced = false;
         }
         attachedStructure = null;
     }

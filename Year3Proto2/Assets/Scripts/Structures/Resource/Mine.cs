@@ -37,11 +37,11 @@ public class Mine : ResourceStructure
             {
                 if (attachedTile.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    GameObject adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
+                    Structure adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
                     // If there is a structure on the tile...
                     if (adjStructure)
                     {
-                        if (adjStructure.GetComponent<Structure>().IsStructure("Hill Environment"))
+                        if (adjStructure.IsStructure("Hill Environment"))
                         { tileBonus++; }
                     }
                 }

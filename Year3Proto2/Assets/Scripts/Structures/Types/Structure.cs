@@ -16,16 +16,17 @@ public abstract class Structure : MonoBehaviour
     public float sitHeight;
     public string displayName;
     public TileBehaviour attachedTile;
-
+    public bool isPlaced;
     protected float health = 100.0f;
 
     protected StructureType structureType;
 
     protected void StructureStart()
     {
+        isPlaced = false;
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
         {
-            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(gameObject, true);
+            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this, true);
         }
     }
 

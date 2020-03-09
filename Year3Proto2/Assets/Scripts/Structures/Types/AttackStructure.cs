@@ -18,6 +18,7 @@ public abstract class AttackStructure : Structure
     {
         StructureUpdate();
 
+
         if (enemies.Count > 0)
         {
             if (target == null)

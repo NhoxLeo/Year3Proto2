@@ -45,11 +45,11 @@ public class Farm : ResourceStructure
             {
                 if (attachedTile.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    GameObject adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
+                    Structure adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
                     // If there is a structure on the tile...
                     if (adjStructure)
                     {
-                        if (adjStructure.GetComponent<Structure>().IsStructure("Plains Environment"))
+                        if (adjStructure.IsStructure("Plains Environment"))
                         { tileBonus++; }
                     }
                 }

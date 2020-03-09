@@ -101,7 +101,7 @@ public class StructureManager : MonoBehaviour
                         {
                             bool canPlaceHere = false;
                             // If the tile we hit has an attached object...
-                            GameObject attached = hit.transform.GetComponent<TileBehaviour>().GetAttached();
+                            Structure attached = hit.transform.GetComponent<TileBehaviour>().GetAttached();
                             if (attached)
                             {
                                 Vector3 hitPos = hit.point;
@@ -111,27 +111,15 @@ public class StructureManager : MonoBehaviour
                                 if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
                                 if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
 
-                                if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
-                                {
-                                    // Special condition: Lumber Mills can be placed on Forest Environment
-                                    if (structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                }
-                                if (attached.GetComponent<Structure>().IsStructure("Hill Environment"))
-                                {
-                                    // Special condition: Lumber Mills can be placed on Hill Environment
-                                    if (structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                }
-                                if (attached.GetComponent<Structure>().IsStructure("Plains Environment"))
-                                {
-                                    // Special condition: Lumber Mills can be placed on Forest Environment
-                                    if (structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                }
+                                // Special condition: Lumber Mills can be placed on Forest Environment
+                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                // Special condition: Lumber Mills can be placed on Hill Environment
+                                else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                // Special condition: Lumber Mills can be placed on Forest Environment
+                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
                             }
-                            else // if the tile we hit does not have an attached object...
-                            {
-                                canPlaceHere = true;
-
-                            }
+                            // if the tile we hit does not have an attached object...
+                            else { canPlaceHere = true; }
                             if (canPlaceHere)
                             {
                                 Vector3 structPos = structure.transform.position;
@@ -154,17 +142,17 @@ public class StructureManager : MonoBehaviour
                                     if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                     {
                                         // Attach the structure to the tile and vica versa
-                                        if (attached) { attached.GetComponent<Structure>().attachedTile.Detach(true); }
-                                        hit.transform.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                                        if (attached) { attached.attachedTile.Detach(true); }
+                                        hit.transform.GetComponent<TileBehaviour>().Attach(structure, true);
                                         structure.OnPlace();
                                         if (structure.IsStructure("Lumber Mill"))
                                         {
                                             if (attached)
                                             {
-                                                if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
+                                                if (attached.IsStructure("Forest Environment"))
                                                 {
                                                     // The structure is being placed on a forest
-                                                    Destroy(attached);
+                                                    Destroy(attached.gameObject);
                                                     gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
                                                     structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
                                                     structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
@@ -175,10 +163,10 @@ public class StructureManager : MonoBehaviour
                                         {
                                             if (attached)
                                             {
-                                                if (attached.GetComponent<Structure>().IsStructure("Hill Environment"))
+                                                if (attached.IsStructure("Hill Environment"))
                                                 {
                                                     // The structure is being placed on a forest
-                                                    Destroy(attached);
+                                                    Destroy(attached.gameObject);
                                                     gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
                                                     structure.GetComponent<Mine>().wasPlacedOnHills = true;
                                                     structure.GetComponent<MeshRenderer>().material = Resources.Load("HillMaterial") as Material;
@@ -189,10 +177,10 @@ public class StructureManager : MonoBehaviour
                                         {
                                             if (attached)
                                             {
-                                                if (attached.GetComponent<Structure>().IsStructure("Plains Environment"))
+                                                if (attached.IsStructure("Plains Environment"))
                                                 {
                                                     // The structure is being placed on a forest
-                                                    Destroy(attached);
+                                                    Destroy(attached.gameObject);
                                                     gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
                                                     structure.GetComponent<Farm>().wasPlacedOnPlains = true;
                                                     structure.GetComponent<MeshRenderer>().material = Resources.Load("PlainsMaterial") as Material;
@@ -289,6 +277,7 @@ public class StructureManager : MonoBehaviour
                     if (selectedStructure.GetStructureType() == StructureType.resource)
                     {
                         selectedStructure.GetComponent<ResourceStructure>().IncreaseFoodAllocation();
+                        FindObjectOfType<BuildingInfo>().SetInfo();
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -297,6 +286,7 @@ public class StructureManager : MonoBehaviour
                     if (selectedStructure.GetStructureType() == StructureType.resource)
                     {
                         selectedStructure.GetComponent<ResourceStructure>().DecreaseFoodAllocation();
+                        FindObjectOfType<BuildingInfo>().SetInfo();
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -305,6 +295,7 @@ public class StructureManager : MonoBehaviour
                     if (selectedStructure.GetStructureType() == StructureType.resource)
                     {
                         selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMax();
+                        FindObjectOfType<BuildingInfo>().SetInfo();
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -313,6 +304,7 @@ public class StructureManager : MonoBehaviour
                     if (selectedStructure.GetStructureType() == StructureType.resource)
                     {
                         selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMin();
+                        FindObjectOfType<BuildingInfo>().SetInfo();
                     }
                 }
             }
@@ -420,7 +412,7 @@ public class StructureManager : MonoBehaviour
                     structPos.y = structure.sitHeight;
                     structPos.z = structureOldTile.transform.position.z;
                     structure.transform.position = structPos;
-                    structureOldTile.GetComponent<TileBehaviour>().Attach(structure.gameObject, true);
+                    structureOldTile.Attach(structure, true);
                     structureOldTile = null;
                 }
                 structureState = StructManState.selected;

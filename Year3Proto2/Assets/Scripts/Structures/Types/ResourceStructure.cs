@@ -100,7 +100,7 @@ public abstract class ResourceStructure : Structure
                     Vector3 highlightPos = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].transform.position;
                     highlightPos.y = 0.55f;
                     newTileHighlight.transform.position = highlightPos;
-                    GameObject adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
+                    Structure adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
                     // If there is a structure on the tile...
                     if (adjStructure)
                     {
@@ -120,7 +120,7 @@ public abstract class ResourceStructure : Structure
                                 break;
                         }
 
-                        if (adjStructure.GetComponent<Structure>().IsStructure(adjStructType))
+                        if (adjStructure.IsStructure(adjStructType))
                         {
                             newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
                         }
