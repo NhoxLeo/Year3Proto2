@@ -165,10 +165,19 @@ public class BuildingInfo : MonoBehaviour
                 tool.height = 162.0f;
                 break;
 
+            case "Longhaus":
+                foodComponent.SetActive(false);
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "";
+                statValueText.text = "Protect me!";
+                statInfoText.text = "";
+
+                tool.height = 162.0f;
+                break;
+
             case "Forest Environment":
                 foodComponent.SetActive(false);
                 statIcon.sprite = woodSprite;
-                headingText.text = "Forest";
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Lumber Mills";
                 statInfoText.text = "";
@@ -178,7 +187,6 @@ public class BuildingInfo : MonoBehaviour
             case "Hill Environment":
                 foodComponent.SetActive(false);
                 statIcon.sprite = metalSprite;
-                headingText.text = "Hills";
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Mines";
                 statInfoText.text = "";
@@ -188,7 +196,6 @@ public class BuildingInfo : MonoBehaviour
             case "Plains Environment":
                 foodComponent.SetActive(false);
                 statIcon.sprite = foodSprite;
-                headingText.text = "Plains";
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Farms";
                 statInfoText.text = "";
