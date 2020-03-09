@@ -403,6 +403,9 @@ public class StructureManager : MonoBehaviour
             structure = LPinstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
             structureState = StructManState.moving;
+            if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+            selectedStructure = null;
+            buildingInfo.showPanel = false;
             return true;
         }
         return false;

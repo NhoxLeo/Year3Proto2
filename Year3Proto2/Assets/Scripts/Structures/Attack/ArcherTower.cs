@@ -8,6 +8,7 @@ public class ArcherTower : AttackStructure
 
     private GameObject spawnedArrow;
     private const float arrowSpeed = 1.6f;
+    public float arrowDamage = 5.0f;
 
     void Start()
     {
@@ -35,7 +36,7 @@ public class ArcherTower : AttackStructure
 
             spawnedArrow.transform.position = Vector3.MoveTowards(arrowPosition, targetPosition, Time.deltaTime * arrowSpeed);
 
-            if(Vector3.Distance(arrowPosition, targetPosition) <= 0.01f)
+            if(Vector3.Distance(arrowPosition, targetPosition) <= 0.05f)
             {
                 if (target.GetComponent<Enemy>().health <= 0.0f)
                 {
@@ -44,7 +45,7 @@ public class ArcherTower : AttackStructure
                 }
                 else
                 {
-                    target.GetComponent<Enemy>().health -= 5.0f;
+                    target.GetComponent<Enemy>().health -= arrowDamage;
                     Destroy(spawnedArrow.gameObject);
                 }
             }

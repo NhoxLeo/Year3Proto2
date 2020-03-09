@@ -45,7 +45,7 @@ public class CatapultTower : AttackStructure
             float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
             spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
 
-            if (Vector3.Distance(spawnedBoulder.transform.position, target.transform.position) < 0.01f)
+            if (Vector3.Distance(spawnedBoulder.transform.position, target.transform.position) < 0.05f)
             {
                 enemies.Remove(target);
 
