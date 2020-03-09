@@ -12,13 +12,16 @@ public abstract class ResourceStructure : Structure
     public float productionTime = 3f;
     protected float remainingTime = 3f;
     protected int batchSize = 2;
-
+    private GameObject tileHighlight;
+    public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
 
     protected void ResourceStart()
     {
         StructureStart();
         structureType = StructureType.resource;
         foodAllocation = 3;
+        tileHighlight = Resources.Load("TileHighlight") as GameObject;
+        tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
     }
 
     protected void ResourceUpdate()
@@ -79,5 +82,79 @@ public abstract class ResourceStructure : Structure
     public static int GetFoodAllocationMax()
     {
         return foodAllocationMax;
+    }
+
+    public override void OnPlace()
+    {
+        if (attachedTile)
+        {
+            // For each possible tile
+            for (int i = 0; i < 4; i++)
+            {
+                if (attachedTile.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
+                {
+                    GameObject newTileHighlight = Instantiate(tileHighlight, transform);
+                    tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
+                    Vector3 highlightPos = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].transform.position;
+                    highlightPos.y = 0.55f;
+                    newTileHighlight.transform.position = highlightPos;
+                    GameObject adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
+                    // If there is a structure on the tile...
+                    if (adjStructure)
+                    {
+                        string adjStructType = "Forest Environment";
+                        switch (resourceType)
+                        {
+                            case ResourceType.wood:
+                                adjStructType = "Forest Environment";
+                                break;
+                            case ResourceType.metal:
+                                adjStructType = "Hill Environment";
+                                break;
+                            case ResourceType.food:
+                                adjStructType = "Plains Environment";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (adjStructure.GetComponent<Structure>().IsStructure(adjStructType))
+                        {
+                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                            //newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.green);
+                        }
+                        else
+                        {
+                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                            //newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.red);
+                        }
+                    }
+                    newTileHighlight.SetActive(false);
+                }
+            }
+        }
+    }
+
+
+    public override void OnSelected()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (tileHighlights.ContainsKey((TileBehaviour.TileCode)i))
+            {
+                tileHighlights[(TileBehaviour.TileCode)i].SetActive(true);
+            }
+        }
+    }
+
+    public override void OnDeselected()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (tileHighlights.ContainsKey((TileBehaviour.TileCode)i))
+            { 
+                tileHighlights[(TileBehaviour.TileCode)i].SetActive(false);
+            }
+        }
     }
 }
