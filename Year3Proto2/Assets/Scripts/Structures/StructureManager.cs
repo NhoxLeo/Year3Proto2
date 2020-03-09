@@ -109,6 +109,7 @@ public class StructureManager : MonoBehaviour
                                 structure.transform.position = hitPos;
 
                                 if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+                                if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
 
                                 if (attached.GetComponent<Structure>().IsStructure("Forest Environment"))
                                 {
@@ -216,8 +217,16 @@ public class StructureManager : MonoBehaviour
                 {
                     ResetBuilding();
                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
-                    SelectStructure(structure);
-                    structureState = StructManState.selected;
+                    if (structureFromStore)
+                    {
+                        DeselectStructure();
+                        structureState = StructManState.selecting;
+                    }
+                    else
+                    {
+                        SelectStructure(structure);
+                        structureState = StructManState.selected;
+                    }
                 }
             }
             else if (structureState == StructManState.selected)
@@ -343,6 +352,7 @@ public class StructureManager : MonoBehaviour
         if (isOverUI)
         {
             if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+            if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
             HideBuilding();
         }
     }

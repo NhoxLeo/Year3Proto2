@@ -86,6 +86,8 @@ public abstract class ResourceStructure : Structure
 
     public override void OnPlace()
     {
+        OnDeselected();
+        tileHighlights.Clear(); 
         if (attachedTile)
         {
             // For each possible tile

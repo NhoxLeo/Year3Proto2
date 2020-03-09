@@ -7730,6 +7730,12 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7158009794963219459, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: emptySprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bac84dc5e6950ee4f8412917a8b040bd,
+        type: 3}
     - target: {fileID: 7323546641040062519, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_Material

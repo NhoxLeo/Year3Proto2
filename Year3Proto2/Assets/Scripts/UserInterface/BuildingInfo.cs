@@ -16,6 +16,7 @@ public class BuildingInfo : MonoBehaviour
     public Sprite foodSprite;
     public Sprite woodSprite;
     public Sprite metalSprite;
+    public Sprite emptySprite;
 
     private TMP_Text headingText;               // Text showing name of building
     private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
@@ -50,6 +51,12 @@ public class BuildingInfo : MonoBehaviour
         tool.showTooltip = showPanel;
 
         headingText.text = buildingName;
+        string env = "Environment";
+        if (buildingName.Contains(env))
+        {
+            string newHeading = headingText.text.Remove(headingText.text.IndexOf(env), env.Length);
+            headingText.text = newHeading;
+        }
 
         SetPosition();
 
@@ -62,7 +69,9 @@ public class BuildingInfo : MonoBehaviour
     public void SetInfo()
     {
         if (targetBuilding == null)
+        {
             return;
+        }
 
         switch (buildingName)
         {
@@ -105,6 +114,7 @@ public class BuildingInfo : MonoBehaviour
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = granary.storage.ToString();
+                statInfoText.text = "";
 
                 tool.height = 162.0f;
                 break;
@@ -127,6 +137,7 @@ public class BuildingInfo : MonoBehaviour
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = pile.storage.ToString();
+                statInfoText.text = "";
 
                 tool.height = 162.0f;
                 break;
@@ -149,7 +160,38 @@ public class BuildingInfo : MonoBehaviour
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = metStore.storage.ToString();
+                statInfoText.text = "";
 
+                tool.height = 162.0f;
+                break;
+
+            case "Forest Environment":
+                foodComponent.SetActive(false);
+                statIcon.sprite = woodSprite;
+                headingText.text = "Forest";
+                statHeadingText.text = "Bonus Building Type";
+                statValueText.text = "Lumber Mills";
+                statInfoText.text = "";
+                tool.height = 162.0f;
+                break;
+
+            case "Hill Environment":
+                foodComponent.SetActive(false);
+                statIcon.sprite = metalSprite;
+                headingText.text = "Hills";
+                statHeadingText.text = "Bonus Building Type";
+                statValueText.text = "Mines";
+                statInfoText.text = "";
+                tool.height = 162.0f;
+                break;
+
+            case "Plains Environment":
+                foodComponent.SetActive(false);
+                statIcon.sprite = foodSprite;
+                headingText.text = "Plains";
+                statHeadingText.text = "Bonus Building Type";
+                statValueText.text = "Farms";
+                statInfoText.text = "";
                 tool.height = 162.0f;
                 break;
 
