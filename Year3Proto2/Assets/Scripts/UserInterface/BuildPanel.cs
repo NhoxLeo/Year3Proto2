@@ -31,6 +31,8 @@ public class BuildPanel : MonoBehaviour
     private Tooltip tooltip;
     private TMP_Text tooltipHeading;
     private TMP_Text tooltipDescription;
+    private TMP_Text woodCostText;
+    private TMP_Text metalCostText;
     private float tooltipTimer;
 
     public Buildings buildingSelected;
@@ -44,6 +46,7 @@ public class BuildPanel : MonoBehaviour
     {
         public string[] heading;
         public string[] description;
+        public Vector2[] cost;
 
     }
     [SerializeField]
@@ -60,6 +63,8 @@ public class BuildPanel : MonoBehaviour
         tooltip = tooltipBox.GetComponent<Tooltip>();
         tooltipHeading = transform.Find("BuildPanelTooltip/PanelMask/Heading").GetComponent<TMP_Text>();
         tooltipDescription = transform.Find("BuildPanelTooltip/PanelMask/Description").GetComponent<TMP_Text>();
+        woodCostText = transform.Find("BuildPanelTooltip/PanelMask/CostValueWood").GetComponent<TMP_Text>();
+        metalCostText = transform.Find("BuildPanelTooltip/PanelMask/CostValueMetal").GetComponent<TMP_Text>();
 
         buildIndicator = transform.Find("PanelMask/BuildingIndicator").gameObject;
         buildIndicator.SetActive(false);
@@ -134,6 +139,15 @@ public class BuildPanel : MonoBehaviour
 
             tooltipHeading.text = toolInfo.heading[(int)tooltipSelected];
             tooltipDescription.text = toolInfo.description[(int)tooltipSelected];
+
+            int woodCost = (int)toolInfo.cost[(int)tooltipSelected].x;
+            int metalCost = (int)toolInfo.cost[(int)tooltipSelected].y;
+
+            woodCostText.text = woodCost.ToString();
+            metalCostText.text = metalCost.ToString();
+
+            metalCostText.gameObject.SetActive((metalCost > 0));
+            
 
             float targetPos = transform.Find("PanelMask").GetChild(tool + 7).transform.localPosition.x;
             if (tooltipTimer > 0.15f)
