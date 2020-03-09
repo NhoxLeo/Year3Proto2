@@ -14,7 +14,7 @@ public class TileBehaviour : MonoBehaviour
 
     public Dictionary<TileCode, TileBehaviour> adjacentTiles;
 
-    private GameObject attachedStructure;
+    public GameObject attachedStructure;
 
     // Start is called before the first frame update
     void Start()
@@ -105,7 +105,7 @@ public class TileBehaviour : MonoBehaviour
     {
         if (_alsoAttachSelf)
         {
-            _structure.GetComponent<Structure>().attachedTile = gameObject;
+            _structure.GetComponent<Structure>().attachedTile = this;
         }
         attachedStructure = _structure;
     }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5572838029965962192}
   - component: {fileID: 4233399490860001852}
   - component: {fileID: 4687414033504787728}
+  - component: {fileID: 3324299006489752888}
   m_Layer: 9
   m_Name: Longhaus
   m_TagString: Untagged
@@ -109,6 +110,22 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4577368211018818353, guid: e3b4b05da4c9fd24f9016f6c1b0c6dfe, type: 3}
+--- !u!54 &3324299006489752888
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53662582760956294}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
