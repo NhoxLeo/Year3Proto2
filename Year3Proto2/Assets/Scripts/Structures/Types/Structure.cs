@@ -70,5 +70,25 @@ public abstract class Structure : MonoBehaviour
             attachedTile.Detach(true);
         }
     }
+
+    public virtual void OnPlace()
+    {
+
+    }
+
+    public virtual void OnAnyPlaced()
+    {
+
+    }
+
+    public virtual void OnSelected()
+    {
+
+    }
+
+    public virtual void OnDeselected()
+    {
+
+    }
 }
 

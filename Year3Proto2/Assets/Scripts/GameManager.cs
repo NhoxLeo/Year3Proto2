@@ -279,6 +279,8 @@ public class GameManager : MonoBehaviour
 
     public void OnStructurePlace()
     {
+        CalculateStorageMaximum();
+
         // Update all Lumber Mills
         LumberMill[] lumberMills = FindObjectsOfType<LumberMill>();
         foreach (LumberMill lumberMill in lumberMills)
