@@ -74,8 +74,9 @@ public class Tooltip : MonoBehaviour
         pulseSeq.Play();
     }
 
-    public void SetHeight()
+    public void SetHeight(float h)
     {
+        height = h;
         rTransform.DOSizeDelta(new Vector2(width, height), 0.25f).SetEase(Ease.OutQuint);
     }
 }

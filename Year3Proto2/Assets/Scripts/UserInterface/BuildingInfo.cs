@@ -22,9 +22,8 @@ public class BuildingInfo : MonoBehaviour
     private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
     private TMP_Text statValueText;             // Text showing value of stat
     private TMP_Text statInfoText;              // Additional info shown next to stat value
-    private Image statIcon;
-
-    private GameObject foodComponent;
+    private Image statIcon;                     // Icon shown next to stat value
+    private GameObject foodComponent;           // Section for food allocation
     private TMP_Text foodValueText;             // Text showing current food allocation
 
     void Start()
@@ -82,8 +81,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Attack Power";
                 statValueText.text = archer.arrowDamage.ToString("0");
                 statInfoText.text = "Single target";
-
-                tool.height = 252.0f;
                 break;
 
             case "Catapult Tower":
@@ -93,8 +90,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Attack Power";
                 //statValueText.text = catapult.damage;
                 statInfoText.text = "AOE Damage";
-
-                tool.height = 252.0f;
                 break;
 
             case "Farm":
@@ -104,8 +99,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = farm.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + farm.productionTime.ToString("0") + "s";
-
-                tool.height = 162.0f;
                 break;
 
             case "Granary":
@@ -115,8 +108,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = granary.storage.ToString();
                 statInfoText.text = "";
-
-                tool.height = 162.0f;
                 break;
 
             case "Lumber Mill":
@@ -127,8 +118,6 @@ public class BuildingInfo : MonoBehaviour
                 statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
                 foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
-
-                tool.height = 252.0f;
                 break;
 
             case "Lumber Pile":
@@ -138,8 +127,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = pile.storage.ToString();
                 statInfoText.text = "";
-
-                tool.height = 162.0f;
                 break;
 
             case "Mine":
@@ -150,8 +137,6 @@ public class BuildingInfo : MonoBehaviour
                 statValueText.text = mine.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mine.productionTime.ToString("0") + "s";
                 foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
-
-                tool.height = 252.0f;
                 break;
 
             case "Metal Storage":
@@ -161,8 +146,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = metStore.storage.ToString();
                 statInfoText.text = "";
-
-                tool.height = 162.0f;
                 break;
 
             case "Longhaus":
@@ -171,8 +154,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "";
                 statValueText.text = "Protect me!";
                 statInfoText.text = "";
-
-                tool.height = 162.0f;
                 break;
 
             case "Forest Environment":
@@ -181,7 +162,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Lumber Mills";
                 statInfoText.text = "";
-                tool.height = 162.0f;
                 break;
 
             case "Hill Environment":
@@ -190,7 +170,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Mines";
                 statInfoText.text = "";
-                tool.height = 162.0f;
                 break;
 
             case "Plains Environment":
@@ -199,7 +178,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Farms";
                 statInfoText.text = "";
-                tool.height = 162.0f;
                 break;
 
             default:
@@ -207,7 +185,7 @@ public class BuildingInfo : MonoBehaviour
                 break;
         }
 
-        tool.SetHeight();
+        tool.SetHeight(foodComponent.activeSelf ? 242.0f : 152.0f);
     }
 
     private void SetPosition()
@@ -298,5 +276,9 @@ public class BuildingInfo : MonoBehaviour
 
         SetInfo();
     }
-    
+   
+    public void SetVisibility(bool visible)
+    {
+        showPanel = visible;
+    }
 }

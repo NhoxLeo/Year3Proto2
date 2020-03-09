@@ -12,7 +12,8 @@ public class MessageBox : MonoBehaviour
 
     void Start()
     {
-        displayText = GetComponent<TMP_Text>();
+        tool = GetComponent<Tooltip>();
+        displayText = transform.GetChild(1).GetComponent<TMP_Text>();
     }
 
 
@@ -26,6 +27,11 @@ public class MessageBox : MonoBehaviour
         else
         {
             tool.showTooltip = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            ShowMessage("You pressed M, thus triggering a test messege!", 3.5f);
         }
     }
 
