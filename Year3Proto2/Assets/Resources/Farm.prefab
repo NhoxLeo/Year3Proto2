@@ -52,6 +52,7 @@ MonoBehaviour:
   sitHeight: 0.5
   displayName: 
   attachedTile: {fileID: 0}
+  isPlaced: 0
   productionTime: 3
   wasPlacedOnPlains: 0
 --- !u!33 &1058955272712285215
@@ -61,7 +62,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8003710413468328400}
-  m_Mesh: {fileID: -666328276366774393, guid: 5551118ee9843af4494c831b929ba4c8, type: 3}
+  m_Mesh: {fileID: -2878355678071528026, guid: b11a01b23700ee446a7f0fb5e0a950fd, type: 3}
 --- !u!23 &8035119525040223577
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -80,7 +81,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -7730278038719451655, guid: 5551118ee9843af4494c831b929ba4c8, type: 3}
+  - {fileID: 2100000, guid: 7d414cac029692d4ca14352341e22f88, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
