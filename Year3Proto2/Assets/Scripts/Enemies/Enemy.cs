@@ -13,19 +13,18 @@ public abstract class Enemy : MonoBehaviour
 {
     private Structure target = null;
     private EnemyState enemyState = EnemyState.IDLE;
-    private List<GameObject> enemiesInArea = new List<GameObject>();
+    private readonly List<GameObject> enemiesInArea = new List<GameObject>();
 
-    public float health = 10.0f;
-
-    protected float yPosition;
-    protected float jumpHeight = 0.1f;
     protected bool action = false;
 
+    public float health = 10.0f;
     public float speed = 0.6f;
     public float scale = 0.0f;
     public float damage = 2.0f;
 
-    private float finalSpeed = 0.0f;
+    protected float yPosition;
+    protected float finalSpeed = 0.0f;
+    protected float jumpHeight = 0.0f;
 
     protected List<StructureType> structureTypes;
 
@@ -35,6 +34,7 @@ public abstract class Enemy : MonoBehaviour
     {
         scale = Random.Range(0.1f, 0.2f);
         jumpHeight = scale;
+        yPosition = transform.position.y;
 
         transform.localScale = new Vector3(scale, scale, scale);
         damage = scale * 20.0f;
@@ -52,7 +52,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyState = EnemyState.WALK;
 
                     transform.DOKill(false);
-                    transform.DOMoveY(yPosition + jumpHeight, finalSpeed).SetLoops(-1, LoopType.Yoyo);
+                    transform.DOMoveY(yPosition + jumpHeight, finalSpeed / 3.0f).SetLoops(-1, LoopType.Yoyo);
                 }
                 else
                 {
@@ -84,10 +84,9 @@ public abstract class Enemy : MonoBehaviour
                 Next();
                 break;
             case EnemyState.IDLE:
-                yPosition = transform.position.y;
 
                 transform.DOKill(false);
-                transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
+                transform.DOMoveY(yPosition + jumpHeight, finalSpeed / 3.0f).SetLoops(-1, LoopType.Yoyo);
 
                 if (!Next()) { target = null; }
 
