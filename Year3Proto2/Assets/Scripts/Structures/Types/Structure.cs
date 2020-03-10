@@ -17,13 +17,15 @@ public abstract class Structure : MonoBehaviour
     public string displayName;
     public TileBehaviour attachedTile;
     public bool isPlaced;
-    protected float health = 100.0f;
+    protected float health;
+    protected float maxHealth = 100.0f;
     private bool isBuilt;
 
     protected StructureType structureType;
 
     protected void StructureStart()
     {
+        health = maxHealth;
         isPlaced = false;
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
         {
@@ -63,6 +65,21 @@ public abstract class Structure : MonoBehaviour
     public float GetHealth()
     {
         return health;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public ResourceBundle RepairCost()
+    {
+        return FindObjectOfType<StructureManager>().structureDict[structureName].resourceCost * (1.0f - (health / maxHealth));
+    }
+
+    public void Repair()
+    {
+        health = maxHealth;
     }
 
     private void OnDestroy()

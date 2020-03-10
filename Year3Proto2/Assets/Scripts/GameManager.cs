@@ -204,7 +204,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerData = new PlayerData(500, 500);
+        playerData = new PlayerData(200, 500);
         CalculateStorageMaximum();
         recentBatches = new List<Batch>();
     }

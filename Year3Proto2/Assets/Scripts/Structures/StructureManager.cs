@@ -21,6 +21,14 @@ public struct ResourceBundle
         metalCost = _mCost;
         foodCost = _fCost;
     }
+    public static ResourceBundle operator *(ResourceBundle _kStructureDefinition, float _otherHS)
+    {
+        ResourceBundle newStructure = _kStructureDefinition;
+        newStructure.woodCost = Mathf.RoundToInt(newStructure.woodCost * _otherHS);
+        newStructure.metalCost = Mathf.RoundToInt(newStructure.metalCost * _otherHS);
+        newStructure.foodCost = Mathf.RoundToInt(newStructure.foodCost * _otherHS);
+        return newStructure;
+    }
 }
 
 public struct StructureDefinition
@@ -33,6 +41,7 @@ public struct StructureDefinition
         structure = _structure;
         resourceCost = _cost;
     }
+
 
 }
 
@@ -67,15 +76,16 @@ public class StructureManager : MonoBehaviour
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            // NAME                                                     NAME                                               wC  mC  fC
-            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(80, 20, 0)) },
-            { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(200, 0, 0)) },
-            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(50, 80, 0)) },
-            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(130, 20, 0)) },
-            { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40, 10, 0)) },
-            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(150, 0, 0)) },
-            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150, 80, 0)) },
-            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(120, 200, 0)) }
+            // NAME                                                     NAME                                               wC       mC      fC
+            { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(150,     20,     0)) },
+            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(80,      20,     0)) },
+            { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(120,     0,      0)) },
+            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(60,      60,     0)) },
+            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(130,     20,     0)) },
+            { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
+            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(120,     0,      0)) },
+            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(90,      30,     0)) },
+            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(150,     100,    0)) }
         };
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
@@ -161,7 +171,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                             gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
                                                             structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
-                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
+                                                            //structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
                                                         }
                                                     }
                                                 }
@@ -175,7 +185,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                             gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
                                                             structure.GetComponent<Mine>().wasPlacedOnHills = true;
-                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
+                                                            //structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
                                                         }
                                                     }
                                                 }
@@ -189,7 +199,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                             gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
                                                             structure.GetComponent<Farm>().wasPlacedOnPlains = true;
-                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
+                                                            //structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
                                                         }
                                                     }
                                                 }
@@ -315,6 +325,17 @@ public class StructureManager : MonoBehaviour
                     {
                         selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMin();
                         FindObjectOfType<BuildingInfo>().SetInfo();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.Y))
+                {
+                    ResourceBundle repairCost = selectedStructure.RepairCost();
+                    if (gameMan.playerData.CanAfford(repairCost))
+                    {
+                        gameMan.playerData.DeductResource(ResourceType.wood, repairCost.woodCost);
+                        gameMan.playerData.DeductResource(ResourceType.metal, repairCost.metalCost);
+                        gameMan.playerData.DeductResource(ResourceType.food, repairCost.foodCost);
+                        selectedStructure.Repair();
                     }
                 }
             }
