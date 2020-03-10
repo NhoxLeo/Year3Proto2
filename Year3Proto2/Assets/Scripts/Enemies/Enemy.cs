@@ -15,13 +15,7 @@ public abstract class Enemy : MonoBehaviour
     private EnemyState enemyState = EnemyState.IDLE;
     private List<GameObject> enemiesInArea = new List<GameObject>();
 
-    [Header("Stats")]
-    public float health = 10.0f;
-
-    [Header("Velocity")]
-    public float moveSpeed = 8.0f;
-    public float rotationSpeed = 2.0f;
-
+    protected float health = 10.0f;
     protected float yPosition;
     protected float speed = 0.6f;
     protected float jumpHeight = 0.1f;
@@ -31,7 +25,7 @@ public abstract class Enemy : MonoBehaviour
 
     public abstract void Action(Structure structure);
 
-    private void Update()
+    private void FixedUpdate()
     {
         switch (enemyState)
         {
