@@ -11,7 +11,7 @@ public abstract class ResourceStructure : Structure
     protected int tileBonus = 0;
     public float productionTime = 3f;
     protected float remainingTime = 3f;
-    protected int batchSize = 2;
+    protected int batchSize = 1;
     private GameObject tileHighlight;
     public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
 
@@ -26,15 +26,21 @@ public abstract class ResourceStructure : Structure
 
     protected void ResourceUpdate()
     {
-        StructureUpdate();
-        remainingTime -= Time.deltaTime;
-
-        if (remainingTime <= 0f)
+        if (isPlaced)
         {
-            remainingTime = productionTime;
-            GameManager game = FindObjectOfType<GameManager>();
-            game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
-            game.AddBatch(new Batch(-foodAllocation, ResourceType.food));
+            StructureUpdate();
+            remainingTime -= Time.deltaTime;
+
+            if (remainingTime <= 0f)
+            {
+                remainingTime = productionTime;
+                GameManager game = FindObjectOfType<GameManager>();
+                game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
+                if (structureName != "Farm")
+                {
+                    game.AddBatch(new Batch(-foodAllocation, ResourceType.food));
+                }
+            }
         }
     }
 
@@ -48,7 +54,7 @@ public abstract class ResourceStructure : Structure
         string debug = gameObject.ToString() + " foodAlloc was " + foodAllocation.ToString() + " and is now ";
         foodAllocation++;
         if (foodAllocation > foodAllocationMax) { foodAllocation = foodAllocationMax; }
-        Debug.Log(debug + foodAllocation);
+        //Debug.Log(debug + foodAllocation);
     }
 
     public void DecreaseFoodAllocation()
@@ -56,7 +62,7 @@ public abstract class ResourceStructure : Structure
         string debug = gameObject.ToString() + " foodAlloc was " + foodAllocation.ToString() + " and is now ";
         foodAllocation--;
         if (foodAllocation < foodAllocationMin) { foodAllocation = foodAllocationMin; }
-        Debug.Log(debug + foodAllocation);
+        //Debug.Log(debug + foodAllocation);
     }
 
     public void SetFoodAllocationMax()
@@ -86,6 +92,7 @@ public abstract class ResourceStructure : Structure
 
     public override void OnPlace()
     {
+        tileBonus = 1;
         OnDeselected();
         tileHighlights.Clear(); 
         if (attachedTile)
@@ -95,45 +102,49 @@ public abstract class ResourceStructure : Structure
             {
                 if (attachedTile.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    GameObject newTileHighlight = Instantiate(tileHighlight, transform);
-                    tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
-                    Vector3 highlightPos = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].transform.position;
-                    highlightPos.y = 0.55f;
-                    newTileHighlight.transform.position = highlightPos;
-                    GameObject adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
-                    // If there is a structure on the tile...
-                    if (adjStructure)
+                    if (attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetPlayable())
                     {
-                        string adjStructType = "Forest Environment";
-                        switch (resourceType)
+                        GameObject newTileHighlight = Instantiate(tileHighlight, transform);
+                        tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
+                        Vector3 highlightPos = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].transform.position;
+                        highlightPos.y = 0.55f;
+                        newTileHighlight.transform.position = highlightPos;
+                        Structure adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
+                        // If there is a structure on the tile...
+                        if (adjStructure)
                         {
-                            case ResourceType.wood:
-                                adjStructType = "Forest Environment";
-                                break;
-                            case ResourceType.metal:
-                                adjStructType = "Hill Environment";
-                                break;
-                            case ResourceType.food:
-                                adjStructType = "Plains Environment";
-                                break;
-                            default:
-                                break;
-                        }
+                            string adjStructType = "Forest Environment";
+                            switch (resourceType)
+                            {
+                                case ResourceType.wood:
+                                    adjStructType = "Forest Environment";
+                                    break;
+                                case ResourceType.metal:
+                                    adjStructType = "Hill Environment";
+                                    break;
+                                case ResourceType.food:
+                                    adjStructType = "Plains Environment";
+                                    break;
+                                default:
+                                    break;
+                            }
 
-                        if (adjStructure.GetComponent<Structure>().IsStructure(adjStructType))
-                        {
-                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                            if (adjStructure.IsStructure(adjStructType))
+                            {
+                                newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                tileBonus++;
+                            }
+                            else
+                            {
+                                newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                            }
                         }
                         else
                         {
                             newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                         }
+                        newTileHighlight.SetActive(false);
                     }
-                    else
-                    {
-                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                    }
-                    newTileHighlight.SetActive(false);
                 }
             }
         }
