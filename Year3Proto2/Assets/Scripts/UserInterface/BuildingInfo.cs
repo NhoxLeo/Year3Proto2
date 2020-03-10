@@ -27,6 +27,10 @@ public class BuildingInfo : MonoBehaviour
     private TMP_Text foodValueText;             // Text showing current food allocation
     private Button repairButton;                // Button for repairing buildings
 
+    public bool doAutoUpdate;                   // Whether to automatically update info panel
+    public float updateInterval = 1.5f;         // Time between info panel updates
+    private float updateTimer;
+
     void Start()
     {
         rTrans = GetComponent<RectTransform>();
@@ -45,6 +49,8 @@ public class BuildingInfo : MonoBehaviour
         repairButton = transform.Find("PanelMask/RepairButton").GetComponent<Button>();
 
         statInfoText.text = "";
+
+        updateTimer = updateInterval;
     }
 
 
@@ -55,6 +61,20 @@ public class BuildingInfo : MonoBehaviour
         if (targetBuilding != null)
         {
             headingText.text = buildingName;
+
+            // Auto update info
+            if (showPanel && doAutoUpdate)
+            {
+                updateTimer -= Time.deltaTime;
+
+                if (updateTimer <= 0.0f)
+                {
+                    SetInfo();
+                    updateTimer = updateInterval;
+
+                    Debug.Log("Building info was updated automatically");
+                }
+            }
         }
         else
         {
@@ -69,11 +89,6 @@ public class BuildingInfo : MonoBehaviour
         }
 
         SetPosition();
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            SetInfo();
-        }
     }
 
     public void SetInfo()
@@ -238,6 +253,7 @@ public class BuildingInfo : MonoBehaviour
             xPivot = 1.25f;
         }
 
+        // Smooth Lerping motion
         float dt = Time.unscaledDeltaTime;
         Vector2 pivot = new Vector2(Mathf.Lerp(rTrans.pivot.x, xPivot, dt * 10.0f), Mathf.Lerp(rTrans.pivot.y, yPivot, dt * 10.0f));
         rTrans.pivot = pivot;
