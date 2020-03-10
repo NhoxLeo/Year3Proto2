@@ -31,7 +31,7 @@ public class MessageBox : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M))
         {
-            ShowMessage("You pressed M, thus triggering a test messege!", 3.5f);
+            ShowMessage("You pressed M, thus triggering a test message!", 3.5f);
         }
     }
 

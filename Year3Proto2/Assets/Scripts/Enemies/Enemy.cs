@@ -13,8 +13,14 @@ public abstract class Enemy : MonoBehaviour
 {
     private Structure target = null;
     private EnemyState enemyState = EnemyState.IDLE;
+    private List<GameObject> enemiesInArea = new List<GameObject>();
 
+    [Header("Stats")]
     public float health = 10.0f;
+
+    [Header("Velocity")]
+    public float moveSpeed = 8.0f;
+    public float rotationSpeed = 2.0f;
 
     protected float yPosition;
     protected float speed = 0.6f;
@@ -50,8 +56,22 @@ public abstract class Enemy : MonoBehaviour
                     {
                         if (!Next()) { target = null; }
                     }
+
                     transform.position += transform.forward * speed * Time.deltaTime;
+
+
+                    enemiesInArea.RemoveAll(enemy => enemy == null);
+
+                    foreach (GameObject @object in enemiesInArea)
+                    {
+                        if (Vector3.Distance(@object.transform.position, transform.position) < 0.2f)
+                        {
+                            transform.position = (transform.position - @object.transform.position).normalized * 0.2f + @object.transform.position;
+                        }
+                    }
+       
                 }
+
                 Next();
                 break;
             case EnemyState.IDLE:
@@ -99,6 +119,11 @@ public abstract class Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if(other.GetComponent<Enemy>() != null)
+        {
+            if (!enemiesInArea.Contains(other.gameObject)) enemiesInArea.Add(other.gameObject);
+        }
+
         if (target)
         {
             if (other.gameObject == target.gameObject)
@@ -112,12 +137,26 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.GetComponent<Enemy>() != null)
+        {
+            if (enemiesInArea.Contains(other.gameObject)) enemiesInArea.Remove(other.gameObject);
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
+
         if(target != null)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, target.transform.position);
         }
+    }
+
+    public Structure GetTarget()
+    {
+        return target;
     }
 }
