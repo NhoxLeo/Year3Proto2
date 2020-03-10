@@ -8,6 +8,7 @@ public class BuildingInfo : MonoBehaviour
     private RectTransform rTrans;
     private Tooltip tool;
     private BuildPanel buildPanel;
+    private GameManager gameMan;
 
     public GameObject targetBuilding;
     public string buildingName;
@@ -45,6 +46,7 @@ public class BuildingInfo : MonoBehaviour
         repairButton = transform.Find("PanelMask/RepairButton").GetComponent<Button>();
 
         statInfoText.text = "";
+        gameMan = FindObjectOfType<GameManager>();
     }
 
 
@@ -309,56 +311,15 @@ public class BuildingInfo : MonoBehaviour
         if (targetBuilding == null)
             return;
 
-        switch (buildingName)
+        Structure targetStructure = targetBuilding.GetComponent<Structure>();
+            
+        ResourceBundle repairCost = targetStructure.RepairCost();
+        if (gameMan.playerData.CanAfford(repairCost))
         {
-            case "Archer Tower":
-                ArcherTower archer = targetBuilding.GetComponent<ArcherTower>();
-                archer.Repair();
-                break;
-
-            case "Catapult Tower":
-                CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
-                catapult.Repair();
-                break;
-
-            case "Farm":
-                Farm farm = targetBuilding.GetComponent<Farm>();
-                farm.Repair();
-                break;
-
-            case "Granary":
-                Granary granary = targetBuilding.GetComponent<Granary>();
-                granary.Repair();
-                break;
-
-            case "Lumber Mill":
-                LumberMill mill = targetBuilding.GetComponent<LumberMill>();
-                mill.Repair();
-                break;
-
-            case "Lumber Pile":
-                LumberPile pile = targetBuilding.GetComponent<LumberPile>();
-                pile.Repair();
-                break;
-
-            case "Mine":
-                Mine mine = targetBuilding.GetComponent<Mine>();
-                mine.Repair();
-                break;
-
-            case "Metal Storage":
-                MetalStorage metStore = targetBuilding.GetComponent<MetalStorage>();
-                metStore.Repair();
-                break;
-
-            case "Longhaus":
-                Longhaus haus = targetBuilding.GetComponent<Longhaus>();
-                haus.Repair();
-                break;
-
-            default:
-
-                break;
+            gameMan.playerData.DeductResource(ResourceType.wood, repairCost.woodCost);
+            gameMan.playerData.DeductResource(ResourceType.metal, repairCost.metalCost);
+            gameMan.playerData.DeductResource(ResourceType.food, repairCost.foodCost);
+            targetStructure.Repair();
         }
 
         SetInfo();

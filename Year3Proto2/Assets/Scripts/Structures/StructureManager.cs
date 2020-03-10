@@ -59,7 +59,8 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Mine" },
         { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
     };
-
+    public Canvas canvas;
+    public GameObject healthBarPrefab;
     private Structure structure;
     private Structure selectedStructure;
     private TileBehaviour structureOldTile;
@@ -72,7 +73,7 @@ public class StructureManager : MonoBehaviour
     private GameManager gameMan;
     public bool isOverUI = false;
 
-    private void Start()
+    private void Awake()
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
@@ -89,6 +90,8 @@ public class StructureManager : MonoBehaviour
         };
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
+        canvas = FindObjectOfType<Canvas>();
+        healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
     }
 
     private void Update()
@@ -327,6 +330,7 @@ public class StructureManager : MonoBehaviour
                         FindObjectOfType<BuildingInfo>().SetInfo();
                     }
                 }
+                /*
                 if (Input.GetKeyDown(KeyCode.Y))
                 {
                     ResourceBundle repairCost = selectedStructure.RepairCost();
@@ -338,6 +342,7 @@ public class StructureManager : MonoBehaviour
                         selectedStructure.Repair();
                     }
                 }
+                */
             }
             else if (structureState == StructManState.selecting)
             {
@@ -400,8 +405,8 @@ public class StructureManager : MonoBehaviour
         {
             DeselectStructure();
             structureFromStore = true;
-            GameObject LPinstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-            structure = LPinstance.GetComponent<Structure>();
+            GameObject structureInstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+            structure = structureInstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
             structureState = StructManState.moving;
             if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);

@@ -59,8 +59,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d9ff4b7ca63a94ebedd5d4d321a4da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 0}
+  healthBarPrefab: {fileID: 0}
   tileHighlight: {fileID: 7067514012913874853}
-  selectedTileHighlight: {fileID: 0}
+  selectedTileHighlight: {fileID: 4255771629231950415}
   isOverUI: 0
 --- !u!1 &3545930471103010973
 GameObject:
