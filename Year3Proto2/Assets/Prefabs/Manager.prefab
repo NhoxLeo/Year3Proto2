@@ -104,8 +104,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4d32735369515f40a5be28a3fcbbe85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemies: []
+  enemies:
+  - {fileID: 3370710463950152404, guid: f1737e3674a929b45abf54fa8c30ddeb, type: 3}
   enemiesPerWave: 6
+  cooldown: 1
+  enemyWave: {fileID: 4343382515965339557, guid: dc9bc59ea579df647bc3eecabd096749,
+    type: 3}
 --- !u!1001 &1934217215400905385
 PrefabInstance:
   m_ObjectHideFlags: 0

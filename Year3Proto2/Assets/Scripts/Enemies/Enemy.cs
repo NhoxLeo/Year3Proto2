@@ -59,9 +59,15 @@ public abstract class Enemy : MonoBehaviour
 
                     transform.position += transform.forward * speed * Time.deltaTime;
 
-                    foreach (GameObject @object in enemiesInArea) {
-                        if(Vector3.Distance(@object.transform.position, transform.position) < 0.2f) 
+
+                    enemiesInArea.RemoveAll(enemy => enemy == null);
+
+                    foreach (GameObject @object in enemiesInArea)
+                    {
+                        if (Vector3.Distance(@object.transform.position, transform.position) < 0.2f)
+                        {
                             transform.position = (transform.position - @object.transform.position).normalized * 0.2f + @object.transform.position;
+                        }
                     }
        
                 }
@@ -147,5 +153,10 @@ public abstract class Enemy : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, target.transform.position);
         }
+    }
+
+    public Structure GetTarget()
+    {
+        return target;
     }
 }
