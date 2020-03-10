@@ -52,6 +52,7 @@ MonoBehaviour:
   sitHeight: 0.5
   displayName: 
   attachedTile: {fileID: 0}
+  isPlaced: 0
   storage: 0
 --- !u!33 &4206844913795456530
 MeshFilter:
@@ -79,7 +80,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8005206982585323536, guid: c8ec2bb1c58b16e489035c010cc833c1, type: 3}
+  - {fileID: 2100000, guid: 77ad46cdae6d29d408dd6319613b4e07, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
