@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyWave : MonoBehaviour
 {
     private List<Enemy> enemies = new List<Enemy>();
+
     private bool initialised = false;
 
     public Enemy[] enemyPrefabs;
@@ -18,11 +19,6 @@ public class EnemyWave : MonoBehaviour
             enemyWaves.Remove(this);
             Destroy(gameObject);
         }
-    }
-
-    private void Update()
-    {
-        
     }
 
     public void Initialize(List<TileBehaviour> availableTiles, int enemiesPerWave)
@@ -39,13 +35,20 @@ public class EnemyWave : MonoBehaviour
 
                     Enemy enemy = Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], position, Quaternion.identity, transform);
 
-                    Vector2 enemyPosition = CalcPosition(i, 4, 0.3f);
+                    Vector2 enemyPosition = CalculatePosition(i, 4, 0.3f);
 
                     position.x += enemyPosition.x;
                     position.z += enemyPosition.y;
 
                     enemy.transform.position = position;
                     enemies.Add(enemy);
+
+                    Structure structure = enemy.GetTarget();
+
+                    if (structure != null)
+                    {
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(structure.transform.position - transform.position), 0.0f);
+                    }
                 }
             }
         }
@@ -58,18 +61,10 @@ public class EnemyWave : MonoBehaviour
         TileBehaviour tileBehaviour = tileBehaviours[Random.Range(0, tileBehaviours.Count - 1)];
         if (tileBehaviour == null) return null;
 
-        foreach (KeyValuePair<TileBehaviour.TileCode, TileBehaviour> keyValuePair in tileBehaviour.adjacentTiles)
-        {
-            if (keyValuePair.Value.attachedStructure)
-            {
-                return GetAvailableTile(tileBehaviours);
-            }
-        }
-
         return tileBehaviour;
     }
 
-    Vector2 CalcPosition(int index, int columns, float space)
+    Vector2 CalculatePosition(int index, int columns, float space)
     {
         float posX = (index % columns) * space;
         float posY = (index / columns) * space;

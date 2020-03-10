@@ -15,23 +15,33 @@ public abstract class Enemy : MonoBehaviour
     private EnemyState enemyState = EnemyState.IDLE;
     private List<GameObject> enemiesInArea = new List<GameObject>();
 
-    [Header("Stats")]
     public float health = 10.0f;
 
-    [Header("Velocity")]
-    public float moveSpeed = 8.0f;
-    public float rotationSpeed = 2.0f;
-
     protected float yPosition;
-    protected float speed = 0.6f;
     protected float jumpHeight = 0.1f;
     protected bool action = false;
 
+    public float speed = 0.6f;
+    public float scale = 0.0f;
+    public float damage = 2.0f;
+
+    private float finalSpeed = 0.0f;
+
     protected List<StructureType> structureTypes;
 
-    public abstract void Action(Structure structure);
+    public abstract void Action(Structure structure, float damage);
 
-    private void Update()
+    protected void EnemyStart()
+    {
+        scale = Random.Range(0.1f, 0.2f);
+        jumpHeight = scale;
+
+        transform.localScale = new Vector3(scale, scale, scale);
+        damage = scale * 20.0f;
+        finalSpeed = speed + scale / 4.0f;
+    }
+
+    private void FixedUpdate()
     {
         switch (enemyState)
         {
@@ -42,11 +52,11 @@ public abstract class Enemy : MonoBehaviour
                     enemyState = EnemyState.WALK;
 
                     transform.DOKill(false);
-                    transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
+                    transform.DOMoveY(yPosition + jumpHeight, finalSpeed).SetLoops(-1, LoopType.Yoyo);
                 }
                 else
                 {
-                    Action(target);
+                    Action(target, damage);
                 }
                 break;
             case EnemyState.WALK:
@@ -57,16 +67,15 @@ public abstract class Enemy : MonoBehaviour
                         if (!Next()) { target = null; }
                     }
 
-                    transform.position += transform.forward * speed * Time.deltaTime;
-
+                    transform.position += transform.forward * finalSpeed * Time.deltaTime;
 
                     enemiesInArea.RemoveAll(enemy => enemy == null);
 
                     foreach (GameObject @object in enemiesInArea)
                     {
-                        if (Vector3.Distance(@object.transform.position, transform.position) < 0.2f)
+                        if (Vector3.Distance(@object.transform.position, transform.position) < (scale + 0.2f))
                         {
-                            transform.position = (transform.position - @object.transform.position).normalized * 0.2f + @object.transform.position;
+                            transform.position = (transform.position - @object.transform.position).normalized * (scale + 0.2f) + @object.transform.position;
                         }
                     }
        
@@ -76,6 +85,8 @@ public abstract class Enemy : MonoBehaviour
                 break;
             case EnemyState.IDLE:
                 yPosition = transform.position.y;
+
+                transform.DOKill(false);
                 transform.DOMoveY(yPosition + jumpHeight, speed / 3.0f).SetLoops(-1, LoopType.Yoyo);
 
                 if (!Next()) { target = null; }
