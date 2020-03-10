@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 6331100484764424317}
   - component: {fileID: 6331100484764424316}
   - component: {fileID: 5813071429813056229}
+  - component: {fileID: 7783257105116407332}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -107,7 +108,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6331100484764424319}
   m_LocalRotation: {x: 0.19439211, y: 0.082892045, z: -0.01648822, w: 0.9772762}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7413800287715975970}
@@ -156,7 +157,7 @@ Light:
       e32: 0
       e33: 1
     m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 2800000, guid: 8e34454a458313a44b4ebf0f2daea16c, type: 3}
+  m_Cookie: {fileID: 2800000, guid: af1c5ce62b00d164081bb3159d54ae23, type: 3}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
   m_RenderMode: 0
@@ -205,8 +206,8 @@ MonoBehaviour:
   m_AffectDiffuse: 1
   m_AffectSpecular: 1
   m_NonLightmappedOnly: 0
-  m_ShapeWidth: 30
-  m_ShapeHeight: 20
+  m_ShapeWidth: 45
+  m_ShapeHeight: 18
   m_AspectRatio: 1
   m_ShapeRadius: 0.025
   m_SoftnessScale: 1
@@ -280,6 +281,20 @@ MonoBehaviour:
   useVolumetric: 1
   featuresFoldout: 1
   showAdditionalSettings: 0
+--- !u!114 &7783257105116407332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6331100484764424319}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 069a50eff21a2e34fbd00f0f07abd2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: {x: 0.5, y: 0, z: 0.75}
+  startDelay: 1
 --- !u!1 &8303001672212189441
 GameObject:
   m_ObjectHideFlags: 0

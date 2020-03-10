@@ -204,7 +204,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerData = new PlayerData(500, 500);
+        playerData = new PlayerData(200, 500);
         CalculateStorageMaximum();
         recentBatches = new List<Batch>();
     }
@@ -281,23 +281,9 @@ public class GameManager : MonoBehaviour
     {
         CalculateStorageMaximum();
 
-        // Update all Lumber Mills
-        LumberMill[] lumberMills = FindObjectsOfType<LumberMill>();
-        foreach (LumberMill lumberMill in lumberMills)
+        foreach (ResourceStructure resourceStructure in FindObjectsOfType<ResourceStructure>())
         {
-            lumberMill.CalculateTileBonus();
-        }
-        // Update all Mines
-        Mine[] mines = FindObjectsOfType<Mine>();
-        foreach (Mine mine in mines)
-        {
-            mine.CalculateTileBonus();
-        }
-        // Update all Farms
-        Farm[] farms = FindObjectsOfType<Farm>();
-        foreach (Farm farm in farms)
-        {
-            farm.CalculateTileBonus();
+            resourceStructure.OnPlace();
         }
 
         // Update all enemies
