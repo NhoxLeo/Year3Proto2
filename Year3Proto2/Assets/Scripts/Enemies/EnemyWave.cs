@@ -61,14 +61,6 @@ public class EnemyWave : MonoBehaviour
         TileBehaviour tileBehaviour = tileBehaviours[Random.Range(0, tileBehaviours.Count - 1)];
         if (tileBehaviour == null) return null;
 
-        foreach (KeyValuePair<TileBehaviour.TileCode, TileBehaviour> keyValuePair in tileBehaviour.adjacentTiles)
-        {
-            if (keyValuePair.Value.attachedStructure)
-            {
-                return GetAvailableTile(tileBehaviours);
-            }
-        }
-
         return tileBehaviour;
     }
 

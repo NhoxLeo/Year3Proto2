@@ -29,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
         {
             cooldown = 30.0f;
 
-            EnemyWave enemyWave = Instantiate(this.enemyWave, transform.parent);
+            EnemyWave enemyWave = Instantiate(this.enemyWave, transform);
             enemyWave.Initialize(GetAvailableTiles(), enemiesPerWave);
             enemyWaves.Add(enemyWave);
         }
@@ -43,7 +43,7 @@ public class EnemySpawner : MonoBehaviour
 
         foreach(TileBehaviour tileBehaviour in this.tileBehaviours)
         {
-            if (tileBehaviour.GetAttached() == null) tileBehaviours.Add(tileBehaviour);
+            if(tileBehaviour.GetSpawnTile()) tileBehaviours.Add(tileBehaviour);
         }
 
         return tileBehaviours;
