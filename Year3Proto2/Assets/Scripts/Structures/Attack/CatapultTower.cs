@@ -14,6 +14,8 @@ public class CatapultTower : AttackStructure
     private Vector3 current;
     private Vector3 origin;
 
+    private Vector3 final;
+
 
     void Start()
     {
@@ -28,29 +30,36 @@ public class CatapultTower : AttackStructure
 
     public override void Attack(GameObject target)
     {
-        if(spawnedBoulder == null)
+
+        if (spawnedBoulder == null)
         {
             Vector3 initialPosition = transform.position + new Vector3(0.0f, transform.localScale.y / 2.0f, 0.0f);
             spawnedBoulder = Instantiate(boulder, initialPosition, Quaternion.identity, transform);
             origin = current = initialPosition;
             distanceTravelled = 0.0f;
+
+            Vector3 position = target.transform.position;
+            position.y = -0.5f;
+
+            final = position;
         }
         else
         {
-            Vector3 direction = target.transform.position - current;
+            if (target == null) Destroy(spawnedBoulder.gameObject);
+
+            Vector3 direction = final - current;
             current += direction.normalized * speed * Time.deltaTime;
             distanceTravelled += speed * Time.deltaTime;
 
-            float totalDistance = Vector3.Distance(origin, target.transform.position);
+            float totalDistance = Vector3.Distance(origin, final);
             float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
             spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
 
-            if (Vector3.Distance(spawnedBoulder.transform.position, target.transform.position) < 0.05f)
+            if(spawnedBoulder.transform.position.y <= 0)
             {
                 enemies.Remove(target);
 
                 Destroy(spawnedBoulder);
-                Destroy(target);
             }
         }
     }
