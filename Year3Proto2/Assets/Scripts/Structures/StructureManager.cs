@@ -113,6 +113,8 @@ public class StructureManager : MonoBehaviour
                                         hitPos.y = structure.sitHeight;
                                         structure.transform.position = hitPos;
 
+                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
+
                                         if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
                                         if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
 
@@ -127,10 +129,9 @@ public class StructureManager : MonoBehaviour
                                     else { canPlaceHere = true; }
                                     if (canPlaceHere)
                                     {
-                                        Vector3 structPos = structure.transform.position;
-                                        structPos.x = hit.transform.position.x;
+                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
+                                        Vector3 structPos = hit.transform.transform.position;
                                         structPos.y = structure.sitHeight;
-                                        structPos.z = hit.transform.position.z;
                                         structure.transform.position = structPos;
 
                                         Vector3 highlightPos = structPos;
@@ -160,7 +161,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                             gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
                                                             structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
-                                                            structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
                                                         }
                                                     }
                                                 }
@@ -174,7 +175,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                             gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
                                                             structure.GetComponent<Mine>().wasPlacedOnHills = true;
-                                                            structure.GetComponent<MeshRenderer>().material = Resources.Load("HillMaterial") as Material;
+                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
                                                         }
                                                     }
                                                 }
@@ -188,7 +189,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                             gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
                                                             structure.GetComponent<Farm>().wasPlacedOnPlains = true;
-                                                            structure.GetComponent<MeshRenderer>().material = Resources.Load("PlainsMaterial") as Material;
+                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", new Color(0.7f, 1.0f, 0.7f, 1.0f));
                                                         }
                                                     }
                                                 }

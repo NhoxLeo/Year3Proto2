@@ -11,7 +11,7 @@ public abstract class ResourceStructure : Structure
     protected int tileBonus = 0;
     public float productionTime = 3f;
     protected float remainingTime = 3f;
-    protected int batchSize = 2;
+    protected int batchSize = 1;
     private GameObject tileHighlight;
     public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
 
