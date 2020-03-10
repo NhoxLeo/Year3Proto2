@@ -1618,6 +1618,8 @@ MonoBehaviour:
   woodSprite: {fileID: 21300000, guid: 86cb29ee8be42a543b0ef4fa49cae6b2, type: 3}
   metalSprite: {fileID: 21300000, guid: 017e6e3eb3a6f254495c46f7ea5ebbc9, type: 3}
   emptySprite: {fileID: 0}
+  doAutoUpdate: 1
+  updateInterval: 1.5
 --- !u!1 &5593073932314056941
 GameObject:
   m_ObjectHideFlags: 0
