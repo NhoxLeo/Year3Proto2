@@ -7,6 +7,7 @@ public abstract class AttackStructure : Structure
     protected GameObject target = null;
     protected List<GameObject> enemies;
 
+
     protected void AttackStart()
     {
         StructureStart();
@@ -16,33 +17,39 @@ public abstract class AttackStructure : Structure
 
     protected void AttackUpdate()
     {
-        StructureUpdate();
-
-        if (enemies.Count > 0)
+        if (attachedTile != null)
         {
-            if (target == null)
+            StructureUpdate();
+
+            if (enemies.Count > 0)
             {
-
-                float closestDistanceSqr = Mathf.Infinity;
-                Vector3 currentPosition = transform.position;
-
-                GameObject nearestEnemy = null;
-                foreach (GameObject enemy in enemies)
+                if (target == null)
                 {
-                    Vector3 directionToTarget = enemy.transform.position - currentPosition;
-                    float dSqrToTarget = directionToTarget.sqrMagnitude;
-                    if (dSqrToTarget < closestDistanceSqr)
-                    {
-                        closestDistanceSqr = dSqrToTarget;
-                        nearestEnemy = enemy;
-                    }
-                }
 
-                if (nearestEnemy != null) target = nearestEnemy;
-            }
-            else
-            {
-                Attack(target);
+                    float closestDistanceSqr = Mathf.Infinity;
+                    Vector3 currentPosition = transform.position;
+
+                    GameObject nearestEnemy = null;
+
+                    enemies.RemoveAll(enemy => enemy == null);
+
+                    foreach (GameObject enemy in enemies)
+                    {
+                        Vector3 directionToTarget = enemy.transform.position - currentPosition;
+                        float dSqrToTarget = directionToTarget.sqrMagnitude;
+                        if (dSqrToTarget < closestDistanceSqr)
+                        {
+                            closestDistanceSqr = dSqrToTarget;
+                            nearestEnemy = enemy;
+                        }
+                    }
+
+                    if (nearestEnemy != null) target = nearestEnemy;
+                }
+                else
+                {
+                    Attack(target);
+                }
             }
         }
     }
