@@ -7,7 +7,7 @@ public class ArcherTower : AttackStructure
     public GameObject arrow;
 
     private GameObject spawnedArrow;
-    private const float arrowSpeed = 1.6f;
+    private const float arrowSpeed = 2.5f;
     public float arrowDamage = 5.0f;
 
     void Start()
@@ -46,8 +46,9 @@ public class ArcherTower : AttackStructure
                 else
                 {
                     target.GetComponent<Enemy>().health -= arrowDamage;
-                    Destroy(spawnedArrow.gameObject);
                 }
+
+                Destroy(spawnedArrow.gameObject);
             }
         }
         else

@@ -22,7 +22,7 @@ public class Invader : Enemy
         cooldown -= Time.deltaTime;
         if (cooldown <= 0)
         {
-            cooldown = speed / 0.6f;
+            cooldown = finalSpeed / 0.6f;
             structure.Damage(damage);
         }
 
@@ -32,7 +32,7 @@ public class Invader : Enemy
             transform.DOMoveY(yPosition, 0.0f);
 
             transform.DOKill(false);
-            transform.DOMove(transform.position + (transform.forward * 0.1f), speed / 2.0f).SetLoops(-1, LoopType.Yoyo);
+            transform.DOMove(transform.position + (transform.forward * scale), finalSpeed / 3.0f).SetLoops(-1, LoopType.Yoyo);
 
             action = true;
         }
