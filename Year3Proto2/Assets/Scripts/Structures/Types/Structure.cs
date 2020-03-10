@@ -18,6 +18,7 @@ public abstract class Structure : MonoBehaviour
     public TileBehaviour attachedTile;
     public bool isPlaced;
     protected float health = 100.0f;
+    private bool isBuilt;
 
     protected StructureType structureType;
 
@@ -26,7 +27,7 @@ public abstract class Structure : MonoBehaviour
         isPlaced = false;
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
         {
-            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this, true);
+            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
         }
     }
 
@@ -34,7 +35,7 @@ public abstract class Structure : MonoBehaviour
     {
         if(health <= 0.0f)
         {
-            attachedTile.Detach(true);
+            attachedTile.Detach();
             Destroy(gameObject);
         }
     }
@@ -68,7 +69,7 @@ public abstract class Structure : MonoBehaviour
     {
         if (attachedTile)
         {
-            attachedTile.Detach(true);
+            attachedTile.Detach();
         }
     }
 

@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class TileBehaviour : MonoBehaviour
 {
+    [SerializeField] [Tooltip("Determines whether or not the player can place structures on the tile.")]
+    private bool isPlayable;
+    [SerializeField] [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
+    private bool isValidSpawnTile;
+    
     public enum TileCode
     { 
         north = 0,
@@ -30,60 +35,34 @@ public class TileBehaviour : MonoBehaviour
         tcBoxCollider.enabled = false;
 
         // Cast 4 rays to get adjacent tiles, store them
-        int tcLayer = LayerMask.NameToLayer("TileCollider");
-        tcLayer = 1 << tcLayer;
-        int structLayer = LayerMask.NameToLayer("Structure");
-        structLayer = 1 << structLayer;
-        Color colour = Color.green;
-        colour.a = .1f;
+        int tcLayer = 1 << LayerMask.NameToLayer("TileCollider");
+        int structLayer = 1 << LayerMask.NameToLayer("Structure");
+
         // North
         if (Physics.Raycast(tileCollider.transform.position, Vector3.forward, out RaycastHit hit, .8f, tcLayer))
         {
-            // if we hit a TileCollider
-            if (hit.collider.name == "TileCollider")
-            {
-                adjacentTiles.Add(TileCode.north, hit.collider.GetComponentInParent<TileBehaviour>());
-                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.forward * .8f, Color.green, 5f);
-            }
+            adjacentTiles.Add(TileCode.north, hit.collider.GetComponentInParent<TileBehaviour>());
         }
         // East
         if (Physics.Raycast(tileCollider.transform.position, Vector3.right, out hit, .8f, tcLayer))
         {
-            // if we hit a TileCollider
-            if (hit.collider.name == "TileCollider")
-            {
-                adjacentTiles.Add(TileCode.east, hit.collider.GetComponentInParent<TileBehaviour>());
-                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.right * .8f, Color.green, 5f);
-            }
+            adjacentTiles.Add(TileCode.east, hit.collider.GetComponentInParent<TileBehaviour>());
         }
         // South
         if (Physics.Raycast(tileCollider.transform.position, Vector3.back, out hit, .8f, tcLayer))
         {
-            // if we hit a TileCollider
-            if (hit.collider.name == "TileCollider")
-            {
-                adjacentTiles.Add(TileCode.south, hit.collider.GetComponentInParent<TileBehaviour>());
-                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.back * .8f, Color.green, 5f);
-            }
+            adjacentTiles.Add(TileCode.south, hit.collider.GetComponentInParent<TileBehaviour>());
         }
         // West
         if (Physics.Raycast(tileCollider.transform.position, Vector3.left, out hit, .8f, tcLayer))
         {
-            // if we hit a TileCollider
-            if (hit.collider.name == "TileCollider")
-            {
-                adjacentTiles.Add(TileCode.west, hit.collider.GetComponentInParent<TileBehaviour>());
-                hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
-                Debug.DrawRay(tileCollider.transform.position, Vector3.left * .8f, Color.green, 5f);
-            }
+            adjacentTiles.Add(TileCode.west, hit.collider.GetComponentInParent<TileBehaviour>());
+            //hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
         }
 
         if (Physics.Raycast(tileCollider.transform.position, Vector3.up, out hit, 1.6f, structLayer))
         {
-            Attach(hit.transform.GetComponent<Structure>(), true);
+            Attach(hit.transform.GetComponent<Structure>());
         }
 
         // Turn on the collider
@@ -101,23 +80,27 @@ public class TileBehaviour : MonoBehaviour
         return attachedStructure;
     }
 
-    public void Attach(Structure _structure, bool _alsoAttachSelf = false)
+    public void Attach(Structure _structure)
     {
-        if (_alsoAttachSelf)
-        {
-            _structure.attachedTile = this;
-            _structure.isPlaced = true;
-        }
+        _structure.attachedTile = this;
+        _structure.isPlaced = true;
         attachedStructure = _structure;
     }
 
-    public void Detach(bool _alsoDetachSelf = false)
+    public void Detach()
     {
-        if (_alsoDetachSelf)
-        {
-            attachedStructure.attachedTile = null;
-            attachedStructure.isPlaced = false;
-        }
+        attachedStructure.attachedTile = null;
+        attachedStructure.isPlaced = false;
         attachedStructure = null;
+    }
+
+    public bool GetPlayable()
+    {
+        return isPlayable;
+    }
+
+    public bool GetSpawnTile()
+    {
+        return isValidSpawnTile;
     }
 }

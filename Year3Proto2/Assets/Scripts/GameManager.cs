@@ -281,23 +281,9 @@ public class GameManager : MonoBehaviour
     {
         CalculateStorageMaximum();
 
-        // Update all Lumber Mills
-        LumberMill[] lumberMills = FindObjectsOfType<LumberMill>();
-        foreach (LumberMill lumberMill in lumberMills)
+        foreach (ResourceStructure resourceStructure in FindObjectsOfType<ResourceStructure>())
         {
-            lumberMill.CalculateTileBonus();
-        }
-        // Update all Mines
-        Mine[] mines = FindObjectsOfType<Mine>();
-        foreach (Mine mine in mines)
-        {
-            mine.CalculateTileBonus();
-        }
-        // Update all Farms
-        Farm[] farms = FindObjectsOfType<Farm>();
-        foreach (Farm farm in farms)
-        {
-            farm.CalculateTileBonus();
+            resourceStructure.OnPlace();
         }
 
         // Update all enemies

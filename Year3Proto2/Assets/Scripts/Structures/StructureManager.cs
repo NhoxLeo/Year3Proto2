@@ -85,7 +85,7 @@ public class StructureManager : MonoBehaviour
     {
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-
+        
         if (!isOverUI)
         {
             if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
@@ -99,105 +99,113 @@ public class StructureManager : MonoBehaviour
                         // If we hit a tile...
                         if (hit.collider.name.Contains("Tile"))
                         {
-                            bool canPlaceHere = false;
-                            // If the tile we hit has an attached object...
-                            Structure attached = hit.transform.GetComponent<TileBehaviour>().GetAttached();
-                            if (attached)
+                            TileBehaviour tile = hit.transform.GetComponent<TileBehaviour>();
+                            if (tile)
                             {
-                                Vector3 hitPos = hit.point;
-                                hitPos.y = structure.sitHeight;
-                                structure.transform.position = hitPos;
-
-                                if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
-                                if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
-
-                                // Special condition: Lumber Mills can be placed on Forest Environment
-                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                // Special condition: Lumber Mills can be placed on Hill Environment
-                                else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                // Special condition: Lumber Mills can be placed on Forest Environment
-                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                            }
-                            // if the tile we hit does not have an attached object...
-                            else { canPlaceHere = true; }
-                            if (canPlaceHere)
-                            {
-                                Vector3 structPos = structure.transform.position;
-                                structPos.x = hit.transform.position.x;
-                                structPos.y = structure.sitHeight;
-                                structPos.z = hit.transform.position.z;
-                                structure.transform.position = structPos;
-
-                                Vector3 highlightPos = structPos;
-                                highlightPos.y = 0.501f;
-                                tileHighlight.position = highlightPos;
-                                selectedTileHighlight.position = highlightPos;
-
-                                if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
-                                if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
-
-                                // If the user clicked the LMB...
-                                if (Input.GetMouseButtonDown(0))
+                                if (tile.GetPlayable())
                                 {
-                                    if ((structureFromStore && BuyBuilding()) || !structureFromStore)
+                                    bool canPlaceHere = false;
+                                    // If the tile we hit has an attached object...
+                                    Structure attached = tile.GetAttached();
+                                    if (attached)
                                     {
-                                        // Attach the structure to the tile and vica versa
-                                        if (attached) { attached.attachedTile.Detach(true); }
-                                        hit.transform.GetComponent<TileBehaviour>().Attach(structure, true);
-                                        structure.OnPlace();
-                                        if (structure.IsStructure("Lumber Mill"))
+                                        Vector3 hitPos = hit.point;
+                                        hitPos.y = structure.sitHeight;
+                                        structure.transform.position = hitPos;
+
+                                        if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
+                                        if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+
+                                        // Special condition: Lumber Mills can be placed on Forest Environment
+                                        if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                        // Special condition: Lumber Mills can be placed on Hill Environment
+                                        else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                        // Special condition: Lumber Mills can be placed on Forest Environment
+                                        else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
+                                    }
+                                    // if the tile we hit does not have an attached object...
+                                    else { canPlaceHere = true; }
+                                    if (canPlaceHere)
+                                    {
+                                        Vector3 structPos = structure.transform.position;
+                                        structPos.x = hit.transform.position.x;
+                                        structPos.y = structure.sitHeight;
+                                        structPos.z = hit.transform.position.z;
+                                        structure.transform.position = structPos;
+
+                                        Vector3 highlightPos = structPos;
+                                        highlightPos.y = 0.501f;
+                                        tileHighlight.position = highlightPos;
+                                        selectedTileHighlight.position = highlightPos;
+
+                                        if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
+                                        if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+                                        // If the user clicked the LMB...
+                                        if (Input.GetMouseButtonDown(0))
                                         {
-                                            if (attached)
+                                            if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                             {
-                                                if (attached.IsStructure("Forest Environment"))
+                                                // Attach the structure to the tile and vica versa
+                                                if (attached) { attached.attachedTile.Detach(); }
+                                                tile.Attach(structure);
+                                                structure.OnPlace();
+                                                if (structure.IsStructure("Lumber Mill"))
                                                 {
-                                                    // The structure is being placed on a forest
-                                                    Destroy(attached.gameObject);
-                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
-                                                    structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
-                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                    if (attached)
+                                                    {
+                                                        if (attached.IsStructure("Forest Environment"))
+                                                        {
+                                                            // The structure is being placed on a forest
+                                                            Destroy(attached.gameObject);
+                                                            gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
+                                                            structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
+                                                            structure.GetComponent<MeshRenderer>().material = Resources.Load("TreeMaterial") as Material;
+                                                        }
+                                                    }
                                                 }
+                                                else if (structure.IsStructure("Mine"))
+                                                {
+                                                    if (attached)
+                                                    {
+                                                        if (attached.IsStructure("Hill Environment"))
+                                                        {
+                                                            // The structure is being placed on a forest
+                                                            Destroy(attached.gameObject);
+                                                            gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
+                                                            structure.GetComponent<Mine>().wasPlacedOnHills = true;
+                                                            structure.GetComponent<MeshRenderer>().material = Resources.Load("HillMaterial") as Material;
+                                                        }
+                                                    }
+                                                }
+                                                else if (structure.IsStructure("Farm"))
+                                                {
+                                                    if (attached)
+                                                    {
+                                                        if (attached.IsStructure("Plains Environment"))
+                                                        {
+                                                            // The structure is being placed on a forest
+                                                            Destroy(attached.gameObject);
+                                                            gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
+                                                            structure.GetComponent<Farm>().wasPlacedOnPlains = true;
+                                                            structure.GetComponent<MeshRenderer>().material = Resources.Load("PlainsMaterial") as Material;
+                                                        }
+                                                    }
+                                                }
+                                                gameMan.OnStructurePlace();
+                                                if (structureFromStore)
+                                                {
+                                                    FindObjectOfType<BuildPanel>().UINoneSelected();
+                                                    FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                                                }
+                                                SelectStructure(structure);
+                                                structureState = StructManState.selected;
                                             }
                                         }
-                                        else if (structure.IsStructure("Mine"))
-                                        {
-                                            if (attached)
-                                            {
-                                                if (attached.IsStructure("Hill Environment"))
-                                                {
-                                                    // The structure is being placed on a forest
-                                                    Destroy(attached.gameObject);
-                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
-                                                    structure.GetComponent<Mine>().wasPlacedOnHills = true;
-                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("HillMaterial") as Material;
-                                                }
-                                            }
-                                        }
-                                        else if (structure.IsStructure("Farm"))
-                                        {
-                                            if (attached)
-                                            {
-                                                if (attached.IsStructure("Plains Environment"))
-                                                {
-                                                    // The structure is being placed on a forest
-                                                    Destroy(attached.gameObject);
-                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
-                                                    structure.GetComponent<Farm>().wasPlacedOnPlains = true;
-                                                    structure.GetComponent<MeshRenderer>().material = Resources.Load("PlainsMaterial") as Material;
-                                                }
-                                            }
-                                        }
-                                        gameMan.OnStructurePlace();
-                                        if (structureFromStore)
-                                        {
-                                            FindObjectOfType<BuildPanel>().UINoneSelected();
-                                            FindObjectOfType<BuildPanel>().ResetBuildingSelected();
-                                        }
-                                        SelectStructure(structure);
-                                        structureState = StructManState.selected;
                                     }
                                 }
                             }
+                            
                         }
                     }
                 }
@@ -238,7 +246,8 @@ public class StructureManager : MonoBehaviour
                                     structure = hitStructure;
                                     structureOldTile = structure.attachedTile;
                                     // Detach the structure from it's tile, and vica versa.
-                                    structure.attachedTile.Detach(true);
+                                    structure.attachedTile.Detach();
+                                    structure.OnDeselected();
                                     // Put the manager back into moving mode.
                                     structureState = StructManState.moving;
                                     buildingInfo.showPanel = false;
@@ -412,7 +421,7 @@ public class StructureManager : MonoBehaviour
                     structPos.y = structure.sitHeight;
                     structPos.z = structureOldTile.transform.position.z;
                     structure.transform.position = structPos;
-                    structureOldTile.Attach(structure, true);
+                    structureOldTile.Attach(structure);
                     structureOldTile = null;
                 }
                 structureState = StructManState.selected;

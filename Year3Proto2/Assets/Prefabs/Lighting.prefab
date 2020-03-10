@@ -206,8 +206,8 @@ MonoBehaviour:
   m_AffectDiffuse: 1
   m_AffectSpecular: 1
   m_NonLightmappedOnly: 0
-  m_ShapeWidth: 30
-  m_ShapeHeight: 12
+  m_ShapeWidth: 45
+  m_ShapeHeight: 18
   m_AspectRatio: 1
   m_ShapeRadius: 0.025
   m_SoftnessScale: 1

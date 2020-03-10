@@ -52,6 +52,8 @@ public class CameraController : MonoBehaviour
 
     private Vector3 cameraZoomMidPoint;
 
+    //private int cu
+
 
     // Start is called before the first frame update
     void Start()
@@ -74,7 +76,7 @@ public class CameraController : MonoBehaviour
         if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }
         if (scrollOffset < scrollMin) { scrollOffset = scrollMin; }
 
-        float scrollMoveBonus = (scrollOffset < 0f ? 1f - scrollOffset * 0.2f : 1f);
+        float scrollMoveBonus = 1f + (-scrollOffset + 10f) * 0.15f;
 
 
         if (Input.GetKey(moveNorth))
@@ -100,5 +102,7 @@ public class CameraController : MonoBehaviour
         if (cameraZoomMidPoint.z < zAxisMin) { cameraZoomMidPoint.z = zAxisMin; }
 
         transform.position = cameraZoomMidPoint + transform.forward * scrollOffset * .5f;
+
+        //Screen.width
     }
 }
