@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.41989428, g: 0.2642923, b: 0.1790575, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -31846,22 +31846,22 @@ PrefabInstance:
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 259.115
+      value: 52
       objectReference: {fileID: 0}
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -45
       objectReference: {fileID: 0}
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -85547,6 +85547,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 700899947784832006, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: enemiesPerWave
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
         type: 3}
