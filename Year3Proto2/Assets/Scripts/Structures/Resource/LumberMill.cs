@@ -20,34 +20,13 @@ public class LumberMill : ResourceStructure
     {
         ResourceUpdate();
     }
-    public void CalculateTileBonus()
+
+    public override void OnPlace()
     {
-        tileBonus = 1;
+        base.OnPlace();
         if (wasPlacedOnForest)
         {
             tileBonus++;
         }
-
-        // If the Lumber Mill is placed on a tile...
-        if (attachedTile)
-        {
-            // For each possible tile
-            for (int i = 0; i < 4; i++)
-            {
-                if (attachedTile.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
-                {
-                    GameObject adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
-                    // If there is a structure on the tile...
-                    if (adjStructure)
-                    {
-                        if (adjStructure.GetComponent<Structure>().IsStructure("Forest Environment"))
-                        { tileBonus++; }
-                    }
-                }
-            }
-        }
-        //Debug.Log("New tile bonus for " + gameObject.ToString() + " is " + tileBonus.ToString());
     }
-
-
 }

@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Raider : Enemy
 {
-    public override void Action(Structure structure)
+    private void Start()
+    {
+        EnemyStart();
+    }
+    public override void Action(Structure structure, float damage)
     {
         throw new System.NotImplementedException();
     }

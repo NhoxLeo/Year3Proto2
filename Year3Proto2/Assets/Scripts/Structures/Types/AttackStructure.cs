@@ -23,15 +23,13 @@ public abstract class AttackStructure : Structure
 
             if (enemies.Count > 0)
             {
+                enemies.RemoveAll(enemy => enemy == null);
                 if (target == null)
-                {
-
+                { 
                     float closestDistanceSqr = Mathf.Infinity;
                     Vector3 currentPosition = transform.position;
 
                     GameObject nearestEnemy = null;
-
-                    enemies.RemoveAll(enemy => enemy == null);
 
                     foreach (GameObject enemy in enemies)
                     {
