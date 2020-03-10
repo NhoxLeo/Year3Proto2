@@ -7,7 +7,7 @@ public class CatapultTower : AttackStructure
     public GameObject boulder;
     private GameObject spawnedBoulder;
 
-    private float speed = 0.6f; 
+    private float speed = 0.8f; 
     private float arcFactor = 0.45f;
     private float distanceTravelled;
 
@@ -55,12 +55,24 @@ public class CatapultTower : AttackStructure
             float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
             spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
 
-            if(spawnedBoulder.transform.position.y <= 0)
+            if (spawnedBoulder.transform.position.y <= 0)
             {
-                enemies.Remove(target);
-
                 Destroy(spawnedBoulder);
+
+                foreach (GameObject enemy in new List<GameObject>(enemies))
+                {
+                    if(Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
+                    {
+                        enemies.Remove(target);
+                        Destroy(enemy);
+                    }
+                }
             }
+        }
+
+        if(enemies.Count <= 0)
+        {
+            Destroy(spawnedBoulder);
         }
     }
 }
