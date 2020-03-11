@@ -12,7 +12,7 @@ public class EnemySpawner : MonoBehaviour
     public int newEnemiesPerWave = 4;
     public float cooldown = 30.0f;
     public float timeBetweenWaves = 30.0f;
-
+    private int waveCounter = 0;
     private TileBehaviour[] tileBehaviours;
 
     private List<EnemyWave> enemyWaves;
@@ -29,6 +29,11 @@ public class EnemySpawner : MonoBehaviour
         cooldown -= Time.deltaTime;
         if (cooldown <= 0.0f)
         {
+            waveCounter++;
+            if (waveCounter == 1)
+            {
+                FindObjectOfType<MessageBox>().ShowMessage("Invaders incoming!", 3.5f);
+            }
             cooldown = timeBetweenWaves;
             enemiesPerWave += newEnemiesPerWave;
             EnemyWave enemyWave = Instantiate(this.enemyWave, transform);
