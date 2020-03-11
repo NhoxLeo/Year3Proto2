@@ -6401,6 +6401,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2f2b601de1dd8144e8be7161af078bbc,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -6596,6 +6602,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: eaef4bcca9e76134a9988ccf21a0f308,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -6916,6 +6928,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4128ebb9db57bd2448664d9d6d83f55c,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7106,6 +7124,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c41ada5dce9bd7540b42956af5e7b53e,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7296,6 +7320,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e68883b661b640b4181a43e95a73f1de,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7471,6 +7501,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f7e631e842289ac4d9e426d10a669fbe,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7666,6 +7702,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9f4284a4ef9776a48bbfb8d58f45d2af,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -8034,6 +8076,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3455722143598662045}
     m_Modifications:
+    - target: {fileID: 821222961758712432, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b8cb32de9f9ad4444b0b78842cd018fb,
+        type: 3}
     - target: {fileID: 2945052394925961421, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target

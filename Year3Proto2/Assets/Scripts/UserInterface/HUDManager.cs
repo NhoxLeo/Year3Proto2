@@ -23,7 +23,7 @@ public class HUDManager : MonoBehaviour
         metalText = transform.Find("ResourceBar/MetalText").GetComponent<TMP_Text>();
     }
 
-    void LateUpdate()
+    void OnGUI()
     {
         float foodVel = game.GetFoodVelocity(1);
         string foodSign = (Mathf.Sign(foodVel) == 1) ? "+" : "";
