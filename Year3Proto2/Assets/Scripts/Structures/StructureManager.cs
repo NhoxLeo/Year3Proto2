@@ -297,6 +297,7 @@ public class StructureManager : MonoBehaviour
             {
                 if (!selectedStructure)
                 {
+                    DeselectStructure();
                     structureState = StructManState.selecting;
                 }
                 else
@@ -598,6 +599,9 @@ public class StructureManager : MonoBehaviour
         envInfo.SetVisibility(true);
         switch (_structure.GetStructureName())
         {
+            case "Longhaus":
+                envInfo.ShowInfo("The Longhaus is your base of operations, protect it at all costs! The Longhaus generates a small amount of wood & food and an even smaller amount of metal.");
+                break;
             case "Forest Environment":
                 envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
                 break;
@@ -606,6 +610,30 @@ public class StructureManager : MonoBehaviour
                 break;
             case "Plains Environment":
                 envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
+                break;
+            case "Farm":
+                envInfo.ShowInfo("The Farm generates Food. It gains a bonus from all plains tiles surrounding it, and an additional bonus if placed on a plains tile.");
+                break;
+            case "Lumber Mill":
+                envInfo.ShowInfo("The Lumber Mill generates Wood. It gains a bonus from all forest tiles surrounding it, and an additional bonus if placed on a forest tile.");
+                break;
+            case "Mine":
+                envInfo.ShowInfo("The Mine generates Metal. It gains a bonus from all hill tiles surrounding it, and an additional bonus if placed on a hill tile.");
+                break;
+            case "Granary":
+                envInfo.ShowInfo("The Granary stores Food. If it is broken, you will lose the additional capacity it gives you, and any excess Food you have will be lost.");
+                break;
+            case "Lumber Pile":
+                envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
+                break;
+            case "Metal Storehouse":
+                envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
+                break;
+            case "Archer Tower":
+                envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
+                break;
+            case "Catapult":
+                envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
                 break;
         }
 
