@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CameraController : MonoBehaviour
 {
@@ -20,6 +21,9 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] [Tooltip("Rate of movement for the camera")]
     private float sensitivity;
+
+    [SerializeField] [Tooltip("Rate at which camera lerps movement")]
+    private float lerpSpeed = 10.0f;
 
     [Header("Motion Limits")]
 
@@ -101,7 +105,9 @@ public class CameraController : MonoBehaviour
         if (cameraZoomMidPoint.z > zAxisMax) { cameraZoomMidPoint.z = zAxisMax; }
         if (cameraZoomMidPoint.z < zAxisMin) { cameraZoomMidPoint.z = zAxisMin; }
 
-        transform.position = cameraZoomMidPoint + transform.forward * scrollOffset * .5f;
+        //transform.position = cameraZoomMidPoint + transform.forward * scrollOffset * .5f;
+
+        transform.position = Vector3.Lerp(transform.position, cameraZoomMidPoint + transform.forward * scrollOffset * .5f, Time.smoothDeltaTime * lerpSpeed);
 
         //Screen.width
     }
