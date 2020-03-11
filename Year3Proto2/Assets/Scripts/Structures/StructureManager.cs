@@ -389,8 +389,11 @@ public class StructureManager : MonoBehaviour
                         // If the hit transform has a structure component... (SHOULD ALWAYS)
                         if (hitStructure)
                         {
-                            SelectStructure(hitStructure);
-                            structureState = StructManState.selected;
+                            if (hitStructure.attachedTile.GetPlayable())
+                            {
+                                SelectStructure(hitStructure);
+                                structureState = StructManState.selected;
+                            }
                         }
                         else // The hit transform hasn't got a structure component
                         {
