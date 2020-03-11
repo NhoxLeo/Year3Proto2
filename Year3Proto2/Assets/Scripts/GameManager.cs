@@ -164,8 +164,10 @@ public struct PlayerData
 public class GameManager : MonoBehaviour
 {
     private float batchMaxAge = 3.0f;
-
+    private float gameoverTimer = 5.0f;
     private List<Batch> recentBatches;
+
+    private static Dictionary<string, AudioClip> audioClips;
 
     int recentWood
     {
@@ -215,6 +217,20 @@ public class GameManager : MonoBehaviour
 
     public PlayerData playerData;
 
+    private void Awake()
+    {
+        audioClips = new Dictionary<string, AudioClip>
+        {
+            { "horn", Resources.Load("Audio/SFX/sfxHorn") as AudioClip },
+            { "build", Resources.Load("Audio/SFX/sfxBuild") as AudioClip },
+            { "arrow", Resources.Load("Audio/SFX/sfxArrow") as AudioClip },
+            { "buildingHit", Resources.Load("Audio/SFX/sfxBuildingHit") as AudioClip },
+            { "buildingDestroy", Resources.Load("Audio/SFX/sfxBuildingDestroy") as AudioClip },
+            { "catapultFire", Resources.Load("Audio/SFX/sfxCatapultFire") as AudioClip },
+            { "lose", Resources.Load("Audio/SFX/sfxLose") as AudioClip },
+        };
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -238,6 +254,14 @@ public class GameManager : MonoBehaviour
         foreach (Batch batch in batchesToRemove)
         {
             recentBatches.Remove(batch);
+        }
+        if (!FindObjectOfType<Longhaus>())
+        {
+            gameoverTimer -= Time.deltaTime;
+            if (gameoverTimer < 0f)
+            {
+                FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+            }
         }
     }
 
@@ -306,5 +330,20 @@ public class GameManager : MonoBehaviour
         {
             enemy.Next();
         }
+    }
+
+    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f)
+    {
+        GameObject spawnAudio = new GameObject("TemporarySoundObject");
+        spawnAudio.transform.position = _positon;
+        AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
+        DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
+        spawnAudioDestroy.SetLifetime(audioClips[_sfxName].length);
+        spawnAudioComp.spatialBlend = 1.0f;
+        spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
+        spawnAudioComp.maxDistance = 100f;
+        spawnAudioComp.clip = audioClips[_sfxName];
+        spawnAudioComp.Play();
+        spawnAudioComp.volume = _volume;
     }
 }

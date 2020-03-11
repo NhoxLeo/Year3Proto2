@@ -36,6 +36,7 @@ public class Longhaus : Structure
             if (!longhausDead)
             {
                 FindObjectOfType<MessageBox>().ShowMessage("You Lost!", 3f);
+                GameManager.CreateAudioEffect("lose", Camera.main.transform.position, 2f);
                 //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
             }
             longhausDead = true;
@@ -48,8 +49,9 @@ public class Longhaus : Structure
             {
                 remainingTime = productionTime;
                 GameManager game = FindObjectOfType<GameManager>();
-                game.AddBatch(new Batch(1, ResourceType.metal));
-                game.AddBatch(new Batch(5, ResourceType.wood));
+                game.AddBatch(new Batch(3, ResourceType.metal));
+                game.AddBatch(new Batch(7, ResourceType.wood));
+                game.AddBatch(new Batch(7, ResourceType.food));
             }
         }
     }

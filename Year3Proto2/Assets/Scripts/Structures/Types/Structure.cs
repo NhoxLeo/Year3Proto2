@@ -44,6 +44,7 @@ public abstract class Structure : MonoBehaviour
     {
         if(health <= 0.0f)
         {
+            GameManager.CreateAudioEffect("buildingDestroy", transform.position);
             attachedTile.Detach();
             Destroy(gameObject);
         }
@@ -71,6 +72,7 @@ public abstract class Structure : MonoBehaviour
         health -= amount;
         if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
+        GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
     }
 
     public float GetHealth()
