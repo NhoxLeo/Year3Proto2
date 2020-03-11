@@ -5,6 +5,7 @@ public class Tooltip : MonoBehaviour
 {
     public bool showTooltip;
     private bool tipShown;
+    private bool interactable = true;
 
     private CanvasGroup canvas;
     private RectTransform rTransform;
@@ -12,6 +13,10 @@ public class Tooltip : MonoBehaviour
     public float height;
 
     private Sequence pulseSeq;
+
+    public AudioClip toolSound;
+    private AudioSource audioSource;
+    private bool soundSet;
 
     void Start()
     {
@@ -43,6 +48,16 @@ public class Tooltip : MonoBehaviour
 
     }
 
+    private void SetSound()
+    {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.volume = 0.75f;
+        toolSound = FindObjectOfType<SceneSwitcher>().toolSound;
+        audioSource.clip = toolSound;
+
+        soundSet = true;
+    }
+
     private void ShowTip()
     {
         PulseTip();
@@ -51,8 +66,15 @@ public class Tooltip : MonoBehaviour
         canvas.DOKill(true);
         canvas.DOFade(1.0f, 0.15f);
 
-        canvas.interactable = true;
-        canvas.blocksRaycasts = true;
+        canvas.interactable = interactable;
+        canvas.blocksRaycasts = interactable;
+
+        if (!soundSet)
+        {
+            //SetSound();
+        }
+
+        //audioSource.Play();
     }
 
     private void HideTip()
@@ -78,5 +100,10 @@ public class Tooltip : MonoBehaviour
     {
         height = h;
         rTransform.DOSizeDelta(new Vector2(width, height), 0.25f).SetEase(Ease.OutQuint);
+    }
+
+    public void SetInteractable(bool isInteractable)
+    {
+        interactable = isInteractable;
     }
 }

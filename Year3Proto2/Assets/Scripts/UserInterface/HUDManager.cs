@@ -11,6 +11,7 @@ public class HUDManager : MonoBehaviour
     public Color lossColour;
     public Color fullColour;
     private GameManager game;
+    private StructureManager structMan;
     private TMP_Text foodText;
     private TMP_Text woodText;
     private TMP_Text metalText;
@@ -18,6 +19,7 @@ public class HUDManager : MonoBehaviour
     void Start()
     {
         game = FindObjectOfType<GameManager>();
+        structMan = FindObjectOfType<StructureManager>();
         foodText = transform.Find("ResourceBar/FoodText").GetComponent<TMP_Text>();
         woodText = transform.Find("ResourceBar/WoodText").GetComponent<TMP_Text>();
         metalText = transform.Find("ResourceBar/MetalText").GetComponent<TMP_Text>();
@@ -75,5 +77,13 @@ public class HUDManager : MonoBehaviour
         {
             metalText.color = fullColour;
         }
+    }
+
+    public void SetOverUI(bool isOver)
+    {
+        if (structMan == null)
+            return;
+
+        structMan.SetIsOverUI(isOver);
     }
 }
