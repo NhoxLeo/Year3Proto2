@@ -28,11 +28,7 @@ public class EnemyWave : MonoBehaviour
             TileBehaviour tileBehaviour = GetAvailableTile(availableTiles);
             if (tileBehaviour != null)
             {
-                GameObject spawnAudio = new GameObject("hornSound");
-                spawnAudio.transform.position = tileBehaviour.transform.position;
-                AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
-                spawnAudioComp.clip = Resources.Load("Audio/SFX/sfxHorn") as AudioClip;
-                spawnAudioComp.Play();
+                GameManager.CreateAudioEffect("horn", tileBehaviour.transform.position);
                 for (int i = 0; i < enemiesPerWave; i++)
                 {
                     Vector3 position = tileBehaviour.transform.position;

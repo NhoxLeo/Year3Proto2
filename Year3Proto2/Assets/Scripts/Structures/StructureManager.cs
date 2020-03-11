@@ -204,6 +204,7 @@ public class StructureManager : MonoBehaviour
                                         {
                                             if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                             {
+                                                GameManager.CreateAudioEffect("build", structure.transform.position);
                                                 structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
                                                 // Attach the structure to the tile and vica versa
                                                 if (attached) { attached.attachedTile.Detach(); }
