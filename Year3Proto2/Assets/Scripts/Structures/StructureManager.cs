@@ -104,10 +104,10 @@ public class StructureManager : MonoBehaviour
 
         if (!isOverUI)
         {
-            if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
+            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
             if (structureState == StructManState.moving)
             {
-                if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
                 if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
                 {
                     if (structure.transform != null)
@@ -131,8 +131,8 @@ public class StructureManager : MonoBehaviour
 
                                         structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
 
-                                        if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
-                                        if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
                                         // Special condition: Lumber Mills can be placed on Forest Environment
                                         if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill"))
                                         {
@@ -192,7 +192,7 @@ public class StructureManager : MonoBehaviour
                                         tileHighlight.position = highlightPos;
                                         selectedTileHighlight.position = highlightPos;
 
-                                        if (!tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(true);
+                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
                                         //if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
 
                                         // If the user clicked the LMB...
@@ -283,6 +283,41 @@ public class StructureManager : MonoBehaviour
             }
             else if (structureState == StructManState.selected)
             {
+                Vector3 highlightpos = selectedStructure.transform.position;
+                highlightpos.y = 0.501f;
+                selectedTileHighlight.position = highlightpos;
+
+                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                {
+                    if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                    {
+                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                        highlightpos = hit.transform.position;
+                        highlightpos.y = 0.501f;
+                        tileHighlight.position = highlightpos;
+                    }
+                    else
+                    {
+                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                    }
+
+                }
+
+                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
+                {
+                    if (hit.transform.GetComponent<Structure>().attachedTile.GetPlayable())
+                    {
+                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                        highlightpos = hit.transform.position;
+                        highlightpos.y = 0.501f;
+                        tileHighlight.position = highlightpos;
+                    }
+                    else
+                    {
+                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                    }
+                }
+
                 // If the player clicks the LMB...
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -315,7 +350,10 @@ public class StructureManager : MonoBehaviour
                             }
                             else
                             {
-                                SelectStructure(hitStructure);
+                                if (hitStructure.attachedTile.GetPlayable())
+                                {
+                                    SelectStructure(hitStructure);
+                                }
                             }
                         }
                         else // The hit transform hasn't got a structure component
@@ -328,16 +366,6 @@ public class StructureManager : MonoBehaviour
                         DeselectStructure();
                         structureState = StructManState.selecting;
                     }
-                }
-
-                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
-                {
-                    Vector3 highlightpos = tileHighlight.position;
-                    highlightpos.x = hit.transform.position.x;
-                    highlightpos.y = 0.501f;
-                    highlightpos.z = hit.transform.position.z;
-
-                    tileHighlight.position = highlightpos;
                 }
 
                 if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -379,44 +407,51 @@ public class StructureManager : MonoBehaviour
             }
             else if (structureState == StructManState.selecting)
             {
-                // If the player clicks the LMB...
-                if (Input.GetMouseButtonDown(0))
+                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
                 {
-                    // If the player has clicked on a structure...
-                    if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
+                    if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
                     {
-                        Structure hitStructure = hit.transform.GetComponent<Structure>();
-                        // If the hit transform has a structure component... (SHOULD ALWAYS)
-                        if (hitStructure)
+                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                        Vector3 highlightpos = hit.transform.position;
+                        highlightpos.y = 0.501f;
+                        tileHighlight.position = highlightpos;
+                    }
+                    else
+                    {
+                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                    }
+                }
+
+                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
+                {
+                    Structure hitStructure = hit.transform.GetComponent<Structure>();
+                    // If the hit transform has a structure component... (SHOULD ALWAYS)
+                    if (hitStructure)
+                    {
+                        if (hitStructure.attachedTile.GetPlayable())
                         {
-                            if (hitStructure.attachedTile.GetPlayable())
+                            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                            Vector3 highlightpos = hit.transform.position;
+                            highlightpos.y = 0.501f;
+                            tileHighlight.position = highlightpos;
+                            if (Input.GetMouseButtonDown(0))
                             {
                                 SelectStructure(hitStructure);
                                 structureState = StructManState.selected;
                             }
                         }
-                        else // The hit transform hasn't got a structure component
+                        else
                         {
-                            Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
+                            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                         }
                     }
-                }
-
-                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
-                {
-                    Vector3 highlightpos = tileHighlight.position;
-                    highlightpos.x = hit.transform.position.x;
-                    highlightpos.y = 0.501f;
-                    highlightpos.z = hit.transform.position.z;
-
-                    tileHighlight.position = highlightpos;
                 }
             }
         }
         if (isOverUI)
         {
-            if (tileHighlight.gameObject.activeSelf) tileHighlight.gameObject.SetActive(false);
-            if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+            //if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
             HideBuilding();
         }
     }
@@ -449,7 +484,7 @@ public class StructureManager : MonoBehaviour
             structure = structureInstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
             structureState = StructManState.moving;
-            if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+            if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
             selectedStructure = null;
             buildingInfo.showPanel = false;
             return true;
@@ -483,10 +518,8 @@ public class StructureManager : MonoBehaviour
                 }
                 else
                 {
-                    Vector3 structPos = structure.transform.position;
-                    structPos.x = structureOldTile.transform.position.x;
+                    Vector3 structPos = structureOldTile.transform.position;
                     structPos.y = structure.sitHeight;
-                    structPos.z = structureOldTile.transform.position.z;
                     structure.transform.position = structPos;
                     structureOldTile.Attach(structure);
                     structureOldTile = null;
@@ -505,10 +538,8 @@ public class StructureManager : MonoBehaviour
 
         if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
 
-        Vector3 highlightpos = selectedTileHighlight.position;
-        highlightpos.x = selectedStructure.attachedTile.transform.position.x;
+        Vector3 highlightpos = selectedStructure.attachedTile.transform.position;
         highlightpos.y = 0.501f;
-        highlightpos.z = selectedStructure.attachedTile.transform.position.z;
         selectedTileHighlight.position = highlightpos;
 
         buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
@@ -517,7 +548,7 @@ public class StructureManager : MonoBehaviour
 
     public void DeselectStructure()
     {
-        if (selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(false);
+        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
         if (selectedStructure)
         {
             selectedStructure.OnDeselected();
