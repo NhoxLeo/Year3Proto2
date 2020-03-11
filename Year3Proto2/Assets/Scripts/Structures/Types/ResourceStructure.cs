@@ -153,6 +153,7 @@ public abstract class ResourceStructure : Structure
 
     public override void OnSelected()
     {
+        base.OnSelected();
         for (int i = 0; i < 4; i++)
         {
             if (tileHighlights.ContainsKey((TileBehaviour.TileCode)i))
@@ -164,6 +165,7 @@ public abstract class ResourceStructure : Structure
 
     public override void OnDeselected()
     {
+        base.OnDeselected();
         for (int i = 0; i < 4; i++)
         {
             if (tileHighlights.ContainsKey((TileBehaviour.TileCode)i))
