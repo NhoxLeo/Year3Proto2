@@ -15,6 +15,7 @@ public class SceneSwitcher : MonoBehaviour
     private float fadeTimeCur = 0.0f;
 
     public AudioClip clickSound;
+    public AudioClip toolSound;
 
     void Awake()
     {
@@ -22,6 +23,8 @@ public class SceneSwitcher : MonoBehaviour
         curScene = SceneManager.GetActiveScene().name;
         GlobalData.curScene = curScene;
         Debug.Log("Current scene: " + curScene);
+        clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
+        //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
     }
 
     void Start()
@@ -75,6 +78,11 @@ public class SceneSwitcher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneSwitch(curScene);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneSwitch("TitleScreen");
         }
 
     }
