@@ -109,7 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemies:
   - {fileID: 3370710463950152404, guid: f1737e3674a929b45abf54fa8c30ddeb, type: 3}
-  enemiesPerWave: 8
+  enemiesPerWave: 4
   newEnemiesPerWave: 2
   cooldown: 30
   timeBetweenWaves: 20
