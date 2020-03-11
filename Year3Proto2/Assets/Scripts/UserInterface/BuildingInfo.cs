@@ -46,12 +46,9 @@ public class BuildingInfo : MonoBehaviour
 
         foodComponent = transform.Find("PanelMask/Allocation").gameObject;
         foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
-
         repairButton = transform.Find("PanelMask/RepairButton").GetComponent<Button>();
-
         statInfoText.text = "";
         gameMan = FindObjectOfType<GameManager>();
-
         updateTimer = updateInterval;
     }
 

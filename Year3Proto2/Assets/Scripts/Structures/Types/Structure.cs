@@ -67,7 +67,9 @@ public abstract class Structure : MonoBehaviour
 
     public void Damage(float amount)
     {
+        bool setInfo = health == maxHealth;
         health -= amount;
+        if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
     }
 
@@ -93,7 +95,7 @@ public abstract class Structure : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (healthBar.gameObject) { Destroy(healthBar.gameObject); }
+        if (healthBar) { Destroy(healthBar.gameObject); }
         if (attachedTile)
         {
             attachedTile.Detach();
@@ -112,12 +114,18 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void OnSelected()
     {
-        healthBar.gameObject.SetActive(true);
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(true);
+        }
     }
 
     public virtual void OnDeselected()
     {
-        healthBar.gameObject.SetActive(false);
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(false);
+        }
     }
     
     public void SetHealthbar(Healthbar _healthBar)
