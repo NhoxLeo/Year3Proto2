@@ -97,6 +97,20 @@ public struct PlayerData
         return value;
     }
 
+    public int GetResourceMax(ResourceType _type)
+    {
+        switch (_type)
+        {
+            case ResourceType.wood:
+                return rWoodMax;
+            case ResourceType.metal:
+                return rMetalMax;
+            case ResourceType.food:
+                return rFoodMax;
+        }
+        return 0;
+    }
+
     public void SetMaximum(ResourceType _type, int _newMax)
     {
         switch (_type)
