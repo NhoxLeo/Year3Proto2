@@ -54,6 +54,7 @@ public class ArcherTower : AttackStructure
         else
         {
             spawnedArrow = Instantiate(arrow, transform.position + new Vector3(0.0f, transform.localScale.y / 2.0f, 0.0f), Quaternion.identity, transform);
+            GetComponent<AudioSource>().Play();
         }
     }
 }
