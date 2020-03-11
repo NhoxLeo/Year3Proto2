@@ -69,8 +69,8 @@ public abstract class Enemy : MonoBehaviour
 
                     transform.position += transform.forward * finalSpeed * Time.deltaTime;
 
+                    
                     enemiesInArea.RemoveAll(enemy => enemy == null);
-
                     foreach (GameObject @object in enemiesInArea)
                     {
                         if (Vector3.Distance(@object.transform.position, transform.position) < (scale + 0.2f))
@@ -80,8 +80,10 @@ public abstract class Enemy : MonoBehaviour
                     }
        
                 }
-
-                Next();
+                else
+                {
+                    Next();
+                }
                 break;
             case EnemyState.IDLE:
 

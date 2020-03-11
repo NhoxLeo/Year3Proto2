@@ -28,6 +28,7 @@ public class EnemyWave : MonoBehaviour
             TileBehaviour tileBehaviour = GetAvailableTile(availableTiles);
             if (tileBehaviour != null)
             {
+                GameManager.CreateAudioEffect("horn", tileBehaviour.transform.position);
                 for (int i = 0; i < enemiesPerWave; i++)
                 {
                     Vector3 position = tileBehaviour.transform.position;
@@ -58,10 +59,7 @@ public class EnemyWave : MonoBehaviour
 
     public TileBehaviour GetAvailableTile(List<TileBehaviour> tileBehaviours)
     {
-        TileBehaviour tileBehaviour = tileBehaviours[Random.Range(0, tileBehaviours.Count - 1)];
-        if (tileBehaviour == null) return null;
-
-        return tileBehaviour;
+        return tileBehaviours[Random.Range(0, tileBehaviours.Count - 1)];
     }
 
     Vector2 CalculatePosition(int index, int columns, float space)

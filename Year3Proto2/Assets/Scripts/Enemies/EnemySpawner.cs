@@ -17,11 +17,16 @@ public class EnemySpawner : MonoBehaviour
 
     private List<EnemyWave> enemyWaves;
     public EnemyWave enemyWave;
+    List<TileBehaviour> availableTiles;
 
     private void Start()
     {
         enemyWaves = new List<EnemyWave>();
-        tileBehaviours = FindObjectsOfType<TileBehaviour>();
+        availableTiles = new List<TileBehaviour>();
+        foreach (TileBehaviour tileBehaviour in FindObjectsOfType<TileBehaviour>())
+        {
+            if (tileBehaviour.GetSpawnTile()) availableTiles.Add(tileBehaviour);
+        }
     }
 
     private void FixedUpdate()
@@ -37,7 +42,7 @@ public class EnemySpawner : MonoBehaviour
             cooldown = timeBetweenWaves;
             enemiesPerWave += newEnemiesPerWave;
             EnemyWave enemyWave = Instantiate(this.enemyWave, transform);
-            enemyWave.Initialize(GetAvailableTiles(), enemiesPerWave);
+            enemyWave.Initialize(availableTiles, enemiesPerWave);
             enemyWaves.Add(enemyWave);
         }
 
@@ -46,14 +51,7 @@ public class EnemySpawner : MonoBehaviour
 
     public List<TileBehaviour> GetAvailableTiles()
     {
-        List<TileBehaviour> tileBehaviours = new List<TileBehaviour>();
-
-        foreach(TileBehaviour tileBehaviour in this.tileBehaviours)
-        {
-            if(tileBehaviour.GetSpawnTile()) tileBehaviours.Add(tileBehaviour);
-        }
-
-        return tileBehaviours;
+        return availableTiles;
     }
 
 }
