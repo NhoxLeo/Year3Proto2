@@ -15,6 +15,7 @@ public class EnvInfo : MonoBehaviour
     {
         rTrans = GetComponent<RectTransform>();
         tool = GetComponent<Tooltip>();
+        tool.SetInteractable(false);
         textbox = transform.Find("PanelMask/Description").GetComponent<TMP_Text>();
     }
 
