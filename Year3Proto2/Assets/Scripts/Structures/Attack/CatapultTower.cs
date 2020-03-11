@@ -5,6 +5,8 @@ using UnityEngine;
 public class CatapultTower : AttackStructure
 {
     public GameObject boulder;
+    public GameObject catapult;
+
     private GameObject spawnedBoulder;
 
     private float speed = 0.8f; 
@@ -33,7 +35,19 @@ public class CatapultTower : AttackStructure
         if (attachedTile == null && spawnedBoulder != null)
         { 
             enemies.Clear();
-            if (spawnedBoulder) { Destroy(spawnedBoulder); }
+            if (spawnedBoulder) Destroy(spawnedBoulder);
+        }
+
+        if(target == null)
+        {
+            if (spawnedBoulder) Destroy(spawnedBoulder);
+        } 
+        else
+        {
+            Vector3 lookPos = target.transform.position - catapult.transform.position;
+            lookPos.y = 0;
+            Quaternion rotation = Quaternion.LookRotation(lookPos);
+            catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation, Time.deltaTime * speed);
         }
 
         if (spawnedBoulder == null)
