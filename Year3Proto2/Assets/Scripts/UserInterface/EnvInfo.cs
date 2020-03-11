@@ -50,7 +50,8 @@ public class EnvInfo : MonoBehaviour
         {
             yPivot = 0.0f;
         }
-        else if (transform.localPosition.x > 640.0f)
+
+        if (transform.localPosition.x > 640.0f)
         {
             xPivot = 1.0f;
         }
