@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DestroyMe : MonoBehaviour
 {
+    [SerializeField]
     float lifetime = 0f;
 
     public void SetLifetime(float _newLifetime)

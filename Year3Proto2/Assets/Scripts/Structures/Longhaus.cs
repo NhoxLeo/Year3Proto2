@@ -36,6 +36,7 @@ public class Longhaus : Structure
             if (!longhausDead)
             {
                 FindObjectOfType<MessageBox>().ShowMessage("You Lost!", 3f);
+                GameManager.CreateAudioEffect("lose", Camera.main.transform.position, 2f);
                 //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
             }
             longhausDead = true;

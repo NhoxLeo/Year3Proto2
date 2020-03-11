@@ -150,7 +150,7 @@ public struct PlayerData
 public class GameManager : MonoBehaviour
 {
     private float batchMaxAge = 3.0f;
-
+    private float gameoverTimer = 5.0f;
     private List<Batch> recentBatches;
 
     private static Dictionary<string, AudioClip> audioClips;
@@ -212,6 +212,8 @@ public class GameManager : MonoBehaviour
             { "arrow", Resources.Load("Audio/SFX/sfxArrow") as AudioClip },
             { "buildingHit", Resources.Load("Audio/SFX/sfxBuildingHit") as AudioClip },
             { "buildingDestroy", Resources.Load("Audio/SFX/sfxBuildingDestroy") as AudioClip },
+            { "catapultFire", Resources.Load("Audio/SFX/sfxCatapultFire") as AudioClip },
+            { "lose", Resources.Load("Audio/SFX/sfxLose") as AudioClip },
         };
     }
 
@@ -238,6 +240,14 @@ public class GameManager : MonoBehaviour
         foreach (Batch batch in batchesToRemove)
         {
             recentBatches.Remove(batch);
+        }
+        if (!FindObjectOfType<Longhaus>())
+        {
+            gameoverTimer -= Time.deltaTime;
+            if (gameoverTimer < 0f)
+            {
+                FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+            }
         }
     }
 

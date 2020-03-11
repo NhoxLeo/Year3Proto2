@@ -40,6 +40,7 @@ public class CatapultTower : AttackStructure
         {
             Vector3 initialPosition = transform.position + new Vector3(0.0f, transform.localScale.y / 2.0f, 0.0f);
             spawnedBoulder = Instantiate(boulder, initialPosition, Quaternion.identity, transform);
+            GameManager.CreateAudioEffect("catapultFire", transform.position);
             origin = current = initialPosition;
             distanceTravelled = 0.0f;
 
@@ -61,9 +62,8 @@ public class CatapultTower : AttackStructure
                 float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
                 spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
 
-                if (spawnedBoulder.transform.position.y <= 0)
+                if (spawnedBoulder.transform.position.y <= 0.5f)
                 {
-                    Destroy(spawnedBoulder);
 
                     foreach (GameObject enemy in new List<GameObject>(enemies))
                     {
@@ -71,8 +71,10 @@ public class CatapultTower : AttackStructure
                         {
                             enemies.Remove(enemy);
                             Destroy(enemy);
+                            Instantiate(Resources.Load("Explosion") as GameObject, spawnedBoulder.transform.position, Quaternion.identity);
                         }
                     }
+                    Destroy(spawnedBoulder);
                 }
             }
         }
