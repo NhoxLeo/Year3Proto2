@@ -30,6 +30,11 @@ public class CatapultTower : AttackStructure
 
     public override void Attack(GameObject target)
     {
+        if (attachedTile == null && spawnedBoulder != null)
+        { 
+            enemies.Clear();
+            Destroy(spawnedBoulder);
+        }
 
         if (spawnedBoulder == null)
         {
@@ -63,7 +68,7 @@ public class CatapultTower : AttackStructure
                 {
                     if(Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
                     {
-                        enemies.Remove(target);
+                        enemies.Remove(enemy);
                         Destroy(enemy);
                     }
                 }

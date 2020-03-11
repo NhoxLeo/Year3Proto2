@@ -19,7 +19,8 @@ public abstract class Structure : MonoBehaviour
     public bool isPlaced;
     protected float health;
     protected float maxHealth = 100.0f;
-    private bool isBuilt;
+    //private bool isBuilt;
+    protected Healthbar healthBar;
 
     protected StructureType structureType;
 
@@ -31,6 +32,12 @@ public abstract class Structure : MonoBehaviour
         {
             hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
         }
+        StructureManager structMan = FindObjectOfType<StructureManager>();
+        GameObject healthBarInst = Instantiate(structMan.healthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
+        SetHealthbar(healthBarInst.GetComponent<Healthbar>());
+        healthBar.target = gameObject;
+        healthBar.fillAmount = 1.0f;
+        healthBarInst.SetActive(false);
     }
 
     protected void StructureUpdate()
@@ -40,6 +47,7 @@ public abstract class Structure : MonoBehaviour
             attachedTile.Detach();
             Destroy(gameObject);
         }
+        healthBar.fillAmount = health / maxHealth;
     }
 
     public StructureType GetStructureType()
@@ -59,7 +67,10 @@ public abstract class Structure : MonoBehaviour
 
     public void Damage(float amount)
     {
+        bool setInfo = health == maxHealth;
         health -= amount;
+        if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
+        if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
     }
 
     public float GetHealth()
@@ -84,6 +95,7 @@ public abstract class Structure : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (healthBar) { Destroy(healthBar.gameObject); }
         if (attachedTile)
         {
             attachedTile.Detach();
@@ -102,12 +114,23 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void OnSelected()
     {
-
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(true);
+        }
     }
 
     public virtual void OnDeselected()
     {
-
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(false);
+        }
+    }
+    
+    public void SetHealthbar(Healthbar _healthBar)
+    {
+        healthBar = _healthBar;
     }
 }
 
