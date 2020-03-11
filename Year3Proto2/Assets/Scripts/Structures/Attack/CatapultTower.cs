@@ -51,25 +51,27 @@ public class CatapultTower : AttackStructure
         else
         {
             if (target == null) Destroy(spawnedBoulder.gameObject);
-
-            Vector3 direction = final - current;
-            current += direction.normalized * speed * Time.deltaTime;
-            distanceTravelled += speed * Time.deltaTime;
-
-            float totalDistance = Vector3.Distance(origin, final);
-            float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
-            spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
-
-            if (spawnedBoulder.transform.position.y <= 0)
+            if (spawnedBoulder)
             {
-                Destroy(spawnedBoulder);
+                Vector3 direction = final - current;
+                current += direction.normalized * speed * Time.deltaTime;
+                distanceTravelled += speed * Time.deltaTime;
 
-                foreach (GameObject enemy in new List<GameObject>(enemies))
+                float totalDistance = Vector3.Distance(origin, final);
+                float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
+                spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
+
+                if (spawnedBoulder.transform.position.y <= 0)
                 {
-                    if(Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
+                    Destroy(spawnedBoulder);
+
+                    foreach (GameObject enemy in new List<GameObject>(enemies))
                     {
-                        enemies.Remove(enemy);
-                        Destroy(enemy);
+                        if (Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
+                        {
+                            enemies.Remove(enemy);
+                            Destroy(enemy);
+                        }
                     }
                 }
             }
