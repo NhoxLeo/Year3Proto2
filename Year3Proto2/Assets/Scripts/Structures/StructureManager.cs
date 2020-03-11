@@ -70,6 +70,9 @@ public class StructureManager : MonoBehaviour
     private GameManager gameMan;
     public bool isOverUI = false;
     private MessageBox messageBox;
+    private EnvInfo envInfo;
+    private Structure hoveroverStructure;
+    private float hoveroverTime;
 
     private void Awake()
     {
@@ -99,6 +102,9 @@ public class StructureManager : MonoBehaviour
         structureOldTile = null;
         structure = null;
         selectedStructure = null;
+        envInfo = FindObjectOfType<EnvInfo>();
+        hoveroverStructure = null;
+        hoveroverTime = 0f;
     }
 
     private void Update()
@@ -106,6 +112,7 @@ public class StructureManager : MonoBehaviour
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
+        envInfo.SetVisibility(false);
         if (!isOverUI)
         {
             if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
@@ -316,17 +323,25 @@ public class StructureManager : MonoBehaviour
 
                     if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
                     {
-                        if (hit.transform.GetComponent<Structure>().attachedTile.GetPlayable())
+                        Structure hitStructure = hit.transform.GetComponent<Structure>();
+                        if (hitStructure.attachedTile.GetPlayable())
                         {
                             if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
                             highlightpos = hit.transform.position;
                             highlightpos.y = 0.501f;
                             tileHighlight.position = highlightpos;
+
+                            PlayerMouseOver(hitStructure);
                         }
                         else
                         {
                             if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                         }
+                    }
+                    else
+                    {
+                        hoveroverStructure = null;
+                        hoveroverTime = 0f;
                     }
 
                     // If the player clicks the LMB...
@@ -446,6 +461,9 @@ public class StructureManager : MonoBehaviour
                             Vector3 highlightpos = hit.transform.position;
                             highlightpos.y = 0.501f;
                             tileHighlight.position = highlightpos;
+
+                            PlayerMouseOver(hitStructure);
+
                             if (Input.GetMouseButtonDown(0))
                             {
                                 SelectStructure(hitStructure);
@@ -455,8 +473,14 @@ public class StructureManager : MonoBehaviour
                         else
                         {
                             if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                            envInfo.SetVisibility(false);
                         }
                     }
+                }
+                else
+                {
+                    hoveroverStructure = null;
+                    hoveroverTime = 0f;
                 }
             }
         }
@@ -567,5 +591,45 @@ public class StructureManager : MonoBehaviour
             selectedStructure = null;
         }
         buildingInfo.showPanel = false;
+    }
+
+    void SetHoverInfo(Structure _structure)
+    {
+        envInfo.SetVisibility(true);
+        switch (_structure.GetStructureName())
+        {
+            case "Forest Environment":
+                envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
+                break;
+            case "Hill Environment":
+                envInfo.ShowInfo("Placing a Mine on this tile will destroy the hill, and provide a bonus to the Mine. Placing a Mine adjacent to this tile with provide a bonus to the Mine.");
+                break;
+            case "Plains Environment":
+                envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
+                break;
+        }
+
+    }
+
+    void PlayerMouseOver(Structure _structure)
+    {
+        if (!hoveroverStructure)
+        {
+            hoveroverStructure = _structure;
+            hoveroverTime += Time.deltaTime;
+        }
+        else if (hoveroverStructure == _structure)
+        {
+            hoveroverTime += Time.deltaTime;
+        }
+        else
+        {
+            hoveroverStructure = _structure;
+            hoveroverTime = 0f;
+        }
+        if (hoveroverTime > 1.0f)
+        {
+            SetHoverInfo(_structure);
+        }
     }
 }
