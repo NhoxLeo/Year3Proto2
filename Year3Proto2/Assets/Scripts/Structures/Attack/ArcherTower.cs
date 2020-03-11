@@ -35,7 +35,7 @@ public class ArcherTower : AttackStructure
             difference.y = 0;
 
             Quaternion rotation = Quaternion.LookRotation(difference);
-            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation, Time.deltaTime * arrowSpeed);
+            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * arrowSpeed);
 
         }
     }
@@ -51,9 +51,10 @@ public class ArcherTower : AttackStructure
             Vector3 arrowPosition = spawnedArrow.transform.position;
             Vector3 targetPosition = target.transform.position;
 
+
             spawnedArrow.transform.position = Vector3.MoveTowards(arrowPosition, targetPosition, Time.deltaTime * arrowSpeed);
 
-            if(Vector3.Distance(arrowPosition, targetPosition) <= 0.05f)
+            if (Vector3.Distance(arrowPosition, targetPosition) <= 0.05f)
             {
                 if (target.GetComponent<Enemy>().health <= 0.0f)
                 {
@@ -70,6 +71,7 @@ public class ArcherTower : AttackStructure
         }
         else
         {
+
             spawnedArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
             GameManager.CreateAudioEffect("arrow", transform.position);
         }

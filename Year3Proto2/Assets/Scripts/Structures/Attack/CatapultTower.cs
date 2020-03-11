@@ -5,12 +5,12 @@ using UnityEngine;
 public class CatapultTower : AttackStructure
 {
     public GameObject boulder;
-    public GameObject catapult;
+    //public GameObject catapult;
 
     private GameObject spawnedBoulder;
 
     private float speed = 0.8f; 
-    private float arcFactor = 0.45f;
+    private float arcFactor = 0.60f;
     private float distanceTravelled;
 
     private Vector3 current;
@@ -38,16 +38,26 @@ public class CatapultTower : AttackStructure
             if (spawnedBoulder) Destroy(spawnedBoulder);
         }
 
-        if(target == null)
+        if (enemies.Count <= 0)
         {
             if (spawnedBoulder) Destroy(spawnedBoulder);
-        } 
+        }
+
+        if (target == null)
+        {
+            if (spawnedBoulder) Destroy(spawnedBoulder);
+        }
         else
         {
-            Vector3 lookPos = target.transform.position - catapult.transform.position;
-            lookPos.y = 0;
-            Quaternion rotation = Quaternion.LookRotation(lookPos);
-            catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation, Time.deltaTime * speed);
+            /*Vector3 catapultPosition = catapult.transform.position;
+            Vector3 targetPosition = target.transform.position;
+
+            Vector3 difference = catapultPosition - targetPosition;
+            difference.y = 0;
+
+            Quaternion rotation = Quaternion.LookRotation(difference);
+            catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * speed);
+            */
         }
 
         if (spawnedBoulder == null)
@@ -81,6 +91,7 @@ public class CatapultTower : AttackStructure
                             Destroy(enemy);
                         }
                     }
+
                     Instantiate(Resources.Load("Explosion") as GameObject, spawnedBoulder.transform.position, Quaternion.identity);
                     Destroy(spawnedBoulder);
                 }

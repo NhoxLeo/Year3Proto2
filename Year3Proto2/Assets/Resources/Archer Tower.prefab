@@ -79,7 +79,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+  - {fileID: 2100000, guid: b27652a5a0f7a3c478bb709aac0275b9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -120,6 +120,7 @@ MonoBehaviour:
   isPlaced: 0
   arrow: {fileID: 1147110280109721153, guid: 2d84c91535cfd2747988038d60f7ad23, type: 3}
   ballista: {fileID: 5853393773172578223}
+  arrowPosition: {x: 0, y: 0.6, z: 0}
   arrowDamage: 5
 --- !u!64 &1413963230254588248
 MeshCollider:
