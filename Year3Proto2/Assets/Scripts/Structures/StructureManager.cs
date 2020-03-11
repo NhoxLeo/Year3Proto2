@@ -295,6 +295,9 @@ public class StructureManager : MonoBehaviour
                         {
                             if (hitStructure == selectedStructure)
                             {
+                                /* MOVING STRUCTURES DO NOT DELETE*/
+
+                                /*
                                 // If the structure is NOT an environment structure, and not the longhaus
                                 if (hitStructure.GetStructureType() != StructureType.environment && hitStructure.GetStructureName() != "Longhaus")
                                 {
@@ -308,6 +311,7 @@ public class StructureManager : MonoBehaviour
                                     structureState = StructManState.moving;
                                     buildingInfo.showPanel = false;
                                 }
+                                */
                             }
                             else
                             {
