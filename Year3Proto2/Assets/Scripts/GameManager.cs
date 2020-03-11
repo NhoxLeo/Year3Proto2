@@ -228,6 +228,10 @@ public class GameManager : MonoBehaviour
             { "buildingDestroy", Resources.Load("Audio/SFX/sfxBuildingDestroy") as AudioClip },
             { "catapultFire", Resources.Load("Audio/SFX/sfxCatapultFire") as AudioClip },
             { "lose", Resources.Load("Audio/SFX/sfxLose") as AudioClip },
+            { "UIclick1", Resources.Load("Audio/SFX/sfxUIClick1") as AudioClip },
+            { "UIclick2", Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip },
+            { "UIclick3", Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip },
+            { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
         };
     }
 
@@ -332,14 +336,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f)
+    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
         spawnAudio.transform.position = _positon;
         AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(audioClips[_sfxName].length);
-        spawnAudioComp.spatialBlend = 1.0f;
+        spawnAudioComp.spatialBlend = _spatial ? 1.0f : 0.0f;
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];
