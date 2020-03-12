@@ -13,6 +13,8 @@ public class Farm : ResourceStructure
         wasPlacedOnPlains = false;
         resourceType = ResourceType.food;
         structureName = "Farm";
+        maxHealth = 100f;
+        health = maxHealth;
     }
 
     // Update is called once per frame

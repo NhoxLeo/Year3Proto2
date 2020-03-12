@@ -13,6 +13,8 @@ public class Mine : ResourceStructure
         wasPlacedOnHills = false;
         resourceType = ResourceType.metal;
         structureName = "Mine";
+        maxHealth = 100f;
+        health = maxHealth;
     }
 
     // Update is called once per frame

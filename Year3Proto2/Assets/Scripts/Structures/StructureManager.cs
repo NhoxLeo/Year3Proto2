@@ -290,194 +290,15 @@ public class StructureManager : MonoBehaviour
         if (!isOverUI)
         {
             if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-            if (structureState == StructManState.moving)
+            switch (structureState)
             {
-                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
-                {
-                    if (structure.transform != null)
-                    {
-                        // If we hit a tile...
-                        if (hit.collider.name.Contains("Tile"))
-                        {
-                            TileBehaviour tile = hit.transform.GetComponent<TileBehaviour>();
-                            if (tile)
-                            {
-                                if (tile.GetPlayable())
-                                {
-                                    bool canPlaceHere = false;
-                                    // If the tile we hit has an attached object...
-                                    Structure attached = tile.GetAttached();
-                                    if (attached)
-                                    {
-                                        Vector3 hitPos = hit.point;
-                                        hitPos.y = structure.sitHeight;
-                                        structure.transform.position = hitPos;
-
-                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
-
-                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-
-                                        if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                        else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                        else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                        else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
-                                        else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
-                                    }
-                                    // if the tile we hit does not have an attached object...
-                                    else { canPlaceHere = true; }
-                                    if (canPlaceHere)
-                                    {
-                                        if (attached)
-                                        {
-                                            if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)
-                                            {
-                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
-                                            }
-                                            else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack)
-                                            {
-                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
-                                            }
-                                            else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage)
-                                            {
-                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
-                                            }
-                                        }
-                                        else // the tile can be placed on, and has no attached structure
-                                        {
-                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
-                                        }
-
-                                        // If player cannot afford the structure, set to red.
-                                        if (!gameMan.playerData.CanAfford(structureDict[structure.GetStructureName()].resourceCost))
-                                        {
-                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
-                                        }
-
-                                        Vector3 structPos = hit.transform.transform.position;
-                                        structPos.y = structure.sitHeight;
-                                        structure.transform.position = structPos;
-
-                                        Vector3 highlightPos = structPos;
-                                        highlightPos.y = 0.501f;
-                                        tileHighlight.position = highlightPos;
-                                        selectedTileHighlight.position = highlightPos;
-
-                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                        //if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
-
-                                        // If the user clicked the LMB...
-                                        if (Input.GetMouseButtonDown(0))
-                                        {
-                                            if ((structureFromStore && BuyBuilding()) || !structureFromStore)
-                                            {
-                                                GameManager.CreateAudioEffect("build", structure.transform.position);
-                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
-                                                // Attach the structure to the tile and vica versa
-                                                if (attached) { attached.attachedTile.Detach(); }
-                                                tile.Attach(structure);
-                                                structure.OnPlace();
-                                                if (attached)
-                                                {
-                                                    StructureType attachedStructType = attached.GetStructureType();
-                                                    StructureType structType = structure.GetStructureType();
-                                                    if (attachedStructType == StructureType.environment && structType == StructureType.resource)
-                                                    {
-                                                        Destroy(attached.gameObject);
-                                                        messageBox.HideMessage();
-                                                        switch (structure.GetStructureName())
-                                                        {
-                                                            case "Lumber Mill":
-                                                                gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
-                                                                structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
-                                                                break;
-                                                            case "Farm":
-                                                                gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
-                                                                structure.GetComponent<Farm>().wasPlacedOnPlains = true;
-                                                                break;
-                                                            case "Mine":
-                                                                gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
-                                                                structure.GetComponent<Mine>().wasPlacedOnHills = true;
-                                                                break;
-                                                        }
-                                                    }
-                                                    else if (attachedStructType == StructureType.environment && structType == StructureType.attack)
-                                                    {
-                                                        switch (attached.GetStructureName())
-                                                        {
-                                                            case "Forest Environment":
-                                                                gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
-                                                                break;
-                                                            case "Hill Environment":
-                                                                gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
-                                                                break;
-                                                            case "Plains Environment":
-                                                                gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
-                                                                break;
-                                                        }
-                                                        Destroy(attached.gameObject);
-                                                        messageBox.HideMessage();
-                                                    }
-                                                }
-                                                gameMan.OnStructurePlace();
-                                                if (structureFromStore)
-                                                {
-                                                    FindObjectOfType<BuildPanel>().UINoneSelected();
-                                                    FindObjectOfType<BuildPanel>().ResetBuildingSelected();
-                                                }
-                                                if (!towerPlaced)
-                                                {
-                                                    FindObjectOfType<EnemySpawner>().Begin();
-                                                    towerPlaced = true;
-                                                }
-                                                SelectStructure(structure);
-                                                structureState = StructManState.selected;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            
-                        }
-                    }
-                }
-                if (Input.GetMouseButtonDown(1))
-                {
-                    ResetBuilding();
-                    FindObjectOfType<BuildPanel>().ResetBuildingSelected();
-                    if (structureFromStore)
-                    {
-                        DeselectStructure();
-                        structureState = StructManState.selecting;
-                    }
-                    else
-                    {
-                        SelectStructure(structure);
-                        structureState = StructManState.selected;
-                    }
-                    messageBox.HideMessage();
-                }
-            }
-            else if (structureState == StructManState.selected)
-            {
-                if (!selectedStructure)
-                {
-                    DeselectStructure();
-                    structureState = StructManState.selecting;
-                }
-                else
-                {
-                    Vector3 highlightpos = selectedStructure.transform.position;
-                    highlightpos.y = 0.501f;
-                    selectedTileHighlight.position = highlightpos;
-
+                case StructManState.selecting:
                     if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
                     {
                         if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
                         {
                             if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                            highlightpos = hit.transform.position;
+                            Vector3 highlightpos = hit.transform.position;
                             highlightpos.y = 0.501f;
                             tileHighlight.position = highlightpos;
                         }
@@ -485,24 +306,33 @@ public class StructureManager : MonoBehaviour
                         {
                             if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                         }
-
                     }
-
                     if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
                     {
                         Structure hitStructure = hit.transform.GetComponent<Structure>();
-                        if (hitStructure.attachedTile.GetPlayable())
+                        // If the hit transform has a structure component... (SHOULD ALWAYS)
+                        if (hitStructure)
                         {
-                            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                            highlightpos = hit.transform.position;
-                            highlightpos.y = 0.501f;
-                            tileHighlight.position = highlightpos;
+                            if (hitStructure.attachedTile.GetPlayable())
+                            {
+                                if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                Vector3 highlightpos = hit.transform.position;
+                                highlightpos.y = 0.501f;
+                                tileHighlight.position = highlightpos;
 
-                            PlayerMouseOver(hitStructure);
-                        }
-                        else
-                        {
-                            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                PlayerMouseOver(hitStructure);
+
+                                if (Input.GetMouseButtonDown(0))
+                                {
+                                    SelectStructure(hitStructure);
+                                    structureState = StructManState.selected;
+                                }
+                            }
+                            else
+                            {
+                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                envInfo.SetVisibility(false);
+                            }
                         }
                     }
                     else
@@ -510,136 +340,285 @@ public class StructureManager : MonoBehaviour
                         hoveroverStructure = null;
                         hoveroverTime = 0f;
                     }
-
-                    // If the player clicks the LMB...
-                    if (Input.GetMouseButtonDown(0))
+                    break;
+                case StructManState.selected:
+                    if (!selectedStructure)
                     {
-                        // If the player has clicked on a structure...
+                        DeselectStructure();
+                        structureState = StructManState.selecting;
+                    }
+                    else
+                    {
+                        Vector3 highlightpos = selectedStructure.transform.position;
+                        highlightpos.y = 0.501f;
+                        selectedTileHighlight.position = highlightpos;
+
+                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                        {
+                            if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                            {
+                                if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                highlightpos = hit.transform.position;
+                                highlightpos.y = 0.501f;
+                                tileHighlight.position = highlightpos;
+                            }
+                            else
+                            {
+                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                            }
+
+                        }
+
                         if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
                         {
                             Structure hitStructure = hit.transform.GetComponent<Structure>();
-                            // If the hit transform has a structure component... (SHOULD ALWAYS)
-                            if (hitStructure)
+                            if (hitStructure.attachedTile.GetPlayable())
                             {
-                                if (hitStructure == selectedStructure)
-                                {
-                                    /* MOVING STRUCTURES DO NOT DELETE*/
+                                if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                highlightpos = hit.transform.position;
+                                highlightpos.y = 0.501f;
+                                tileHighlight.position = highlightpos;
 
-                                    /*
-                                    // If the structure is NOT an environment structure, and not the longhaus
-                                    if (hitStructure.GetStructureType() != StructureType.environment && hitStructure.GetStructureName() != "Longhaus")
-                                    {
-                                        structureFromStore = false;
-                                        structure = hitStructure;
-                                        structureOldTile = structure.attachedTile;
-                                        // Detach the structure from it's tile, and vica versa.
-                                        structure.attachedTile.Detach();
-                                        structure.OnDeselected();
-                                        // Put the manager back into moving mode.
-                                        structureState = StructManState.moving;
-                                        buildingInfo.showPanel = false;
-                                    }
-                                    */
-                                }
-                                else
-                                {
-                                    if (hitStructure.attachedTile.GetPlayable())
-                                    {
-                                        SelectStructure(hitStructure);
-                                    }
-                                }
+                                PlayerMouseOver(hitStructure);
                             }
-                            else // The hit transform hasn't got a structure component
+                            else
                             {
-                                Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
+                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                             }
                         }
                         else
+                        {
+                            hoveroverStructure = null;
+                            hoveroverTime = 0f;
+                        }
+
+                        // If the player clicks the LMB...
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            // If the player has clicked on a structure...
+                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
+                            {
+                                Structure hitStructure = hit.transform.GetComponent<Structure>();
+                                // If the hit transform has a structure component... (SHOULD ALWAYS)
+                                if (hitStructure)
+                                {
+                                    if (hitStructure != selectedStructure)
+                                    {
+                                        if (hitStructure.attachedTile.GetPlayable())
+                                        {
+                                            SelectStructure(hitStructure);
+                                        }
+                                    }
+                                }
+                                else // The hit transform hasn't got a structure component
+                                {
+                                    Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
+                                }
+                            }
+                            else
+                            {
+                                DeselectStructure();
+                                structureState = StructManState.selecting;
+                                break;
+                            }
+                        }
+
+                        StructureType structureType = selectedStructure.GetStructureType();
+                        if (structureType == StructureType.resource || structureType == StructureType.attack)
+                        {
+                            if (Input.GetKeyDown(KeyCode.RightArrow))
+                            {
+                                selectedStructure.IncreaseFoodAllocation();
+                            }
+                            if (Input.GetKeyDown(KeyCode.LeftArrow))
+                            {
+                                selectedStructure.DecreaseFoodAllocation();
+                            }
+                            if (Input.GetKeyDown(KeyCode.UpArrow))
+                            {
+                                selectedStructure.SetFoodAllocationMax();
+                            }
+                            if (Input.GetKeyDown(KeyCode.DownArrow))
+                            {
+                                selectedStructure.SetFoodAllocationMin();
+                            }
+                        }
+
+                    }
+                    break;
+                case StructManState.moving:
+                    if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+                    if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                    {
+                        if (structure.transform != null)
+                        {
+                            // If we hit a tile...
+                            if (hit.collider.name.Contains("Tile"))
+                            {
+                                TileBehaviour tile = hit.transform.GetComponent<TileBehaviour>();
+                                if (tile)
+                                {
+                                    if (tile.GetPlayable())
+                                    {
+                                        bool canPlaceHere = false;
+                                        // If the tile we hit has an attached object...
+                                        Structure attached = tile.GetAttached();
+                                        if (attached)
+                                        {
+                                            Vector3 hitPos = hit.point;
+                                            hitPos.y = structure.sitHeight;
+                                            structure.transform.position = hitPos;
+
+                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
+
+                                            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                            if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+
+                                            if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                            else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                            else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
+                                            else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
+                                            else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
+                                        }
+                                        // if the tile we hit does not have an attached object...
+                                        else { canPlaceHere = true; }
+                                        if (canPlaceHere)
+                                        {
+                                            if (attached)
+                                            {
+                                                if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)
+                                                {
+                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                                                }
+                                                else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack)
+                                                {
+                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
+                                                }
+                                                else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage)
+                                                {
+                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
+                                                }
+                                            }
+                                            else // the tile can be placed on, and has no attached structure
+                                            {
+                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                                            }
+
+                                            // If player cannot afford the structure, set to red.
+                                            if (!gameMan.playerData.CanAfford(structureDict[structure.GetStructureName()].resourceCost))
+                                            {
+                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
+                                            }
+
+                                            Vector3 structPos = hit.transform.transform.position;
+                                            structPos.y = structure.sitHeight;
+                                            structure.transform.position = structPos;
+
+                                            Vector3 highlightPos = structPos;
+                                            highlightPos.y = 0.501f;
+                                            tileHighlight.position = highlightPos;
+                                            selectedTileHighlight.position = highlightPos;
+
+                                            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                            //if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+                                            // If the user clicked the LMB...
+                                            if (Input.GetMouseButtonDown(0))
+                                            {
+                                                if ((structureFromStore && BuyBuilding()) || !structureFromStore)
+                                                {
+                                                    GameManager.CreateAudioEffect("build", structure.transform.position);
+                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
+                                                    // Attach the structure to the tile and vica versa
+                                                    if (attached) { attached.attachedTile.Detach(); }
+                                                    tile.Attach(structure);
+                                                    structure.OnPlace();
+                                                    if (attached)
+                                                    {
+                                                        StructureType attachedStructType = attached.GetStructureType();
+                                                        StructureType structType = structure.GetStructureType();
+                                                        if (attachedStructType == StructureType.environment && structType == StructureType.resource)
+                                                        {
+                                                            Destroy(attached.gameObject);
+                                                            messageBox.HideMessage();
+                                                            switch (structure.GetStructureName())
+                                                            {
+                                                                case "Lumber Mill":
+                                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
+                                                                    structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
+                                                                    break;
+                                                                case "Farm":
+                                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
+                                                                    structure.GetComponent<Farm>().wasPlacedOnPlains = true;
+                                                                    break;
+                                                                case "Mine":
+                                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
+                                                                    structure.GetComponent<Mine>().wasPlacedOnHills = true;
+                                                                    break;
+                                                            }
+                                                        }
+                                                        else if (attachedStructType == StructureType.environment && structType == StructureType.attack)
+                                                        {
+                                                            switch (attached.GetStructureName())
+                                                            {
+                                                                case "Forest Environment":
+                                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
+                                                                    break;
+                                                                case "Hill Environment":
+                                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
+                                                                    break;
+                                                                case "Plains Environment":
+                                                                    gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
+                                                                    break;
+                                                            }
+                                                            Destroy(attached.gameObject);
+                                                            messageBox.HideMessage();
+                                                        }
+                                                    }
+                                                    gameMan.OnStructurePlace();
+                                                    if (structureFromStore)
+                                                    {
+                                                        FindObjectOfType<BuildPanel>().UINoneSelected();
+                                                        FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                                                    }
+                                                    if (!towerPlaced)
+                                                    {
+                                                        FindObjectOfType<EnemySpawner>().Begin();
+                                                        towerPlaced = true;
+                                                    }
+                                                    SelectStructure(structure);
+                                                    structureState = StructManState.selected;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    if (Input.GetMouseButtonDown(1))
+                    {
+                        ResetBuilding();
+                        FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                        if (structureFromStore)
                         {
                             DeselectStructure();
                             structureState = StructManState.selecting;
                         }
-                    }
-
-                    StructureType structureType = selectedStructure.GetStructureType();
-                    if (structureType == StructureType.resource || structureType == StructureType.attack)
-                    {
-                        if (Input.GetKeyDown(KeyCode.RightArrow))
-                        {
-                            selectedStructure.IncreaseFoodAllocation();
-                        }
-                        if (Input.GetKeyDown(KeyCode.LeftArrow))
-                        {
-                            selectedStructure.DecreaseFoodAllocation();
-                        }
-                        if (Input.GetKeyDown(KeyCode.UpArrow))
-                        {
-                            selectedStructure.SetFoodAllocationMax();
-                        }
-                        if (Input.GetKeyDown(KeyCode.DownArrow))
-                        {
-                            selectedStructure.SetFoodAllocationMin();
-                        }
-                    }
-                        
-                }
-            }
-            else if (structureState == StructManState.selecting)
-            {
-                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
-                {
-                    if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
-                    {
-                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                        Vector3 highlightpos = hit.transform.position;
-                        highlightpos.y = 0.501f;
-                        tileHighlight.position = highlightpos;
-                    }
-                    else
-                    {
-                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                    }
-                }
-
-                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
-                {
-                    Structure hitStructure = hit.transform.GetComponent<Structure>();
-                    // If the hit transform has a structure component... (SHOULD ALWAYS)
-                    if (hitStructure)
-                    {
-                        if (hitStructure.attachedTile.GetPlayable())
-                        {
-                            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                            Vector3 highlightpos = hit.transform.position;
-                            highlightpos.y = 0.501f;
-                            tileHighlight.position = highlightpos;
-
-                            PlayerMouseOver(hitStructure);
-
-                            if (Input.GetMouseButtonDown(0))
-                            {
-                                SelectStructure(hitStructure);
-                                structureState = StructManState.selected;
-                            }
-                        }
                         else
                         {
-                            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                            envInfo.SetVisibility(false);
+                            SelectStructure(structure);
+                            structureState = StructManState.selected;
                         }
+                        messageBox.HideMessage();
                     }
-                }
-                else
-                {
-                    hoveroverStructure = null;
-                    hoveroverTime = 0f;
-                }
+                    break;
             }
         }
         if (isOverUI)
         {
             if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-            //if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
             HideBuilding();
         }
 

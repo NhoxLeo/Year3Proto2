@@ -17,6 +17,12 @@ public class ArrowBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!target)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, target.position, Time.deltaTime * speed);
         transform.LookAt(target.position);
         if (Vector3.Distance(transform.position, target.position) <= 0.05f)
@@ -33,5 +39,6 @@ public class ArrowBehaviour : MonoBehaviour
 
             Destroy(gameObject);
         }
+
     }
 }

@@ -7,7 +7,7 @@ public class ArcherTower : AttackStructure
     public GameObject arrow;
     public GameObject ballista;
     public float arrowDamage = 5f;
-    public float fireRate = 2f;
+    public float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
 
@@ -17,9 +17,10 @@ public class ArcherTower : AttackStructure
     void Start()
     {
         AttackStart();
-        maxHealth = 300f;
+        maxHealth = 350f;
+        health = maxHealth;
         structureName = "Archer Tower";
-        fireDelay = 1 / fireRate;
+        SetFirerate();
     }
 
     private void Update()
@@ -43,7 +44,15 @@ public class ArcherTower : AttackStructure
     public override void Attack(GameObject target)
     {
         fireCooldown -= Time.deltaTime;
-        if (fireCooldown <= 0) { Fire(); }
+        if (fireCooldown <= 0)
+        {
+            GameManager game = FindObjectOfType<GameManager>();
+            if (game.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+            {
+                Fire();
+                game.AddBatch(new Batch(-1, ResourceType.food));
+            }
+        }
     }
 
     public override void IncreaseFoodAllocation()

@@ -25,6 +25,8 @@ public class Longhaus : Structure
         structureType = StructureType.longhaus;
         structureName = "Longhaus";
         longhausDead = false;
+        maxHealth = 400f;
+        health = maxHealth;
     }
 
     // Update is called once per frame
