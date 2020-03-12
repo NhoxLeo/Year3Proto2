@@ -11,7 +11,7 @@ public enum StructureType
 
 public abstract class Structure : MonoBehaviour
 {
-    public TileBehaviour attachedTile;
+    public TileBehaviour attachedTile = null;
     public string displayName;
     public Sprite icon;
     public bool isPlaced;
