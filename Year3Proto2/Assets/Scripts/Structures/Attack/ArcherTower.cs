@@ -27,7 +27,7 @@ public class ArcherTower : AttackStructure
     {
         AttackUpdate();
 
-        if (target != null)
+        if (target)
         {
             Vector3 ballistaPosition = ballista.transform.position;
             Vector3 targetPosition = target.transform.position;
@@ -36,7 +36,7 @@ public class ArcherTower : AttackStructure
             difference.y = 0;
 
             Quaternion rotation = Quaternion.LookRotation(difference);
-            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * arrowSpeed);
+            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * 2.5f);
 
         }
     }
@@ -47,7 +47,7 @@ public class ArcherTower : AttackStructure
         if (fireCooldown <= 0)
         {
             GameManager game = FindObjectOfType<GameManager>();
-            if (game.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+            if (game.playerData.CanAfford(new ResourceBundle(1, 0, 0)))
             {
                 Fire();
                 game.AddBatch(new Batch(-1, ResourceType.food));
