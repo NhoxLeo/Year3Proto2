@@ -9,7 +9,7 @@ public class Granary : StorageStructure
     {
         StorageStart();
         resourceType = ResourceType.food;
-        storage = 1000;
+        storage = 500;
         structureName = "Granary";
     }
 

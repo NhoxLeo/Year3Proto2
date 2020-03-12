@@ -20,17 +20,18 @@ public class Raider : Enemy
         if (cooldown <= 0)
         {
             cooldown = finalSpeed / 0.6f;
-            structure.
+            //structure;
         }
 
         if (!action)
         {
+            /*
             transform.DOKill(false);
             transform.DOMoveY(yPosition, 0.0f);
 
             transform.DOKill(false);
             transform.DOMove(transform.position + (transform.forward * scale), finalSpeed / 3.0f).SetLoops(-1, LoopType.Yoyo);
-
+            */
             action = true;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Batch
 {
@@ -166,6 +167,7 @@ public class GameManager : MonoBehaviour
     private float batchMaxAge = 3.0f;
     private float gameoverTimer = 5.0f;
     private List<Batch> recentBatches;
+    private bool gameover = false;
 
     private static Dictionary<string, AudioClip> audioClips;
 
@@ -228,6 +230,11 @@ public class GameManager : MonoBehaviour
             { "buildingDestroy", Resources.Load("Audio/SFX/sfxBuildingDestroy") as AudioClip },
             { "catapultFire", Resources.Load("Audio/SFX/sfxCatapultFire") as AudioClip },
             { "lose", Resources.Load("Audio/SFX/sfxLose") as AudioClip },
+            { "win", Resources.Load("Audio/SFX/sfxWin") as AudioClip },
+            { "UIclick1", Resources.Load("Audio/SFX/sfxUIClick1") as AudioClip },
+            { "UIclick2", Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip },
+            { "UIclick3", Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip },
+            { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
         };
     }
 
@@ -255,7 +262,31 @@ public class GameManager : MonoBehaviour
         {
             recentBatches.Remove(batch);
         }
-        if (!FindObjectOfType<Longhaus>())
+        
+        if (!gameover)
+        {
+            if (!FindObjectOfType<Longhaus>())
+            {
+                gameover = true;
+                FindObjectOfType<MessageBox>().ShowMessage("You Lost!", 3f);
+                GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                CreateAudioEffect("lose", Vector3.zero, 1f, false);
+            }
+            if (playerData.GetResource(ResourceType.metal) >= 3000)
+            {
+                if (playerData.GetResource(ResourceType.wood) >= 3000)
+                {
+                    if (playerData.GetResource(ResourceType.food) >= 3000)
+                    {
+                        gameover = true;
+                        FindObjectOfType<MessageBox>().ShowMessage("You Win!", 5f);
+                        GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                        CreateAudioEffect("win", Vector3.zero, 1f, false);
+                    }
+                }
+            }
+        }
+        else
         {
             gameoverTimer -= Time.deltaTime;
             if (gameoverTimer < 0f)
@@ -332,14 +363,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f)
+    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
         spawnAudio.transform.position = _positon;
         AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(audioClips[_sfxName].length);
-        spawnAudioComp.spatialBlend = 1.0f;
+        spawnAudioComp.spatialBlend = _spatial ? 1.0f : 0.0f;
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];

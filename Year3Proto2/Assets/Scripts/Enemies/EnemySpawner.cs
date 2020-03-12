@@ -14,6 +14,7 @@ public class EnemySpawner : MonoBehaviour
     public float timeBetweenWaves = 30.0f;
     private int waveCounter = 0;
     private TileBehaviour[] tileBehaviours;
+    private bool begin = false;
 
     private List<EnemyWave> enemyWaves;
     public EnemyWave enemyWave;
@@ -31,22 +32,25 @@ public class EnemySpawner : MonoBehaviour
 
     private void FixedUpdate()
     {
-        cooldown -= Time.deltaTime;
-        if (cooldown <= 0.0f)
+        if (begin)
         {
-            waveCounter++;
-            if (waveCounter == 1)
+            cooldown -= Time.deltaTime;
+            if (cooldown <= 0.0f)
             {
-                FindObjectOfType<MessageBox>().ShowMessage("Invaders incoming!", 3.5f);
+                waveCounter++;
+                if (waveCounter == 1)
+                {
+                    FindObjectOfType<MessageBox>().ShowMessage("Invaders incoming!", 3.5f);
+                }
+                cooldown = timeBetweenWaves;
+                enemiesPerWave += newEnemiesPerWave;
+                EnemyWave enemyWave = Instantiate(this.enemyWave, transform);
+                enemyWave.Initialize(availableTiles, enemiesPerWave);
+                enemyWaves.Add(enemyWave);
             }
-            cooldown = timeBetweenWaves;
-            enemiesPerWave += newEnemiesPerWave;
-            EnemyWave enemyWave = Instantiate(this.enemyWave, transform);
-            enemyWave.Initialize(availableTiles, enemiesPerWave);
-            enemyWaves.Add(enemyWave);
-        }
 
-        enemyWaves.ForEach(enemyWave => enemyWave.Check(enemyWaves));
+            enemyWaves.ForEach(enemyWave => enemyWave.Check(enemyWaves));
+        }
     }
 
     public List<TileBehaviour> GetAvailableTiles()
@@ -57,6 +61,11 @@ public class EnemySpawner : MonoBehaviour
     public int GetWaveCurrent()
     {
         return waveCounter;
+    }
+
+    public void Begin()
+    {
+        begin = true;
     }
 
 }

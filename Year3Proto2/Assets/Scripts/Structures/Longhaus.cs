@@ -31,17 +31,7 @@ public class Longhaus : Structure
     void Update()
     {
         StructureUpdate();
-        if (health <= 0)
-        {
-            if (!longhausDead)
-            {
-                FindObjectOfType<MessageBox>().ShowMessage("You Lost!", 3f);
-                GameManager.CreateAudioEffect("lose", Camera.main.transform.position, 2f);
-                //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
-            }
-            longhausDead = true;
-        }
-        else
+        if (health > 0)
         {
             remainingTime -= Time.deltaTime;
 
