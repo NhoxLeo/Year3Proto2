@@ -73,7 +73,7 @@ public class StructureManager : MonoBehaviour
     private EnvInfo envInfo;
     private Structure hoveroverStructure;
     private float hoveroverTime;
-
+    private bool towerPlaced = false;
     private void Awake()
     {
         structureDict = new Dictionary<string, StructureDefinition>
@@ -144,32 +144,10 @@ public class StructureManager : MonoBehaviour
 
                                         if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                         if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-                                        // Special condition: Lumber Mills can be placed on Forest Environment
-                                        if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill"))
-                                        {
-                                            canPlaceHere = true;
-                                            //SendMessage("This will consume the Forest.", 0f);
-                                        }
-                                        // Special condition: Lumber Mills can be placed on Hill Environment
-                                        else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine"))
-                                        {
-                                            canPlaceHere = true;
-                                            //SendMessage("This will consume the Hill.", 0f);
-                                        }
-                                        // Special condition: Lumber Mills can be placed on Forest Environment
-                                        else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm"))
-                                        {
-                                            canPlaceHere = true;
-                                            //SendMessage("This will consume the Plains.", 0f);
-                                        }
-                                        else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack)
-                                        {
-                                            canPlaceHere = true;
-                                        }
-                                        else
-                                        {
-                                            messageBox.ShowMessage("You cannot place that structure on that tile.");
-                                        }
+                                        if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                        else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                        else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
+                                        else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
                                     }
                                     // if the tile we hit does not have an attached object...
                                     else { canPlaceHere = true; }
@@ -177,7 +155,7 @@ public class StructureManager : MonoBehaviour
                                     {
                                         if (attached)
                                         {
-                                            messageBox.ShowMessage("This will consume the environment tile.");
+                                            //messageBox.ShowMessage("This will consume the environment tile.");
                                             if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)
                                             {
                                                 structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
@@ -191,7 +169,13 @@ public class StructureManager : MonoBehaviour
                                         {
                                             structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
                                             string messageBoxCurrent = messageBox.GetCurrentMessage();
-                                            if (messageBoxCurrent == "This will consume the environment tile." || messageBoxCurrent == "You cannot place that structure on that tile.") { messageBox.HideMessage(); }
+                                            //if (messageBoxCurrent == "This will consume the environment tile." || messageBoxCurrent == "You cannot place that structure on that tile.") { messageBox.HideMessage(); }
+                                        }
+
+                                        // If player cannot afford the structure, set to red.
+                                        if (!gameMan.playerData.CanAfford(structureDict[structure.GetStructureName()].resourceCost))
+                                        {
+                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
                                         }
 
                                         Vector3 structPos = hit.transform.transform.position;
@@ -264,6 +248,11 @@ public class StructureManager : MonoBehaviour
                                                 {
                                                     FindObjectOfType<BuildPanel>().UINoneSelected();
                                                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                                                }
+                                                if (!towerPlaced)
+                                                {
+                                                    FindObjectOfType<EnemySpawner>().Begin();
+                                                    towerPlaced = true;
                                                 }
                                                 SelectStructure(structure);
                                                 structureState = StructManState.selected;
@@ -506,7 +495,7 @@ public class StructureManager : MonoBehaviour
             {
                 return true;
             }
-            messageBox.ShowMessage("You can't afford that!", 2f);
+            messageBox.ShowMessage("You can't afford that!", 1.5f);
         }
         return false;
     }

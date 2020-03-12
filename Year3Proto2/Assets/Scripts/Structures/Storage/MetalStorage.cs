@@ -9,7 +9,7 @@ public class MetalStorage : StorageStructure
     {
         StorageStart();
         resourceType = ResourceType.metal;
-        storage = 1000;
+        storage = 500;
         structureName = "Metal Storage";
     }
 
