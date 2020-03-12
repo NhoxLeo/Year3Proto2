@@ -12,7 +12,7 @@ public class ButtonPulse : MonoBehaviour
     private void SetSound()
     {
         audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.volume = 0.75f;
+        audioSource.volume = 0.825f;
         clickSound = FindObjectOfType<SceneSwitcher>().clickSound;
         audioSource.clip = clickSound;
 
