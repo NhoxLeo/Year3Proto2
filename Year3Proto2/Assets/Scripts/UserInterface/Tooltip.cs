@@ -106,4 +106,9 @@ public class Tooltip : MonoBehaviour
     {
         interactable = isInteractable;
     }
+
+    public void SetVisibility(bool isVisible)
+    {
+        showTooltip = isVisible;
+    }
 }

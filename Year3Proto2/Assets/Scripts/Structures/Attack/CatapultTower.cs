@@ -5,97 +5,88 @@ using UnityEngine;
 public class CatapultTower : AttackStructure
 {
     public GameObject boulder;
-    //public GameObject catapult;
+    public GameObject catapult;
+    public float boulderDamage = 5f;
+    public float fireRate = 0f;
+    private float fireDelay = 0f;
+    private float fireCooldown = 0f;
 
-    private GameObject spawnedBoulder;
+    private List<GameObject> spawnedBoulders = new List<GameObject>();
 
-    private float speed = 0.8f; 
-    private float arcFactor = 0.60f;
-    private float distanceTravelled;
-
-    private Vector3 current;
-    private Vector3 origin;
-
-    private Vector3 final;
+    private float speed = 0.8f;
 
 
     void Start()
     {
         AttackStart();
         structureName = "Catapult Tower";
+        maxHealth = 450f;
+        health = maxHealth;
+        SetFirerate();
     }
 
     private void Update()
     {
         AttackUpdate();
-    }
-
-    public override void Attack(GameObject target)
-    {
-        if (attachedTile == null && spawnedBoulder != null)
-        { 
-            enemies.Clear();
-            if (spawnedBoulder) Destroy(spawnedBoulder);
-        }
-
-        if (enemies.Count <= 0)
+        if (target)
         {
-            if (spawnedBoulder) Destroy(spawnedBoulder);
-        }
-
-        if (target == null)
-        {
-            if (spawnedBoulder) Destroy(spawnedBoulder);
-        }
-        else
-        {
-            /*Vector3 catapultPosition = catapult.transform.position;
+            Vector3 catapultPosition = catapult.transform.position;
             Vector3 targetPosition = target.transform.position;
 
             Vector3 difference = catapultPosition - targetPosition;
             difference.y = 0;
 
             Quaternion rotation = Quaternion.LookRotation(difference);
-            catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * speed);
-            */
+            catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * 2.5f);
         }
+    }
 
-        if (spawnedBoulder == null)
+    public override void Attack(GameObject target)
+    {
+        fireCooldown -= Time.deltaTime;
+        if (fireCooldown <= 0)
         {
-            Vector3 initialPosition = transform.position + new Vector3(0.0f, transform.localScale.y / 2.0f, 0.0f);
-            spawnedBoulder = Instantiate(boulder, initialPosition, Quaternion.identity, transform);
-            GameManager.CreateAudioEffect("catapultFire", transform.position);
-            origin = current = initialPosition;
-            distanceTravelled = 0.0f;
-            final = target.transform.position;
-        }
-        else
-        {
-            if (spawnedBoulder)
+            GameManager game = FindObjectOfType<GameManager>();
+            if (game.playerData.CanAfford(new ResourceBundle(3, 0, 0)))
             {
-                Vector3 direction = final - current;
-                current += direction.normalized * speed * Time.deltaTime;
-                distanceTravelled += speed * Time.deltaTime;
-
-                float totalDistance = Vector3.Distance(origin, final);
-                float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
-                spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
-
-                if (spawnedBoulder.transform.position.y <= 0.51f)
-                {
-                    foreach (GameObject enemy in new List<GameObject>(enemies))
-                    {
-                        if (Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
-                        {
-                            enemies.Remove(enemy);
-                            Destroy(enemy);
-                        }
-                    }
-
-                    Instantiate(Resources.Load("Explosion") as GameObject, spawnedBoulder.transform.position, Quaternion.identity);
-                    Destroy(spawnedBoulder);
-                }
+                Fire();
+                game.AddBatch(new Batch(-3, ResourceType.food));
             }
         }
+    }
+
+
+    void Fire()
+    {
+        fireCooldown = fireDelay;
+        GameObject newBoulder = Instantiate(boulder, catapult.transform.position, Quaternion.identity, transform);
+        BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
+        spawnedBoulders.Add(newBoulder);
+        boulderBehaviour.target = target.transform.position;
+        GameManager.CreateAudioEffect("catapultFire", transform.position);
+    }
+
+
+    void SetFirerate()
+    {
+        switch (foodAllocation)
+        {
+            case 1:
+                fireRate = 0.25f;
+                break;
+            case 2:
+                fireRate = 1f / 3.5f;
+                break;
+            case 3:
+                fireRate = 1f / 3f;
+                break;
+            case 4:
+                fireRate = 1f / 2.5f;
+                break;
+            case 5:
+                fireRate = 0.5f;
+                break;
+        }
+        fireDelay = 1 / fireRate;
     }
 }

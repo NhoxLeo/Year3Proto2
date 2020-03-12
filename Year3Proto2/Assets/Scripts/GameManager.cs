@@ -172,13 +172,17 @@ public class GameManager : MonoBehaviour
     private static Dictionary<string, AudioClip> audioClips;
     private float batchMaxAge = 3.0f;
     private bool gameover = false;
+    private bool victory = false;
     private float gameoverTimer = 5.0f;
     private List<Batch> recentBatches;
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
     private float tutorialDelay = 2.0f;
+    private bool musicBackOn = false;
+    private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private bool repairMessage = false;
+    public bool repairAll = false;
     int recentFood
     {
         get
@@ -402,7 +406,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (repairCount > 5 && !repairMessage)
+        if (repairCount > 5 && !repairMessage && !repairAll)
         {
             MessageBox messageBox = FindObjectOfType<MessageBox>();
             messageBox.ShowMessage("You can press R to mass repair", 3f);
@@ -414,6 +418,7 @@ public class GameManager : MonoBehaviour
             if (!FindObjectOfType<Longhaus>())
             {
                 gameover = true;
+                victory = false;
                 FindObjectOfType<MessageBox>().ShowMessage("You Lost!", 3f);
                 GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
@@ -425,6 +430,7 @@ public class GameManager : MonoBehaviour
                     if (playerData.GetResource(ResourceType.food) >= 3000)
                     {
                         gameover = true;
+                        victory = true;
                         FindObjectOfType<MessageBox>().ShowMessage("You Win!", 5f);
                         GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                         CreateAudioEffect("win", Vector3.zero, 1f, false);
@@ -432,13 +438,27 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        else
+
+
+        if (gameover)
         {
-            gameoverTimer -= Time.deltaTime;
-            if (gameoverTimer < 0f)
+            if (victory)
             {
-                FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                musicDelay -= Time.deltaTime;
+                if (musicDelay < 0f)
+                {
+                    GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(1f, 2f);
+                }
             }
+            else
+            {
+                gameoverTimer -= Time.deltaTime;
+                if (gameoverTimer < 0f)
+                {
+                    FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                }
+            }
+            
         }
     }
 }

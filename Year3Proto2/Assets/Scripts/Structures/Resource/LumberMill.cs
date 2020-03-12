@@ -13,6 +13,8 @@ public class LumberMill : ResourceStructure
         wasPlacedOnForest = false;
         resourceType = ResourceType.wood;
         structureName = "Lumber Mill";
+        maxHealth = 100f;
+        health = maxHealth;
     }
 
     // Update is called once per frame

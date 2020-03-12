@@ -21,6 +21,7 @@ public abstract class Enemy : MonoBehaviour
     public float speed = 0.6f;
     public float scale = 0.0f;
     public float damage = 2.0f;
+    public bool nextReturnFalse = false;
 
     protected float yPosition;
     protected float finalSpeed = 0.0f;
@@ -71,18 +72,21 @@ public abstract class Enemy : MonoBehaviour
 
                     
                     enemiesInArea.RemoveAll(enemy => enemy == null);
-                    foreach (GameObject @object in enemiesInArea)
+                    foreach (GameObject enemy in enemiesInArea)
                     {
-                        if (Vector3.Distance(@object.transform.position, transform.position) < (scale + 0.2f))
+                        if (Vector3.Distance(enemy.transform.position, transform.position) < (scale + 0.2f))
                         {
-                            transform.position = (transform.position - @object.transform.position).normalized * (scale + 0.2f) + @object.transform.position;
+                            transform.position = (transform.position - enemy.transform.position).normalized * (scale + 0.2f) + enemy.transform.position;
                         }
                     }
        
                 }
                 else
                 {
-                    Next();
+                    if (!nextReturnFalse)
+                    {
+                        nextReturnFalse = !Next();
+                    }
                 }
                 break;
             case EnemyState.IDLE:

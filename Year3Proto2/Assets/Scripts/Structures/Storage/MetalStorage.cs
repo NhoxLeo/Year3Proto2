@@ -11,6 +11,8 @@ public class MetalStorage : StorageStructure
         resourceType = ResourceType.metal;
         storage = 500;
         structureName = "Metal Storage";
+        maxHealth = 200f;
+        health = maxHealth;
     }
 
     // Update is called once per frame

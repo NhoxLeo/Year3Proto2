@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c1bfed699f8db249a407f5fcfe942e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialDone: 0
 --- !u!114 &2034944319271232491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,9 +64,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 0}
   healthBarPrefab: {fileID: 0}
-  tileHighlight: {fileID: 7067514012913874853}
-  selectedTileHighlight: {fileID: 4255771629231950415}
   isOverUI: 0
+  selectedTileHighlight: {fileID: 4255771629231950415}
+  tileHighlight: {fileID: 7067514012913874853}
 --- !u!82 &4498777283510002559
 AudioSource:
   m_ObjectHideFlags: 0
@@ -305,7 +306,7 @@ MonoBehaviour:
   - {fileID: 3370710463950152404, guid: f1737e3674a929b45abf54fa8c30ddeb, type: 3}
   enemiesPerWave: 4
   newEnemiesPerWave: 2
-  cooldown: 45
+  cooldown: 30
   timeBetweenWaves: 30
   enemyWave: {fileID: 4343382515965339557, guid: dc9bc59ea579df647bc3eecabd096749,
     type: 3}

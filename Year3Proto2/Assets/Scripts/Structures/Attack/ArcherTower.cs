@@ -6,27 +6,28 @@ public class ArcherTower : AttackStructure
 {
     public GameObject arrow;
     public GameObject ballista;
-    public float arrowDamage = 5.0f;
+    public float arrowDamage = 5f;
+    public float fireRate = 0f;
+    private float fireDelay = 0f;
+    private float fireCooldown = 0f;
 
-    private GameObject spawnedArrow;
+    private List<GameObject> spawnedArrows = new List<GameObject>();
     private const float arrowSpeed = 2.5f;
 
     void Start()
     {
         AttackStart();
+        maxHealth = 350f;
+        health = maxHealth;
         structureName = "Archer Tower";
+        SetFirerate();
     }
 
     private void Update()
     {
         AttackUpdate();
 
-        if (target == null && spawnedArrow != null)
-        {
-            Destroy(spawnedArrow);
-        } 
-
-        if(target != null)
+        if (target)
         {
             Vector3 ballistaPosition = ballista.transform.position;
             Vector3 targetPosition = target.transform.position;
@@ -35,45 +36,69 @@ public class ArcherTower : AttackStructure
             difference.y = 0;
 
             Quaternion rotation = Quaternion.LookRotation(difference);
-            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * arrowSpeed);
+            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * 2.5f);
 
         }
     }
 
     public override void Attack(GameObject target)
-    { 
-        if (spawnedArrow != null)
+    {
+        fireCooldown -= Time.deltaTime;
+        if (fireCooldown <= 0)
         {
-            if(target == null) Destroy(spawnedArrow.gameObject);
-
-            spawnedArrow.transform.LookAt(target.transform);
-
-            Vector3 arrowPosition = spawnedArrow.transform.position;
-            Vector3 targetPosition = target.transform.position;
-
-
-            spawnedArrow.transform.position = Vector3.MoveTowards(arrowPosition, targetPosition, Time.deltaTime * arrowSpeed);
-
-            if (Vector3.Distance(arrowPosition, targetPosition) <= 0.05f)
+            GameManager game = FindObjectOfType<GameManager>();
+            if (game.playerData.CanAfford(new ResourceBundle(1, 0, 0)))
             {
-                if (target.GetComponent<Enemy>().health <= 0.0f)
-                {
-                    enemies.Remove(target);
-                    Destroy(target);
-                }
-                else
-                {
-                    target.GetComponent<Enemy>().health -= arrowDamage;
-                }
-
-                Destroy(spawnedArrow.gameObject);
+                Fire();
+                game.AddBatch(new Batch(-1, ResourceType.food));
             }
         }
-        else
-        {
+    }
 
-            spawnedArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
-            GameManager.CreateAudioEffect("arrow", transform.position);
+    public override void IncreaseFoodAllocation()
+    {
+        base.IncreaseFoodAllocation();
+        SetFirerate();
+    }
+
+    public override void DecreaseFoodAllocation()
+    {
+        base.DecreaseFoodAllocation();
+        SetFirerate();
+    }
+
+    void Fire()
+    {
+        fireCooldown = fireDelay;
+        GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
+        ArrowBehaviour arrowBehaviour = newArrow.GetComponent<ArrowBehaviour>();
+        spawnedArrows.Add(newArrow);
+        arrowBehaviour.target = target.transform;
+        arrowBehaviour.damage = arrowDamage;
+        arrowBehaviour.speed = arrowSpeed;
+        GameManager.CreateAudioEffect("arrow", transform.position);
+    }
+
+    void SetFirerate()
+    {
+        switch (foodAllocation)
+        {
+            case 1:
+                fireRate = 0.5f;
+                break;
+            case 2:
+                fireRate = 2f / 3f;
+                break;
+            case 3:
+                fireRate = 1f;
+                break;
+            case 4:
+                fireRate = 1.5f;
+                break;
+            case 5:
+                fireRate = 2f;
+                break;
         }
+        fireDelay = 1 / fireRate;
     }
 }
