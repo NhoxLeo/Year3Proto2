@@ -8,7 +8,7 @@ public class ArcherTower : AttackStructure
     public GameObject ballista;
     public float arrowDamage = 5.0f;
 
-    private GameObject spawnedArrow;
+    private List<GameObject> spawnedArrows = new List<GameObject>();
     private const float arrowSpeed = 2.5f;
 
     void Start()
@@ -20,11 +20,6 @@ public class ArcherTower : AttackStructure
     private void Update()
     {
         AttackUpdate();
-
-        if (target == null && spawnedArrow != null)
-        {
-            Destroy(spawnedArrow);
-        } 
 
         if(target != null)
         {
