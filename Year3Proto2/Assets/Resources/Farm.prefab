@@ -47,12 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3538452db5f33f843ab5acbc60b36ed9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  structureName: 
-  icon: {fileID: 0}
-  sitHeight: 0.5
-  displayName: 
   attachedTile: {fileID: 0}
+  displayName: 
+  icon: {fileID: 0}
   isPlaced: 0
+  sitHeight: 0.512
+  structureName: 
   productionTime: 3
   wasPlacedOnPlains: 0
 --- !u!33 &1058955272712285215
