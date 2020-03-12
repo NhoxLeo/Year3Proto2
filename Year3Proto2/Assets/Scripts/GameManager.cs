@@ -178,6 +178,8 @@ public class GameManager : MonoBehaviour
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
     private float tutorialDelay = 2.0f;
+    private bool musicBackOn = false;
+    private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private bool repairMessage = false;
     public bool repairAll = false;
@@ -411,7 +413,7 @@ public class GameManager : MonoBehaviour
             if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
         }
 
-        if (!gameover || victory)
+        if (!gameover)
         {
             if (!FindObjectOfType<Longhaus>())
             {
@@ -436,13 +438,27 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        else
+
+
+        if (gameover)
         {
-            gameoverTimer -= Time.deltaTime;
-            if (gameoverTimer < 0f)
+            if (victory)
             {
-                FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                musicDelay -= Time.deltaTime;
+                if (musicDelay < 0f)
+                {
+                    GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(1f, 2f);
+                }
             }
+            else
+            {
+                gameoverTimer -= Time.deltaTime;
+                if (gameoverTimer < 0f)
+                {
+                    FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                }
+            }
+            
         }
     }
 }
