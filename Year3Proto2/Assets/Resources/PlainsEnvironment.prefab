@@ -46,11 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67f1f6eb7128efc4a88a51784f8350cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  structureName: 
-  icon: {fileID: 0}
-  sitHeight: 0.535
-  displayName: 
   attachedTile: {fileID: 0}
+  displayName: 
+  icon: {fileID: 0}
+  isPlaced: 0
+  sitHeight: 0.535
+  structureName: 
 --- !u!33 &7900202285779034415
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -58,7 +59,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867630619333440005}
-  m_Mesh: {fileID: -4831741224372153022, guid: f50eba806c086e144bd8f77174e6d4a9, type: 3}
+  m_Mesh: {fileID: 6414584333378211482, guid: 82bcc03e3ad6dbb4ba9507a7fd2a43f9, type: 3}
 --- !u!23 &6871674551980845975
 MeshRenderer:
   m_ObjectHideFlags: 0
