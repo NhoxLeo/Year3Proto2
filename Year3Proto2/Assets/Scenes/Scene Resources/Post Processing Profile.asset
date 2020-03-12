@@ -22,12 +22,12 @@ MonoBehaviour:
     m_Value: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.05
+    m_Value: 0.045
     min: 0
     max: 1
   m_MaxSamples:
     m_OverrideState: 1
-    m_Value: 8
+    m_Value: 10
     min: 3
     max: 24
 --- !u!114 &-4160392748747272093
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.25
+    m_Value: 0.3
   contrast:
     m_OverrideState: 1
     m_Value: 10
