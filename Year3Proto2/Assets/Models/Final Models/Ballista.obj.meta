@@ -3,7 +3,12 @@ guid: 5aba5bf3350dd444cbb3f145a8e9ddb1
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ballista_tower_Ballista_tower_polySurface6Mat
+    second: {fileID: 2100000, guid: d7d8bf7c38e2e444ca8f222a695c7840, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
