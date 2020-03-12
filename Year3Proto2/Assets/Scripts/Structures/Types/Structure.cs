@@ -11,18 +11,107 @@ public enum StructureType
 
 public abstract class Structure : MonoBehaviour
 {
-    public string structureName;
-    public Sprite icon;
-    public float sitHeight;
-    public string displayName;
     public TileBehaviour attachedTile;
+    public string displayName;
+    public Sprite icon;
     public bool isPlaced;
+    public float sitHeight;
+    public string structureName;
     protected float health;
-    protected float maxHealth = 100.0f;
     //private bool isBuilt;
     protected Healthbar healthBar;
 
+    protected float maxHealth = 100.0f;
     protected StructureType structureType;
+
+    public void Damage(float amount)
+    {
+        bool setInfo = health == maxHealth;
+        health -= amount;
+        if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
+        if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
+        GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
+    }
+
+    public float GetHealth()
+    {
+        return health;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public string GetStructureName()
+    {
+        return structureName;
+    }
+
+    public StructureType GetStructureType()
+    {
+        return structureType;
+    }
+
+    public bool IsStructure(string _structureName)
+    {
+        return _structureName == structureName;
+    }
+
+    public virtual void OnAnyPlaced()
+    {
+
+    }
+
+    public virtual void OnDeselected()
+    {
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(false);
+        }
+    }
+
+    public virtual void OnPlace()
+    {
+
+    }
+
+    public virtual void OnSelected()
+    {
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(true);
+        }
+    }
+
+    public bool Repair()
+    {
+        if (structureType == StructureType.environment)
+        {
+            return true;
+        }
+
+        GameManager gameMan = FindObjectOfType<GameManager>();
+        ResourceBundle repairCost = RepairCost();
+        if (gameMan.playerData.CanAfford(repairCost))
+        {
+            GameManager.IncrementRepairCount();
+            gameMan.playerData.DeductResource(repairCost);
+            health = maxHealth;
+            return true;
+        }
+        return false;
+    }
+
+    public ResourceBundle RepairCost()
+    {
+        return FindObjectOfType<StructureManager>().structureDict[structureName].resourceCost * (1.0f - (health / maxHealth));
+    }
+
+    public void SetHealthbar(Healthbar _healthBar)
+    {
+        healthBar = _healthBar;
+    }
 
     protected void StructureStart()
     {
@@ -50,51 +139,6 @@ public abstract class Structure : MonoBehaviour
         }
         healthBar.fillAmount = health / maxHealth;
     }
-
-    public StructureType GetStructureType()
-    {
-        return structureType;
-    }
-
-    public bool IsStructure(string _structureName)
-    {
-        return _structureName == structureName;
-    }
-
-    public string GetStructureName()
-    {
-        return structureName;
-    }
-
-    public void Damage(float amount)
-    {
-        bool setInfo = health == maxHealth;
-        health -= amount;
-        if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
-        if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
-        GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
-    }
-
-    public float GetHealth()
-    {
-        return health;
-    }
-
-    public float GetMaxHealth()
-    {
-        return maxHealth;
-    }
-
-    public ResourceBundle RepairCost()
-    {
-        return FindObjectOfType<StructureManager>().structureDict[structureName].resourceCost * (1.0f - (health / maxHealth));
-    }
-
-    public void Repair()
-    {
-        health = maxHealth;
-    }
-
     private void OnDestroy()
     {
         if (healthBar) { Destroy(healthBar.gameObject); }
@@ -102,37 +146,6 @@ public abstract class Structure : MonoBehaviour
         {
             attachedTile.Detach();
         }
-    }
-
-    public virtual void OnPlace()
-    {
-
-    }
-
-    public virtual void OnAnyPlaced()
-    {
-
-    }
-
-    public virtual void OnSelected()
-    {
-        if (structureType != StructureType.environment)
-        {
-            healthBar.gameObject.SetActive(true);
-        }
-    }
-
-    public virtual void OnDeselected()
-    {
-        if (structureType != StructureType.environment)
-        {
-            healthBar.gameObject.SetActive(false);
-        }
-    }
-    
-    public void SetHealthbar(Healthbar _healthBar)
-    {
-        healthBar = _healthBar;
     }
 }
 
