@@ -7,6 +7,9 @@ using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
+    private float updateInterval = 0.667f;
+    private float updateTimer;
+
     public Color gainColour;
     public Color lossColour;
     public Color fullColour;
@@ -32,6 +35,22 @@ public class HUDManager : MonoBehaviour
     }
 
     void LateUpdate()
+    {
+        updateTimer -= Time.unscaledDeltaTime;
+        if (updateTimer <= 0)
+        {
+            RefreshResources();
+            updateTimer = updateInterval;
+        }
+
+        // Info Bar
+
+        int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
+        string plural = (wavesSurvived == 1) ? "" : "s";
+        waveText.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
+    }
+
+    private void RefreshResources()
     {
         // Reesources
 
@@ -85,13 +104,6 @@ public class HUDManager : MonoBehaviour
         {
             metalText.color = fullColour;
         }
-
-
-        // Info Bar
-
-        int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
-        string plural = (wavesSurvived == 1) ? "" : "s";
-        waveText.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
 
     public void SetOverUI(bool isOver)
