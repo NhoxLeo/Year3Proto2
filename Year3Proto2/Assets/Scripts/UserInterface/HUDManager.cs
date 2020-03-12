@@ -16,17 +16,25 @@ public class HUDManager : MonoBehaviour
     private TMP_Text woodText;
     private TMP_Text metalText;
 
+    private EnemySpawner spawner;
+    private TMP_Text waveText;
+
     void Start()
     {
         game = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
+        spawner = FindObjectOfType<EnemySpawner>();
+
         foodText = transform.Find("ResourceBar/FoodText").GetComponent<TMP_Text>();
         woodText = transform.Find("ResourceBar/WoodText").GetComponent<TMP_Text>();
         metalText = transform.Find("ResourceBar/MetalText").GetComponent<TMP_Text>();
+        waveText = transform.Find("InfoBar/Waves").GetComponent<TMP_Text>();
     }
 
     void LateUpdate()
     {
+        // Reesources
+
         float foodVel = game.GetFoodVelocity(1);
         string foodSign = (Mathf.Sign(foodVel) == 1) ? "+" : "";
         float foodVelDP = Mathf.Round(foodVel * 10f) * .1f;
@@ -77,6 +85,13 @@ public class HUDManager : MonoBehaviour
         {
             metalText.color = fullColour;
         }
+
+
+        // Info Bar
+
+        int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
+        string plural = (wavesSurvived == 1) ? "" : "s";
+        waveText.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
 
     public void SetOverUI(bool isOver)

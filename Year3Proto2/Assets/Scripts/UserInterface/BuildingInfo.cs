@@ -71,7 +71,7 @@ public class BuildingInfo : MonoBehaviour
         }
         else
         {
-            headingText.text = "missingno";
+            showPanel = false;
         }
 
         string env = "Environment";
