@@ -54,4 +54,9 @@ public class EnemySpawner : MonoBehaviour
         return availableTiles;
     }
 
+    public int GetWaveCurrent()
+    {
+        return waveCounter;
+    }
+
 }
