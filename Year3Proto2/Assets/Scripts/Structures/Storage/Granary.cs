@@ -11,6 +11,8 @@ public class Granary : StorageStructure
         resourceType = ResourceType.food;
         storage = 500;
         structureName = "Granary";
+        maxHealth = 200f;
+        health = maxHealth;
     }
 
     // Update is called once per frame
