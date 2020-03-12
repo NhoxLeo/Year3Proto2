@@ -33,51 +33,44 @@ public class CatapultTower : AttackStructure
         if (attachedTile == null && spawnedBoulder != null)
         { 
             enemies.Clear();
-            Destroy(spawnedBoulder);
+            if (spawnedBoulder) { Destroy(spawnedBoulder); }
         }
 
         if (spawnedBoulder == null)
         {
             Vector3 initialPosition = transform.position + new Vector3(0.0f, transform.localScale.y / 2.0f, 0.0f);
             spawnedBoulder = Instantiate(boulder, initialPosition, Quaternion.identity, transform);
+            GameManager.CreateAudioEffect("catapultFire", transform.position);
             origin = current = initialPosition;
             distanceTravelled = 0.0f;
-
-            Vector3 position = target.transform.position;
-            position.y = -0.5f;
-
-            final = position;
+            final = target.transform.position;
         }
         else
         {
-            if (target == null) Destroy(spawnedBoulder.gameObject);
-
-            Vector3 direction = final - current;
-            current += direction.normalized * speed * Time.deltaTime;
-            distanceTravelled += speed * Time.deltaTime;
-
-            float totalDistance = Vector3.Distance(origin, final);
-            float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
-            spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
-
-            if (spawnedBoulder.transform.position.y <= 0)
+            if (spawnedBoulder)
             {
-                Destroy(spawnedBoulder);
+                Vector3 direction = final - current;
+                current += direction.normalized * speed * Time.deltaTime;
+                distanceTravelled += speed * Time.deltaTime;
 
-                foreach (GameObject enemy in new List<GameObject>(enemies))
+                float totalDistance = Vector3.Distance(origin, final);
+                float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
+                spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
+
+                if (spawnedBoulder.transform.position.y <= 0.51f)
                 {
-                    if(Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
+                    foreach (GameObject enemy in new List<GameObject>(enemies))
                     {
-                        enemies.Remove(enemy);
-                        Destroy(enemy);
+                        if (Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
+                        {
+                            enemies.Remove(enemy);
+                            Destroy(enemy);
+                        }
                     }
+                    Instantiate(Resources.Load("Explosion") as GameObject, spawnedBoulder.transform.position, Quaternion.identity);
+                    Destroy(spawnedBoulder);
                 }
             }
-        }
-
-        if(enemies.Count <= 0)
-        {
-            Destroy(spawnedBoulder);
         }
     }
 }

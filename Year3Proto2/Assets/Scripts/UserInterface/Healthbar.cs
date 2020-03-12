@@ -43,7 +43,7 @@ public class Healthbar : MonoBehaviour
         transform.position = pos;
     }
 
-    public void PulseTip()
+    private void PulseTip()
     {
         transform.DOKill(true);
         transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f);

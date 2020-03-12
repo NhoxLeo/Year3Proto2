@@ -11,11 +11,12 @@ public class MessageBox : MonoBehaviour
 
     private TMP_Text displayText;
 
-    void Start()
+    void Awake()
     {
         tool = GetComponent<Tooltip>();
         displayText = transform.GetChild(1).GetComponent<TMP_Text>();
         timerMode = true;
+        timer = 0.0f;
     }
 
 
@@ -49,6 +50,32 @@ public class MessageBox : MonoBehaviour
     {
         if ((timerMode && timer <= 0f) || !timerMode)
         {
+            if (tool)
+            {
+                Debug.Log("tool returns.");
+                if (tool.showTooltip)
+                {
+                    Debug.Log("tool.showTooltip is true.");
+                }
+                else
+                {
+                    Debug.Log("tool.showTooltip is false.");
+                }
+            }
+            else
+            {
+                Debug.LogError("tool returns null.");
+            }
+            if (displayText)
+            {
+                Debug.Log("displayText returns.");
+                Debug.Log("displayText.text == " + displayText.text);
+            }
+            else
+            {
+                Debug.LogError("displayText returns null.");
+            }
+
             if (tool.showTooltip && displayText.text != message) { tool.PulseTip(); }
             displayText.text = message;
 

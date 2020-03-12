@@ -4,24 +4,27 @@ using DG.Tweening;
 
 public class SceneSwitcher : MonoBehaviour
 {
-
     public GameObject fadePanel;
     public float fadeTime = 0.5f;
     private float fadeInDelay = 0.25f;
     private CanvasGroup canvas;
-    private string targetScene;
-    private string curScene;
-    private bool isFading;
-    private bool isSwitching;
-    private float fadeTimeCur;
+    private string targetScene = "";
+    private string curScene = "";
+    private bool isFading = false;
+    private bool isSwitching = false;
+    private float fadeTimeCur = 0.0f;
 
     public AudioClip clickSound;
+    public AudioClip toolSound;
 
     void Awake()
     {
+        canvas = fadePanel.GetComponent<CanvasGroup>();
         curScene = SceneManager.GetActiveScene().name;
         GlobalData.curScene = curScene;
         Debug.Log("Current scene: " + curScene);
+        clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
+        //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
     }
 
     void Start()
@@ -36,7 +39,6 @@ public class SceneSwitcher : MonoBehaviour
             fadePanel = GameObject.Find("FadePanel(Clone)");
         }
         fadePanel.SetActive(true);
-        canvas = fadePanel.GetComponent<CanvasGroup>();
 
         Invoke("ExitFade", fadeInDelay);
     }
@@ -76,6 +78,11 @@ public class SceneSwitcher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneSwitch(curScene);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneSwitch("TitleScreen");
         }
 
     }

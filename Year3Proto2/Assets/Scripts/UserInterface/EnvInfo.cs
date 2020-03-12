@@ -15,6 +15,7 @@ public class EnvInfo : MonoBehaviour
     {
         rTrans = GetComponent<RectTransform>();
         tool = GetComponent<Tooltip>();
+        tool.SetInteractable(false);
         textbox = transform.Find("PanelMask/Description").GetComponent<TMP_Text>();
     }
 
@@ -50,7 +51,8 @@ public class EnvInfo : MonoBehaviour
         {
             yPivot = 0.0f;
         }
-        else if (transform.localPosition.x > 640.0f)
+
+        if (transform.localPosition.x > 640.0f)
         {
             xPivot = 1.0f;
         }
