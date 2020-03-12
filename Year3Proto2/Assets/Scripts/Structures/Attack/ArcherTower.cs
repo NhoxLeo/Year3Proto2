@@ -5,10 +5,11 @@ using UnityEngine;
 public class ArcherTower : AttackStructure
 {
     public GameObject arrow;
+    public GameObject ballista;
+    public float arrowDamage = 5.0f;
 
     private GameObject spawnedArrow;
     private const float arrowSpeed = 2.5f;
-    public float arrowDamage = 5.0f;
 
     void Start()
     {
@@ -20,11 +21,27 @@ public class ArcherTower : AttackStructure
     {
         AttackUpdate();
 
-        if (target == null && spawnedArrow != null) Destroy(spawnedArrow);
+        if (target == null && spawnedArrow != null)
+        {
+            Destroy(spawnedArrow);
+        } 
+
+        if(target != null)
+        {
+            Vector3 ballistaPosition = ballista.transform.position;
+            Vector3 targetPosition = target.transform.position;
+
+            Vector3 difference = ballistaPosition - targetPosition;
+            difference.y = 0;
+
+            Quaternion rotation = Quaternion.LookRotation(difference);
+            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * arrowSpeed);
+
+        }
     }
 
     public override void Attack(GameObject target)
-    {
+    { 
         if (spawnedArrow != null)
         {
             if(target == null) Destroy(spawnedArrow.gameObject);
@@ -34,9 +51,10 @@ public class ArcherTower : AttackStructure
             Vector3 arrowPosition = spawnedArrow.transform.position;
             Vector3 targetPosition = target.transform.position;
 
+
             spawnedArrow.transform.position = Vector3.MoveTowards(arrowPosition, targetPosition, Time.deltaTime * arrowSpeed);
 
-            if(Vector3.Distance(arrowPosition, targetPosition) <= 0.05f)
+            if (Vector3.Distance(arrowPosition, targetPosition) <= 0.05f)
             {
                 if (target.GetComponent<Enemy>().health <= 0.0f)
                 {
@@ -53,7 +71,8 @@ public class ArcherTower : AttackStructure
         }
         else
         {
-            spawnedArrow = Instantiate(arrow, transform.position + new Vector3(0.0f, transform.localScale.y / 2.0f, 0.0f), Quaternion.identity, transform);
+
+            spawnedArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
             GameManager.CreateAudioEffect("arrow", transform.position);
         }
     }

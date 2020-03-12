@@ -34887,6 +34887,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 909300668292868982, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 909300668292868982, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1155392124715638757, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -35832,6 +35842,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9130212742263017329, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9130212742263017329, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: baca440b2bf69734497f80ed08a4d9ce, type: 3}
@@ -93626,6 +93646,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 700899947784832006, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: timeBetweenWaves
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 700899947784832006, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: cooldown
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7067514012913874853, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
         type: 3}
