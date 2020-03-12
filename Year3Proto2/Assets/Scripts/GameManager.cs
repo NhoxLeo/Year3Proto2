@@ -180,6 +180,7 @@ public class GameManager : MonoBehaviour
     private float tutorialDelay = 2.0f;
     private static int repairCount = 0;
     private bool repairMessage = false;
+    public bool repairAll = false;
     int recentFood
     {
         get
@@ -403,7 +404,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (repairCount > 5 && !repairMessage)
+        if (repairCount > 5 && !repairMessage && !repairAll)
         {
             MessageBox messageBox = FindObjectOfType<MessageBox>();
             messageBox.ShowMessage("You can press R to mass repair", 3f);

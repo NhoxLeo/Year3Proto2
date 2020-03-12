@@ -21,6 +21,7 @@ public abstract class Enemy : MonoBehaviour
     public float speed = 0.6f;
     public float scale = 0.0f;
     public float damage = 2.0f;
+    public bool nextReturnFalse = false;
 
     protected float yPosition;
     protected float finalSpeed = 0.0f;
@@ -82,7 +83,10 @@ public abstract class Enemy : MonoBehaviour
                 }
                 else
                 {
-                    Next();
+                    if (!nextReturnFalse)
+                    {
+                        nextReturnFalse = !Next();
+                    }
                 }
                 break;
             case EnemyState.IDLE:
