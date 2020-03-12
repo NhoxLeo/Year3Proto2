@@ -72,11 +72,11 @@ public abstract class Enemy : MonoBehaviour
 
                     
                     enemiesInArea.RemoveAll(enemy => enemy == null);
-                    foreach (GameObject @object in enemiesInArea)
+                    foreach (GameObject enemy in enemiesInArea)
                     {
-                        if (Vector3.Distance(@object.transform.position, transform.position) < (scale + 0.2f))
+                        if (Vector3.Distance(enemy.transform.position, transform.position) < (scale + 0.2f))
                         {
-                            transform.position = (transform.position - @object.transform.position).normalized * (scale + 0.2f) + @object.transform.position;
+                            transform.position = (transform.position - enemy.transform.position).normalized * (scale + 0.2f) + enemy.transform.position;
                         }
                     }
        
