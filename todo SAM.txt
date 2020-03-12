@@ -31,8 +31,8 @@ Second:	Good luck!											DONE
   - Catapult fires faster based on amount of food allocated to it					DONE
   - Catapult deducts food when it fires									DONE
  --- ENEMY AI
-  - Next not called when longhaus destroyed
-
+  - Next not called when longhaus destroyed								DONE
+  - Enemies follow their own target
 
 arrows fall to the ground if no target
 enemy health variation based on size
