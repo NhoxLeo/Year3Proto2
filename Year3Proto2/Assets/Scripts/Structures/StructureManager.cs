@@ -170,30 +170,30 @@ public class StructureManager : MonoBehaviour
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                     NAME                                               wC       mC      fC
-            { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(150,     20,     0)) },
+            { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
 
-            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(90,      30,     0)) },
-            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(150,     100,    0)) },
+            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
+            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
 
             { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
             { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(120,     0,      0)) },
 
-            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(80,      20,     0)) },
+            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(60,      20,     0)) },
             { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(120,     0,      0)) },
 
-            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(60,      60,     0)) },
-            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(130,     20,     0)) },
+            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(100,     20,     0)) },
+            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(120,     80,     0)) },
         };
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         canvas = FindObjectOfType<Canvas>();
         messageBox = FindObjectOfType<MessageBox>();
+        envInfo = FindObjectOfType<EnvInfo>();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         structureFromStore = false;
         structureOldTile = null;
         structure = null;
         selectedStructure = null;
-        envInfo = FindObjectOfType<EnvInfo>();
         hoveroverStructure = null;
         hoveroverTime = 0f;
     }
@@ -318,10 +318,12 @@ public class StructureManager : MonoBehaviour
 
                                         if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                         if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+
                                         if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
                                         else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
                                         else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
                                         else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
+                                        else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
                                     }
                                     // if the tile we hit does not have an attached object...
                                     else { canPlaceHere = true; }
@@ -337,12 +339,14 @@ public class StructureManager : MonoBehaviour
                                             {
                                                 structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
                                             }
+                                            else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage)
+                                            {
+                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
+                                            }
                                         }
                                         else // the tile can be placed on, and has no attached structure
                                         {
                                             structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
-                                            string messageBoxCurrent = messageBox.GetCurrentMessage();
-                                            //if (messageBoxCurrent == "This will consume the environment tile." || messageBoxCurrent == "You cannot place that structure on that tile.") { messageBox.HideMessage(); }
                                         }
 
                                         // If player cannot afford the structure, set to red.
@@ -557,42 +561,27 @@ public class StructureManager : MonoBehaviour
                         }
                     }
 
-                    if (Input.GetKeyDown(KeyCode.RightArrow))
+                    StructureType structureType = selectedStructure.GetStructureType();
+                    if (structureType == StructureType.resource || structureType == StructureType.attack)
                     {
-                        // increases the food allocation of the selected structure.
-                        if (selectedStructure.GetStructureType() == StructureType.resource)
+                        if (Input.GetKeyDown(KeyCode.RightArrow))
                         {
-                            selectedStructure.GetComponent<ResourceStructure>().IncreaseFoodAllocation();
-                            FindObjectOfType<BuildingInfo>().SetInfo();
+                            selectedStructure.IncreaseFoodAllocation();
+                        }
+                        if (Input.GetKeyDown(KeyCode.LeftArrow))
+                        {
+                            selectedStructure.DecreaseFoodAllocation();
+                        }
+                        if (Input.GetKeyDown(KeyCode.UpArrow))
+                        {
+                            selectedStructure.SetFoodAllocationMax();
+                        }
+                        if (Input.GetKeyDown(KeyCode.DownArrow))
+                        {
+                            selectedStructure.SetFoodAllocationMin();
                         }
                     }
-                    if (Input.GetKeyDown(KeyCode.LeftArrow))
-                    {
-                        // decreases the food allocation of the selected structure.
-                        if (selectedStructure.GetStructureType() == StructureType.resource)
-                        {
-                            selectedStructure.GetComponent<ResourceStructure>().DecreaseFoodAllocation();
-                            FindObjectOfType<BuildingInfo>().SetInfo();
-                        }
-                    }
-                    if (Input.GetKeyDown(KeyCode.UpArrow))
-                    {
-                        // increases the food allocation of the selected structure.
-                        if (selectedStructure.GetStructureType() == StructureType.resource)
-                        {
-                            selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMax();
-                            FindObjectOfType<BuildingInfo>().SetInfo();
-                        }
-                    }
-                    if (Input.GetKeyDown(KeyCode.DownArrow))
-                    {
-                        // decreases the food allocation of the selected structure.
-                        if (selectedStructure.GetStructureType() == StructureType.resource)
-                        {
-                            selectedStructure.GetComponent<ResourceStructure>().SetFoodAllocationMin();
-                            FindObjectOfType<BuildingInfo>().SetInfo();
-                        }
-                    }
+                        
                 }
             }
             else if (structureState == StructManState.selecting)
