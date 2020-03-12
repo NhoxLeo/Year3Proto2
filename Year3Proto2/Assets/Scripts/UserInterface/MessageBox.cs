@@ -38,12 +38,6 @@ public class MessageBox : MonoBehaviour
         {
             tool.showTooltip = true;
         }
-        
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            ShowMessage("You pressed M, thus triggering a test message!", 3.5f);
-        }
     }
 
     public void ShowMessage(string message, float time = 0f)
