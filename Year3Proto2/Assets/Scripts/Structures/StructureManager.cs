@@ -11,10 +11,9 @@ public enum StructManState
 
 public struct ResourceBundle
 {
-    public int woodCost;
-    public int metalCost;
     public int foodCost;
-
+    public int metalCost;
+    public int woodCost;
     public ResourceBundle(int _wCost, int _mCost, int _fCost)
     {
         woodCost = _wCost;
@@ -33,9 +32,8 @@ public struct ResourceBundle
 
 public struct StructureDefinition
 {
-    public GameObject structure;
     public ResourceBundle resourceCost;
-
+    public GameObject structure;
     public StructureDefinition(GameObject _structure, ResourceBundle _cost)
     {
         structure = _structure;
@@ -58,21 +56,114 @@ public class StructureManager : MonoBehaviour
     };
     public Canvas canvas;
     public GameObject healthBarPrefab;
-    private Structure structure;
-    private Structure selectedStructure;
-    private TileBehaviour structureOldTile;
-    private BuildingInfo buildingInfo;
-    private bool structureFromStore;
-    public Transform tileHighlight = null;
-    public Transform selectedTileHighlight = null;
-    private StructManState structureState = StructManState.selecting;
-    public Dictionary<string, StructureDefinition> structureDict;
-    private GameManager gameMan;
     public bool isOverUI = false;
-    private MessageBox messageBox;
+    public Transform selectedTileHighlight = null;
+    public Dictionary<string, StructureDefinition> structureDict;
+    public Transform tileHighlight = null;
+    private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
+    private GameManager gameMan;
     private Structure hoveroverStructure;
     private float hoveroverTime;
+    private MessageBox messageBox;
+    private Structure selectedStructure;
+    private Structure structure;
+    private bool structureFromStore;
+    private TileBehaviour structureOldTile;
+    private StructManState structureState = StructManState.selecting;
+    private bool towerPlaced = false;
+    public bool BuyBuilding()
+    {
+        if (structure && structureFromStore)
+        {
+            if (gameMan.playerData.AttemptPurchase(structureDict[structure.GetStructureName()].resourceCost))
+            {
+                return true;
+            }
+            ShowMessage("You can't afford that!", 1.5f);
+        }
+        return false;
+    }
+
+    public void DeselectStructure()
+    {
+        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+        if (selectedStructure)
+        {
+            selectedStructure.OnDeselected();
+            selectedStructure = null;
+        }
+        buildingInfo.showPanel = false;
+    }
+
+    public void ResetBuilding()
+    {
+        if (structure)
+        {
+            if (structureState == StructManState.moving)
+            {
+                if (structureFromStore)
+                {
+                    Destroy(structure.gameObject);
+                    FindObjectOfType<BuildPanel>().UINoneSelected();
+                }
+                else
+                {
+                    Vector3 structPos = structureOldTile.transform.position;
+                    structPos.y = structure.sitHeight;
+                    structure.transform.position = structPos;
+                    structureOldTile.Attach(structure);
+                    structureOldTile = null;
+                }
+                structureState = StructManState.selected;
+            }
+        }
+    }
+
+    public void SelectStructure(Structure _structure)
+    {
+        DeselectStructure();
+        selectedStructure = _structure;
+
+        selectedStructure.OnSelected();
+
+        if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+        Vector3 highlightpos = selectedStructure.attachedTile.transform.position;
+        highlightpos.y = 0.501f;
+        selectedTileHighlight.position = highlightpos;
+
+        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+        buildingInfo.showPanel = true;
+    }
+
+    public bool SetBuilding(string _building)
+    {
+        if (structureState != StructManState.moving)
+        {
+            DeselectStructure();
+            structureFromStore = true;
+            GameObject structureInstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+            structure = structureInstance.GetComponent<Structure>();
+            // Put the manager back into moving mode.
+            structureState = StructManState.moving;
+            if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+            selectedStructure = null;
+            buildingInfo.showPanel = false;
+            return true;
+        }
+        return false;
+    }
+
+    public bool SetBuilding(BuildPanel.Buildings _buildingID)
+    {
+        return SetBuilding(StructureNames[_buildingID]);
+    }
+
+    public void SetIsOverUI(bool _isOverUI)
+    {
+        isOverUI = _isOverUI;
+    }
 
     private void Awake()
     {
@@ -105,6 +196,89 @@ public class StructureManager : MonoBehaviour
         envInfo = FindObjectOfType<EnvInfo>();
         hoveroverStructure = null;
         hoveroverTime = 0f;
+    }
+
+    private void HideBuilding()
+    {
+        if (structure && structureState == StructManState.moving)
+        {
+            structure.transform.position = Vector3.down * 10f;
+        }
+    }
+
+    void PlayerMouseOver(Structure _structure)
+    {
+        if (!hoveroverStructure)
+        {
+            hoveroverStructure = _structure;
+            hoveroverTime += Time.deltaTime;
+        }
+        else if (hoveroverStructure == _structure)
+        {
+            hoveroverTime += Time.deltaTime;
+        }
+        else
+        {
+            hoveroverStructure = _structure;
+            hoveroverTime = 0f;
+        }
+        if (hoveroverTime > 1.0f)
+        {
+            SetHoverInfo(_structure);
+        }
+    }
+
+    void SetHoverInfo(Structure _structure)
+    {
+        envInfo.SetVisibility(true);
+        switch (_structure.GetStructureName())
+        {
+            case "Longhaus":
+                envInfo.ShowInfo("The Longhaus is your base of operations, protect it at all costs! The Longhaus generates a small amount of wood & food and an even smaller amount of metal.");
+                break;
+            case "Forest Environment":
+                envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
+                break;
+            case "Hill Environment":
+                envInfo.ShowInfo("Placing a Mine on this tile will destroy the hill, and provide a bonus to the Mine. Placing a Mine adjacent to this tile with provide a bonus to the Mine.");
+                break;
+            case "Plains Environment":
+                envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
+                break;
+            case "Farm":
+                envInfo.ShowInfo("The Farm generates Food. It gains a bonus from all plains tiles surrounding it, and an additional bonus if placed on a plains tile.");
+                break;
+            case "Lumber Mill":
+                envInfo.ShowInfo("The Lumber Mill generates Wood. It gains a bonus from all forest tiles surrounding it, and an additional bonus if placed on a forest tile.");
+                break;
+            case "Mine":
+                envInfo.ShowInfo("The Mine generates Metal. It gains a bonus from all hill tiles surrounding it, and an additional bonus if placed on a hill tile.");
+                break;
+            case "Granary":
+                envInfo.ShowInfo("The Granary stores Food. If it is broken, you will lose the additional capacity it gives you, and any excess Food you have will be lost.");
+                break;
+            case "Lumber Pile":
+                envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
+                break;
+            case "Metal Storehouse":
+                envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
+                break;
+            case "Archer Tower":
+                envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
+                break;
+            case "Catapult":
+                envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
+                break;
+        }
+
+    }
+
+    void ShowMessage(string _message, float _duration)
+    {
+        if (gameMan.tutorialDone)
+        {
+            messageBox.ShowMessage(_message, _duration);
+        }
     }
 
     private void Update()
@@ -144,32 +318,10 @@ public class StructureManager : MonoBehaviour
 
                                         if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                         if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-                                        // Special condition: Lumber Mills can be placed on Forest Environment
-                                        if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill"))
-                                        {
-                                            canPlaceHere = true;
-                                            //SendMessage("This will consume the Forest.", 0f);
-                                        }
-                                        // Special condition: Lumber Mills can be placed on Hill Environment
-                                        else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine"))
-                                        {
-                                            canPlaceHere = true;
-                                            //SendMessage("This will consume the Hill.", 0f);
-                                        }
-                                        // Special condition: Lumber Mills can be placed on Forest Environment
-                                        else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm"))
-                                        {
-                                            canPlaceHere = true;
-                                            //SendMessage("This will consume the Plains.", 0f);
-                                        }
-                                        else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack)
-                                        {
-                                            canPlaceHere = true;
-                                        }
-                                        else
-                                        {
-                                            messageBox.ShowMessage("You cannot place that structure on that tile.");
-                                        }
+                                        if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                        else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                        else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
+                                        else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
                                     }
                                     // if the tile we hit does not have an attached object...
                                     else { canPlaceHere = true; }
@@ -177,7 +329,6 @@ public class StructureManager : MonoBehaviour
                                     {
                                         if (attached)
                                         {
-                                            messageBox.ShowMessage("This will consume the environment tile.");
                                             if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)
                                             {
                                                 structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
@@ -191,7 +342,13 @@ public class StructureManager : MonoBehaviour
                                         {
                                             structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
                                             string messageBoxCurrent = messageBox.GetCurrentMessage();
-                                            if (messageBoxCurrent == "This will consume the environment tile." || messageBoxCurrent == "You cannot place that structure on that tile.") { messageBox.HideMessage(); }
+                                            //if (messageBoxCurrent == "This will consume the environment tile." || messageBoxCurrent == "You cannot place that structure on that tile.") { messageBox.HideMessage(); }
+                                        }
+
+                                        // If player cannot afford the structure, set to red.
+                                        if (!gameMan.playerData.CanAfford(structureDict[structure.GetStructureName()].resourceCost))
+                                        {
+                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
                                         }
 
                                         Vector3 structPos = hit.transform.transform.position;
@@ -264,6 +421,11 @@ public class StructureManager : MonoBehaviour
                                                 {
                                                     FindObjectOfType<BuildPanel>().UINoneSelected();
                                                     FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                                                }
+                                                if (!towerPlaced)
+                                                {
+                                                    FindObjectOfType<EnemySpawner>().Begin();
+                                                    towerPlaced = true;
                                                 }
                                                 SelectStructure(structure);
                                                 structureState = StructManState.selected;
@@ -491,173 +653,10 @@ public class StructureManager : MonoBehaviour
             //if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
             HideBuilding();
         }
-    }
 
-    public void SetIsOverUI(bool _isOverUI)
-    {
-        isOverUI = _isOverUI;
-    }
-
-    public bool BuyBuilding()
-    {
-        if (structure && structureFromStore)
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (gameMan.playerData.AttemptPurchase(structureDict[structure.GetStructureName()].resourceCost))
-            {
-                return true;
-            }
-            messageBox.ShowMessage("You can't afford that!", 2f);
-        }
-        return false;
-    }
-
-    public bool SetBuilding(string _building)
-    {
-        if (structureState != StructManState.moving)
-        {
-            DeselectStructure();
-            structureFromStore = true;
-            GameObject structureInstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-            structure = structureInstance.GetComponent<Structure>();
-            // Put the manager back into moving mode.
-            structureState = StructManState.moving;
-            if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-            selectedStructure = null;
-            buildingInfo.showPanel = false;
-            return true;
-        }
-        return false;
-    }
-
-    private void HideBuilding()
-    {
-        if (structure && structureState == StructManState.moving)
-        {
-            structure.transform.position = Vector3.down * 10f;
-        }
-    }
-
-    public bool SetBuilding(BuildPanel.Buildings _buildingID)
-    {
-        return SetBuilding(StructureNames[_buildingID]);
-    }
-
-    public void ResetBuilding()
-    {
-        if (structure)
-        {
-            if (structureState == StructManState.moving)
-            {
-                if (structureFromStore)
-                {
-                    Destroy(structure.gameObject);
-                    FindObjectOfType<BuildPanel>().UINoneSelected();
-                }
-                else
-                {
-                    Vector3 structPos = structureOldTile.transform.position;
-                    structPos.y = structure.sitHeight;
-                    structure.transform.position = structPos;
-                    structureOldTile.Attach(structure);
-                    structureOldTile = null;
-                }
-                structureState = StructManState.selected;
-            }
-        }
-    }
-
-    public void SelectStructure(Structure _structure)
-    {
-        DeselectStructure();
-        selectedStructure = _structure;
-
-        selectedStructure.OnSelected();
-
-        if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
-
-        Vector3 highlightpos = selectedStructure.attachedTile.transform.position;
-        highlightpos.y = 0.501f;
-        selectedTileHighlight.position = highlightpos;
-
-        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
-        buildingInfo.showPanel = true;
-    }
-
-    public void DeselectStructure()
-    {
-        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-        if (selectedStructure)
-        {
-            selectedStructure.OnDeselected();
-            selectedStructure = null;
-        }
-        buildingInfo.showPanel = false;
-    }
-
-    void SetHoverInfo(Structure _structure)
-    {
-        envInfo.SetVisibility(true);
-        switch (_structure.GetStructureName())
-        {
-            case "Longhaus":
-                envInfo.ShowInfo("The Longhaus is your base of operations, protect it at all costs! The Longhaus generates a small amount of wood & food and an even smaller amount of metal.");
-                break;
-            case "Forest Environment":
-                envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
-                break;
-            case "Hill Environment":
-                envInfo.ShowInfo("Placing a Mine on this tile will destroy the hill, and provide a bonus to the Mine. Placing a Mine adjacent to this tile with provide a bonus to the Mine.");
-                break;
-            case "Plains Environment":
-                envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
-                break;
-            case "Farm":
-                envInfo.ShowInfo("The Farm generates Food. It gains a bonus from all plains tiles surrounding it, and an additional bonus if placed on a plains tile.");
-                break;
-            case "Lumber Mill":
-                envInfo.ShowInfo("The Lumber Mill generates Wood. It gains a bonus from all forest tiles surrounding it, and an additional bonus if placed on a forest tile.");
-                break;
-            case "Mine":
-                envInfo.ShowInfo("The Mine generates Metal. It gains a bonus from all hill tiles surrounding it, and an additional bonus if placed on a hill tile.");
-                break;
-            case "Granary":
-                envInfo.ShowInfo("The Granary stores Food. If it is broken, you will lose the additional capacity it gives you, and any excess Food you have will be lost.");
-                break;
-            case "Lumber Pile":
-                envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
-                break;
-            case "Metal Storehouse":
-                envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
-                break;
-            case "Archer Tower":
-                envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
-                break;
-            case "Catapult":
-                envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
-                break;
-        }
-
-    }
-
-    void PlayerMouseOver(Structure _structure)
-    {
-        if (!hoveroverStructure)
-        {
-            hoveroverStructure = _structure;
-            hoveroverTime += Time.deltaTime;
-        }
-        else if (hoveroverStructure == _structure)
-        {
-            hoveroverTime += Time.deltaTime;
-        }
-        else
-        {
-            hoveroverStructure = _structure;
-            hoveroverTime = 0f;
-        }
-        if (hoveroverTime > 1.0f)
-        {
-            SetHoverInfo(_structure);
+            gameMan.RepairAll();
         }
     }
 }

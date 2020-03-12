@@ -9,7 +9,7 @@ public class LumberPile : StorageStructure
     {
         StorageStart();
         resourceType = ResourceType.wood;
-        storage = 1000;
+        storage = 500;
         structureName = "Lumber Pile";
     }
 

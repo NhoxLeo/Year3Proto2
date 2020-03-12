@@ -1,14 +1,17 @@
 fileFormatVersion: 2
-guid: 5aba5bf3350dd444cbb3f145a8e9ddb1
+guid: 84a08c09f090ca442b4520493e00649a
 ModelImporter:
   serializedVersion: 19300
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      74: 1827226128182048838
+    second: Take 001
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Ballista_tower_Ballista_tower_polySurface6Mat
-    second: {fileID: 2100000, guid: d7d8bf7c38e2e444ca8f222a695c7840, type: 2}
+      name: lambert1
+    second: {fileID: 2100000, guid: 49d5c6e10132cff499b28585ba549cc1, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

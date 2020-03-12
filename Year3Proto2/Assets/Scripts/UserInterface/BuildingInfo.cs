@@ -71,7 +71,7 @@ public class BuildingInfo : MonoBehaviour
         }
         else
         {
-            headingText.text = "missingno";
+            showPanel = false;
         }
 
         string env = "Environment";
@@ -296,13 +296,7 @@ public class BuildingInfo : MonoBehaviour
 
         Structure targetStructure = targetBuilding.GetComponent<Structure>();
         ResourceBundle repairCost = targetStructure.RepairCost();
-        if (gameMan.playerData.CanAfford(repairCost))
-        {
-            gameMan.playerData.DeductResource(ResourceType.wood, repairCost.woodCost);
-            gameMan.playerData.DeductResource(ResourceType.metal, repairCost.metalCost);
-            gameMan.playerData.DeductResource(ResourceType.food, repairCost.foodCost);
-            targetStructure.Repair();
-        }
+        targetStructure.Repair();
         SetInfo();
     }
    

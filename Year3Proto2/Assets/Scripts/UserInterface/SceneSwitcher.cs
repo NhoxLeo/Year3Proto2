@@ -74,17 +74,6 @@ public class SceneSwitcher : MonoBehaviour
 
             isSwitching = false;
         }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneSwitch(curScene);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneSwitch("TitleScreen");
-        }
-
     }
 
     public void SceneSwitch(string scene)
