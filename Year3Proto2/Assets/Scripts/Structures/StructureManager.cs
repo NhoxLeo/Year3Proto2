@@ -624,6 +624,7 @@ public class StructureManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
+            gameMan.repairAll = true;
             gameMan.RepairAll();
         }
     }
