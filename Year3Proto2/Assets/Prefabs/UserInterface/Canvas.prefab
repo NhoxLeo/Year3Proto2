@@ -6028,14 +6028,14 @@ MonoBehaviour:
     - Stores collected Metal. Increases maximum Metal storage capacity.
     cost:
     - {x: 0, y: 0}
-    - {x: 90, y: 30}
-    - {x: 150, y: 100}
+    - {x: 150, y: 50}
+    - {x: 200, y: 250}
     - {x: 40, y: 0}
     - {x: 120, y: 0}
-    - {x: 80, y: 20}
+    - {x: 60, y: 20}
     - {x: 120, y: 0}
-    - {x: 60, y: 60}
-    - {x: 130, y: 20}
+    - {x: 100, y: 20}
+    - {x: 120, y: 80}
 --- !u!114 &3228721109103862829
 MonoBehaviour:
   m_ObjectHideFlags: 0
