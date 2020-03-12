@@ -24,13 +24,16 @@ Second:	Good luck!											DONE
   - Archer Tower can have food allocated to it								DONE
   - Archer Tower fires faster based on amount of food allocated to it					DONE
   - Archer Tower deducts food when it fires								DONE
- --- CATAPULT
-  - Catapult fires multiple projectiles
-  - Catapult deals damage rather than deleting
+ --- CATAPULT												DONE
+  - Catapult fires multiple projectiles									DONE
+  - Catapult deals damage rather than deleting								DONE
   - Catapult can have food allocated to it								DONE
-  - Catapult fires faster based on amount of food allocated to it
-  - Catapult deducts food when it fires
-
+  - Catapult fires faster based on amount of food allocated to it					DONE
+  - Catapult deducts food when it fires									DONE
+ --- ENEMY AI
+  - Next not called when longhaus destroyed								DONE
+  - Enemies follow their own target
 
 arrows fall to the ground if no target
+enemy health variation based on size
 

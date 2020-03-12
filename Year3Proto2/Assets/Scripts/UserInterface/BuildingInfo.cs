@@ -109,7 +109,7 @@ public class BuildingInfo : MonoBehaviour
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Attack Power";
-                statValueText.text = "???";
+                statValueText.text = "10";
                 statInfoText.text = "AOE Damage";
                 foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
 

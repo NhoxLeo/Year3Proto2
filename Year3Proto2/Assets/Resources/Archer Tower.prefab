@@ -112,16 +112,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6575c17a6eb5c0d4382871fd21ce0044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  structureName: 
-  icon: {fileID: 0}
-  sitHeight: 0.5
-  displayName: 
   attachedTile: {fileID: 0}
+  displayName: 
+  icon: {fileID: 0}
   isPlaced: 0
+  sitHeight: 0.5
+  structureName: 
   arrow: {fileID: 1147110280109721153, guid: 2d84c91535cfd2747988038d60f7ad23, type: 3}
   ballista: {fileID: 5853393773172578223}
-  arrowPosition: {x: 0, y: 0.6, z: 0}
   arrowDamage: 5
+  fireRate: 0
 --- !u!64 &1413963230254588248
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -179,8 +179,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 4
-  m_Center: {x: 0, y: -0.5, z: 0}
+  m_Radius: 3.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3954447937614860170
 MonoBehaviour:
   m_ObjectHideFlags: 0
