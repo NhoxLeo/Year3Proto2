@@ -23,6 +23,8 @@ public class CatapultTower : AttackStructure
     {
         AttackStart();
         structureName = "Catapult Tower";
+        maxHealth = 450f;
+        health = maxHealth;
     }
 
     private void Update()

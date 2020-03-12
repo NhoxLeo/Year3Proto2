@@ -11,6 +11,8 @@ public class LumberPile : StorageStructure
         resourceType = ResourceType.wood;
         storage = 500;
         structureName = "Lumber Pile";
+        maxHealth = 200f;
+        health = maxHealth;
     }
 
     // Update is called once per frame

@@ -124,10 +124,17 @@ public abstract class ResourceStructure : Structure
             {
                 remainingTime = productionTime;
                 GameManager game = FindObjectOfType<GameManager>();
-                game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
                 if (structureName != "Farm")
                 {
-                    game.AddBatch(new Batch(-foodAllocation, ResourceType.food));
+                    if (game.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+                    {
+                        game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
+                        game.AddBatch(new Batch(-foodAllocation, ResourceType.food));
+                    }
+                }
+                else
+                {
+                    game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
                 }
             }
         }
