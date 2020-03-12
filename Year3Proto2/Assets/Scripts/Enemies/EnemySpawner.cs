@@ -9,44 +9,63 @@ public class EnemySpawner : MonoBehaviour
 
     [Header("Variables")]
     public int enemiesPerWave = 8;
-    public float cooldown = 1.0f;
-
+    public int newEnemiesPerWave = 4;
+    public float cooldown = 30.0f;
+    public float timeBetweenWaves = 30.0f;
+    private int waveCounter = 0;
     private TileBehaviour[] tileBehaviours;
+    private bool begin = false;
 
     private List<EnemyWave> enemyWaves;
     public EnemyWave enemyWave;
+    List<TileBehaviour> availableTiles;
 
     private void Start()
     {
         enemyWaves = new List<EnemyWave>();
-        tileBehaviours = FindObjectsOfType<TileBehaviour>();
+        availableTiles = new List<TileBehaviour>();
+        foreach (TileBehaviour tileBehaviour in FindObjectsOfType<TileBehaviour>())
+        {
+            if (tileBehaviour.GetSpawnTile()) availableTiles.Add(tileBehaviour);
+        }
     }
 
     private void FixedUpdate()
     {
-        cooldown -= Time.deltaTime;
-        if (cooldown <= 0.0f)
+        if (begin)
         {
-            cooldown = 30.0f;
+            cooldown -= Time.deltaTime;
+            if (cooldown <= 0.0f)
+            {
+                waveCounter++;
+                if (waveCounter == 1)
+                {
+                    FindObjectOfType<MessageBox>().ShowMessage("Invaders incoming!", 3.5f);
+                }
+                cooldown = timeBetweenWaves;
+                enemiesPerWave += newEnemiesPerWave;
+                EnemyWave enemyWave = Instantiate(this.enemyWave, transform);
+                enemyWave.Initialize(availableTiles, enemiesPerWave);
+                enemyWaves.Add(enemyWave);
+            }
 
-            EnemyWave enemyWave = Instantiate(this.enemyWave, transform.parent);
-            enemyWave.Initialize(GetAvailableTiles(), enemiesPerWave);
-            enemyWaves.Add(enemyWave);
+            enemyWaves.ForEach(enemyWave => enemyWave.Check(enemyWaves));
         }
-
-        enemyWaves.ForEach(enemyWave => enemyWave.Check(enemyWaves));
     }
 
     public List<TileBehaviour> GetAvailableTiles()
     {
-        List<TileBehaviour> tileBehaviours = new List<TileBehaviour>();
+        return availableTiles;
+    }
 
-        foreach(TileBehaviour tileBehaviour in this.tileBehaviours)
-        {
-            if (tileBehaviour.GetAttached() == null) tileBehaviours.Add(tileBehaviour);
-        }
+    public int GetWaveCurrent()
+    {
+        return waveCounter;
+    }
 
-        return tileBehaviours;
+    public void Begin()
+    {
+        begin = true;
     }
 
 }

@@ -13,6 +13,8 @@ public class TitleScreen : MonoBehaviour
 
     void Start()
     {
+        GetComponent<Tooltip>().showTooltip = true;
+
         gameLogo = transform.Find("GameLogo").gameObject;
         float gameLogoY = gameLogo.transform.localPosition.y;
         gameLogo.transform.DOLocalMoveY(-16.0f, 0.0f);
@@ -21,7 +23,7 @@ public class TitleScreen : MonoBehaviour
         buttonStart = transform.Find("ButtonStart").gameObject;
         buttonStart.transform.localScale = new Vector3(0, 0, 0);
 
-        buttonTut = transform.Find("ButtonTut").gameObject;
+        buttonTut = transform.Find("ButtonCredits").gameObject;
         buttonTut.transform.localScale = new Vector3(0, 0, 0);
 
         buttonExit = transform.Find("ButtonExit").gameObject;
@@ -30,12 +32,12 @@ public class TitleScreen : MonoBehaviour
         divider = transform.Find("Divider").gameObject;
         divider.transform.localScale = new Vector3(0, 1, 1);
 
-        decorLeft = transform.Find("Background/DecorLeft").gameObject;
+        decorLeft = transform.Find("DecorLeft").gameObject;
         float decorLeftX = decorLeft.transform.localPosition.x;
         decorLeft.transform.DOLocalMoveX(-32f, 0.0f);
         decorLeft.GetComponent<CanvasGroup>().alpha = 0.0f;
 
-        decorRight = transform.Find("Background/DecorRight").gameObject;
+        decorRight = transform.Find("DecorRight").gameObject;
         float decorRightX = decorRight.transform.localPosition.x;
         decorRight.transform.DOLocalMoveX(32f, 0.0f);
         decorRight.GetComponent<CanvasGroup>().alpha = 0.0f;

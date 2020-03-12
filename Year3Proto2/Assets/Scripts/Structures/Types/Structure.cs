@@ -11,31 +11,41 @@ public enum StructureType
 
 public abstract class Structure : MonoBehaviour
 {
-    public string structureName;
-    public Sprite icon;
-    public float sitHeight;
-    public string displayName;
     public TileBehaviour attachedTile;
+    public string displayName;
+    public Sprite icon;
+    public bool isPlaced;
+    public float sitHeight;
+    public string structureName;
+    protected float health;
+    //private bool isBuilt;
+    protected Healthbar healthBar;
 
-    protected float health = 100.0f;
-
+    protected float maxHealth = 100.0f;
     protected StructureType structureType;
 
-    protected void StructureStart()
+    public void Damage(float amount)
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
-        {
-            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(gameObject, true);
-        }
+        bool setInfo = health == maxHealth;
+        health -= amount;
+        if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
+        if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
+        GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
     }
 
-    protected void StructureUpdate()
+    public float GetHealth()
     {
-        if(health <= 0.0f)
-        {
-            attachedTile.Detach(true);
-            Destroy(gameObject);
-        }
+        return health;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public string GetStructureName()
+    {
+        return structureName;
     }
 
     public StructureType GetStructureType()
@@ -48,26 +58,16 @@ public abstract class Structure : MonoBehaviour
         return _structureName == structureName;
     }
 
-    public string GetStructureName()
+    public virtual void OnAnyPlaced()
     {
-        return structureName;
+
     }
 
-    public void Damage(float amount)
+    public virtual void OnDeselected()
     {
-        health -= amount;
-    }
-
-    public float GetHealth()
-    {
-        return health;
-    }
-
-    private void OnDestroy()
-    {
-        if (attachedTile)
+        if (structureType != StructureType.environment)
         {
-            attachedTile.Detach(true);
+            healthBar.gameObject.SetActive(false);
         }
     }
 
@@ -76,19 +76,76 @@ public abstract class Structure : MonoBehaviour
 
     }
 
-    public virtual void OnAnyPlaced()
-    {
-
-    }
-
     public virtual void OnSelected()
     {
-
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(true);
+        }
     }
 
-    public virtual void OnDeselected()
+    public bool Repair()
     {
+        if (structureType == StructureType.environment)
+        {
+            return true;
+        }
 
+        GameManager gameMan = FindObjectOfType<GameManager>();
+        ResourceBundle repairCost = RepairCost();
+        if (gameMan.playerData.CanAfford(repairCost))
+        {
+            GameManager.IncrementRepairCount();
+            gameMan.playerData.DeductResource(repairCost);
+            health = maxHealth;
+            return true;
+        }
+        return false;
+    }
+
+    public ResourceBundle RepairCost()
+    {
+        return FindObjectOfType<StructureManager>().structureDict[structureName].resourceCost * (1.0f - (health / maxHealth));
+    }
+
+    public void SetHealthbar(Healthbar _healthBar)
+    {
+        healthBar = _healthBar;
+    }
+
+    protected void StructureStart()
+    {
+        health = maxHealth;
+        isPlaced = false;
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
+        {
+            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
+        }
+        StructureManager structMan = FindObjectOfType<StructureManager>();
+        GameObject healthBarInst = Instantiate(structMan.healthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
+        SetHealthbar(healthBarInst.GetComponent<Healthbar>());
+        healthBar.target = gameObject;
+        healthBar.fillAmount = 1.0f;
+        healthBarInst.SetActive(false);
+    }
+
+    protected void StructureUpdate()
+    {
+        if(health <= 0.0f)
+        {
+            GameManager.CreateAudioEffect("buildingDestroy", transform.position);
+            attachedTile.Detach();
+            Destroy(gameObject);
+        }
+        healthBar.fillAmount = health / maxHealth;
+    }
+    private void OnDestroy()
+    {
+        if (healthBar) { Destroy(healthBar.gameObject); }
+        if (attachedTile)
+        {
+            attachedTile.Detach();
+        }
     }
 }
 

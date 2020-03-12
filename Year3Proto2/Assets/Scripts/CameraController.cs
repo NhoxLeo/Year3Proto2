@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CameraController : MonoBehaviour
 {
-    [Header("Camera Movement")]
+    [Header("Movement")]
 
     [SerializeField] [Tooltip("Keybinding for moving the camera up")]
     private KeyCode moveNorth;
@@ -20,6 +21,11 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] [Tooltip("Rate of movement for the camera")]
     private float sensitivity;
+
+    [SerializeField] [Tooltip("Rate at which camera lerps movement")]
+    private float lerpSpeed = 10.0f;
+
+    [Header("Motion Limits")]
 
     [SerializeField] [Tooltip("xAxis maximum")]
     private float xAxisMax;
@@ -39,10 +45,18 @@ public class CameraController : MonoBehaviour
     private Vector3 west;
 
     private float scrollOffset = 0f;
+
+    [Header("Zoom Limits")]
+
+    [SerializeField] [Tooltip("Zoom Max")]
     private float scrollMax = 3f;
+
+    [SerializeField] [Tooltip("Zoom Min")]
     private float scrollMin = -10f;
 
-    Vector3 cameraZoomMidPoint;
+    private Vector3 cameraZoomMidPoint;
+
+    //private int cu
 
 
     // Start is called before the first frame update
@@ -66,21 +80,24 @@ public class CameraController : MonoBehaviour
         if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }
         if (scrollOffset < scrollMin) { scrollOffset = scrollMin; }
 
+        float scrollMoveBonus = 1f + (-scrollOffset + 10f) * 0.15f;
+
+
         if (Input.GetKey(moveNorth))
         {
-            cameraZoomMidPoint += north * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += north * Time.deltaTime * sensitivity * scrollMoveBonus;
         }
         if (Input.GetKey(moveEast))
         {
-            cameraZoomMidPoint += east * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += east * Time.deltaTime * sensitivity * scrollMoveBonus;
         }
         if (Input.GetKey(moveSouth))
         {
-            cameraZoomMidPoint += south * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += south * Time.deltaTime * sensitivity * scrollMoveBonus;
         }
         if (Input.GetKey(moveWest))
         {
-            cameraZoomMidPoint += west * Time.deltaTime * sensitivity;
+            cameraZoomMidPoint += west * Time.deltaTime * sensitivity * scrollMoveBonus;
         }
 
         if (cameraZoomMidPoint.x > xAxisMax) { cameraZoomMidPoint.x = xAxisMax; }
@@ -88,6 +105,10 @@ public class CameraController : MonoBehaviour
         if (cameraZoomMidPoint.z > zAxisMax) { cameraZoomMidPoint.z = zAxisMax; }
         if (cameraZoomMidPoint.z < zAxisMin) { cameraZoomMidPoint.z = zAxisMin; }
 
-        transform.position = cameraZoomMidPoint + transform.forward * scrollOffset * .5f;
+        //transform.position = cameraZoomMidPoint + transform.forward * scrollOffset * .5f;
+
+        transform.position = Vector3.Lerp(transform.position, cameraZoomMidPoint + transform.forward * scrollOffset * .5f, Time.smoothDeltaTime * lerpSpeed);
+
+        //Screen.width
     }
 }

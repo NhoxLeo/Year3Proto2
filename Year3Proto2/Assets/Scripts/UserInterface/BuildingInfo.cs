@@ -8,6 +8,7 @@ public class BuildingInfo : MonoBehaviour
     private RectTransform rTrans;
     private Tooltip tool;
     private BuildPanel buildPanel;
+    private GameManager gameMan;
 
     public GameObject targetBuilding;
     public string buildingName;
@@ -25,6 +26,11 @@ public class BuildingInfo : MonoBehaviour
     private Image statIcon;                     // Icon shown next to stat value
     private GameObject foodComponent;           // Section for food allocation
     private TMP_Text foodValueText;             // Text showing current food allocation
+    private Button repairButton;                // Button for repairing buildings
+
+    public bool doAutoUpdate;                   // Whether to automatically update info panel
+    public float updateInterval = 1.5f;         // Time between info panel updates
+    private float updateTimer;
 
     void Start()
     {
@@ -39,17 +45,35 @@ public class BuildingInfo : MonoBehaviour
         statIcon = transform.Find("PanelMask/Stat/StatIcon").GetComponent<Image>();
 
         foodComponent = transform.Find("PanelMask/Allocation").gameObject;
-        foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
-
-        statInfoText.text = "";
-    }
-
-
+        foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
+        repairButton = transform.Find("PanelMask/RepairButton").GetComponent<Button>();
+        statInfoText.text = "";
+        gameMan = FindObjectOfType<GameManager>();
+        updateTimer = updateInterval;
+    }
     void LateUpdate()
     {
         tool.showTooltip = showPanel;
 
-        headingText.text = buildingName;
+        if (targetBuilding != null)
+        {
+            headingText.text = buildingName;
+            // Auto update info
+            if (showPanel && doAutoUpdate)
+            {
+                updateTimer -= Time.deltaTime;
+                if (updateTimer <= 0.0f)
+                {
+                    SetInfo();
+                    updateTimer = updateInterval;
+                }
+            }
+        }
+        else
+        {
+            showPanel = false;
+        }
+
         string env = "Environment";
         if (buildingName.Contains(env))
         {
@@ -58,20 +82,15 @@ public class BuildingInfo : MonoBehaviour
         }
 
         SetPosition();
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            SetInfo();
-        }
     }
 
     public void SetInfo()
     {
+        repairButton.interactable = false;
         if (targetBuilding == null)
         {
             return;
-        }
-
+        }
         switch (buildingName)
         {
             case "Archer Tower":
@@ -81,16 +100,21 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Attack Power";
                 statValueText.text = archer.arrowDamage.ToString("0");
                 statInfoText.text = "Single target";
-                break;
+                foodValueText.text = "?/?";
 
+                repairButton.interactable = (archer.GetHealth() < archer.GetMaxHealth());
+                break;
             case "Catapult Tower":
                 foodComponent.SetActive(true);
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Attack Power";
-                //statValueText.text = catapult.damage;
+                statValueText.text = "???";
                 statInfoText.text = "AOE Damage";
-                break;
+                foodValueText.text = "?/?";
+
+                repairButton.interactable = (catapult.GetHealth() < catapult.GetMaxHealth());
+                break;
 
             case "Farm":
                 foodComponent.SetActive(false);
@@ -99,17 +123,18 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = farm.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + farm.productionTime.ToString("0") + "s";
-                break;
 
+                repairButton.interactable = (farm.GetHealth() < farm.GetMaxHealth());
+                break;
             case "Granary":
                 foodComponent.SetActive(false);
                 Granary granary = targetBuilding.GetComponent<Granary>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = granary.storage.ToString();
-                statInfoText.text = "";
-                break;
-
+                statInfoText.text = "";
+                repairButton.interactable = (granary.GetHealth() < granary.GetMaxHealth());
+                break;
             case "Lumber Mill":
                 foodComponent.SetActive(true);
                 LumberMill mill = targetBuilding.GetComponent<LumberMill>();
@@ -117,18 +142,18 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
-                foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
-                break;
-
+                foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
+                repairButton.interactable = (mill.GetHealth() < mill.GetMaxHealth());
+                break;
             case "Lumber Pile":
                 foodComponent.SetActive(false);
                 LumberPile pile = targetBuilding.GetComponent<LumberPile>();
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = pile.storage.ToString();
-                statInfoText.text = "";
-                break;
-
+                statInfoText.text = "";
+                repairButton.interactable = (pile.GetHealth() < pile.GetMaxHealth());
+                break;
             case "Mine":
                 foodComponent.SetActive(true);
                 Mine mine = targetBuilding.GetComponent<Mine>();
@@ -136,52 +161,52 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mine.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mine.productionTime.ToString("0") + "s";
-                foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
-                break;
-
+                foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + ResourceStructure.GetFoodAllocationMax().ToString("0");
+                repairButton.interactable = (mine.GetHealth() < mine.GetMaxHealth());
+                break;
             case "Metal Storage":
                 foodComponent.SetActive(false);
                 MetalStorage metStore = targetBuilding.GetComponent<MetalStorage>();
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = metStore.storage.ToString();
+                repairButton.interactable = (metStore.GetHealth() < metStore.GetMaxHealth()) ? true : false;
                 statInfoText.text = "";
-                break;
-
-            case "Longhaus":
-                foodComponent.SetActive(false);
+                break;
+            case "Longhaus":                foodComponent.SetActive(false);
+                Longhaus haus = targetBuilding.GetComponent<Longhaus>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "";
-                statValueText.text = "Protect me!";
-                statInfoText.text = "";
-                break;
-
+                statHeadingText.text = "Your home base";
+                statValueText.text = "Protect me!";                statInfoText.text = "";
+                repairButton.interactable = (haus.GetHealth() < haus.GetMaxHealth());
+                break;
             case "Forest Environment":
                 foodComponent.SetActive(false);
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Lumber Mills";
                 statInfoText.text = "";
-                break;
-
+                break;
             case "Hill Environment":
                 foodComponent.SetActive(false);
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Mines";
                 statInfoText.text = "";
-                break;
-
+                break;
             case "Plains Environment":
                 foodComponent.SetActive(false);
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Farms";
                 statInfoText.text = "";
-                break;
-
+                break;
             default:
-
+                foodComponent.SetActive(false);
+                statIcon.sprite = emptySprite;
+                statHeadingText.text = "Unknown Stat";
+                statValueText.text = "???";
+                statInfoText.text = "Missing target";
                 break;
         }
 
@@ -191,26 +216,23 @@ public class BuildingInfo : MonoBehaviour
     private void SetPosition()
     {
         if (targetBuilding == null)
-            return;
-
+            return;
         // Position info panel near target building
         Vector3 pos = Camera.main.WorldToScreenPoint(targetBuilding.transform.position);
-        transform.position = pos;
-
+        transform.position = pos;
         // Adjust position of info panel if near edge of bounds
         float xPivot = -0.25f;
-        float yPivot = 0.5f;
-
+        float yPivot = 0.5f;
         if (transform.localPosition.y < -220f)
         {
             xPivot = 0.5f;
             yPivot = -0.3f;
-        }
-        else if (transform.localPosition.x > 576.0f)
+        }
+        if (transform.localPosition.x > 576.0f)
         {
             xPivot = 1.25f;
-        }
-
+        }
+        // Smooth Lerping motion
         float dt = Time.unscaledDeltaTime;
         Vector2 pivot = new Vector2(Mathf.Lerp(rTrans.pivot.x, xPivot, dt * 10.0f), Mathf.Lerp(rTrans.pivot.y, yPivot, dt * 10.0f));
         rTrans.pivot = pivot;
@@ -219,8 +241,7 @@ public class BuildingInfo : MonoBehaviour
         if (transform.localPosition.x < -930.0f || transform.localPosition.x > 930.0f)
         {
             showPanel = false;
-        }
-
+        }
         if (buildPanel.showPanel && transform.localPosition.y < -420.0f)
         {
             showPanel = false;
@@ -229,14 +250,12 @@ public class BuildingInfo : MonoBehaviour
         {
             showPanel = false;
         }
-
     }
 
     public void SetTargetBuilding(GameObject building, string name)
     {
         targetBuilding = building;
-        buildingName = name;
-
+        buildingName = name;
         SetInfo();
     }
 
@@ -249,31 +268,35 @@ public class BuildingInfo : MonoBehaviour
         {
             case "Archer Tower":
                 ArcherTower archer = targetBuilding.GetComponent<ArcherTower>();
-
-                break;
-
+                break;
             case "Catapult Tower":
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
-
-                break;
-
+                break;
             case "Lumber Mill":
                 LumberMill mill = targetBuilding.GetComponent<LumberMill>();
                 if (amount > 0) { mill.IncreaseFoodAllocation(); }
                 else { mill.DecreaseFoodAllocation(); }
-                break;
-
+                break;
             case "Mine":
                 Mine mine = targetBuilding.GetComponent<Mine>();
                 if (amount > 0) { mine.IncreaseFoodAllocation(); }
                 else { mine.DecreaseFoodAllocation(); }
-                break;
-
+                break;
             default:
-
                 break;
         }
 
+        SetInfo();
+    }
+
+    public void RepairBuilding()
+    {
+        if (targetBuilding == null)
+            return;
+
+        Structure targetStructure = targetBuilding.GetComponent<Structure>();
+        ResourceBundle repairCost = targetStructure.RepairCost();
+        targetStructure.Repair();
         SetInfo();
     }
    
@@ -281,4 +304,5 @@ public class BuildingInfo : MonoBehaviour
     {
         showPanel = visible;
     }
+
 }
