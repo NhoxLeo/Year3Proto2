@@ -62,6 +62,8 @@ public class CameraController : MonoBehaviour
 
     private Vector3 cameraZoomMidPoint;
 
+    private StructureManager structMan;
+
     void Start()
     {
         float quarterPi = Mathf.Deg2Rad * 45.0f;
@@ -70,6 +72,8 @@ public class CameraController : MonoBehaviour
         south = Vector3.RotateTowards(Vector3.back, Vector3.left, quarterPi, 5f).normalized;
         west = Vector3.RotateTowards(Vector3.forward, Vector3.left, quarterPi, 5f).normalized;
         cameraZoomMidPoint = transform.position;
+
+        structMan = FindObjectOfType<StructureManager>();
     }
 
     void Update()
@@ -83,23 +87,23 @@ public class CameraController : MonoBehaviour
 
         float scrollMoveBonus = 1f + (-scrollOffset + 10f) * 0.15f;
 
-        float mx = Input.mousePosition.x;
-        float my = Input.mousePosition.y;
+        Vector2 mp = Input.mousePosition;
+        float mouseMult = (structMan.isOverUI || GlobalData.isPaused) ? 0.0f : 1.0f;
 
         float northKey = Input.GetKey(moveNorth) ? 1.0f : 0.0f;
-        float northMouse = Mathf.Clamp((my - (Screen.height - mouseYBuffer)) / mouseYBuffer, 0.0f, 1.0f);
+        float northMouse = Mathf.Clamp((mp.y - (Screen.height - mouseYBuffer)) / mouseYBuffer, 0.0f, 1.0f) * mouseMult;
         float northMove = Mathf.Max(northKey, northMouse);
 
         float eastKey = Input.GetKey(moveEast) ? 1.0f : 0.0f;
-        float eastMouse = Mathf.Clamp((mx - (Screen.width - mouseXBuffer)) / mouseXBuffer, 0.0f, 1.0f);
+        float eastMouse = Mathf.Clamp((mp.x - (Screen.width - mouseXBuffer)) / mouseXBuffer, 0.0f, 1.0f) * mouseMult; ;
         float eastMove = Mathf.Max(eastKey, eastMouse);
 
         float southKey = Input.GetKey(moveSouth) ? 1.0f : 0.0f;
-        float southMouse = Mathf.Clamp(1.0f - (my / mouseYBuffer), 0.0f, 1.0f);
+        float southMouse = Mathf.Clamp(1.0f - (mp.y / mouseYBuffer), 0.0f, 1.0f) * mouseMult; ;
         float southMove = Mathf.Max(southKey, southMouse);
 
         float westKey = Input.GetKey(moveWest) ? 1.0f : 0.0f;
-        float westMouse = Mathf.Clamp(1.0f - (mx / mouseXBuffer), 0.0f, 1.0f);
+        float westMouse = Mathf.Clamp(1.0f - (mp.x / mouseXBuffer), 0.0f, 1.0f) * mouseMult; ;
         float westMove = Mathf.Max(westKey, westMouse);
 
         cameraZoomMidPoint += northMove * north * Time.deltaTime * sensitivity * scrollMoveBonus;

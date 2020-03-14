@@ -23,5 +23,6 @@ public class PauseMenu : MonoBehaviour
     public void ToggleMenu()
     {
         tool.showTooltip = !tool.showTooltip;
+        GlobalData.isPaused = tool.showTooltip;
     }
 }
