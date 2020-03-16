@@ -56,6 +56,7 @@ public class StructureManager : MonoBehaviour
     };
     public Canvas canvas;
     public GameObject healthBarPrefab;
+    public GameObject buildingPuff;
     public bool isOverUI = false;
     public Transform selectedTileHighlight = null;
     public Dictionary<string, StructureDefinition> structureDict;
@@ -190,6 +191,7 @@ public class StructureManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
+        buildingPuff = Resources.Load("BuildEffect") as GameObject;
         structureFromStore = false;
         structureOldTile = null;
         structure = null;
@@ -533,6 +535,8 @@ public class StructureManager : MonoBehaviour
                                                     if (attached) { attached.attachedTile.Detach(); }
                                                     tile.Attach(structure);
                                                     structure.OnPlace();
+                                                    
+                                                    Instantiate(buildingPuff, structure.transform.position, Quaternion.Euler(-90f, 0f, 0f));
                                                     if (attached)
                                                     {
                                                         StructureType attachedStructType = attached.GetStructureType();
@@ -624,6 +628,7 @@ public class StructureManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
+            gameMan.repairAll = true;
             gameMan.RepairAll();
         }
     }
