@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.42018074, g: 0.2644773, b: 0.17913283, a: 1}
+  m_IndirectSpecularColor: {r: 0.41997486, g: 0.26433188, b: 0.17907657, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -200,7 +200,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 5d855fd4ff4e02c49bdac11f4e3379ae,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.42
+      value: -4.937
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 5d855fd4ff4e02c49bdac11f4e3379ae,
         type: 3}
@@ -210,7 +210,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 5d855fd4ff4e02c49bdac11f4e3379ae,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.289
+      value: -2.729
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 5d855fd4ff4e02c49bdac11f4e3379ae,
         type: 3}
@@ -521,7 +521,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ee0d9fa8aa118854686d85182e697a71,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.8866434
+      value: -3.964
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee0d9fa8aa118854686d85182e697a71,
         type: 3}
@@ -890,7 +890,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: b11a01b23700ee446a7f0fb5e0a950fd,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.1120002e-17
+      value: 0.015
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b11a01b23700ee446a7f0fb5e0a950fd,
         type: 3}
@@ -1337,12 +1337,12 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: b11a01b23700ee446a7f0fb5e0a950fd,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.5408788e-17
+      value: 0.009
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b11a01b23700ee446a7f0fb5e0a950fd,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.99
+      value: 4.49
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b11a01b23700ee446a7f0fb5e0a950fd,
         type: 3}
