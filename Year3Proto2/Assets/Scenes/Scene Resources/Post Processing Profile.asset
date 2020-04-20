@@ -168,7 +168,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.3
+    m_Value: 0.35
   contrast:
     m_OverrideState: 1
     m_Value: 10
@@ -187,7 +187,7 @@ MonoBehaviour:
     max: 180
   saturation:
     m_OverrideState: 1
-    m_Value: 4
+    m_Value: 5
     min: -100
     max: 100
 --- !u!114 &11400000
@@ -400,6 +400,9 @@ MonoBehaviour:
     m_Value: 1
     min: 0
     max: 20
+  cameraMotionBlur:
+    m_OverrideState: 0
+    m_Value: 1
   m_SampleCount:
     m_OverrideState: 0
     m_Value: 8
