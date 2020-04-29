@@ -326,6 +326,7 @@ public class GameManager : MonoBehaviour
             if (structure.GetStructureType() != StructureType.environment)
             {
                 if (!structure.Repair()) { repairAll = false; }
+                else { structure.HideHealthbar(); }
             }
         }
         if (repairAll)
