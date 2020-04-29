@@ -66,6 +66,18 @@ public class CatapultTower : AttackStructure
         GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
+    public override void IncreaseFoodAllocation()
+    {
+        base.IncreaseFoodAllocation();
+        SetFirerate();
+    }
+
+    public override void DecreaseFoodAllocation()
+    {
+        base.DecreaseFoodAllocation();
+        SetFirerate();
+    }
+
 
     void SetFirerate()
     {

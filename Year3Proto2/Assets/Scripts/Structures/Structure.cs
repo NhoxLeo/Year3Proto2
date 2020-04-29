@@ -97,6 +97,11 @@ public abstract class Structure : MonoBehaviour
         }
     }
 
+    public void HideHealthbar()
+    {
+        healthBar.gameObject.SetActive(false);
+    }
+
     public virtual void OnPlace()
     {
 

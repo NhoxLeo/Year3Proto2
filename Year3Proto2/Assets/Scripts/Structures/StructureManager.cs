@@ -561,7 +561,7 @@ public class StructureManager : MonoBehaviour
                                                                     break;
                                                             }
                                                         }
-                                                        else if (attachedStructType == StructureType.environment && structType == StructureType.attack)
+                                                        else if (attachedStructType == StructureType.environment && (structType == StructureType.attack || structType == StructureType.storage))
                                                         {
                                                             switch (attached.GetStructureName())
                                                             {
