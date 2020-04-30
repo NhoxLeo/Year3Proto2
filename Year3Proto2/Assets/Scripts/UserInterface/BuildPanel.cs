@@ -87,6 +87,10 @@ public class BuildPanel : MonoBehaviour
         }
     }
 
+    public TooltipInfo GetToolInfo()
+    {
+        return toolInfo;
+    }
 
     public void TogglePanel()
     {

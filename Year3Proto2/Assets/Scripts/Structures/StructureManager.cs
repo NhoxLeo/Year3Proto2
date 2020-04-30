@@ -28,6 +28,22 @@ public struct ResourceBundle
         newStructure.foodCost = Mathf.RoundToInt(newStructure.foodCost * _otherHS);
         return newStructure;
     }
+
+    public static implicit operator Vector3(ResourceBundle _rb)
+    {
+        Vector3 vec;
+        vec.x = _rb.woodCost;
+        vec.y = _rb.metalCost;
+        vec.z = _rb.foodCost;
+        return vec;
+    }
+
+    public ResourceBundle(Vector3 _vec)
+    {
+        woodCost = (int)_vec.x;
+        metalCost = (int)_vec.y;
+        foodCost = (int)_vec.z;
+    }
 }
 
 public struct StructureDefinition
@@ -54,6 +70,28 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Mine" },
         { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
     };
+    public static Dictionary<string, BuildPanel.Buildings> StructureIDs = new Dictionary<string, BuildPanel.Buildings>
+    {
+        { "Archer Tower", BuildPanel.Buildings.Archer },
+        { "Catapult Tower", BuildPanel.Buildings.Catapult },
+        { "Farm", BuildPanel.Buildings.Farm },
+        { "Granary", BuildPanel.Buildings.Granary },
+        { "Lumber Mill", BuildPanel.Buildings.LumberMill },
+        { "Lumber Pile", BuildPanel.Buildings.LumberPile },
+        { "Mine", BuildPanel.Buildings.Mine },
+        { "Metal Storage", BuildPanel.Buildings.MetalStorage }
+    };
+    public Dictionary<BuildPanel.Buildings, int> StructureCounts = new Dictionary<BuildPanel.Buildings, int>
+    {
+        { BuildPanel.Buildings.Archer, 0 },
+        { BuildPanel.Buildings.Catapult, 0 },
+        { BuildPanel.Buildings.Farm, 0 },
+        { BuildPanel.Buildings.Granary, 0 },
+        { BuildPanel.Buildings.LumberMill, 0 },
+        { BuildPanel.Buildings.LumberPile, 0 },
+        { BuildPanel.Buildings.Mine, 0 },
+        { BuildPanel.Buildings.MetalStorage, 0 }
+    };
     public Canvas canvas;
     public GameObject healthBarPrefab;
     public GameObject buildingPuff;
@@ -73,17 +111,34 @@ public class StructureManager : MonoBehaviour
     private TileBehaviour structureOldTile;
     private StructManState structureState = StructManState.selecting;
     private bool towerPlaced = false;
+    private BuildPanel panel;
     public bool BuyBuilding()
     {
         if (structure && structureFromStore)
         {
             if (gameMan.playerData.AttemptPurchase(structureDict[structure.GetStructureName()].resourceCost))
             {
+                IncreaseStructureCost(structure.GetStructureName());
                 return true;
             }
             ShowMessage("You can't afford that!", 1.5f);
         }
         return false;
+    }
+
+    public void IncreaseStructureCost(string _structureName)
+    {
+        // Find the original cost of the building. Buildings go up by 50% of their original cost every time one is purchased. 
+        // Finding original cost: 2 / 2 + (previous building count) * current cost
+        // Incrementing: 2 + (new building count) / 2 * original cost
+        Vector3 currentCost = structureDict[_structureName].resourceCost;
+        Vector3 originalCost = 2f / (2f + StructureCounts[StructureIDs[_structureName]]) * currentCost;
+        int buiildingCount = ++StructureCounts[StructureIDs[_structureName]];
+        Vector3 newCost = (2f + buiildingCount) / 2f * originalCost;
+        StructureDefinition newDefinition = structureDict[_structureName];
+        newDefinition.resourceCost = new ResourceBundle(newCost);
+        structureDict[_structureName] = newDefinition;
+        panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
     }
 
     public void DeselectStructure()
@@ -168,6 +223,7 @@ public class StructureManager : MonoBehaviour
 
     private void Awake()
     {
+        panel = FindObjectOfType<BuildPanel>();
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                     NAME                                               wC       mC      fC
