@@ -24,6 +24,7 @@ public abstract class Structure : MonoBehaviour
     protected Healthbar healthBar;
     protected float maxHealth = 100.0f;
     protected StructureType structureType;
+    protected float timeSinceLastHit = Mathf.Infinity;
 
     public static int GetFoodAllocationMax()
     {
@@ -32,6 +33,7 @@ public abstract class Structure : MonoBehaviour
 
     public void Damage(float amount)
     {
+        timeSinceLastHit = 0.0f;
         bool setInfo = health == maxHealth;
         health -= amount;
         if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
@@ -65,6 +67,11 @@ public abstract class Structure : MonoBehaviour
     public string GetStructureName()
     {
         return structureName;
+    }
+
+    public bool CanBeRepaired()
+    {
+        return (health < maxHealth) && (timeSinceLastHit >= 5.0f);
     }
 
     public StructureType GetStructureType()
@@ -124,7 +131,7 @@ public abstract class Structure : MonoBehaviour
 
         GameManager gameMan = FindObjectOfType<GameManager>();
         ResourceBundle repairCost = RepairCost();
-        if (gameMan.playerData.CanAfford(repairCost))
+        if (gameMan.playerData.CanAfford(repairCost) && timeSinceLastHit >= 5.0f)
         {
             GameManager.IncrementRepairCount();
             gameMan.playerData.DeductResource(repairCost);
@@ -171,7 +178,8 @@ public abstract class Structure : MonoBehaviour
 
     protected void StructureUpdate()
     {
-        if(health <= 0.0f)
+        timeSinceLastHit += Time.deltaTime;
+        if (health <= 0.0f)
         {
             GameManager.CreateAudioEffect("buildingDestroy", transform.position);
             attachedTile.Detach();

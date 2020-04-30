@@ -62,6 +62,8 @@ public class CameraController : MonoBehaviour
 
     private Vector3 cameraZoomMidPoint;
 
+    private Vector2 lastFrameMousePos;
+
     private StructureManager structMan;
 
     void Start()
@@ -72,7 +74,7 @@ public class CameraController : MonoBehaviour
         south = Vector3.RotateTowards(Vector3.back, Vector3.left, quarterPi, 5f).normalized;
         west = Vector3.RotateTowards(Vector3.forward, Vector3.left, quarterPi, 5f).normalized;
         cameraZoomMidPoint = transform.position;
-
+        lastFrameMousePos = Vector2.zero;
         structMan = FindObjectOfType<StructureManager>();
     }
 
@@ -90,26 +92,37 @@ public class CameraController : MonoBehaviour
         Vector2 mp = Input.mousePosition;
         float mouseMult = (structMan.isOverUI || GlobalData.isPaused) ? 0.0f : 1.0f;
 
-        float northKey = Input.GetKey(moveNorth) ? 1.0f : 0.0f;
-        float northMouse = Mathf.Clamp((mp.y - (Screen.height - mouseYBuffer)) / mouseYBuffer, 0.0f, 1.0f) * mouseMult;
-        float northMove = Mathf.Max(northKey, northMouse);
+        float movementCoeff = Time.deltaTime * sensitivity * scrollMoveBonus;
 
-        float eastKey = Input.GetKey(moveEast) ? 1.0f : 0.0f;
-        float eastMouse = Mathf.Clamp((mp.x - (Screen.width - mouseXBuffer)) / mouseXBuffer, 0.0f, 1.0f) * mouseMult; ;
-        float eastMove = Mathf.Max(eastKey, eastMouse);
+        if (Input.GetMouseButton(1))
+        {
+            cameraZoomMidPoint += north * movementCoeff * (lastFrameMousePos.y - mp.y) * .07f;
+            cameraZoomMidPoint += east * movementCoeff * (lastFrameMousePos.x - mp.x) * .07f;
+        }
+        else
+        {
+            float northKey = Input.GetKey(moveNorth) ? 1.0f : 0.0f;
+            float northMouse = Mathf.Clamp((mp.y - (Screen.height - mouseYBuffer)) / mouseYBuffer, 0.0f, 1.0f) * mouseMult;
+            float northMove = Mathf.Max(northKey, northMouse);
 
-        float southKey = Input.GetKey(moveSouth) ? 1.0f : 0.0f;
-        float southMouse = Mathf.Clamp(1.0f - (mp.y / mouseYBuffer), 0.0f, 1.0f) * mouseMult; ;
-        float southMove = Mathf.Max(southKey, southMouse);
+            float eastKey = Input.GetKey(moveEast) ? 1.0f : 0.0f;
+            float eastMouse = Mathf.Clamp((mp.x - (Screen.width - mouseXBuffer)) / mouseXBuffer, 0.0f, 1.0f) * mouseMult;
+            float eastMove = Mathf.Max(eastKey, eastMouse);
 
-        float westKey = Input.GetKey(moveWest) ? 1.0f : 0.0f;
-        float westMouse = Mathf.Clamp(1.0f - (mp.x / mouseXBuffer), 0.0f, 1.0f) * mouseMult; ;
-        float westMove = Mathf.Max(westKey, westMouse);
+            float southKey = Input.GetKey(moveSouth) ? 1.0f : 0.0f;
+            float southMouse = Mathf.Clamp(1.0f - (mp.y / mouseYBuffer), 0.0f, 1.0f) * mouseMult;
+            float southMove = Mathf.Max(southKey, southMouse);
 
-        cameraZoomMidPoint += northMove * north * Time.deltaTime * sensitivity * scrollMoveBonus;
-        cameraZoomMidPoint += eastMove * east * Time.deltaTime * sensitivity * scrollMoveBonus;
-        cameraZoomMidPoint += southMove * south * Time.deltaTime * sensitivity * scrollMoveBonus;
-        cameraZoomMidPoint += westMove * west * Time.deltaTime * sensitivity * scrollMoveBonus;
+            float westKey = Input.GetKey(moveWest) ? 1.0f : 0.0f;
+            float westMouse = Mathf.Clamp(1.0f - (mp.x / mouseXBuffer), 0.0f, 1.0f) * mouseMult;
+            float westMove = Mathf.Max(westKey, westMouse);
+
+            cameraZoomMidPoint += northMove * north * movementCoeff;
+            cameraZoomMidPoint += eastMove * east * movementCoeff;
+            cameraZoomMidPoint += southMove * south * movementCoeff;
+            cameraZoomMidPoint += westMove * west * movementCoeff;
+        }
+
 
         if (cameraZoomMidPoint.x > xAxisMax) { cameraZoomMidPoint.x = xAxisMax; }
         if (cameraZoomMidPoint.x < xAxisMin) { cameraZoomMidPoint.x = xAxisMin; }
@@ -117,5 +130,7 @@ public class CameraController : MonoBehaviour
         if (cameraZoomMidPoint.z < zAxisMin) { cameraZoomMidPoint.z = zAxisMin; }
 
         transform.position = Vector3.Lerp(transform.position, cameraZoomMidPoint + transform.forward * scrollOffset * .5f, Time.smoothDeltaTime * lerpSpeed);
+
+        lastFrameMousePos = mp;
     }
 }
