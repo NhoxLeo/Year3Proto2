@@ -48,12 +48,12 @@ public struct ResourceBundle
 
 public struct StructureDefinition
 {
-    public ResourceBundle resourceCost;
-    public GameObject structure;
+    public ResourceBundle originalCost;
+    public GameObject structurePrefab;
     public StructureDefinition(GameObject _structure, ResourceBundle _cost)
     {
-        structure = _structure;
-        resourceCost = _cost;
+        structurePrefab = _structure;
+        originalCost = _cost;
     }
 }
 
@@ -92,13 +92,25 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, 0 },
         { BuildPanel.Buildings.MetalStorage, 0 }
     };
-    public Canvas canvas;
-    public GameObject healthBarPrefab;
-    public GameObject buildingPuff;
-    public bool isOverUI = false;
+
+    [Header("Procedural Generation Parameters")]
+    public Vector2 plainsEnvironmentBounds;
+    public Vector2 hillsEnvironmentBounds;
+    public Vector2 forestEnvironmentBounds;
+
+    [Header("General Setup")]
     public Transform selectedTileHighlight = null;
-    public Dictionary<string, StructureDefinition> structureDict;
     public Transform tileHighlight = null;
+
+    public Dictionary<string, StructureDefinition> structureDict;
+    public Dictionary<string, ResourceBundle> structureCosts;
+    [HideInInspector]
+    public Canvas canvas;
+    [HideInInspector]
+    public GameObject healthBarPrefab;
+    [HideInInspector]
+    public bool isOverUI = false;
+
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private GameManager gameMan;
@@ -112,11 +124,12 @@ public class StructureManager : MonoBehaviour
     private StructManState structureState = StructManState.selecting;
     private bool towerPlaced = false;
     private BuildPanel panel;
+    private GameObject buildingPuff;
     public bool BuyBuilding()
     {
         if (structure && structureFromStore)
         {
-            if (gameMan.playerData.AttemptPurchase(structureDict[structure.GetStructureName()].resourceCost))
+            if (gameMan.playerData.AttemptPurchase(structureCosts[structure.GetStructureName()]))
             {
                 IncreaseStructureCost(structure.GetStructureName());
                 return true;
@@ -128,16 +141,18 @@ public class StructureManager : MonoBehaviour
 
     public void IncreaseStructureCost(string _structureName)
     {
-        // Find the original cost of the building. Buildings go up by 50% of their original cost every time one is purchased. 
-        // Finding original cost: 2 / 2 + (previous building count) * current cost
-        // Incrementing: 2 + (new building count) / 2 * original cost
-        Vector3 currentCost = structureDict[_structureName].resourceCost;
-        Vector3 originalCost = 2f / (2f + StructureCounts[StructureIDs[_structureName]]) * currentCost;
-        int buiildingCount = ++StructureCounts[StructureIDs[_structureName]];
-        Vector3 newCost = (2f + buiildingCount) / 2f * originalCost;
-        StructureDefinition newDefinition = structureDict[_structureName];
-        newDefinition.resourceCost = new ResourceBundle(newCost);
-        structureDict[_structureName] = newDefinition;
+        int buildingCount = ++StructureCounts[StructureIDs[_structureName]];
+        Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
+        structureCosts[_structureName] = new ResourceBundle(newCost);
+        panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+    }
+
+    public void DecreaseStructureCost(string _structureName)
+    {
+        int buildingCount = --StructureCounts[StructureIDs[_structureName]];
+        if (buildingCount < 0) { buildingCount = StructureCounts[StructureIDs[_structureName]] = 0; }
+        Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
+        structureCosts[_structureName] = new ResourceBundle(newCost);
         panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
     }
 
@@ -199,7 +214,7 @@ public class StructureManager : MonoBehaviour
         {
             DeselectStructure();
             structureFromStore = true;
-            GameObject structureInstance = Instantiate(structureDict[_building].structure, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
             structure = structureInstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
             structureState = StructManState.moving;
@@ -221,6 +236,167 @@ public class StructureManager : MonoBehaviour
         isOverUI = _isOverUI;
     }
 
+    private void ProceduralGeneration(int _seed = 0)
+    {
+        if (_seed != 0) { Random.InitState(_seed); }
+        
+        // find our totals
+        int forestTotal = Random.Range((int)forestEnvironmentBounds.x, (int)forestEnvironmentBounds.y + 1);
+        int hillsTotal = Random.Range((int)hillsEnvironmentBounds.x, (int)hillsEnvironmentBounds.y + 1);
+        int plainsTotal = Random.Range((int)plainsEnvironmentBounds.x, (int)plainsEnvironmentBounds.y + 1);
+
+        // get all the tiles
+        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
+        List<TileBehaviour> playableTiles = new List<TileBehaviour>();
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            // if the tile is playable and it doesn't have a structure already
+            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
+            {
+                playableTiles.Add(tiles[i]);
+            }
+        }
+
+        // Generate Forests
+        int forestPlaced = 0;
+        while (forestPlaced < forestTotal)
+        {
+            if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = playableTiles[Random.Range(0, playableTiles.Count)];
+
+            if (!PGInstatiateEnvironment("Forest Environment", tile))
+            {
+                // Something has gone wrong
+                //Debug.LogError("PG: PGInstatiateEnvironment returned false");
+                //tile.GetComponent<MeshRenderer>().enabled = false;
+            }
+
+            // update forestPlaced
+            forestPlaced++;
+            playableTiles.Remove(tile);
+            if (forestPlaced == forestTotal) { break; }
+
+            // now try the tiles around it
+            for (int i = 0; i < 4; i++)
+            {
+                TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i]; 
+                if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (playableTiles.Contains(tileI))
+                {
+                    if (!PGInstatiateEnvironment("Forest Environment", tileI))
+                    {
+                        // Something has gone wrong
+                        //Debug.LogError("PG: PGInstatiateEnvironment returned false");
+                        //tileI.GetComponent<MeshRenderer>().enabled = false;
+                    }
+
+                    // update forestPlaced
+                    forestPlaced++;
+                    playableTiles.Remove(tileI);
+                    if (forestPlaced == forestTotal) { break; }
+                }
+            }
+        }
+
+        // Generate Hills
+        int hillsPlaced = 0;
+        while (hillsPlaced < hillsTotal)
+        {
+            if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = playableTiles[Random.Range(0, playableTiles.Count)];
+
+            if (!PGInstatiateEnvironment("Hills Environment", tile))
+            {
+                // Something has gone wrong
+                //Debug.LogError("PG: PGInstatiateEnvironment returned false");
+                //tile.GetComponent<MeshRenderer>().enabled = false;
+            }
+
+            // update hillsPlaced
+            hillsPlaced++;
+            playableTiles.Remove(tile);
+            if (hillsPlaced == hillsTotal) { break; }
+
+            // now try the tiles around it
+            for (int i = 0; i < 4; i++)
+            {
+                TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i]; 
+                if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (playableTiles.Contains(tileI))
+                {
+                    if (!PGInstatiateEnvironment("Hills Environment", tileI))
+                    {
+                        // Something has gone wrong
+                        //Debug.LogError("PG: PGInstatiateEnvironment returned false");
+                        //tileI.GetComponent<MeshRenderer>().enabled = false;
+                    }
+
+                    // update hillsPlaced
+                    hillsPlaced++;
+                    playableTiles.Remove(tileI);
+                    if (hillsPlaced == hillsTotal) { break; }
+                }
+            }
+        }
+
+        // Generate Plains
+        int plainsPlaced = 0;
+        while (plainsPlaced < plainsTotal)
+        {
+            if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = playableTiles[Random.Range(0, playableTiles.Count)];
+
+            if (!PGInstatiateEnvironment("Plains Environment", tile))
+            {
+                // Something has gone wrong
+                //Debug.LogError("PG: PGInstatiateEnvironment returned false");
+                //tile.GetComponent<MeshRenderer>().enabled = false;
+            }
+
+            // update plainsPlaced
+            plainsPlaced++;
+            playableTiles.Remove(tile);
+            if (plainsPlaced == plainsTotal) { break; }
+
+            // now try the tiles around it
+            for (int i = 0; i < 4; i++)
+            {
+                TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i];
+                if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (playableTiles.Contains(tileI))
+                {
+                    if (!PGInstatiateEnvironment("Plains Environment", tileI))
+                    {
+                        // Something has gone wrong
+                        //Debug.LogError("PG: PGInstatiateEnvironment returned false");
+                        //tileI.GetComponent<MeshRenderer>().enabled = false;
+                    }
+
+                    // update plainsPlaced
+                    plainsPlaced++;
+                    playableTiles.Remove(tileI);
+                    if (plainsPlaced == plainsTotal) { break; }
+                }
+            }
+        }
+    }
+
+    private bool PGInstatiateEnvironment(string _environmentType, TileBehaviour _tile)
+    {
+        // create the structure
+        Structure structure = Instantiate(structureDict[_environmentType].structurePrefab).GetComponent<Structure>();
+
+        // move the new structure to the tile
+        Vector3 structPos = _tile.transform.position;
+        structPos.y = structure.sitHeight;
+        structure.transform.position = structPos;
+        //structure.transform.SetPositionAndRotation(structPos, structure.transform.rotation);
+
+        _tile.Attach(structure);
+        return true;
+        //return _tile.DetectStructure();
+    }
+
     private void Awake()
     {
         panel = FindObjectOfType<BuildPanel>();
@@ -240,6 +416,27 @@ public class StructureManager : MonoBehaviour
 
             { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(100,     20,     0)) },
             { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(120,     80,     0)) },
+
+            { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0, 0, 0)) },
+            { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0, 0, 0)) },
+            { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0, 0, 0)) },
+        };
+        structureCosts = new Dictionary<string, ResourceBundle>
+        {
+            // NAME                                 wC       mC      fC
+            { "Longhaus",       new ResourceBundle(600,     200,    0) },
+
+            { "Archer Tower",   new ResourceBundle(150,     50,     0) },
+            { "Catapult Tower", new ResourceBundle(200,     250,    0) },
+
+            { "Farm",           new ResourceBundle(40,      0,      0) },
+            { "Granary",        new ResourceBundle(120,     0,      0) },
+
+            { "Lumber Mill",    new ResourceBundle(60,      20,     0) },
+            { "Lumber Pile",    new ResourceBundle(120,     0,      0) },
+
+            { "Mine",           new ResourceBundle(100,     20,     0) },
+            { "Metal Storage",  new ResourceBundle(120,     80,     0) }
         };
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
@@ -256,6 +453,23 @@ public class StructureManager : MonoBehaviour
         hoveroverTime = 0f;
     }
 
+    private void Start()
+    {
+        /*
+        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            // if the tile is playable and it doesn't have a structure already
+            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
+            {
+                //tiles[i].enabled = false;
+                tiles[i].gameObject.SetActive(false);
+            }
+        }
+        */
+        ProceduralGeneration(100);
+    }
+
     private void HideBuilding()
     {
         if (structure && structureState == StructManState.moving)
@@ -264,7 +478,7 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    void PlayerMouseOver(Structure _structure)
+    private void PlayerMouseOver(Structure _structure)
     {
         if (!hoveroverStructure)
         {
@@ -286,7 +500,7 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    void SetHoverInfo(Structure _structure)
+    private void SetHoverInfo(Structure _structure)
     {
         envInfo.SetVisibility(true);
         switch (_structure.GetStructureName())
@@ -331,7 +545,7 @@ public class StructureManager : MonoBehaviour
 
     }
 
-    void ShowMessage(string _message, float _duration)
+    private void ShowMessage(string _message, float _duration)
     {
         if (gameMan.tutorialDone)
         {
@@ -400,10 +614,22 @@ public class StructureManager : MonoBehaviour
                     }
                     break;
                 case StructManState.selected:
+                    StructureType selectedStructType = selectedStructure.GetStructureType();
+                    if (Input.GetKeyDown(KeyCode.Delete) &&
+                        selectedStructType != StructureType.environment &&
+                        selectedStructType != StructureType.longhaus)
+                    {
+                        selectedStructure.Damage(selectedStructure.GetHealth());
+                        DeselectStructure();
+                        structureState = StructManState.selecting;
+                        break;
+                    }
+
                     if (!selectedStructure)
                     {
                         DeselectStructure();
                         structureState = StructManState.selecting;
+                        break;
                     }
                     else
                     {
@@ -563,12 +789,12 @@ public class StructureManager : MonoBehaviour
                                             }
 
                                             // If player cannot afford the structure, set to red.
-                                            if (!gameMan.playerData.CanAfford(structureDict[structure.GetStructureName()].resourceCost))
+                                            if (!gameMan.playerData.CanAfford(structureDict[structure.GetStructureName()].originalCost))
                                             {
                                                 structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
                                             }
 
-                                            Vector3 structPos = hit.transform.transform.position;
+                                            Vector3 structPos = hit.transform.position;
                                             structPos.y = structure.sitHeight;
                                             structure.transform.position = structPos;
 

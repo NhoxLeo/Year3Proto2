@@ -22,7 +22,7 @@ public class TileBehaviour : MonoBehaviour
     public Structure attachedStructure;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         attachedStructure = null;
         adjacentTiles = new Dictionary<TileCode, TileBehaviour>();
@@ -36,7 +36,6 @@ public class TileBehaviour : MonoBehaviour
 
         // Cast 4 rays to get adjacent tiles, store them
         int tcLayer = 1 << LayerMask.NameToLayer("TileCollider");
-        int structLayer = 1 << LayerMask.NameToLayer("Structure");
 
         // North
         if (Physics.Raycast(tileCollider.transform.position, Vector3.forward, out RaycastHit hit, .8f, tcLayer))
@@ -60,10 +59,7 @@ public class TileBehaviour : MonoBehaviour
             //hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
         }
 
-        if (Physics.Raycast(tileCollider.transform.position, Vector3.up, out hit, 1.6f, structLayer))
-        {
-            Attach(hit.transform.GetComponent<Structure>());
-        }
+        DetectStructure();
 
         // Turn on the collider
         tcBoxCollider.enabled = true;
@@ -78,6 +74,19 @@ public class TileBehaviour : MonoBehaviour
     public Structure GetAttached()
     {
         return attachedStructure;
+    }
+
+    public bool DetectStructure()
+    {
+        int structLayer = 1 << LayerMask.NameToLayer("Structure");
+        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hit, 1.6f, structLayer))
+        {
+            //Debug.DrawLine(transform.position, transform.position + Vector3.up * 1.6f, Color.green, 20.0f);
+            Attach(hit.transform.GetComponent<Structure>());
+            return true;
+        }
+        //Debug.DrawLine(transform.position, transform.position + Vector3.up * 1.6f, Color.red, 20.0f);
+        return false;
     }
 
     public void Attach(Structure _structure)
