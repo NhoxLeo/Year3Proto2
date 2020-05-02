@@ -467,7 +467,7 @@ public class StructureManager : MonoBehaviour
             }
         }
         */
-        ProceduralGeneration(100);
+        ProceduralGeneration();
     }
 
     private void HideBuilding()
