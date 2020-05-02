@@ -143,7 +143,7 @@ public abstract class Structure : MonoBehaviour
 
     public ResourceBundle RepairCost()
     {
-        return FindObjectOfType<StructureManager>().structureDict[structureName].resourceCost * (1.0f - (health / maxHealth));
+        return FindObjectOfType<StructureManager>().structureDict[structureName].originalCost * (1.0f - (health / maxHealth));
     }
 
     public void SetFoodAllocationMax()
@@ -182,6 +182,7 @@ public abstract class Structure : MonoBehaviour
         if (health <= 0.0f)
         {
             GameManager.CreateAudioEffect("buildingDestroy", transform.position);
+            FindObjectOfType<StructureManager>().DecreaseStructureCost(structureName);
             attachedTile.Detach();
             Destroy(gameObject);
         }
