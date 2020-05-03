@@ -20,9 +20,4 @@ public class MetalStorage : StorageStructure
     {
         StructureUpdate();
     }
-
-    public override void OnPlace()
-    {
-        FindObjectOfType<GameManager>().CalculateStorageMaximum();
-    }
 }

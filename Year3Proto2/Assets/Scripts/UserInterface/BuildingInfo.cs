@@ -97,8 +97,8 @@ public class BuildingInfo : MonoBehaviour
                 foodComponent.SetActive(true);
                 ArcherTower archer = targetBuilding.GetComponent<ArcherTower>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "Attack Power";
-                statValueText.text = archer.arrowDamage.ToString("0");
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = archer.fireRate.ToString("F") + " arrows/second";
                 statInfoText.text = "Single target";
                 foodValueText.text = archer.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
 
@@ -108,8 +108,8 @@ public class BuildingInfo : MonoBehaviour
                 foodComponent.SetActive(true);
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "Attack Power";
-                statValueText.text = "10";
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = catapult.fireRate.ToString("F") + " boulders/second";
                 statInfoText.text = "AOE Damage";
                 foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
 

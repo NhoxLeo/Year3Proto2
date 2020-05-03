@@ -43,14 +43,12 @@ public class ArcherTower : AttackStructure
 
     public override void Attack(GameObject target)
     {
-        fireCooldown -= Time.deltaTime;
-        if (fireCooldown <= 0)
+        fireCooldown += Time.deltaTime;
+        if (fireCooldown >= fireDelay)
         {
-            GameManager game = FindObjectOfType<GameManager>();
-            if (game.playerData.CanAfford(new ResourceBundle(1, 0, 0)))
+            if (gameMan.playerData.AttemptPurchase(new ResourceBundle(3, 0, 0)))
             {
                 Fire();
-                game.AddBatch(new Batch(-1, ResourceType.food));
             }
         }
     }
@@ -69,7 +67,7 @@ public class ArcherTower : AttackStructure
 
     void Fire()
     {
-        fireCooldown = fireDelay;
+        fireCooldown = 0;
         GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
         ArrowBehaviour arrowBehaviour = newArrow.GetComponent<ArrowBehaviour>();
         spawnedArrows.Add(newArrow);
