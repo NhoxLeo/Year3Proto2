@@ -14,7 +14,7 @@ public class MessageBox : MonoBehaviour
     void Awake()
     {
         tool = GetComponent<Tooltip>();
-        displayText = transform.GetChild(1).GetComponent<TMP_Text>();
+        displayText = transform.GetComponentInChildren<TMP_Text>();
         timerMode = true;
         timer = 0.0f;
     }
