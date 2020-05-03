@@ -38,11 +38,25 @@ public struct ResourceBundle
         return vec;
     }
 
+    public static ResourceBundle operator + (ResourceBundle _LHS, ResourceBundle _RHS)
+    {
+        ResourceBundle sum;
+        sum.woodCost = _LHS.woodCost + _RHS.woodCost;
+        sum.metalCost = _LHS.metalCost + _RHS.metalCost;
+        sum.foodCost = _LHS.foodCost + _RHS.foodCost;
+        return sum;
+    }
+
     public ResourceBundle(Vector3 _vec)
     {
         woodCost = (int)_vec.x;
         metalCost = (int)_vec.y;
         foodCost = (int)_vec.z;
+    }
+
+    public bool IsEmpty()
+    {
+        return woodCost == 0 && metalCost == 0 && foodCost == 0;
     }
 }
 
@@ -126,13 +140,16 @@ public class StructureManager : MonoBehaviour
     private BuildPanel panel;
     private GameObject buildingPuff;
     private EnemySpawner enemySpawner;
+    private HUDManager HUDman;
     public bool BuyBuilding()
     {
         if (structure && structureFromStore)
         {
-            if (gameMan.playerData.AttemptPurchase(structureCosts[structure.GetStructureName()]))
+            ResourceBundle cost = structureCosts[structure.GetStructureName()];
+            if (gameMan.playerData.AttemptPurchase(cost))
             {
                 IncreaseStructureCost(structure.GetStructureName());
+                HUDman.ShowResourceDelta(cost, true);
                 return true;
             }
             ShowMessage("You can't afford that!", 1.5f);
@@ -445,6 +462,7 @@ public class StructureManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
+        HUDman = FindObjectOfType<HUDManager>();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         structureFromStore = false;

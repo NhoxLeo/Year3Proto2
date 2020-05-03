@@ -183,6 +183,7 @@ public class GameManager : MonoBehaviour
     private static int repairCount = 0;
     private bool repairMessage = false;
     private MessageBox messageBox;
+    private HUDManager HUDMan;
     private Longhaus longhaus;
     public bool repairAll = false;
     int recentFood
@@ -325,23 +326,53 @@ public class GameManager : MonoBehaviour
     public void RepairAll()
     {
         bool repairAll = true;
+        bool repairsWereDone = false;
+        bool repairsWereFailed = false;
+        ResourceBundle total = new ResourceBundle(0, 0, 0);
         Structure[] structures = FindObjectsOfType<Structure>();
         foreach (Structure structure in structures)
         {
             if (structure.GetStructureType() != StructureType.environment)
             {
-                if (!structure.Repair()) { repairAll = false; }
-                else { structure.HideHealthbar(); }
+                ResourceBundle repairCost = structure.RepairCost();
+                bool repaired = structure.Repair(true);
+                if (repaired) 
+                { 
+                    structure.HideHealthbar(); 
+                    total += repairCost; 
+                    repairsWereDone = true; 
+                }
+                else if (!repairCost.IsEmpty())
+                {
+                    repairsWereFailed = true;
+                    repairAll = false;
+                }
             }
         }
-        if (repairAll)
+        if (repairsWereDone)
         {
-            if (tutorialDone) { messageBox.ShowMessage("All repaired!", 1f); }
+            if (repairAll)
+            {
+                if (tutorialDone) { messageBox.ShowMessage("All repairs done!", 1f); }
+            }
+            else if (repairsWereFailed)
+            {
+                if (tutorialDone) { messageBox.ShowMessage("Couldn't repair everything...", 2f); }
+            }
+            HUDMan.ShowResourceDelta(total, true);
         }
         else
         {
-            if (tutorialDone) { messageBox.ShowMessage("Could not repair everything.", 2f); }
+            if (repairsWereFailed)
+            {
+                if (tutorialDone) { messageBox.ShowMessage("Couldn't repair anything...", 2f); }
+            }
+            else
+            {
+                if (tutorialDone) { messageBox.ShowMessage("There was nothing to repair...", 2f); }
+            }
         }
+        
     }
 
     private void Awake()
@@ -369,6 +400,9 @@ public class GameManager : MonoBehaviour
         playerData = new PlayerData(200, 500);
         CalculateStorageMaximum();
         recentBatches = new List<Batch>();
+        messageBox = FindObjectOfType<MessageBox>();
+        HUDMan = FindObjectOfType<HUDManager>();
+        longhaus = FindObjectOfType<Longhaus>();
     }
 
     // Update is called once per frame
