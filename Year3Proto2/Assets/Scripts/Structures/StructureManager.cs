@@ -38,11 +38,25 @@ public struct ResourceBundle
         return vec;
     }
 
+    public static ResourceBundle operator + (ResourceBundle _LHS, ResourceBundle _RHS)
+    {
+        ResourceBundle sum;
+        sum.woodCost = _LHS.woodCost + _RHS.woodCost;
+        sum.metalCost = _LHS.metalCost + _RHS.metalCost;
+        sum.foodCost = _LHS.foodCost + _RHS.foodCost;
+        return sum;
+    }
+
     public ResourceBundle(Vector3 _vec)
     {
         woodCost = (int)_vec.x;
         metalCost = (int)_vec.y;
         foodCost = (int)_vec.z;
+    }
+
+    public bool IsEmpty()
+    {
+        return woodCost == 0 && metalCost == 0 && foodCost == 0;
     }
 }
 
@@ -97,6 +111,9 @@ public class StructureManager : MonoBehaviour
     public Vector2 plainsEnvironmentBounds;
     public Vector2 hillsEnvironmentBounds;
     public Vector2 forestEnvironmentBounds;
+    public float recursiveGrowthChance;
+    //public float recursiveGrowthFalloff;
+    private List<TileBehaviour> PGPlayableTiles;
 
     [Header("General Setup")]
     public Transform selectedTileHighlight = null;
@@ -126,13 +143,16 @@ public class StructureManager : MonoBehaviour
     private BuildPanel panel;
     private GameObject buildingPuff;
     private EnemySpawner enemySpawner;
+    private HUDManager HUDman;
     public bool BuyBuilding()
     {
         if (structure && structureFromStore)
         {
-            if (gameMan.playerData.AttemptPurchase(structureCosts[structure.GetStructureName()]))
+            ResourceBundle cost = structureCosts[structure.GetStructureName()];
+            if (gameMan.playerData.AttemptPurchase(cost))
             {
                 IncreaseStructureCost(structure.GetStructureName());
+                HUDman.ShowResourceDelta(cost, true);
                 return true;
             }
             ShowMessage("You can't afford that!", 1.5f);
@@ -248,52 +268,66 @@ public class StructureManager : MonoBehaviour
 
         // get all the tiles
         TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
-        List<TileBehaviour> playableTiles = new List<TileBehaviour>();
+        PGPlayableTiles = new List<TileBehaviour>();
         for (int i = 0; i < tiles.Length; i++)
         {
             // if the tile is playable and it doesn't have a structure already
             if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
             {
-                playableTiles.Add(tiles[i]);
+                PGPlayableTiles.Add(tiles[i]);
             }
         }
+
+        int forestPlaced = 0;
+        while (forestPlaced < forestTotal)
+        {
+            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
+            PGRecursiveWander("Forest Environment", tile, ref forestPlaced, forestTotal);
+        }
+
+        int hillsPlaced = 0;
+        while (hillsPlaced < hillsTotal)
+        {
+            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
+            PGRecursiveWander("Hills Environment", tile, ref hillsPlaced, hillsTotal);
+        }
+
+        int plainsPlaced = 0;
+        while (plainsPlaced < plainsTotal)
+        {
+            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
+            PGRecursiveWander("Plains Environment", tile, ref plainsPlaced, plainsTotal);
+        }
+
+
+        /*
 
         // Generate Forests
         int forestPlaced = 0;
         while (forestPlaced < forestTotal)
         {
-            if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = playableTiles[Random.Range(0, playableTiles.Count)];
+            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
 
-            if (!PGInstatiateEnvironment("Forest Environment", tile))
-            {
-                // Something has gone wrong
-                //Debug.LogError("PG: PGInstatiateEnvironment returned false");
-                //tile.GetComponent<MeshRenderer>().enabled = false;
-            }
+            PGInstatiateEnvironment("Forest Environment", tile);
 
             // update forestPlaced
             forestPlaced++;
-            playableTiles.Remove(tile);
+            PGPlayableTiles.Remove(tile);
             if (forestPlaced == forestTotal) { break; }
 
             // now try the tiles around it
             for (int i = 0; i < 4; i++)
             {
                 TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i]; 
-                if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (playableTiles.Contains(tileI))
+                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (PGPlayableTiles.Contains(tileI))
                 {
-                    if (!PGInstatiateEnvironment("Forest Environment", tileI))
-                    {
-                        // Something has gone wrong
-                        //Debug.LogError("PG: PGInstatiateEnvironment returned false");
-                        //tileI.GetComponent<MeshRenderer>().enabled = false;
-                    }
+                    PGInstatiateEnvironment("Forest Environment", tileI);
 
                     // update forestPlaced
                     forestPlaced++;
-                    playableTiles.Remove(tileI);
+                    PGPlayableTiles.Remove(tileI);
                     if (forestPlaced == forestTotal) { break; }
                 }
             }
@@ -303,38 +337,28 @@ public class StructureManager : MonoBehaviour
         int hillsPlaced = 0;
         while (hillsPlaced < hillsTotal)
         {
-            if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = playableTiles[Random.Range(0, playableTiles.Count)];
+            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
 
-            if (!PGInstatiateEnvironment("Hills Environment", tile))
-            {
-                // Something has gone wrong
-                //Debug.LogError("PG: PGInstatiateEnvironment returned false");
-                //tile.GetComponent<MeshRenderer>().enabled = false;
-            }
+            PGInstatiateEnvironment("Hills Environment", tile);
 
             // update hillsPlaced
             hillsPlaced++;
-            playableTiles.Remove(tile);
+            PGPlayableTiles.Remove(tile);
             if (hillsPlaced == hillsTotal) { break; }
 
             // now try the tiles around it
             for (int i = 0; i < 4; i++)
             {
                 TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i]; 
-                if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (playableTiles.Contains(tileI))
+                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (PGPlayableTiles.Contains(tileI))
                 {
-                    if (!PGInstatiateEnvironment("Hills Environment", tileI))
-                    {
-                        // Something has gone wrong
-                        //Debug.LogError("PG: PGInstatiateEnvironment returned false");
-                        //tileI.GetComponent<MeshRenderer>().enabled = false;
-                    }
+                    PGInstatiateEnvironment("Hills Environment", tileI);
 
                     // update hillsPlaced
                     hillsPlaced++;
-                    playableTiles.Remove(tileI);
+                    PGPlayableTiles.Remove(tileI);
                     if (hillsPlaced == hillsTotal) { break; }
                 }
             }
@@ -344,45 +368,67 @@ public class StructureManager : MonoBehaviour
         int plainsPlaced = 0;
         while (plainsPlaced < plainsTotal)
         {
-            if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = playableTiles[Random.Range(0, playableTiles.Count)];
+            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
 
-            if (!PGInstatiateEnvironment("Plains Environment", tile))
-            {
-                // Something has gone wrong
-                //Debug.LogError("PG: PGInstatiateEnvironment returned false");
-                //tile.GetComponent<MeshRenderer>().enabled = false;
-            }
+            PGInstatiateEnvironment("Plains Environment", tile);
 
             // update plainsPlaced
             plainsPlaced++;
-            playableTiles.Remove(tile);
+            PGPlayableTiles.Remove(tile);
             if (plainsPlaced == plainsTotal) { break; }
 
             // now try the tiles around it
             for (int i = 0; i < 4; i++)
             {
                 TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i];
-                if (playableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (playableTiles.Contains(tileI))
+                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (PGPlayableTiles.Contains(tileI))
                 {
-                    if (!PGInstatiateEnvironment("Plains Environment", tileI))
-                    {
-                        // Something has gone wrong
-                        //Debug.LogError("PG: PGInstatiateEnvironment returned false");
-                        //tileI.GetComponent<MeshRenderer>().enabled = false;
-                    }
+                    PGInstatiateEnvironment("Plains Environment", tileI);
 
                     // update plainsPlaced
                     plainsPlaced++;
-                    playableTiles.Remove(tileI);
+                    PGPlayableTiles.Remove(tileI);
                     if (plainsPlaced == plainsTotal) { break; }
+                }
+            }
+        }
+        */
+    }
+
+    private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int placed, int max)
+    {
+        if (placed == max)
+        {
+            return;
+        }
+        // plant the environment on the tile,
+        // remove the tile from PGPlayableTiles
+        // for each face of the tile, if that face is in PGPlayableTiles, roll the dice on PGRecursiveWander
+        if (PGPlayableTiles.Contains(_tile))
+        {
+            placed++;
+            PGPlayableTiles.Remove(_tile);
+            PGInstatiateEnvironment(_environmentType, _tile);
+        }
+
+        // now try the tiles around it
+        for (int i = 0; i < 4; i++)
+        {
+            if (placed == max) { break; }
+            TileBehaviour tileI = _tile.adjacentTiles[(TileBehaviour.TileCode)i];
+            if (PGPlayableTiles.Contains(tileI))
+            {
+                if (Random.Range(0f, 100f) <= recursiveGrowthChance * 100f)
+                {
+                    PGRecursiveWander(_environmentType, tileI, ref placed, max);
                 }
             }
         }
     }
 
-    private bool PGInstatiateEnvironment(string _environmentType, TileBehaviour _tile)
+    private void PGInstatiateEnvironment(string _environmentType, TileBehaviour _tile)
     {
         // create the structure
         Structure structure = Instantiate(structureDict[_environmentType].structurePrefab).GetComponent<Structure>();
@@ -391,11 +437,8 @@ public class StructureManager : MonoBehaviour
         Vector3 structPos = _tile.transform.position;
         structPos.y = structure.sitHeight;
         structure.transform.position = structPos;
-        //structure.transform.SetPositionAndRotation(structPos, structure.transform.rotation);
 
         _tile.Attach(structure);
-        return true;
-        //return _tile.DetectStructure();
     }
 
     private void Awake()
@@ -445,6 +488,7 @@ public class StructureManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
+        HUDman = FindObjectOfType<HUDManager>();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         structureFromStore = false;

@@ -193,6 +193,17 @@ public class HUDManager : MonoBehaviour
 
         RefreshResources();
     }
+    public void ShowResourceDelta(ResourceBundle _resourceDelta, bool _makeNegative = false)
+    {
+        if (_makeNegative)
+        {
+            ShowResourceDelta(-_resourceDelta.foodCost, -_resourceDelta.woodCost, -_resourceDelta.metalCost);
+        }
+        else
+        {
+            ShowResourceDelta(_resourceDelta.foodCost, _resourceDelta.woodCost, _resourceDelta.metalCost);
+        }
+    }
 
     public void SetOverUI(bool isOver)
     {

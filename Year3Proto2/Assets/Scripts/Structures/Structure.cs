@@ -28,6 +28,7 @@ public abstract class Structure : MonoBehaviour
     protected GameManager gameMan;
     StructureManager structMan;
     protected BuildingInfo buildingInfo;
+    protected HUDManager HUDMan;
 
     public static int GetFoodAllocationMax()
     {
@@ -130,7 +131,7 @@ public abstract class Structure : MonoBehaviour
         }
     }
 
-    public bool Repair()
+    public bool Repair(bool _mass = false)
     {
         if (structureType == StructureType.environment)
         {
@@ -138,9 +139,12 @@ public abstract class Structure : MonoBehaviour
         }
 
         ResourceBundle repairCost = RepairCost();
-        if (gameMan.playerData.CanAfford(repairCost) && timeSinceLastHit >= 5.0f)
+        if (gameMan.playerData.CanAfford(repairCost) &&
+            timeSinceLastHit >= 5.0f &&
+            !repairCost.IsEmpty())
         {
             GameManager.IncrementRepairCount();
+            if (!_mass) { HUDMan.ShowResourceDelta(repairCost, true); }
             gameMan.playerData.DeductResource(repairCost);
             health = maxHealth;
             return true;
@@ -173,6 +177,7 @@ public abstract class Structure : MonoBehaviour
         isPlaced = false;
         structMan = FindObjectOfType<StructureManager>();
         gameMan = FindObjectOfType<GameManager>();
+        HUDMan = FindObjectOfType<HUDManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
         {
