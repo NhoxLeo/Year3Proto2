@@ -19,6 +19,18 @@ public class HUDManager : MonoBehaviour
     private TMP_Text woodText;
     private TMP_Text metalText;
 
+    private float foodDeltaTimer;
+    private Tooltip foodDeltaTip;
+    private TMP_Text foodDeltaText;
+
+    private float woodDeltaTimer;
+    private Tooltip woodDeltaTip;
+    private TMP_Text woodDeltaText;
+
+    private float metalDeltaTimer;
+    private Tooltip metalDeltaTip;
+    private TMP_Text metalDeltaText;
+
     private EnemySpawner spawner;
     private TMP_Text waveText;
 
@@ -32,6 +44,15 @@ public class HUDManager : MonoBehaviour
         woodText = transform.Find("ResourceBar/WoodText").GetComponent<TMP_Text>();
         metalText = transform.Find("ResourceBar/MetalText").GetComponent<TMP_Text>();
         waveText = transform.Find("InfoBar/Waves").GetComponent<TMP_Text>();
+
+        foodDeltaTip = transform.Find("ResourceBar/FoodText/FoodIcon/FoodDelta").GetComponent<Tooltip>();
+        foodDeltaText = transform.Find("ResourceBar/FoodText/FoodIcon/FoodDelta/FoodDeltaText").GetComponent<TMP_Text>();
+
+        woodDeltaTip = transform.Find("ResourceBar/WoodText/WoodIcon/WoodDelta").GetComponent<Tooltip>();
+        woodDeltaText = transform.Find("ResourceBar/WoodText/WoodIcon/WoodDelta/WoodDeltaText").GetComponent<TMP_Text>();
+
+        metalDeltaTip = transform.Find("ResourceBar/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
+        metalDeltaText = transform.Find("ResourceBar/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
     }
 
     void LateUpdate()
@@ -42,6 +63,40 @@ public class HUDManager : MonoBehaviour
             RefreshResources();
             updateTimer = updateInterval;
         }
+        
+
+        // Resource Deltas
+        // Food
+        if (foodDeltaTimer > 0.0f)
+        {
+            foodDeltaTimer -= Time.unscaledDeltaTime;
+            foodDeltaTip.showTooltip = true;
+        }
+        else
+        {
+            foodDeltaTip.showTooltip = false;
+        }
+        // Wood
+        if (woodDeltaTimer > 0.0f)
+        {
+            woodDeltaTimer -= Time.unscaledDeltaTime;
+            woodDeltaTip.showTooltip = true;
+        }
+        else
+        {
+            woodDeltaTip.showTooltip = false;
+        }
+        // Metal
+        if (metalDeltaTimer > 0.0f)
+        {
+            metalDeltaTimer -= Time.unscaledDeltaTime;
+            metalDeltaTip.showTooltip = true;
+        }
+        else
+        {
+            metalDeltaTip.showTooltip = false;
+        }
+
 
         // Info Bar
 
@@ -104,6 +159,39 @@ public class HUDManager : MonoBehaviour
         {
             metalText.color = fullColour;
         }
+    }
+
+    public void ShowResourceDelta(int _food, int _wood, int _metal)
+    {
+        if (_food != 0)
+        {
+            foodDeltaTimer = 1.5f;
+            string foodDeltaSign = (_food > 0) ? "+" : "";
+            foodDeltaText.text = foodDeltaSign + _food.ToString();
+            foodDeltaText.color = (_food > 0) ? gainColour : lossColour;
+            foodDeltaTip.PulseTip();
+        }
+
+        if (_wood != 0)
+        {
+            woodDeltaTimer = 1.5f;
+            string woodDeltaSign = (_wood > 0) ? "+" : "";
+            woodDeltaText.text = woodDeltaSign + _wood.ToString();
+            woodDeltaText.color = (_wood > 0) ? gainColour : lossColour;
+            woodDeltaTip.PulseTip();
+        }
+
+        if (_metal != 0)
+        {
+            metalDeltaTimer = 1.5f;
+            string metalDeltaSign = (_metal > 0) ? "+" : "";
+            metalDeltaText.text = metalDeltaSign + _metal.ToString();
+            metalDeltaText.color = (_metal > 0) ? gainColour : lossColour;
+            metalDeltaTip.PulseTip();
+        }
+
+
+        RefreshResources();
     }
 
     public void SetOverUI(bool isOver)
