@@ -125,6 +125,7 @@ public class StructureManager : MonoBehaviour
     private bool towerPlaced = false;
     private BuildPanel panel;
     private GameObject buildingPuff;
+    private EnemySpawner enemySpawner;
     public bool BuyBuilding()
     {
         if (structure && structureFromStore)
@@ -176,7 +177,7 @@ public class StructureManager : MonoBehaviour
                 if (structureFromStore)
                 {
                     Destroy(structure.gameObject);
-                    FindObjectOfType<BuildPanel>().UINoneSelected();
+                    panel.UINoneSelected();
                 }
                 else
                 {
@@ -399,7 +400,6 @@ public class StructureManager : MonoBehaviour
 
     private void Awake()
     {
-        panel = FindObjectOfType<BuildPanel>();
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                     NAME                                               wC       mC      fC
@@ -438,11 +438,13 @@ public class StructureManager : MonoBehaviour
             { "Mine",           new ResourceBundle(100,     20,     0) },
             { "Metal Storage",  new ResourceBundle(120,     80,     0) }
         };
+        panel = FindObjectOfType<BuildPanel>();
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         canvas = FindObjectOfType<Canvas>();
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
+        enemySpawner = FindObjectOfType<EnemySpawner>();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         structureFromStore = false;
@@ -538,7 +540,7 @@ public class StructureManager : MonoBehaviour
             case "Archer Tower":
                 envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
                 break;
-            case "Catapult":
+            case "Catapult Tower":
                 envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
                 break;
         }
@@ -789,7 +791,7 @@ public class StructureManager : MonoBehaviour
                                             }
 
                                             // If player cannot afford the structure, set to red.
-                                            if (!gameMan.playerData.CanAfford(structureDict[structure.GetStructureName()].originalCost))
+                                            if (!gameMan.playerData.CanAfford(structureCosts[structure.GetStructureName()]))
                                             {
                                                 structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
                                             }
@@ -864,12 +866,12 @@ public class StructureManager : MonoBehaviour
                                                     gameMan.OnStructurePlace();
                                                     if (structureFromStore)
                                                     {
-                                                        FindObjectOfType<BuildPanel>().UINoneSelected();
-                                                        FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                                                        panel.UINoneSelected();
+                                                        panel.ResetBuildingSelected();
                                                     }
                                                     if (!towerPlaced)
                                                     {
-                                                        FindObjectOfType<EnemySpawner>().Begin();
+                                                        enemySpawner.Begin();
                                                         towerPlaced = true;
                                                     }
                                                     SelectStructure(structure);
@@ -886,7 +888,7 @@ public class StructureManager : MonoBehaviour
                     if (Input.GetMouseButtonDown(1))
                     {
                         ResetBuilding();
-                        FindObjectOfType<BuildPanel>().ResetBuildingSelected();
+                        panel.ResetBuildingSelected();
                         if (structureFromStore)
                         {
                             DeselectStructure();
