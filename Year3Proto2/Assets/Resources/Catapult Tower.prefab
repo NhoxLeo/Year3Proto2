@@ -176,6 +176,7 @@ MonoBehaviour:
   isPlaced: 0
   sitHeight: 0.5
   structureName: 
+  consumptionTime: 2
   boulder: {fileID: 3151625167024170116, guid: 2f2d89cd2313f7d4b82200f467619bb7, type: 3}
   catapult: {fileID: 1362743559838478317}
   boulderDamage: 5
@@ -361,6 +362,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RangeCircle
+      objectReference: {fileID: 0}
+    - target: {fileID: 6849802697362423110, guid: d7b9248bf76aa094cbe1cf729d24f5b0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7b9248bf76aa094cbe1cf729d24f5b0, type: 3}
