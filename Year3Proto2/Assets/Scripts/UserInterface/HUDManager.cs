@@ -103,17 +103,6 @@ public class HUDManager : MonoBehaviour
         int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
         string plural = (wavesSurvived == 1) ? "" : "s";
         waveText.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
-
-
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            ShowResourceDelta(-100, 650, -1400);
-        }
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            ShowResourceDelta(0, 0, -800);
-        }
     }
 
     private void RefreshResources()
