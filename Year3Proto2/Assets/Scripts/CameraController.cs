@@ -19,6 +19,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] [Tooltip("Keybinding for moving the camera left")]
     private KeyCode moveWest;
 
+    [SerializeField] [Tooltip("Whether to move camera if mouse near edge of screen")]
+    private bool mouseEdgeMove = true;
+
     [SerializeField] [Tooltip("Buffer zone for mouse camera control at edge of screen")]
     private float mouseXBuffer = 50.0f;
 
@@ -90,11 +93,11 @@ public class CameraController : MonoBehaviour
         float scrollMoveBonus = 1f + (-scrollOffset + 10f) * 0.15f;
 
         Vector2 mp = Input.mousePosition;
-        float mouseMult = (structMan.isOverUI || GlobalData.isPaused) ? 0.0f : 1.0f;
+        float mouseMult = (structMan.isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
 
         float movementCoeff = Time.deltaTime * sensitivity * scrollMoveBonus;
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
             cameraZoomMidPoint += north * movementCoeff * (lastFrameMousePos.y - mp.y) * .07f;
             cameraZoomMidPoint += east * movementCoeff * (lastFrameMousePos.x - mp.x) * .07f;
