@@ -97,9 +97,9 @@ public class BuildingInfo : MonoBehaviour
                 foodComponent.SetActive(true);
                 ArcherTower archer = targetBuilding.GetComponent<ArcherTower>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "Attack Power";
-                statValueText.text = archer.arrowDamage.ToString("0");
-                statInfoText.text = "Single target";
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = archer.fireRate.ToString("F");
+                statInfoText.text = "per second";
                 foodValueText.text = archer.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
 
                 repairButton.interactable = archer.CanBeRepaired();
@@ -108,9 +108,9 @@ public class BuildingInfo : MonoBehaviour
                 foodComponent.SetActive(true);
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "Attack Power";
-                statValueText.text = "10";
-                statInfoText.text = "AOE Damage";
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = catapult.fireRate.ToString("F");
+                statInfoText.text = "per second";
                 foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
 
                 repairButton.interactable = catapult.CanBeRepaired();

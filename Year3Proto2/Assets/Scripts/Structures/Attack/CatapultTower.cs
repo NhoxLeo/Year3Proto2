@@ -43,14 +43,12 @@ public class CatapultTower : AttackStructure
 
     public override void Attack(GameObject target)
     {
-        fireCooldown -= Time.deltaTime;
-        if (fireCooldown <= 0)
+        fireCooldown += Time.deltaTime;
+        if (fireCooldown >= fireDelay)
         {
-            GameManager game = FindObjectOfType<GameManager>();
-            if (game.playerData.CanAfford(new ResourceBundle(3, 0, 0)))
+            if (gameMan.playerData.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
                 Fire();
-                game.AddBatch(new Batch(-3, ResourceType.food));
             }
         }
     }
@@ -58,7 +56,7 @@ public class CatapultTower : AttackStructure
 
     void Fire()
     {
-        fireCooldown = fireDelay;
+        fireCooldown = 0;
         GameObject newBoulder = Instantiate(boulder, catapult.transform.position, Quaternion.identity, transform);
         BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
         spawnedBoulders.Add(newBoulder);

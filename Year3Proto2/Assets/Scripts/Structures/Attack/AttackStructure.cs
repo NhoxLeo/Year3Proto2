@@ -6,6 +6,8 @@ public abstract class AttackStructure : Structure
 {
     protected List<GameObject> enemies;
     protected GameObject target = null;
+    public float consumptionTime = 2f;
+    protected float remainingTime = 2f;
     public abstract void Attack(GameObject target);
 
     public List<GameObject> GetEnemies()
@@ -22,7 +24,7 @@ public abstract class AttackStructure : Structure
 
     protected void AttackUpdate()
     {
-        if (attachedTile != null)
+        if (isPlaced)
         {
             StructureUpdate();
 
@@ -52,6 +54,17 @@ public abstract class AttackStructure : Structure
                 else
                 {
                     Attack(target);
+                }
+            }
+
+            // Food consumption
+            remainingTime -= Time.deltaTime;
+            if (remainingTime <= 0f)
+            {
+                remainingTime = consumptionTime;
+                if (gameMan.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+                {
+                    gameMan.AddBatch(new Batch(-foodAllocation, ResourceType.food));
                 }
             }
         }

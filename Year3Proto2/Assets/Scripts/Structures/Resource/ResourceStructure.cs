@@ -123,18 +123,17 @@ public abstract class ResourceStructure : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                GameManager game = FindObjectOfType<GameManager>();
                 if (structureName != "Farm")
                 {
-                    if (game.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+                    if (gameMan.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
                     {
-                        game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
-                        game.AddBatch(new Batch(-foodAllocation, ResourceType.food));
+                        gameMan.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
+                        gameMan.AddBatch(new Batch(-foodAllocation, ResourceType.food));
                     }
                 }
                 else
                 {
-                    game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
+                    gameMan.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
                 }
             }
         }

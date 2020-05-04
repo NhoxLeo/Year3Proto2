@@ -182,6 +182,9 @@ public class GameManager : MonoBehaviour
     private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private bool repairMessage = false;
+    private MessageBox messageBox;
+    private HUDManager HUDMan;
+    private Longhaus longhaus;
     public bool repairAll = false;
     int recentFood
     {
@@ -266,17 +269,20 @@ public class GameManager : MonoBehaviour
         StorageStructure[] storageStructures = FindObjectsOfType<StorageStructure>();
         foreach (StorageStructure storageStructure in storageStructures)
         {
-            switch (storageStructure.GetResourceType())
+            if (storageStructure.GetHealth() > 0f)
             {
-                case ResourceType.wood:
-                    newWoodMax += storageStructure.storage;
-                    break;
-                case ResourceType.metal:
-                    newMetalMax += storageStructure.storage;
-                    break;
-                case ResourceType.food:
-                    newFoodMax += storageStructure.storage;
-                    break;
+                switch (storageStructure.GetResourceType())
+                {
+                    case ResourceType.wood:
+                        newWoodMax += storageStructure.storage;
+                        break;
+                    case ResourceType.metal:
+                        newMetalMax += storageStructure.storage;
+                        break;
+                    case ResourceType.food:
+                        newFoodMax += storageStructure.storage;
+                        break;
+                }
             }
         }
 
@@ -320,23 +326,53 @@ public class GameManager : MonoBehaviour
     public void RepairAll()
     {
         bool repairAll = true;
+        bool repairsWereDone = false;
+        bool repairsWereFailed = false;
+        ResourceBundle total = new ResourceBundle(0, 0, 0);
         Structure[] structures = FindObjectsOfType<Structure>();
         foreach (Structure structure in structures)
         {
             if (structure.GetStructureType() != StructureType.environment)
             {
-                if (!structure.Repair()) { repairAll = false; }
-                else { structure.HideHealthbar(); }
+                ResourceBundle repairCost = structure.RepairCost();
+                bool repaired = structure.Repair(true);
+                if (repaired) 
+                { 
+                    structure.HideHealthbar(); 
+                    total += repairCost; 
+                    repairsWereDone = true; 
+                }
+                else if (!repairCost.IsEmpty())
+                {
+                    repairsWereFailed = true;
+                    repairAll = false;
+                }
             }
         }
-        if (repairAll)
+        if (repairsWereDone)
         {
-            if (tutorialDone) { FindObjectOfType<MessageBox>().ShowMessage("All repaired!", 1f); }
+            if (repairAll)
+            {
+                if (tutorialDone) { messageBox.ShowMessage("All repairs done!", 1f); }
+            }
+            else if (repairsWereFailed)
+            {
+                if (tutorialDone) { messageBox.ShowMessage("Couldn't repair everything...", 2f); }
+            }
+            HUDMan.ShowResourceDelta(total, true);
         }
         else
         {
-            if (tutorialDone) { FindObjectOfType<MessageBox>().ShowMessage("Could not repair everything.", 2f); }
+            if (repairsWereFailed)
+            {
+                if (tutorialDone) { messageBox.ShowMessage("Couldn't repair anything...", 2f); }
+            }
+            else
+            {
+                if (tutorialDone) { messageBox.ShowMessage("There was nothing to repair...", 2f); }
+            }
         }
+        
     }
 
     private void Awake()
@@ -364,6 +400,9 @@ public class GameManager : MonoBehaviour
         playerData = new PlayerData(200, 500);
         CalculateStorageMaximum();
         recentBatches = new List<Batch>();
+        messageBox = FindObjectOfType<MessageBox>();
+        HUDMan = FindObjectOfType<HUDManager>();
+        longhaus = FindObjectOfType<Longhaus>();
     }
 
     // Update is called once per frame
@@ -389,14 +428,14 @@ public class GameManager : MonoBehaviour
             {
                 if (tutorialAMessageTimer == 5f)
                 {
-                    FindObjectOfType<MessageBox>().ShowMessage("Your goal is to collect 3000 of each resource...", 4.5f);
+                    messageBox.ShowMessage("Your goal is to collect 3000 of each resource...", 4.5f);
                 }
                 tutorialAMessageTimer -= Time.deltaTime;
                 if (tutorialAMessageTimer <= 0f)
                 {
                     if (tutorialBMessageTimer == 3f)
                     {
-                        FindObjectOfType<MessageBox>().ShowMessage("...good luck, have fun!", 3f);
+                        messageBox.ShowMessage("...good luck, have fun!", 3f);
                     }
                     tutorialBMessageTimer -= Time.deltaTime;
                     if (tutorialBMessageTimer <= 0f)
@@ -409,18 +448,17 @@ public class GameManager : MonoBehaviour
 
         if (repairCount > 5 && !repairMessage && !repairAll)
         {
-            MessageBox messageBox = FindObjectOfType<MessageBox>();
             messageBox.ShowMessage("You can press R to mass repair", 3f);
             if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
         }
 
         if (!gameover)
         {
-            if (!FindObjectOfType<Longhaus>())
+            if (longhaus == null)
             {
                 gameover = true;
                 victory = false;
-                FindObjectOfType<MessageBox>().ShowMessage("You Lost!", 3f);
+                messageBox.ShowMessage("You Lost!", 3f);
                 GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
             }
@@ -432,7 +470,7 @@ public class GameManager : MonoBehaviour
                     {
                         gameover = true;
                         victory = true;
-                        FindObjectOfType<MessageBox>().ShowMessage("You Win!", 5f);
+                        messageBox.ShowMessage("You Win!", 5f);
                         GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                         CreateAudioEffect("win", Vector3.zero, 1f, false);
                     }

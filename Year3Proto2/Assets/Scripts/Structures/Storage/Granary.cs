@@ -20,9 +20,4 @@ public class Granary : StorageStructure
     {
         StructureUpdate();
     }
-
-    public override void OnPlace()
-    {
-        FindObjectOfType<GameManager>().CalculateStorageMaximum();
-    }
 }

@@ -40,10 +40,9 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                GameManager game = FindObjectOfType<GameManager>();
-                game.AddBatch(new Batch(3, ResourceType.metal));
-                game.AddBatch(new Batch(7, ResourceType.wood));
-                game.AddBatch(new Batch(7, ResourceType.food));
+                gameMan.AddBatch(new Batch(3, ResourceType.metal));
+                gameMan.AddBatch(new Batch(7, ResourceType.wood));
+                gameMan.AddBatch(new Batch(7, ResourceType.food));
             }
         }
     }

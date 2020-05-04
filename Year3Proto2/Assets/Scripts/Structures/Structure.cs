@@ -25,6 +25,10 @@ public abstract class Structure : MonoBehaviour
     protected float maxHealth = 100.0f;
     protected StructureType structureType;
     protected float timeSinceLastHit = Mathf.Infinity;
+    protected GameManager gameMan;
+    StructureManager structMan;
+    protected BuildingInfo buildingInfo;
+    protected HUDManager HUDMan;
 
     public static int GetFoodAllocationMax()
     {
@@ -36,7 +40,7 @@ public abstract class Structure : MonoBehaviour
         timeSinceLastHit = 0.0f;
         bool setInfo = health == maxHealth;
         health -= amount;
-        if (setInfo) { FindObjectOfType<BuildingInfo>().SetInfo(); }
+        if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
         GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
     }
@@ -114,6 +118,11 @@ public abstract class Structure : MonoBehaviour
 
     }
 
+    protected virtual void OnDestroyed()
+    {
+
+    }
+
     public virtual void OnSelected()
     {
         if (structureType != StructureType.environment)
@@ -122,18 +131,20 @@ public abstract class Structure : MonoBehaviour
         }
     }
 
-    public bool Repair()
+    public bool Repair(bool _mass = false)
     {
         if (structureType == StructureType.environment)
         {
             return true;
         }
 
-        GameManager gameMan = FindObjectOfType<GameManager>();
         ResourceBundle repairCost = RepairCost();
-        if (gameMan.playerData.CanAfford(repairCost) && timeSinceLastHit >= 5.0f)
+        if (gameMan.playerData.CanAfford(repairCost) &&
+            timeSinceLastHit >= 5.0f &&
+            !repairCost.IsEmpty())
         {
             GameManager.IncrementRepairCount();
+            if (!_mass) { HUDMan.ShowResourceDelta(repairCost, true); }
             gameMan.playerData.DeductResource(repairCost);
             health = maxHealth;
             return true;
@@ -143,7 +154,7 @@ public abstract class Structure : MonoBehaviour
 
     public ResourceBundle RepairCost()
     {
-        return FindObjectOfType<StructureManager>().structureDict[structureName].originalCost * (1.0f - (health / maxHealth));
+        return structMan.structureDict[structureName].originalCost * (1.0f - (health / maxHealth));
     }
 
     public void SetFoodAllocationMax()
@@ -164,11 +175,14 @@ public abstract class Structure : MonoBehaviour
     {
         health = maxHealth;
         isPlaced = false;
+        structMan = FindObjectOfType<StructureManager>();
+        gameMan = FindObjectOfType<GameManager>();
+        HUDMan = FindObjectOfType<HUDManager>();
+        buildingInfo = FindObjectOfType<BuildingInfo>();
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
         {
             hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
         }
-        StructureManager structMan = FindObjectOfType<StructureManager>();
         GameObject healthBarInst = Instantiate(structMan.healthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
         SetHealthbar(healthBarInst.GetComponent<Healthbar>());
         healthBar.target = gameObject;
@@ -182,7 +196,7 @@ public abstract class Structure : MonoBehaviour
         if (health <= 0.0f)
         {
             GameManager.CreateAudioEffect("buildingDestroy", transform.position);
-            FindObjectOfType<StructureManager>().DecreaseStructureCost(structureName);
+            structMan.DecreaseStructureCost(structureName);
             attachedTile.Detach();
             Destroy(gameObject);
         }
@@ -190,6 +204,7 @@ public abstract class Structure : MonoBehaviour
     }
     private void OnDestroy()
     {
+        OnDestroyed();
         if (healthBar) { Destroy(healthBar.gameObject); }
         if (attachedTile)
         {

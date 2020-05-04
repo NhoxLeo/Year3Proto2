@@ -16,6 +16,7 @@ public class EnemySpawner : MonoBehaviour
     private TileBehaviour[] tileBehaviours;
     private bool begin = false;
 
+    private MessageBox messageBox;
     private List<EnemyWave> enemyWaves;
     public EnemyWave enemyWave;
     List<TileBehaviour> availableTiles;
@@ -24,6 +25,7 @@ public class EnemySpawner : MonoBehaviour
     {
         enemyWaves = new List<EnemyWave>();
         availableTiles = new List<TileBehaviour>();
+        messageBox = FindObjectOfType<MessageBox>();
         foreach (TileBehaviour tileBehaviour in FindObjectsOfType<TileBehaviour>())
         {
             if (tileBehaviour.GetSpawnTile()) availableTiles.Add(tileBehaviour);
@@ -40,7 +42,7 @@ public class EnemySpawner : MonoBehaviour
                 waveCounter++;
                 if (waveCounter == 1)
                 {
-                    FindObjectOfType<MessageBox>().ShowMessage("Invaders incoming!", 3.5f);
+                    messageBox.ShowMessage("Invaders incoming!", 3.5f);
                 }
                 cooldown = timeBetweenWaves;
                 enemiesPerWave += newEnemiesPerWave;

@@ -17,4 +17,15 @@ public abstract class StorageStructure : Structure
     {
         return resourceType;
     }
+
+    public override void OnPlace()
+    {
+        gameMan.CalculateStorageMaximum();
+    }
+
+    protected override void OnDestroyed()
+    {
+        base.OnDestroyed();
+        gameMan.CalculateStorageMaximum();
+    }
 }
