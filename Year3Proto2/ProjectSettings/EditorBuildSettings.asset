@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/TitleScreen.unity
     guid: 27a357408008cb44d9809694e35ee8a1
   - enabled: 1
+    path: Assets/Scenes/ResearchTree.unity
+    guid: 68da14b9efcdda44089eae73feec7839
+  - enabled: 1
+    path: Assets/Scenes/LevelSelect.unity
+    guid: 087729a45b637e948b8c7de71e622517
+  - enabled: 1
     path: Assets/Scenes/SamDev.unity
     guid: c6d1683955e4d8a43930635d08eafccb
   m_configObjects: {}

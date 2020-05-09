@@ -179,12 +179,14 @@ public class GameManager : MonoBehaviour
     private float tutorialBMessageTimer = 3.0f;
     private float tutorialDelay = 2.0f;
     private bool musicBackOn = false;
+    private bool switchingScene = false;
     private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private bool repairMessage = false;
     private MessageBox messageBox;
+    private SuperManager superMan;
     private HUDManager HUDMan;
-    private Longhaus longhaus;
+    public bool longhausDead;
     public bool repairAll = false;
     int recentFood
     {
@@ -402,7 +404,7 @@ public class GameManager : MonoBehaviour
         recentBatches = new List<Batch>();
         messageBox = FindObjectOfType<MessageBox>();
         HUDMan = FindObjectOfType<HUDManager>();
-        longhaus = FindObjectOfType<Longhaus>();
+        superMan = FindObjectOfType<SuperManager>();
     }
 
     // Update is called once per frame
@@ -454,7 +456,7 @@ public class GameManager : MonoBehaviour
 
         if (!gameover)
         {
-            if (longhaus == null)
+            if (longhausDead == true)
             {
                 gameover = true;
                 victory = false;
@@ -470,6 +472,7 @@ public class GameManager : MonoBehaviour
                     {
                         gameover = true;
                         victory = true;
+                        superMan.OnLevelComplete();
                         messageBox.ShowMessage("You Win!", 5f);
                         GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                         CreateAudioEffect("win", Vector3.zero, 1f, false);
@@ -484,17 +487,19 @@ public class GameManager : MonoBehaviour
             if (victory)
             {
                 musicDelay -= Time.deltaTime;
-                if (musicDelay < 0f)
+                if (musicDelay < 0f && !musicBackOn)
                 {
                     GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(1f, 2f);
+                    musicBackOn = true;
                 }
             }
             else
             {
                 gameoverTimer -= Time.deltaTime;
-                if (gameoverTimer < 0f)
+                if (gameoverTimer < 0f && !switchingScene)
                 {
                     FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                    switchingScene = true;
                 }
             }
             
