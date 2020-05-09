@@ -16,15 +16,12 @@ public class Longhaus : Structure
     public float productionTime = 3f;
     protected float remainingTime = 3f;
 
-    private bool longhausDead;
-
     // Start is called before the first frame update
     void Start()
     {
         StructureStart();
         structureType = StructureType.longhaus;
         structureName = "Longhaus";
-        longhausDead = false;
         maxHealth = 400f;
         health = maxHealth;
     }
@@ -33,7 +30,7 @@ public class Longhaus : Structure
     void Update()
     {
         StructureUpdate();
-        if (health > 0)
+        if (health > 0f)
         {
             remainingTime -= Time.deltaTime;
 

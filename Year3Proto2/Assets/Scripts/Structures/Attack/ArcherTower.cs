@@ -74,6 +74,7 @@ public class ArcherTower : AttackStructure
         arrowBehaviour.target = target.transform;
         arrowBehaviour.damage = arrowDamage;
         arrowBehaviour.speed = arrowSpeed;
+        arrowBehaviour.puffEffect = puffPrefab;
         GameManager.CreateAudioEffect("arrow", transform.position);
     }
 

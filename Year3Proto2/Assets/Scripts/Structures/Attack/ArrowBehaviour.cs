@@ -7,12 +7,14 @@ public class ArrowBehaviour : MonoBehaviour
     public Transform target;
     public float damage;
     public float speed;
+    public GameObject puffEffect;
 
     // Start is called before the first frame update
     void Start()
     {
         
     }
+
 
     // Update is called once per frame
     void Update()
@@ -30,6 +32,7 @@ public class ArrowBehaviour : MonoBehaviour
             Enemy enemy = target.GetComponent<Enemy>();
             if (enemy.health <= damage)
             {
+                Instantiate(puffEffect, target.position, Quaternion.identity);
                 Destroy(target.gameObject);
             }
             else
