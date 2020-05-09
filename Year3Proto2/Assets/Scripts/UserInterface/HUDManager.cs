@@ -107,54 +107,28 @@ public class HUDManager : MonoBehaviour
 
     private void RefreshResources()
     {
-        // Reesources
-
         float foodVel = game.GetFoodVelocity(1);
-        string foodSign = (Mathf.Sign(foodVel) == 1) ? "+" : "";
-        float foodVelDP = Mathf.Round(foodVel * 10f) * .1f;
-        foodText.text = game.playerData.GetResource(ResourceType.food).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.food).ToString() + " (" + foodSign + foodVelDP.ToString() + "/s)";
-        if (Mathf.Sign(foodVel) == 1)
-        {
-            foodText.color = gainColour;
-        }
-        else
-        {
-            foodText.color = lossColour;
-        }
+        string foodVelDP = AddSign(Mathf.Round(foodVel * 10f) * .1f);
+        foodText.text = game.playerData.GetResource(ResourceType.food).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.food).ToString() + " (" + foodVelDP + "/s)";
+        foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
         if (game.playerData.ResourceIsFull(ResourceType.food))
         {
             foodText.color = fullColour;
         }
 
         float woodVel = game.GetWoodVelocity(1);
-        string woodSign = (Mathf.Sign(woodVel) == 1) ? "+" : "";
-        float woodVelDP = Mathf.Round(woodVel * 10f) * .1f;
-        woodText.text = game.playerData.GetResource(ResourceType.wood).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.wood).ToString() + " (" + woodSign + woodVelDP.ToString() + "/s)";
-        if (Mathf.Sign(woodVel) == 1)
-        {
-            woodText.color = gainColour;
-        }
-        else
-        {
-            woodText.color = lossColour;
-        }
+        string woodVelDP = AddSign(Mathf.Round(woodVel * 10f) * .1f);
+        woodText.text = game.playerData.GetResource(ResourceType.wood).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.wood).ToString() + " (" + woodVelDP + "/s)";
+        woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
         if (game.playerData.ResourceIsFull(ResourceType.wood))
         {
             woodText.color = fullColour;
         }
 
         float metalVel = game.GetMetalVelocity(1);
-        string metalSign = (Mathf.Sign(metalVel) == 1) ? "+" : "";
-        float metalVelDP = Mathf.Round(metalVel * 10f) * .1f;
-        metalText.text = game.playerData.GetResource(ResourceType.metal).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.metal).ToString() + " (" + metalSign + metalVelDP.ToString() + "/s)";
-        if (Mathf.Sign(metalVel) == 1)
-        {
-            metalText.color = gainColour;
-        }
-        else
-        {
-            metalText.color = lossColour;
-        }
+        string metalVelDP = AddSign(Mathf.Round(metalVel * 10f) * .1f);
+        metalText.text = game.playerData.GetResource(ResourceType.metal).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.metal).ToString() + " (" + metalVelDP + "/s)";
+        metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
         if (game.playerData.ResourceIsFull(ResourceType.metal))
         {
             metalText.color = fullColour;
@@ -166,8 +140,7 @@ public class HUDManager : MonoBehaviour
         if (_food != 0)
         {
             foodDeltaTimer = 1.5f;
-            string foodDeltaSign = (_food > 0) ? "+" : "";
-            foodDeltaText.text = foodDeltaSign + _food.ToString();
+            foodDeltaText.text = AddSign(_food);
             foodDeltaText.color = (_food > 0) ? gainColour : lossColour;
             foodDeltaTip.PulseTip();
         }
@@ -175,8 +148,7 @@ public class HUDManager : MonoBehaviour
         if (_wood != 0)
         {
             woodDeltaTimer = 1.5f;
-            string woodDeltaSign = (_wood > 0) ? "+" : "";
-            woodDeltaText.text = woodDeltaSign + _wood.ToString();
+            woodDeltaText.text = AddSign(_wood);
             woodDeltaText.color = (_wood > 0) ? gainColour : lossColour;
             woodDeltaTip.PulseTip();
         }
@@ -184,8 +156,7 @@ public class HUDManager : MonoBehaviour
         if (_metal != 0)
         {
             metalDeltaTimer = 1.5f;
-            string metalDeltaSign = (_metal > 0) ? "+" : "";
-            metalDeltaText.text = metalDeltaSign + _metal.ToString();
+            metalDeltaText.text = AddSign(_metal);
             metalDeltaText.color = (_metal > 0) ? gainColour : lossColour;
             metalDeltaTip.PulseTip();
         }
@@ -205,11 +176,18 @@ public class HUDManager : MonoBehaviour
         }
     }
 
-    public void SetOverUI(bool isOver)
+    public void SetOverUI(bool _isOver)
     {
         if (structMan == null)
             return;
 
-        structMan.SetIsOverUI(isOver);
+        structMan.SetIsOverUI(_isOver);
+    }
+
+    private string AddSign(float _value)
+    {
+        string _signedValue = (_value > 0) ? "+" : "";
+
+        return _signedValue + _value;
     }
 }
