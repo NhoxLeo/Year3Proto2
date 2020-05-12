@@ -55,7 +55,13 @@ public class SuperManager : MonoBehaviour
     public List<ResearchElementDefinition> researchDefinitions;
     public List<LevelDefinition> levels;
     public int currentLevel;
+    [SerializeField]
+    private bool startMaxed;
 
+    public static SuperManager GetInstance()
+    {
+        return instance;
+    }
 
     void Awake()
     {
@@ -76,7 +82,9 @@ public class SuperManager : MonoBehaviour
             new LevelDefinition(2, 1, new Dictionary<int, bool>(){ {0, true}, {1, false} }),
             new LevelDefinition(3, 1, new Dictionary<int, bool>(){ {0, false}, {1, true} })
         };
-        Load();
+        currentLevel = 2;
+        if (startMaxed) { StartNewGame(); }
+        else { Load(); }
     }
 
     // Update is called once per frame
@@ -108,7 +116,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CurrentLevelHasModifier(Modifiers _modifier)
     {
-        return levels[currentLevel].modifiers[(int)_modifier];
+        return levels[currentLevel - 1].modifiers[(int)_modifier];
     }
 
     public int GetResearchPoints()
@@ -175,18 +183,37 @@ public class SuperManager : MonoBehaviour
     private void StartNewGame()
     {
         saveData = new SaveData();
-        saveData.research = new Dictionary<int, bool>()
+        if (!startMaxed)
         {
-            { 0, false },
-            { 1, false }
-        };
-        saveData.levelCompletion = new Dictionary<int, bool>()
+            saveData.research = new Dictionary<int, bool>()
+            {
+                { 0, false },
+                { 1, false }
+            };
+            saveData.levelCompletion = new Dictionary<int, bool>()
+            {
+                { 1, false },
+                { 2, false },
+                { 3, false }
+            };
+            saveData.researchPoints = 0;
+        }
+        else
         {
-            { 1, false },
-            { 2, false },
-            { 3, false }
-        };
-        saveData.researchPoints = 500;
+            saveData.research = new Dictionary<int, bool>()
+            {
+                { 0, true },
+                { 1, true }
+            };
+            saveData.levelCompletion = new Dictionary<int, bool>()
+            {
+                { 1, true },
+                { 2, true },
+                { 3, true }
+            };
+            saveData.researchPoints = 500;
+        }
+        
         Save();
     }
 
