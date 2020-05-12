@@ -498,7 +498,7 @@ public class StructureManager : MonoBehaviour
         envInfo = FindObjectOfType<EnvInfo>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
         HUDman = FindObjectOfType<HUDManager>();
-        superMan = FindObjectOfType<SuperManager>();
+        superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         structureFromStore = false;
