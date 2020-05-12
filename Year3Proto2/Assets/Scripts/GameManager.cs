@@ -188,6 +188,7 @@ public class GameManager : MonoBehaviour
     private HUDManager HUDMan;
     public bool longhausDead;
     public bool repairAll = false;
+    private float volumeFull;
     int recentFood
     {
         get
@@ -405,6 +406,7 @@ public class GameManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         HUDMan = FindObjectOfType<HUDManager>();
         superMan = FindObjectOfType<SuperManager>();
+        volumeFull = GetComponents<AudioSource>()[0].volume;
     }
 
     // Update is called once per frame
@@ -461,10 +463,10 @@ public class GameManager : MonoBehaviour
                 gameover = true;
                 victory = false;
                 messageBox.ShowMessage("You Lost!", 3f);
-                GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
             }
-            if (playerData.GetResource(ResourceType.metal) >= 3000)
+            else if (playerData.GetResource(ResourceType.metal) >= 3000)
             {
                 if (playerData.GetResource(ResourceType.wood) >= 3000)
                 {
@@ -474,7 +476,7 @@ public class GameManager : MonoBehaviour
                         victory = true;
                         superMan.OnLevelComplete();
                         messageBox.ShowMessage("You Win!", 5f);
-                        GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                        GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                         CreateAudioEffect("win", Vector3.zero, 1f, false);
                     }
                 }
@@ -489,7 +491,7 @@ public class GameManager : MonoBehaviour
                 musicDelay -= Time.deltaTime;
                 if (musicDelay < 0f && !musicBackOn)
                 {
-                    GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(1f, 2f);
+                    GetComponents<AudioSource>()[0].DOFade(volumeFull, 2f);
                     musicBackOn = true;
                 }
             }
