@@ -9,6 +9,8 @@ using TMPro;
 public class BuildPanel : MonoBehaviour
 {
     public bool showPanel;
+    [SerializeField]
+    public Color cannotAfford;
 
     private CanvasGroup canvas;
     private RectTransform rTrans;
@@ -75,12 +77,41 @@ public class BuildPanel : MonoBehaviour
         buildTip = buildTipBox.GetComponent<Tooltip>();
         buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
-        Color locked = Color.white;
-        locked.g = 0.65f;
-        locked.b = 0.65f;
+        //if (!superMan.saveData.research[0]) { transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = locked; }
+        //if (!superMan.saveData.research[1]) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = locked; }
+    }
 
-        if (!superMan.saveData.research[0]) { transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = locked; }
-        if (!superMan.saveData.research[1]) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = locked; }
+    public void SetButtonColour(Buildings _button, Color _colour)
+    {
+        switch (_button)
+        {
+            case Buildings.Archer:
+                transform.Find("PanelMask/IconArcher").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Catapult:
+                transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Farm:
+                transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Granary:
+                transform.Find("PanelMask/IconSilo").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LumberMill:
+                transform.Find("PanelMask/IconLumberMill").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LumberPile:
+                transform.Find("PanelMask/IconLumberPile").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Mine:
+                transform.Find("PanelMask/IconMine").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.MetalStorage:
+                transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = _colour;
+                break;
+            default:
+                break;
+        }
     }
 
     void Update()

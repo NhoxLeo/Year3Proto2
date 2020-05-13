@@ -7272,6 +7272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showPanel: 0
+  cannotAfford: {r: 1, g: 0.5882353, b: 0.5882353, a: 1}
   tooltipSelected: 0
   buildingSelected: 0
   toolInfo:

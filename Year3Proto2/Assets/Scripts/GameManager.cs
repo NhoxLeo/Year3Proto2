@@ -59,7 +59,7 @@ public struct PlayerData
 
     public bool CanAfford(ResourceBundle _cost)
     {
-        return rWood >= _cost.woodCost && rMetal >= _cost.metalCost && rFood >= _cost.foodCost;
+        return (rWood >= _cost.woodCost || _cost.woodCost <= 0) && (rMetal >= _cost.metalCost || _cost.metalCost <= 0) && (rFood >= _cost.foodCost || _cost.foodCost <= 0);
     }
 
     public void DeductResource(ResourceType _type, int _deduction)
@@ -186,9 +186,14 @@ public class GameManager : MonoBehaviour
     private MessageBox messageBox;
     private SuperManager superMan;
     private HUDManager HUDMan;
+    private EnemySpawner enemySpawner;
+    private StructureManager structMan;
+    private BuildPanel buildPanel;
     public bool longhausDead;
     public bool repairAll = false;
     private float volumeFull;
+    private float panelRefreshTimer = 0.0f;
+    private float panelRefreshCooldown = 0.5f;
     int recentFood
     {
         get
@@ -406,6 +411,9 @@ public class GameManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         HUDMan = FindObjectOfType<HUDManager>();
         superMan = FindObjectOfType<SuperManager>();
+        structMan = GetComponent<StructureManager>();
+        enemySpawner = FindObjectOfType<EnemySpawner>();
+        buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
     }
 
@@ -456,6 +464,25 @@ public class GameManager : MonoBehaviour
             if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
         }
 
+        panelRefreshTimer -= Time.deltaTime;
+        if (panelRefreshTimer <= 0f)
+        {
+            panelRefreshTimer = panelRefreshCooldown;
+            // do refresh
+            for (int i = 1; i <= 8; i++)
+            {
+                buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerData.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
+            }
+        }
+
+
+        /*
+        if (SuperManager.levels[superMan.currentLevel].maxWaves == enemySpawner.GetWaveCurrent() && enemySpawner.IsSpawning())
+        {
+            enemySpawner.ToggleSpawning();
+        }
+        */
+
         if (!gameover)
         {
             if (longhausDead == true)
@@ -466,20 +493,14 @@ public class GameManager : MonoBehaviour
                 GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
             }
-            else if (playerData.GetResource(ResourceType.metal) >= 3000)
+            else if (WinConditionIsMet())
             {
-                if (playerData.GetResource(ResourceType.wood) >= 3000)
-                {
-                    if (playerData.GetResource(ResourceType.food) >= 3000)
-                    {
-                        gameover = true;
-                        victory = true;
-                        superMan.OnLevelComplete();
-                        messageBox.ShowMessage("You Win!", 5f);
-                        GetComponents<AudioSource>()[0].DOFade(0f, 1f);
-                        CreateAudioEffect("win", Vector3.zero, 1f, false);
-                    }
-                }
+                gameover = true;
+                victory = true;
+                superMan.OnLevelComplete();
+                messageBox.ShowMessage("You Win!", 5f);
+                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                CreateAudioEffect("win", Vector3.zero, 1f, false);
             }
         }
 
@@ -506,5 +527,21 @@ public class GameManager : MonoBehaviour
             }
             
         }
+    }
+
+    public bool WinConditionIsMet()
+    {
+        int level = superMan.currentLevel;
+        switch (level)
+        {
+            case 0:
+                return enemySpawner.GetWaveCurrent() == 5 && enemySpawner.enemyCount == 0;
+            case 1:
+                return playerData.GetResource(ResourceType.metal) >= 3000 && playerData.GetResource(ResourceType.food) >= 3000 && playerData.GetResource(ResourceType.wood) >= 3000;
+
+            default:
+                break;
+        }
+        return false;
     }
 }
