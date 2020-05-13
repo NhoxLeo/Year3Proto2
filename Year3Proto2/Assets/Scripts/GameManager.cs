@@ -59,7 +59,7 @@ public struct PlayerData
 
     public bool CanAfford(ResourceBundle _cost)
     {
-        return rWood >= _cost.woodCost && rMetal >= _cost.metalCost && rFood >= _cost.foodCost;
+        return (rWood >= _cost.woodCost || _cost.woodCost <= 0) && (rMetal >= _cost.metalCost || _cost.metalCost <= 0) && (rFood >= _cost.foodCost || _cost.foodCost <= 0);
     }
 
     public void DeductResource(ResourceType _type, int _deduction)
@@ -187,9 +187,13 @@ public class GameManager : MonoBehaviour
     private SuperManager superMan;
     private HUDManager HUDMan;
     private EnemySpawner enemySpawner;
+    private StructureManager structMan;
+    private BuildPanel buildPanel;
     public bool longhausDead;
     public bool repairAll = false;
     private float volumeFull;
+    private float panelRefreshTimer = 0.0f;
+    private float panelRefreshCooldown = 0.5f;
     int recentFood
     {
         get
@@ -407,7 +411,9 @@ public class GameManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         HUDMan = FindObjectOfType<HUDManager>();
         superMan = FindObjectOfType<SuperManager>();
+        structMan = GetComponent<StructureManager>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
+        buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
     }
 
@@ -457,6 +463,18 @@ public class GameManager : MonoBehaviour
             messageBox.ShowMessage("You can press R to mass repair", 3f);
             if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
         }
+
+        panelRefreshTimer -= Time.deltaTime;
+        if (panelRefreshTimer <= 0f)
+        {
+            panelRefreshTimer = panelRefreshCooldown;
+            // do refresh
+            for (int i = 1; i <= 8; i++)
+            {
+                buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerData.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
+            }
+        }
+
 
         /*
         if (SuperManager.levels[superMan.currentLevel].maxWaves == enemySpawner.GetWaveCurrent() && enemySpawner.IsSpawning())
