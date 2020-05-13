@@ -30,16 +30,7 @@ public class ArrowBehaviour : MonoBehaviour
         if (Vector3.Distance(transform.position, target.position) <= 0.05f)
         {
             Enemy enemy = target.GetComponent<Enemy>();
-            if (enemy.health <= damage)
-            {
-                Instantiate(puffEffect, target.position, Quaternion.identity);
-                Destroy(target.gameObject);
-            }
-            else
-            {
-                enemy.health -= damage;
-            }
-
+            enemy.DealDamage(damage);
             Destroy(gameObject);
         }
 

@@ -72,4 +72,16 @@ public abstract class AttackStructure : Structure
             }
         }
     }
+
+    public override void OnSelected()
+    {
+        base.OnSelected();
+        transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+    }
+
+    public override void OnDeselected()
+    {
+        base.OnDeselected();
+        transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+    }
 }

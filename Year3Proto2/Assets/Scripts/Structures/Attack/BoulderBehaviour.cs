@@ -38,15 +38,7 @@ public class BoulderBehaviour : MonoBehaviour
             foreach (RaycastHit enemyHit in hitEnemies)
             {
                 Enemy enemy = enemyHit.collider.GetComponent<Enemy>();
-                if (enemy.health <= damage)
-                {
-                    Instantiate(puffEffect, enemy.transform.position, Quaternion.identity);
-                    Destroy(enemy.gameObject);
-                }
-                else
-                {
-                    enemy.health -= damage;
-                }
+                enemy.DealDamage(damage);
             }
             Destroy(gameObject);
         }

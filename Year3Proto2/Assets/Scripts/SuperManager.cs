@@ -41,19 +41,21 @@ public class SuperManager : MonoBehaviour
         public int ID;
         public int reqID;
         public Dictionary<int, bool> modifiers;
+        public int maxWaves;
 
-        public LevelDefinition(int _id, int _reqID, Dictionary<int, bool> _modifiers)
+        public LevelDefinition(int _id, int _reqID, Dictionary<int, bool> _modifiers, int _maxWaves = 0)
         {
             ID = _id;
             reqID = _reqID;
             modifiers = _modifiers;
+            maxWaves = _maxWaves;
         }
     }
 
     private static SuperManager instance = null;
     public SaveData saveData;
     public List<ResearchElementDefinition> researchDefinitions;
-    public List<LevelDefinition> levels;
+    public static List<LevelDefinition> levels;
     public int currentLevel;
     [SerializeField]
     private bool startMaxed;
@@ -78,11 +80,11 @@ public class SuperManager : MonoBehaviour
         };
         levels = new List<LevelDefinition>()
         {
-            new LevelDefinition(1, -1, new Dictionary<int, bool>(){ {0, false}, {1, false} }),
-            new LevelDefinition(2, 1, new Dictionary<int, bool>(){ {0, true}, {1, false} }),
-            new LevelDefinition(3, 1, new Dictionary<int, bool>(){ {0, false}, {1, true} })
+            new LevelDefinition(0, -1, new Dictionary<int, bool>(){ {0, true}, {1, false} }, 5),
+            new LevelDefinition(1, 0, new Dictionary<int, bool>(){ {0, false}, {1, false} }),
+            new LevelDefinition(2, 0, new Dictionary<int, bool>(){ {0, false}, {1, true} })
         };
-        currentLevel = 2;
+        currentLevel = 0;
         if (startMaxed) { StartNewGame(); }
         else { Load(); }
     }
@@ -105,7 +107,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CanPlayLevel(int _ID)
     {
-        int reqID = levels[_ID - 1].reqID;
+        int reqID = levels[_ID].reqID;
         // if the level does not require any levels to be complete
         if (reqID == -1)
         { return true; }
@@ -116,7 +118,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CurrentLevelHasModifier(Modifiers _modifier)
     {
-        return levels[currentLevel - 1].modifiers[(int)_modifier];
+        return levels[currentLevel].modifiers[(int)_modifier];
     }
 
     public int GetResearchPoints()

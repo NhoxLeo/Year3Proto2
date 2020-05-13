@@ -670,6 +670,13 @@ public class StructureManager : MonoBehaviour
                     }
                     break;
                 case StructManState.selected:
+                    if (!selectedStructure)
+                    {
+                        DeselectStructure();
+                        structureState = StructManState.selecting;
+                        break;
+                    }
+
                     StructureType selectedStructType = selectedStructure.GetStructureType();
                     if (Input.GetKeyDown(KeyCode.Delete) &&
                         selectedStructType != StructureType.environment &&
@@ -681,12 +688,6 @@ public class StructureManager : MonoBehaviour
                         break;
                     }
 
-                    if (!selectedStructure)
-                    {
-                        DeselectStructure();
-                        structureState = StructManState.selecting;
-                        break;
-                    }
                     else
                     {
                         Vector3 highlightpos = selectedStructure.transform.position;
@@ -925,7 +926,10 @@ public class StructureManager : MonoBehaviour
                                                     }
                                                     if (!towerPlaced)
                                                     {
-                                                        enemySpawner.Begin();
+                                                        if (!enemySpawner.IsSpawning())
+                                                        {
+                                                            enemySpawner.ToggleSpawning();
+                                                        }
                                                         towerPlaced = true;
                                                     }
                                                     SelectStructure(structure);

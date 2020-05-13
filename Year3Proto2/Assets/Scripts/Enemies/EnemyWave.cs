@@ -9,11 +9,19 @@ public class EnemyWave : MonoBehaviour
     private bool initialised = false;
 
     public Enemy[] enemyPrefabs;
-    public int amount = 9;
-    public int rows = 3;
+
+    public int enemyCount
+    {
+        get
+        {
+            return enemies.Count;
+        }
+    }
 
     public void Check(List<EnemyWave> enemyWaves)
     {
+        enemies.RemoveAll(enemy => enemy == null);
+
         if (enemies.Count <= 0 && initialised)
         {
             enemyWaves.Remove(this);
@@ -28,7 +36,7 @@ public class EnemyWave : MonoBehaviour
             TileBehaviour tileBehaviour = GetAvailableTile(availableTiles);
             if (tileBehaviour != null)
             {
-                GameManager.CreateAudioEffect("horn", tileBehaviour.transform.position);
+                GameManager.CreateAudioEffect("horn", tileBehaviour.transform.position, 1, false);
                 for (int i = 0; i < enemiesPerWave; i++)
                 {
                     Vector3 position = tileBehaviour.transform.position;
@@ -43,13 +51,6 @@ public class EnemyWave : MonoBehaviour
 
                     enemy.transform.position = position;
                     enemies.Add(enemy);
-
-                    Structure structure = enemy.GetTarget();
-
-                    if (structure != null)
-                    {
-                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(structure.transform.position - transform.position), 0.0f);
-                    }
                 }
             }
         }
@@ -64,8 +65,8 @@ public class EnemyWave : MonoBehaviour
 
     Vector2 CalculatePosition(int index, int columns, float space)
     {
-        float posX = (index % columns) * space;
-        float posY = (index / columns) * space;
+        float posX = index % columns * space;
+        float posY = index / columns * space;
         return new Vector2(posX, posY);
     }
 }
