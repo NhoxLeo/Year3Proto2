@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[ExecuteInEditMode]
 public class TileBehaviour : MonoBehaviour
 {
     [SerializeField] [Tooltip("Determines whether or not the player can place structures on the tile.")]
@@ -21,10 +23,13 @@ public class TileBehaviour : MonoBehaviour
 
     public Structure attachedStructure;
 
-    // Start is called before the first frame update
-    void Awake()
+    public void FindAdjacentTiles()
     {
-        attachedStructure = null;
+        if (adjacentTiles != null)
+        {
+            return;
+        }
+
         adjacentTiles = new Dictionary<TileCode, TileBehaviour>();
 
         // Get the child
@@ -56,19 +61,22 @@ public class TileBehaviour : MonoBehaviour
         if (Physics.Raycast(tileCollider.transform.position, Vector3.left, out hit, .8f, tcLayer))
         {
             adjacentTiles.Add(TileCode.west, hit.collider.GetComponentInParent<TileBehaviour>());
-            //hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
         }
-
-        DetectStructure();
 
         // Turn on the collider
         tcBoxCollider.enabled = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Awake()
     {
+        if (Application.isPlaying)
+        {
+            attachedStructure = null;
 
+            FindAdjacentTiles();
+
+            DetectStructure();
+        }
     }
 
     public Structure GetAttached()

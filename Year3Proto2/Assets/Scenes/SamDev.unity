@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4195549, g: 0.2618602, b: 0.16685045, a: 1}
+  m_IndirectSpecularColor: {r: 0.41952604, g: 0.2640621, b: 0.17894448, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -35680,7 +35680,7 @@ PrefabInstance:
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 259.115
       objectReference: {fileID: 0}
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -35950,7 +35950,7 @@ PrefabInstance:
     - target: {fileID: 3078092809196356110, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 49.78
       objectReference: {fileID: 0}
     - target: {fileID: 3078092809196356110, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36025,7 +36025,7 @@ PrefabInstance:
     - target: {fileID: 3847762394655144842, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 32
       objectReference: {fileID: 0}
     - target: {fileID: 3847762394655144842, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36135,7 +36135,7 @@ PrefabInstance:
     - target: {fileID: 4625095535303491183, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 49.78
       objectReference: {fileID: 0}
     - target: {fileID: 4625095535303491183, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36205,7 +36205,7 @@ PrefabInstance:
     - target: {fileID: 5002416158502939124, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 49.78
       objectReference: {fileID: 0}
     - target: {fileID: 5002416158502939124, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36285,7 +36285,7 @@ PrefabInstance:
     - target: {fileID: 5439771201644419989, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 487.15
       objectReference: {fileID: 0}
     - target: {fileID: 5439771201644419989, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36340,7 +36340,7 @@ PrefabInstance:
     - target: {fileID: 5798551897833080833, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 339.06
       objectReference: {fileID: 0}
     - target: {fileID: 5798551897833080833, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36445,7 +36445,7 @@ PrefabInstance:
     - target: {fileID: 6326406072697009261, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 190.97
       objectReference: {fileID: 0}
     - target: {fileID: 6326406072697009261, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36606,7 +36606,7 @@ PrefabInstance:
     - target: {fileID: 7675371014826506130, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 145
       objectReference: {fileID: 0}
     - target: {fileID: 7675371014826506130, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36626,7 +36626,7 @@ PrefabInstance:
     - target: {fileID: 7878361466410564590, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 32
       objectReference: {fileID: 0}
     - target: {fileID: 7878361466410564590, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -91504,6 +91504,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e9f2f5f61448494193a47ec524751b6, type: 3}
+--- !u!223 &2002056149 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 5544484348655152558, guid: baca440b2bf69734497f80ed08a4d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 817593755}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2002733709
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -97666,6 +97672,57 @@ PrefabInstance:
       propertyPath: m_Name
       value: Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 159336282052630998, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: plainsEnvironmentBounds.x
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: plainsEnvironmentBounds.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: hillsEnvironmentBounds.x
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: hillsEnvironmentBounds.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: forestEnvironmentBounds.x
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: forestEnvironmentBounds.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: recursiveGrowthChance
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: canvas
+      value: 
+      objectReference: {fileID: 2002056149}
+    - target: {fileID: 2034944319271232491, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: healthBarPrefab
+      value: 
+      objectReference: {fileID: 3792998656608216644, guid: 21434597174a3114398c4b8d02c1a600,
+        type: 3}
     - target: {fileID: 7067514012913874853, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
         type: 3}
       propertyPath: m_LocalPosition.y
