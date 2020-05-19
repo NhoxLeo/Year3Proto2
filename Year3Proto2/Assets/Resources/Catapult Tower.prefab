@@ -177,7 +177,8 @@ MonoBehaviour:
   sitHeight: 0.5
   structureName: 
   consumptionTime: 2
-  boulder: {fileID: 3151625167024170116, guid: 2f2d89cd2313f7d4b82200f467619bb7, type: 3}
+  boulderPrefab: {fileID: 4549095011785381545, guid: 0416ee26af62c4243886562404841d1f,
+    type: 3}
   catapult: {fileID: 1362743559838478317}
   boulderDamage: 5
   fireRate: 0

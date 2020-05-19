@@ -38,7 +38,7 @@ public class BoulderBehaviour : MonoBehaviour
             foreach (RaycastHit enemyHit in hitEnemies)
             {
                 Enemy enemy = enemyHit.collider.GetComponent<Enemy>();
-                enemy.DealDamage(damage);
+                enemy.Damage(damage);
             }
             Destroy(gameObject);
         }
