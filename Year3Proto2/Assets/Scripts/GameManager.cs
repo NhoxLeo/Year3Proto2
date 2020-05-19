@@ -59,7 +59,7 @@ public struct PlayerData
 
     public bool CanAfford(ResourceBundle _cost)
     {
-        return rWood >= _cost.woodCost && rMetal >= _cost.metalCost && rFood >= _cost.foodCost;
+        return (rWood >= _cost.woodCost || _cost.woodCost <= 0) && (rMetal >= _cost.metalCost || _cost.metalCost <= 0) && (rFood >= _cost.foodCost || _cost.foodCost <= 0);
     }
 
     public void DeductResource(ResourceType _type, int _deduction)
@@ -179,13 +179,21 @@ public class GameManager : MonoBehaviour
     private float tutorialBMessageTimer = 3.0f;
     private float tutorialDelay = 2.0f;
     private bool musicBackOn = false;
+    private bool switchingScene = false;
     private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private bool repairMessage = false;
     private MessageBox messageBox;
+    private SuperManager superMan;
     private HUDManager HUDMan;
-    private Longhaus longhaus;
+    private EnemySpawner enemySpawner;
+    private StructureManager structMan;
+    private BuildPanel buildPanel;
+    public bool longhausDead;
     public bool repairAll = false;
+    private float volumeFull;
+    private float panelRefreshTimer = 0.0f;
+    private float panelRefreshCooldown = 0.5f;
     int recentFood
     {
         get
@@ -402,7 +410,11 @@ public class GameManager : MonoBehaviour
         recentBatches = new List<Batch>();
         messageBox = FindObjectOfType<MessageBox>();
         HUDMan = FindObjectOfType<HUDManager>();
-        longhaus = FindObjectOfType<Longhaus>();
+        superMan = FindObjectOfType<SuperManager>();
+        structMan = GetComponent<StructureManager>();
+        enemySpawner = FindObjectOfType<EnemySpawner>();
+        buildPanel = FindObjectOfType<BuildPanel>();
+        volumeFull = GetComponents<AudioSource>()[0].volume;
     }
 
     // Update is called once per frame
@@ -452,29 +464,43 @@ public class GameManager : MonoBehaviour
             if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
         }
 
+        panelRefreshTimer -= Time.deltaTime;
+        if (panelRefreshTimer <= 0f)
+        {
+            panelRefreshTimer = panelRefreshCooldown;
+            // do refresh
+            for (int i = 1; i <= 8; i++)
+            {
+                buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerData.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
+            }
+        }
+
+
+        /*
+        if (SuperManager.levels[superMan.currentLevel].maxWaves == enemySpawner.GetWaveCurrent() && enemySpawner.IsSpawning())
+        {
+            enemySpawner.ToggleSpawning();
+        }
+        */
+
         if (!gameover)
         {
-            if (longhaus == null)
+            if (longhausDead == true)
             {
                 gameover = true;
                 victory = false;
                 messageBox.ShowMessage("You Lost!", 3f);
-                GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
             }
-            if (playerData.GetResource(ResourceType.metal) >= 3000)
+            else if (WinConditionIsMet())
             {
-                if (playerData.GetResource(ResourceType.wood) >= 3000)
-                {
-                    if (playerData.GetResource(ResourceType.food) >= 3000)
-                    {
-                        gameover = true;
-                        victory = true;
-                        messageBox.ShowMessage("You Win!", 5f);
-                        GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(0f, 1f);
-                        CreateAudioEffect("win", Vector3.zero, 1f, false);
-                    }
-                }
+                gameover = true;
+                victory = true;
+                superMan.OnLevelComplete();
+                messageBox.ShowMessage("You Win!", 5f);
+                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                CreateAudioEffect("win", Vector3.zero, 1f, false);
             }
         }
 
@@ -484,20 +510,38 @@ public class GameManager : MonoBehaviour
             if (victory)
             {
                 musicDelay -= Time.deltaTime;
-                if (musicDelay < 0f)
+                if (musicDelay < 0f && !musicBackOn)
                 {
-                    GameObject.Find("Manager").GetComponents<AudioSource>()[0].DOFade(1f, 2f);
+                    GetComponents<AudioSource>()[0].DOFade(volumeFull, 2f);
+                    musicBackOn = true;
                 }
             }
             else
             {
                 gameoverTimer -= Time.deltaTime;
-                if (gameoverTimer < 0f)
+                if (gameoverTimer < 0f && !switchingScene)
                 {
                     FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                    switchingScene = true;
                 }
             }
             
         }
+    }
+
+    public bool WinConditionIsMet()
+    {
+        int level = superMan.currentLevel;
+        switch (level)
+        {
+            case 0:
+                return enemySpawner.GetWaveCurrent() == 5 && enemySpawner.enemyCount == 0;
+            case 1:
+                return playerData.GetResource(ResourceType.metal) >= 3000 && playerData.GetResource(ResourceType.food) >= 3000 && playerData.GetResource(ResourceType.wood) >= 3000;
+
+            default:
+                break;
+        }
+        return false;
     }
 }

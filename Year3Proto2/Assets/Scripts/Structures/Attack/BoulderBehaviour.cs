@@ -11,6 +11,7 @@ public class BoulderBehaviour : MonoBehaviour
     public float speed = 0.8f;
     private float arcFactor = 0.60f;
     private float distanceTravelled = 0f;
+    public GameObject puffEffect;
 
     // Start is called before the first frame update
     void Start()
@@ -37,14 +38,7 @@ public class BoulderBehaviour : MonoBehaviour
             foreach (RaycastHit enemyHit in hitEnemies)
             {
                 Enemy enemy = enemyHit.collider.GetComponent<Enemy>();
-                if (enemy.health <= damage)
-                {
-                    Destroy(enemy.gameObject);
-                }
-                else
-                {
-                    enemy.health -= damage;
-                }
+                enemy.DealDamage(damage);
             }
             Destroy(gameObject);
         }

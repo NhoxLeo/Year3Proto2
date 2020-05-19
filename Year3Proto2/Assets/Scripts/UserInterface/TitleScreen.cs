@@ -57,4 +57,9 @@ public class TitleScreen : MonoBehaviour
 
         titleSequence.Insert(2.95f, divider.transform.DOScaleX(1.0f, 1.0f).SetEase(Ease.OutQuint));
     }
+
+    public void ResetSaveData()
+    {
+        FindObjectOfType<SuperManager>().ResetSaveData();
+    }
 }

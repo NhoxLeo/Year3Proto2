@@ -35,7 +35,7 @@ public abstract class Structure : MonoBehaviour
         return foodAllocationMax;
     }
 
-    public void Damage(float amount)
+    public bool Damage(float amount)
     {
         timeSinceLastHit = 0.0f;
         bool setInfo = health == maxHealth;
@@ -43,6 +43,7 @@ public abstract class Structure : MonoBehaviour
         if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
         GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
+        return health <= 0f; 
     }
 
     public virtual void DecreaseFoodAllocation()
@@ -100,6 +101,14 @@ public abstract class Structure : MonoBehaviour
 
     }
 
+    public virtual void OnSelected()
+    {
+        if (structureType != StructureType.environment)
+        {
+            healthBar.gameObject.SetActive(true);
+        }
+    }
+
     public virtual void OnDeselected()
     {
         if (structureType != StructureType.environment)
@@ -120,14 +129,12 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void OnDestroyed()
     {
-
-    }
-
-    public virtual void OnSelected()
-    {
-        if (structureType != StructureType.environment)
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
         {
-            healthBar.gameObject.SetActive(true);
+            if (this == enemy.GetTarget())
+            {
+                enemy.SetTargetNull();
+            }
         }
     }
 
@@ -195,6 +202,7 @@ public abstract class Structure : MonoBehaviour
         timeSinceLastHit += Time.deltaTime;
         if (health <= 0.0f)
         {
+            if (GetStructureType() == StructureType.longhaus) { gameMan.longhausDead = true; }
             GameManager.CreateAudioEffect("buildingDestroy", transform.position);
             structMan.DecreaseStructureCost(structureName);
             attachedTile.Detach();

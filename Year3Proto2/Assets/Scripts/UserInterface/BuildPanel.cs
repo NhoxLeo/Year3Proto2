@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 
 public class BuildPanel : MonoBehaviour
 {
     public bool showPanel;
+    [SerializeField]
+    public Color cannotAfford;
 
     private CanvasGroup canvas;
     private RectTransform rTrans;
@@ -40,6 +43,7 @@ public class BuildPanel : MonoBehaviour
     private GameObject buildTipBox;
     private Tooltip buildTip;
     private TMP_Text buildTipHeading;
+    private SuperManager superMan;
 
     [Serializable]
     public struct TooltipInfo
@@ -57,6 +61,7 @@ public class BuildPanel : MonoBehaviour
         canvas = GetComponent<CanvasGroup>();
         rTrans = GetComponent<RectTransform>();
         structMan = FindObjectOfType<StructureManager>();
+        superMan = FindObjectOfType<SuperManager>();
         rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
@@ -72,6 +77,41 @@ public class BuildPanel : MonoBehaviour
         buildTip = buildTipBox.GetComponent<Tooltip>();
         buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
+        //if (!superMan.saveData.research[0]) { transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = locked; }
+        //if (!superMan.saveData.research[1]) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = locked; }
+    }
+
+    public void SetButtonColour(Buildings _button, Color _colour)
+    {
+        switch (_button)
+        {
+            case Buildings.Archer:
+                transform.Find("PanelMask/IconArcher").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Catapult:
+                transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Farm:
+                transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Granary:
+                transform.Find("PanelMask/IconSilo").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LumberMill:
+                transform.Find("PanelMask/IconLumberMill").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LumberPile:
+                transform.Find("PanelMask/IconLumberPile").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Mine:
+                transform.Find("PanelMask/IconMine").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.MetalStorage:
+                transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = _colour;
+                break;
+            default:
+                break;
+        }
     }
 
     void Update()
@@ -133,6 +173,9 @@ public class BuildPanel : MonoBehaviour
     {
         tooltipSelected = (Buildings)tool;
 
+        if (tooltipSelected == Buildings.MetalStorage && !superMan.saveData.research[0]) { return; }
+        if (tooltipSelected == Buildings.Catapult && !superMan.saveData.research[1]) { return; }
+
         if (tooltipSelected == Buildings.None)
         {
             tooltip.showTooltip = false;
@@ -168,6 +211,9 @@ public class BuildPanel : MonoBehaviour
 
     public void SelectBuilding(int buildingType)
     {
+        if ((Buildings)buildingType == Buildings.MetalStorage && !superMan.saveData.research[0]) { return; }
+        if ((Buildings)buildingType == Buildings.Catapult && !superMan.saveData.research[1]) { return; }
+
         if ((Buildings)buildingType == buildingSelected)
         {
             buildingSelected = Buildings.None;

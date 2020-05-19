@@ -5,7 +5,15 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Prefabrication")]
-    public GameObject[] enemies;
+    private List<Enemy> enemies = new List<Enemy>();
+    public Enemy[] enemyPrefabs;
+    public int enemyCount
+    {
+        get
+        {
+            return enemies.Count;
+        }
+    }
 
     [Header("Variables")]
     public int enemiesPerWave = 8;
@@ -13,30 +21,36 @@ public class EnemySpawner : MonoBehaviour
     public float cooldown = 30.0f;
     public float timeBetweenWaves = 30.0f;
     private int waveCounter = 0;
-    private TileBehaviour[] tileBehaviours;
-    private bool begin = false;
+    private bool spawning = false;
 
     private MessageBox messageBox;
-    private List<EnemyWave> enemyWaves;
-    public EnemyWave enemyWave;
     List<TileBehaviour> availableTiles;
+    List<TileBehaviour> waveValidTiles;
+    List<TileBehaviour> waveSelectedTiles;
 
     private void Start()
     {
-        enemyWaves = new List<EnemyWave>();
-        availableTiles = new List<TileBehaviour>();
         messageBox = FindObjectOfType<MessageBox>();
+        availableTiles = new List<TileBehaviour>();
+        waveValidTiles = new List<TileBehaviour>();
+        waveSelectedTiles = new List<TileBehaviour>();
+
         foreach (TileBehaviour tileBehaviour in FindObjectsOfType<TileBehaviour>())
         {
             if (tileBehaviour.GetSpawnTile()) availableTiles.Add(tileBehaviour);
         }
     }
 
+    public TileBehaviour GetRandomSpawnTile()
+    {
+        return availableTiles[Random.Range(0, availableTiles.Count)];
+    }
+
     private void FixedUpdate()
     {
-        if (begin)
+        if (spawning)
         {
-            cooldown -= Time.deltaTime;
+            cooldown -= Time.fixedDeltaTime;
             if (cooldown <= 0.0f)
             {
                 waveCounter++;
@@ -45,19 +59,74 @@ public class EnemySpawner : MonoBehaviour
                     messageBox.ShowMessage("Invaders incoming!", 3.5f);
                 }
                 cooldown = timeBetweenWaves;
+                enemiesPerWave = Mathf.Clamp(enemiesPerWave, 0, 300);
+                int enemiesLeftToSpawn = enemiesPerWave;
+                // SPAWN ENEMY WAVE
+                // up to 4 enemies per tile, spread out at 0.25 points
+
+                // calculate how many tiles are needed
+                int tilesRequired = (int)Mathf.Ceil(enemiesPerWave / 4f);
+
+                // randomly select that number of tiles, store them as a seperate collection of tiles
+                // randomly select one tile...
+                TileBehaviour startTile = GetRandomSpawnTile();
+                waveSelectedTiles.Clear();
+                waveSelectedTiles.Add(startTile);
+                int tilesSelected = 1;
+                // then grow from that point until enough tiles are selected...
+                while (tilesSelected < tilesRequired)
+                {
+                    int tilesToFind = tilesRequired - tilesSelected;
+                    TileBehaviour randomSelectedTile = waveSelectedTiles[Random.Range(0, waveSelectedTiles.Count)];
+                    waveValidTiles.Clear();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        TileBehaviour.TileCode tileCodeI = (TileBehaviour.TileCode)i;
+                        if (randomSelectedTile.adjacentTiles.ContainsKey(tileCodeI))
+                        {
+                            TileBehaviour tileI = randomSelectedTile.adjacentTiles[tileCodeI];
+                            if (tileI.GetSpawnTile() && !waveSelectedTiles.Contains(tileI))
+                            {
+                                waveValidTiles.Add(tileI);
+                            }
+                        }
+                    }
+                    while (tilesToFind > 0 && waveValidTiles.Count > 0)
+                    {
+                        tilesToFind--;
+                        TileBehaviour movingTile = waveValidTiles[Random.Range(0, waveValidTiles.Count)];
+                        waveSelectedTiles.Add(movingTile);
+                        waveValidTiles.Remove(movingTile);
+                        tilesSelected++;
+                    }
+                }
+                
+                // for each tile
+                for (int i = 0; i < waveSelectedTiles.Count; i++)
+                {
+                    TileBehaviour spawnTile = waveSelectedTiles[i];
+                    //   enemies to spawn on this tile = clamp total number to spawn left between 0 and 4
+                    int enemiesToSpawnHere = Mathf.Clamp(enemiesLeftToSpawn, 0, 4);
+                    //   if there are enemies to spawn, spawn them
+                    for (int j = 0; j < enemiesToSpawnHere; j++)
+                    {
+                        // Calculate position to spawn enemy
+                        Vector3 startingPosition = spawnTile.transform.position;
+                        Vector3 enemySpawnPosition = startingPosition;
+                        enemySpawnPosition.x += (j % 2 == 0) ? -.25f : .25f;
+                        enemySpawnPosition.y += .55f;
+                        enemySpawnPosition.z += ((j + 1) % 2 == 0) ? -.25f : .25f;
+                        enemies.Add(Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], enemySpawnPosition, Quaternion.identity));
+                        enemiesLeftToSpawn--;
+                    }
+                }
+                // The start tile plays the spawn effect
+                GameManager.CreateAudioEffect("horn", startTile.transform.position);
+
+                // Next wave is bigger
                 enemiesPerWave += newEnemiesPerWave;
-                EnemyWave enemyWave = Instantiate(this.enemyWave, transform);
-                enemyWave.Initialize(availableTiles, enemiesPerWave);
-                enemyWaves.Add(enemyWave);
             }
-
-            enemyWaves.ForEach(enemyWave => enemyWave.Check(enemyWaves));
         }
-    }
-
-    public List<TileBehaviour> GetAvailableTiles()
-    {
-        return availableTiles;
     }
 
     public int GetWaveCurrent()
@@ -65,9 +134,21 @@ public class EnemySpawner : MonoBehaviour
         return waveCounter;
     }
 
-    public void Begin()
+    public void ToggleSpawning()
     {
-        begin = true;
+        spawning = !spawning;
     }
 
+    public bool IsSpawning()
+    {
+        return spawning;
+    }
+
+    public void RemoveEnemy(Enemy _enemy)
+    {
+        if (enemies.Contains(_enemy))
+        {
+            enemies.Remove(_enemy);
+        }
+    }
 }

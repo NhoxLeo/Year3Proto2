@@ -7,12 +7,14 @@ public class ArrowBehaviour : MonoBehaviour
     public Transform target;
     public float damage;
     public float speed;
+    public GameObject puffEffect;
 
     // Start is called before the first frame update
     void Start()
     {
         
     }
+
 
     // Update is called once per frame
     void Update()
@@ -28,15 +30,7 @@ public class ArrowBehaviour : MonoBehaviour
         if (Vector3.Distance(transform.position, target.position) <= 0.05f)
         {
             Enemy enemy = target.GetComponent<Enemy>();
-            if (enemy.health <= damage)
-            {
-                Destroy(target.gameObject);
-            }
-            else
-            {
-                enemy.health -= damage;
-            }
-
+            enemy.DealDamage(damage);
             Destroy(gameObject);
         }
 

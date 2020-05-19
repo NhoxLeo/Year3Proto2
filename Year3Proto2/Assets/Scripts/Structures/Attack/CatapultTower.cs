@@ -61,6 +61,7 @@ public class CatapultTower : AttackStructure
         BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
         spawnedBoulders.Add(newBoulder);
         boulderBehaviour.target = target.transform.position;
+        boulderBehaviour.puffEffect = puffPrefab;
         GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 

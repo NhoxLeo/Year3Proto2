@@ -144,6 +144,7 @@ public class StructureManager : MonoBehaviour
     private GameObject buildingPuff;
     private EnemySpawner enemySpawner;
     private HUDManager HUDman;
+    private SuperManager superMan;
     public bool BuyBuilding()
     {
         if (structure && structureFromStore)
@@ -162,19 +163,27 @@ public class StructureManager : MonoBehaviour
 
     public void IncreaseStructureCost(string _structureName)
     {
-        int buildingCount = ++StructureCounts[StructureIDs[_structureName]];
-        Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-        structureCosts[_structureName] = new ResourceBundle(newCost);
-        panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        {
+            int buildingCount = ++StructureCounts[StructureIDs[_structureName]];
+            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
+            structureCosts[_structureName] = new ResourceBundle(newCost);
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+        }
     }
 
     public void DecreaseStructureCost(string _structureName)
     {
-        int buildingCount = --StructureCounts[StructureIDs[_structureName]];
-        if (buildingCount < 0) { buildingCount = StructureCounts[StructureIDs[_structureName]] = 0; }
-        Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-        structureCosts[_structureName] = new ResourceBundle(newCost);
-        panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        {
+            if (_structureName == "Longhaus") return;
+
+            int buildingCount = --StructureCounts[StructureIDs[_structureName]];
+            if (buildingCount < 0) { buildingCount = StructureCounts[StructureIDs[_structureName]] = 0; }
+            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
+            structureCosts[_structureName] = new ResourceBundle(newCost);
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+        }
     }
 
     public void DeselectStructure()
@@ -489,6 +498,7 @@ public class StructureManager : MonoBehaviour
         envInfo = FindObjectOfType<EnvInfo>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
         HUDman = FindObjectOfType<HUDManager>();
+        superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         structureFromStore = false;
@@ -660,6 +670,13 @@ public class StructureManager : MonoBehaviour
                     }
                     break;
                 case StructManState.selected:
+                    if (!selectedStructure)
+                    {
+                        DeselectStructure();
+                        structureState = StructManState.selecting;
+                        break;
+                    }
+
                     StructureType selectedStructType = selectedStructure.GetStructureType();
                     if (Input.GetKeyDown(KeyCode.Delete) &&
                         selectedStructType != StructureType.environment &&
@@ -671,12 +688,6 @@ public class StructureManager : MonoBehaviour
                         break;
                     }
 
-                    if (!selectedStructure)
-                    {
-                        DeselectStructure();
-                        structureState = StructManState.selecting;
-                        break;
-                    }
                     else
                     {
                         Vector3 highlightpos = selectedStructure.transform.position;
@@ -915,7 +926,10 @@ public class StructureManager : MonoBehaviour
                                                     }
                                                     if (!towerPlaced)
                                                     {
-                                                        enemySpawner.Begin();
+                                                        if (!enemySpawner.IsSpawning())
+                                                        {
+                                                            enemySpawner.ToggleSpawning();
+                                                        }
                                                         towerPlaced = true;
                                                     }
                                                     SelectStructure(structure);

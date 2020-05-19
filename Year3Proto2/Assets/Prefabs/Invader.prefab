@@ -94,10 +94,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 053089eb552a42647a5f242f00ea8223, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
+    type: 3}
   health: 10
+  avoidForce: 0.05
   speed: 0.6
   scale: 0
   damage: 2
+  nextReturnFalse: 0
 --- !u!135 &4844577932243503454
 SphereCollider:
   m_ObjectHideFlags: 0

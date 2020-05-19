@@ -8,6 +8,8 @@ public abstract class AttackStructure : Structure
     protected GameObject target = null;
     public float consumptionTime = 2f;
     protected float remainingTime = 2f;
+    protected GameObject puffPrefab;
+
     public abstract void Attack(GameObject target);
 
     public List<GameObject> GetEnemies()
@@ -17,6 +19,7 @@ public abstract class AttackStructure : Structure
 
     protected void AttackStart()
     {
+        puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
         StructureStart();
         structureType = StructureType.attack;
         enemies = new List<GameObject>();
@@ -68,5 +71,17 @@ public abstract class AttackStructure : Structure
                 }
             }
         }
+    }
+
+    public override void OnSelected()
+    {
+        base.OnSelected();
+        transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+    }
+
+    public override void OnDeselected()
+    {
+        base.OnDeselected();
+        transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
     }
 }
