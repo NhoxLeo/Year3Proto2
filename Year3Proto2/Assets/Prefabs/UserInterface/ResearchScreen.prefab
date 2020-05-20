@@ -635,10 +635,10 @@ MonoBehaviour:
       name: Range Boost
       description: Extends defence range by 15%
       price: 640
-      purchased: 0
+      purchased: 1
     - card: {fileID: 0}
-      name: Piercing Shot
-      description: Arrows pierce through multiple targets
+      name: Efficiency
+      description: Consume less food when firing
       price: 640
       purchased: 0
     - card: {fileID: 0}
@@ -656,6 +656,16 @@ MonoBehaviour:
     - card: {fileID: 0}
       name: Range Boost
       description: Extends defence range by 15%
+      price: 640
+      purchased: 0
+    - card: {fileID: 0}
+      name: Piercing Shot
+      description: Arrows pierce through multiple targets
+      price: 640
+      purchased: 0
+    - card: {fileID: 0}
+      name: Piercing Shot
+      description: Arrows pierce through multiple targets
       price: 640
       purchased: 0
     - card: {fileID: 0}

@@ -717,6 +717,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1602741815}
     m_Modifications:
+    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
+        type: 3}
+      propertyPath: buildings.Array.data[0].upgrades.Array.data[1].name
+      value: Efficiency
+      objectReference: {fileID: 0}
+    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
+        type: 3}
+      propertyPath: buildings.Array.data[0].upgrades.Array.data[1].description
+      value: Consume less food when firing
+      objectReference: {fileID: 0}
     - target: {fileID: 3970063865032666625, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: m_Name
