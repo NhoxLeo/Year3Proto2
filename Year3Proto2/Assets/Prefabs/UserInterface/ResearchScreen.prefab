@@ -337,7 +337,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -628,13 +628,54 @@ MonoBehaviour:
   - card: {fileID: 0}
     name: Archer Tower
     description: Fires upon a single enemy target at a medium fire rate and damage.
-    buildingThumb: {fileID: 0}
+    price: 3250
+    purchased: 1
+    upgrades:
+    - card: {fileID: 0}
+      name: Range Boost
+      description: Extends defence range by 15%
+      price: 640
+      purchased: 1
+    - card: {fileID: 0}
+      name: Efficiency
+      description: Consume less food when firing
+      price: 640
+      purchased: 0
+    - card: {fileID: 0}
+      name: Piercing Shot
+      description: Arrows pierce through multiple targets
+      price: 640
+      purchased: 0
+  - card: {fileID: 0}
+    name: Catapult Tower
+    description: Fires a large fireball projectile in an arc. Damages enemies in
+      an area of effect.
     price: 3250
     purchased: 0
     upgrades:
     - card: {fileID: 0}
       name: Range Boost
       description: Extends defence range by 15%
+      price: 640
+      purchased: 0
+    - card: {fileID: 0}
+      name: Piercing Shot
+      description: Arrows pierce through multiple targets
+      price: 640
+      purchased: 0
+    - card: {fileID: 0}
+      name: Piercing Shot
+      description: Arrows pierce through multiple targets
+      price: 640
+      purchased: 0
+    - card: {fileID: 0}
+      name: Piercing Shot
+      description: Arrows pierce through multiple targets
+      price: 640
+      purchased: 0
+    - card: {fileID: 0}
+      name: Piercing Shot
+      description: Arrows pierce through multiple targets
       price: 640
       purchased: 0
   buildingCardPrefab: {fileID: 5384338285674771497, guid: 58289096a13b6a24b98aba70d9532d7e,
@@ -955,6 +996,7 @@ GameObject:
   - component: {fileID: 2295202612094504281}
   - component: {fileID: 3232898459673766698}
   - component: {fileID: 1473329856342047445}
+  - component: {fileID: 2576684998177268734}
   m_Layer: 5
   m_Name: Vignette
   m_TagString: Untagged
@@ -1017,3 +1059,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &2576684998177268734
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6511446414045755334}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
