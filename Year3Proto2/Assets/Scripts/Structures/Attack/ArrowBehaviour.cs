@@ -30,7 +30,7 @@ public class ArrowBehaviour : MonoBehaviour
         if (Vector3.Distance(transform.position, target.position) <= 0.05f)
         {
             Enemy enemy = target.GetComponent<Enemy>();
-            enemy.DealDamage(damage);
+            enemy.Damage(damage);
             Destroy(gameObject);
         }
 

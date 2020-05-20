@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class CatapultTower : AttackStructure
 {
-    public GameObject boulder;
+    public GameObject boulderPrefab;
     public GameObject catapult;
     public float boulderDamage = 5f;
     public float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
-
-    private List<GameObject> spawnedBoulders = new List<GameObject>();
-
-    private float speed = 0.8f;
-
 
     void Start()
     {
@@ -48,21 +43,14 @@ public class CatapultTower : AttackStructure
         {
             if (gameMan.playerData.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
-                Fire();
+                fireCooldown = 0;
+                GameObject newBoulder = Instantiate(boulderPrefab, catapult.transform.position, Quaternion.identity, transform);
+                Boulder boulder = newBoulder.GetComponent<Boulder>();
+                boulder.SetTarget(target);
+
+                GameManager.CreateAudioEffect("catapultFire", transform.position);
             }
         }
-    }
-
-
-    void Fire()
-    {
-        fireCooldown = 0;
-        GameObject newBoulder = Instantiate(boulder, catapult.transform.position, Quaternion.identity, transform);
-        BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
-        spawnedBoulders.Add(newBoulder);
-        boulderBehaviour.target = target.transform.position;
-        boulderBehaviour.puffEffect = puffPrefab;
-        GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
     public override void IncreaseFoodAllocation()
