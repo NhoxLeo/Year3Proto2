@@ -26,6 +26,7 @@ public class ResearchScreen : MonoBehaviour
         public string name;
         public string description;
         public int price;
+        public bool canPurchase;
         public bool purchased;
     }
 
@@ -42,15 +43,16 @@ public class ResearchScreen : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.M))
         {
             RefreshCards();
         }
-
     }
 
     private void InitializeCards()
     {
+        //buildings = new Buildings[numberOfBuildings];
+
         for (int i = 0; i < buildings.Length; i++)
         {
             // Instantiate building cards
@@ -59,6 +61,8 @@ public class ResearchScreen : MonoBehaviour
             buildings[i].card.transform.localScale = Vector3.one;
 
             // Instantiate standard upgrade cards
+
+            //buildings[i].upgrades = new Upgrades[numberOfUpgrades];
             float upgradeLength = Mathf.Clamp(buildings[i].upgrades.Length - 1, 0, 4);
             for (int j = 0; j < upgradeLength; j++)
             {
@@ -74,6 +78,9 @@ public class ResearchScreen : MonoBehaviour
 
     private void RefreshCards()
     {
+        // Get info from Research Manager
+        // ...here
+
         for (int i = 0; i < buildings.Length; i++)
         {
             // Set info on building cards
@@ -82,14 +89,52 @@ public class ResearchScreen : MonoBehaviour
             buildings[i].card.transform.Find("ResearchInfo/Description").GetComponent<TMP_Text>().text = buildings[i].description;
             buildings[i].card.transform.Find("ResearchInfo/Price").GetComponent<TMP_Text>().text = buildings[i].price.ToString();
 
-            float upgradeLength = Mathf.Clamp(buildings[i].upgrades.Length - 1, 0, 4);
+            int upgradeLength = Mathf.Clamp(buildings[i].upgrades.Length - 1, 0, 4);
+
+            // Update some stuff depending on whether the building is purchased
+            if (buildings[i].purchased)
+            {
+                buildings[i].card.transform.Find("Upgrades").gameObject.SetActive(true);
+                buildings[i].card.transform.Find("ResearchInfo").gameObject.SetActive(false);
+                buildings[i].card.transform.Find("Check").gameObject.SetActive(true);
+
+                int counter = 0;
+                for (int j = 0; j < buildings[i].upgrades.Length; j++)
+                {
+                    // Enable purchase of upgrades
+                    buildings[i].upgrades[j].canPurchase = true;
+
+                    // Check if special upgrade can be purchased
+                    if (buildings[i].upgrades[j].purchased && j < upgradeLength) { counter++; }
+                }
+
+                buildings[i].upgrades[upgradeLength].canPurchase = (counter == upgradeLength);
+            }
+            else
+            {
+                buildings[i].card.transform.Find("Upgrades").gameObject.SetActive(false);
+                buildings[i].card.transform.Find("ResearchInfo").gameObject.SetActive(true);
+                buildings[i].card.transform.Find("Check").gameObject.SetActive(false);
+
+                for (int j = 0; j < buildings[i].upgrades.Length; j++)
+                {
+                    // Disable purchase of upgrades
+                    buildings[i].upgrades[j].canPurchase = false;
+                }
+
+                buildings[i].upgrades[upgradeLength].canPurchase = false;
+            }
+
+            // Update upgrade info
+
             for (int j = 0; j < upgradeLength; j++)
             {
                 // Set info on standard upgrade cards
                 buildings[i].upgrades[j].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].name;
                 buildings[i].upgrades[j].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].description;
+                buildings[i].upgrades[j].card.GetComponent<Button>().interactable = buildings[i].upgrades[j].canPurchase;
 
-                // Show or hide price based on purchase state
+                // Show or hide price of standard upgrade based on purchase state
                 if (buildings[i].upgrades[j].purchased)
                 {
                     buildings[i].upgrades[j].card.transform.Find("Price").gameObject.SetActive(false);
@@ -104,38 +149,23 @@ public class ResearchScreen : MonoBehaviour
             }
 
             // Set info on special upgrade card
-            int special = buildings[i].upgrades.Length - 1;
-            buildings[i].upgrades[special].card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
-            buildings[i].upgrades[special].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[special].name;
-            buildings[i].upgrades[special].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[special].description;
-            
+            buildings[i].upgrades[upgradeLength].card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
+            buildings[i].upgrades[upgradeLength].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].name;
+            buildings[i].upgrades[upgradeLength].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].description;
+            buildings[i].upgrades[upgradeLength].card.transform.Find("Lock").gameObject.SetActive(!buildings[i].upgrades[upgradeLength].canPurchase);
+            buildings[i].upgrades[upgradeLength].card.GetComponent<Button>().interactable = buildings[i].upgrades[upgradeLength].canPurchase;
 
-            // Show or hide price based on purchase state
-            if (buildings[i].upgrades[special].purchased)
+            // Show or hide price of special upgrade based on purchase state
+            if (buildings[i].upgrades[upgradeLength].purchased)
             {
-                buildings[i].upgrades[special].card.transform.Find("Price").gameObject.SetActive(false);
-                buildings[i].upgrades[special].card.transform.Find("Purchased").gameObject.SetActive(true);
+                buildings[i].upgrades[upgradeLength].card.transform.Find("Price").gameObject.SetActive(false);
+                buildings[i].upgrades[upgradeLength].card.transform.Find("Purchased").gameObject.SetActive(true);
             }
             else
             {
-                buildings[i].upgrades[special].card.transform.Find("Price").gameObject.SetActive(true);
-                buildings[i].upgrades[special].card.transform.Find("Price").GetComponent<TMP_Text>().text = buildings[i].upgrades[special].price.ToString();
-                buildings[i].upgrades[special].card.transform.Find("Purchased").gameObject.SetActive(false);
-            }
-
-
-            // Hide building purchase info when already purchased
-            if (buildings[i].purchased)
-            {
-                buildings[i].card.transform.Find("Upgrades").gameObject.SetActive(true);
-                buildings[i].card.transform.Find("ResearchInfo").gameObject.SetActive(false);
-                buildings[i].card.transform.Find("Check").gameObject.SetActive(true);
-            }
-            else
-            {
-                buildings[i].card.transform.Find("Upgrades").gameObject.SetActive(false);
-                buildings[i].card.transform.Find("ResearchInfo").gameObject.SetActive(true);
-                buildings[i].card.transform.Find("Check").gameObject.SetActive(false);
+                buildings[i].upgrades[upgradeLength].card.transform.Find("Price").gameObject.SetActive(true);
+                buildings[i].upgrades[upgradeLength].card.transform.Find("Price").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].price.ToString();
+                buildings[i].upgrades[upgradeLength].card.transform.Find("Purchased").gameObject.SetActive(false);
             }
         }
     }
