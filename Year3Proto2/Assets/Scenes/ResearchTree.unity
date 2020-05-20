@@ -717,75 +717,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1602741815}
     m_Modifications:
-    - target: {fileID: 182135199904333920, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 182135199904333920, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 182135199904333920, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 182135199904333920, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: buildings.Array.data[1].upgrades.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: buildings.Array.data[1].name
-      value: Archer Tower
-      objectReference: {fileID: 0}
-    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: buildings.Array.data[1].price
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 1355388826720083529, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_Name
-      value: BuildingCards
-      objectReference: {fileID: 0}
     - target: {fileID: 3970063865032666625, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: m_Name
       value: ResearchScreen
-      objectReference: {fileID: 0}
-    - target: {fileID: 4067443254752673111, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 17
-      objectReference: {fileID: 0}
-    - target: {fileID: 4067443254752673111, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.spaceCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4067443254752673111, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4067443254752673111, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4067443254752673111, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4665375144105400039, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}

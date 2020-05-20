@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class ResearchScreen : MonoBehaviour
 {
@@ -12,7 +10,6 @@ public class ResearchScreen : MonoBehaviour
         public GameObject card;
         public string name;
         public string description;
-        public Sprite buildingThumb;
         public int price;
         public bool purchased;
 
@@ -36,17 +33,15 @@ public class ResearchScreen : MonoBehaviour
     public GameObject upgradeCardPrefab;
     public Transform cardPanel;
 
-    void Start()
+    private void Start()
     {
         cardPanel = transform.Find("BuildingCards");
 
         InitializeCards();
     }
 
-
-    void Update()
+    private void Update()
     {
-        
     }
 
     private void InitializeCards()
@@ -60,22 +55,31 @@ public class ResearchScreen : MonoBehaviour
 
             // Set info on building cards
             buildings[i].card.transform.Find("BuildingName").GetComponent<TMP_Text>().text = buildings[i].name;
+            buildings[i].card.transform.Find("BuildingIcon").GetComponent<Image>().sprite = FindIcon(buildings[i].name);
             buildings[i].card.transform.Find("ResearchInfo/Description").GetComponent<TMP_Text>().text = buildings[i].description;
             buildings[i].card.transform.Find("ResearchInfo/Price").GetComponent<TMP_Text>().text = buildings[i].price.ToString();
 
-            // Instantiate upgrade cards
-            for (int j = 0; j < buildings[i].upgrades.Length; j++)
+            // Instantiate standard upgrade cards
+            float upgradeLength = Mathf.Clamp(buildings[i].upgrades.Length - 1, 0, 4);
+            for (int j = 0; j < upgradeLength; j++)
             {
-                // Instantiate upgrade cards
+                // Instantiate standard upgrade cards
                 buildings[i].upgrades[j].card = Instantiate(upgradeCardPrefab);
                 buildings[i].upgrades[j].card.transform.SetParent(buildings[i].card.transform.Find("Upgrades/UpgradesStandard"));
                 buildings[i].upgrades[j].card.transform.localScale = Vector3.one;
 
-                // Set info on upgrade cards
+                // Set info on standard upgrade cards
                 buildings[i].upgrades[j].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].name;
                 buildings[i].upgrades[j].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].description;
                 buildings[i].upgrades[j].card.transform.Find("Price").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].price.ToString();
             }
+
+            // Set info on special upgrade card
+            int special = buildings[i].upgrades.Length - 1;
+            buildings[i].upgrades[special].card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
+            buildings[i].upgrades[special].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[special].name;
+            buildings[i].upgrades[special].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[special].description;
+            buildings[i].upgrades[special].card.transform.Find("Price").GetComponent<TMP_Text>().text = buildings[i].upgrades[special].price.ToString();
 
             // Hide building purchase info when already purchased
             GameObject locked = buildings[i].card.transform.Find("ResearchInfo").gameObject;
@@ -91,15 +95,17 @@ public class ResearchScreen : MonoBehaviour
         }
     }
 
-    //private Sprite FindIcon(string name)
-    //{
-    //    switch (name)
-    //    {
+    private Sprite FindIcon(string _name)
+    {
+        string formattedName = _name.Replace(" ", "");
+        formattedName = "uiBuilding" + formattedName;
+        Sprite buildingSprite = Resources.Load<Sprite>("BuildingThumbs/" + formattedName);
 
-    //        default:
-    //            break;
-    //    }
+        if (buildingSprite == null)
+        {
+            buildingSprite = Resources.Load<Sprite>("BuildingThumbs/uiBuildingPlaceholder");
+        }
 
-
-    //}
+        return buildingSprite;
+    }
 }
