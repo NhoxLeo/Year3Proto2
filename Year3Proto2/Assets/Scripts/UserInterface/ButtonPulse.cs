@@ -30,5 +30,7 @@ public class ButtonPulse : MonoBehaviour
         }
 
         audioSource.Play();
+
+        Debug.Log("Button Clicked");
     }
 }
