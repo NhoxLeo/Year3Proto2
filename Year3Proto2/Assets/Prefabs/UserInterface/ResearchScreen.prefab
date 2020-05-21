@@ -624,60 +624,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4092fb4c70e031d45b033445e09ecd4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildings:
-  - card: {fileID: 0}
-    name: Archer Tower
-    description: Fires upon a single enemy target at a medium fire rate and damage.
-    price: 3250
-    purchased: 1
-    upgrades:
-    - card: {fileID: 0}
-      name: Range Boost
-      description: Extends defence range by 15%
-      price: 640
-      purchased: 1
-    - card: {fileID: 0}
-      name: Efficiency
-      description: Consume less food when firing
-      price: 640
-      purchased: 0
-    - card: {fileID: 0}
-      name: Piercing Shot
-      description: Arrows pierce through multiple targets
-      price: 640
-      purchased: 0
-  - card: {fileID: 0}
-    name: Catapult Tower
-    description: Fires a large fireball projectile in an arc. Damages enemies in
-      an area of effect.
-    price: 3250
-    purchased: 0
-    upgrades:
-    - card: {fileID: 0}
-      name: Range Boost
-      description: Extends defence range by 15%
-      price: 640
-      purchased: 0
-    - card: {fileID: 0}
-      name: Piercing Shot
-      description: Arrows pierce through multiple targets
-      price: 640
-      purchased: 0
-    - card: {fileID: 0}
-      name: Piercing Shot
-      description: Arrows pierce through multiple targets
-      price: 640
-      purchased: 0
-    - card: {fileID: 0}
-      name: Piercing Shot
-      description: Arrows pierce through multiple targets
-      price: 640
-      purchased: 0
-    - card: {fileID: 0}
-      name: Piercing Shot
-      description: Arrows pierce through multiple targets
-      price: 640
-      purchased: 0
+  buildings: []
   buildingCardPrefab: {fileID: 5384338285674771497, guid: 58289096a13b6a24b98aba70d9532d7e,
     type: 3}
   upgradeCardPrefab: {fileID: 7883097743781554462, guid: 5b4a618a86cbf004ab102be7c07b3c8a,
