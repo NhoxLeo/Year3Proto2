@@ -597,13 +597,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.35748002, g: 0.50958, b: 0.54, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: f3ca9aacd40e09f47bd46e984bcc9997, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -624,7 +624,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4092fb4c70e031d45b033445e09ecd4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildings: []
+  buildings:
+  - card: {fileID: 0}
+    name: 
+    description: 
+    price: 0
+    purchased: 0
+    upgrades:
+    - card: {fileID: 0}
+      name: 
+      description: 
+      price: 0
+      canPurchase: 0
+      purchased: 0
+  - card: {fileID: 0}
+    name: 
+    description: 
+    price: 0
+    purchased: 0
+    upgrades:
+    - card: {fileID: 0}
+      name: 
+      description: 
+      price: 0
+      canPurchase: 0
+      purchased: 0
+  - card: {fileID: 0}
+    name: 
+    description: 
+    price: 0
+    purchased: 0
+    upgrades:
+    - card: {fileID: 0}
+      name: 
+      description: 
+      price: 0
+      canPurchase: 0
+      purchased: 0
   buildingCardPrefab: {fileID: 5384338285674771497, guid: 58289096a13b6a24b98aba70d9532d7e,
     type: 3}
   upgradeCardPrefab: {fileID: 7883097743781554462, guid: 5b4a618a86cbf004ab102be7c07b3c8a,
@@ -917,7 +953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.050980393}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.039215688}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

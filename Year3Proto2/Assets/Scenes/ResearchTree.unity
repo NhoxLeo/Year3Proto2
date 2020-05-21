@@ -720,43 +720,52 @@ PrefabInstance:
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.size
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[2].upgrades.Array.size
-      value: 5
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
+        type: 3}
+      propertyPath: buildings.Array.data[0].upgrades.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
+        type: 3}
+      propertyPath: buildings.Array.data[1].upgrades.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[2].name
-      value: HAHAHA
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[2].description
-      value: Fires a large fireball projectile in an arc. Damages enemies in an area
-        of effect.
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[2].price
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[2].upgrades.Array.data[0].name
-      value: Range Boost
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[2].upgrades.Array.data[0].description
-      value: Extends defence range by 15%
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[2].upgrades.Array.data[0].price
-      value: 640
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
@@ -821,7 +830,7 @@ PrefabInstance:
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[1].upgrades.Array.data[0].purchased
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
@@ -836,7 +845,7 @@ PrefabInstance:
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: buildings.Array.data[1].purchased
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
@@ -847,6 +856,11 @@ PrefabInstance:
         type: 3}
       propertyPath: buildings.Array.data[1].upgrades.Array.data[2].purchased
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 974008686773496738, guid: 281a4d182b034e44bb329b00392930c1,
+        type: 3}
+      propertyPath: buildings.Array.data[0].name
+      value: Metal Storage
       objectReference: {fileID: 0}
     - target: {fileID: 3970063865032666625, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
