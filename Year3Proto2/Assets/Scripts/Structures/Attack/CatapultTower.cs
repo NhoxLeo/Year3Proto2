@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CatapultTower : AttackStructure
 {
-    public GameObject boulder;
+    public GameObject boulderPrefab;
     public GameObject catapult;
     public float boulderDamage = 5f;
     public float fireRate = 0f;
@@ -56,18 +56,6 @@ public class CatapultTower : AttackStructure
                 Fire();
             }
         }
-    }
-
-
-    void Fire()
-    {
-        fireCooldown = 0;
-        GameObject newBoulder = Instantiate(boulder, catapult.transform.position, Quaternion.identity, transform);
-        BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
-        spawnedBoulders.Add(newBoulder);
-        boulderBehaviour.target = target.transform.position;
-        boulderBehaviour.puffEffect = puffPrefab;
-        GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
     public override void IncreaseFoodAllocation()

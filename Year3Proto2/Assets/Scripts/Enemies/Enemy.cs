@@ -34,8 +34,11 @@ public abstract class Enemy : MonoBehaviour
 
     public abstract void Action(Structure structure, float damage);
 
+    private Rigidbody body;
+
     protected void EnemyStart()
     {
+        body = GetComponent<Rigidbody>();
         SetScale(Random.Range(0.1f, 0.2f));
     }
 
@@ -255,7 +258,12 @@ public abstract class Enemy : MonoBehaviour
         target = null;
     }
 
-    public void DealDamage(float _damage)
+    public Rigidbody GetBody()
+    {
+        return body;
+    }
+
+    public void Damage(float _damage)
     {
         health -= _damage;
         if (health <= 0f)
