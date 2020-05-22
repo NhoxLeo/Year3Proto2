@@ -125,13 +125,19 @@ public class SuperManager : MonoBehaviour
     {
         public int ID;
         public int reqID;
-        public int RPCost;
+        public string name;
+        public string description;
+        public int price;
+        public bool isSpecialUpgrade;
 
-        public ResearchElementDefinition(int _id, int _rpCost, int _reqID)
+        public ResearchElementDefinition(int _id, int _reqID, string _name, string _description, int _price, bool _isSpecial = false)
         {
             ID = _id;
-            RPCost = _rpCost;
             reqID = _reqID;
+            name = _name;
+            description = _description;
+            price = _price;
+            isSpecialUpgrade = _isSpecial;
         }
     }
 
@@ -186,8 +192,12 @@ public class SuperManager : MonoBehaviour
 
         researchDefinitions = new List<ResearchElementDefinition>()
         {
-            new ResearchElementDefinition(0, 50, -1),
-            new ResearchElementDefinition(1, 50, 0)
+            new ResearchElementDefinition(0, -1, "Archer Tower", "Archer Tower Building Description", 200),
+            new ResearchElementDefinition(1, 0, "Range Boost", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(2, 0, "Power Shot", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(3, 0, "Fortification", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(4, 0, "Efficiency", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(5, 0, "Piercing Shot", "Extends defence range by 15%", 100, true),
         };
         levels = new List<LevelDefinition>()
         {
@@ -373,15 +383,19 @@ public class SuperManager : MonoBehaviour
     {
         if (!saveData.research[_ID])
         {
-            if (researchDefinitions[_ID].RPCost <= GetResearchPoints())
+            if (researchDefinitions[_ID].price <= GetResearchPoints())
             {
-                saveData.researchPoints -= researchDefinitions[_ID].RPCost;
+                saveData.researchPoints -= researchDefinitions[_ID].price;
                 saveData.research[_ID] = true;
                 WriteGameData();
                 return true;
             }
+            else
+            {
+                return false;
+            }
         }
-        return false;
+        return true;
     }
 
     public void WriteGameData()
@@ -433,7 +447,11 @@ public class SuperManager : MonoBehaviour
             saveData.research = new Dictionary<int, bool>()
             {
                 { 0, false },
-                { 1, false }
+                { 1, false },
+                { 2, false },
+                { 3, false },
+                { 4, false },
+                { 5, false }
             };
             saveData.levelCompletion = new Dictionary<int, bool>()
             {
@@ -441,14 +459,18 @@ public class SuperManager : MonoBehaviour
                 { 2, false },
                 { 3, false }
             };
-            saveData.researchPoints = 0;
+            saveData.researchPoints = 1000;
         }
         else
         {
             saveData.research = new Dictionary<int, bool>()
             {
                 { 0, true },
-                { 1, true }
+                { 1, true },
+                { 2, true },
+                { 3, true },
+                { 4, true },
+                { 5, true }
             };
             saveData.levelCompletion = new Dictionary<int, bool>()
             {
@@ -456,7 +478,7 @@ public class SuperManager : MonoBehaviour
                 { 2, true },
                 { 3, true }
             };
-            saveData.researchPoints = 500;
+            saveData.researchPoints = 1000;
         }
 
         saveData.currentMatch = new MatchSaveData();

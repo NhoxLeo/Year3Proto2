@@ -2291,6 +2291,7 @@ GameObject:
   - component: {fileID: 7885962782290608262}
   - component: {fileID: 315314560264991680}
   - component: {fileID: 5415317556601591549}
+  - component: {fileID: 7947053733444466013}
   m_Layer: 5
   m_Name: UpgradeSpecial
   m_TagString: Untagged
@@ -2413,6 +2414,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 7947053733444466013}
+        m_MethodName: AttemptResearch
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &5415317556601591549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2426,6 +2438,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickSound: {fileID: 0}
+--- !u!114 &7947053733444466013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6458970435228370858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb005b7547fa19418bd8718242e906b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 0
 --- !u!1 &6615939207793324960
 GameObject:
   m_ObjectHideFlags: 0
@@ -2617,6 +2642,7 @@ GameObject:
   - component: {fileID: 7103626699852259801}
   - component: {fileID: 7509673444898146422}
   - component: {fileID: 412254614310893}
+  - component: {fileID: 4410627072632011397}
   m_Layer: 5
   m_Name: ResearchButton
   m_TagString: Untagged
@@ -2735,6 +2761,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 4410627072632011397}
+        m_MethodName: AttemptResearch
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &412254614310893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2748,6 +2785,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickSound: {fileID: 0}
+--- !u!114 &4410627072632011397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6783602070970300987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb005b7547fa19418bd8718242e906b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 0
 --- !u!1 &7781750522345537935
 GameObject:
   m_ObjectHideFlags: 0

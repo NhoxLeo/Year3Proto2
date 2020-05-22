@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class DefenseStructure : Structure
 {
-    public void DefenseStart()
+    protected override void Start()
     {
-        StructureStart();
+        base.Start();
         structureType = StructureType.defense;
     }
 }

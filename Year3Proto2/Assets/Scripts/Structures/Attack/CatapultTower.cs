@@ -11,10 +11,6 @@ public class CatapultTower : AttackStructure
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
 
-    private List<GameObject> spawnedBoulders = new List<GameObject>();
-
-    private float speed = 0.8f;
-
 
     protected override void Awake()
     {
@@ -56,6 +52,15 @@ public class CatapultTower : AttackStructure
                 Fire();
             }
         }
+    }
+
+    void Fire()
+    {
+        fireCooldown = 0;
+        GameObject newBoulder = Instantiate(boulderPrefab, catapult.transform.position, Quaternion.identity, transform);
+        Boulder boulder = newBoulder.GetComponent<Boulder>();
+        boulder.SetTarget(target.transform.gameObject);
+        GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
     public override void IncreaseFoodAllocation()
