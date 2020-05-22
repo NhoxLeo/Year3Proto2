@@ -146,8 +146,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3858759680
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0.9019608}
+    rgba: 3942645760
+  m_fontColor: {r: 0, g: 0, b: 0, a: 0.92156863}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -451,8 +451,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3858759680
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0.9019608}
+    rgba: 3942645760
+  m_fontColor: {r: 0, g: 0, b: 0, a: 0.92156863}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -745,8 +745,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3640655872
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0.8509804}
+    rgba: 3858759680
+  m_fontColor: {r: 0, g: 0, b: 0, a: 0.9019608}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -980,6 +980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clickSound: {fileID: 0}
 --- !u!1 &3744521492670745924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1132,6 +1133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clickSound: {fileID: 0}
 --- !u!1 &4220426574159085576
 GameObject:
   m_ObjectHideFlags: 0
@@ -1347,6 +1349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clickSound: {fileID: 0}
 --- !u!1 &4605685925667393556
 GameObject:
   m_ObjectHideFlags: 0
@@ -1598,6 +1601,7 @@ MonoBehaviour:
   showTooltip: 0
   width: 0
   height: 0
+  toolSound: {fileID: 0}
 --- !u!114 &1442182035810083811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1846,6 +1850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clickSound: {fileID: 0}
 --- !u!1 &8110225223818613345
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,8 +1925,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3858759680
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0.9019608}
+    rgba: 3942645760
+  m_fontColor: {r: 0, g: 0, b: 0, a: 0.92156863}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2076,8 +2081,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3858759680
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0.9019608}
+    rgba: 3942645760
+  m_fontColor: {r: 0, g: 0, b: 0, a: 0.92156863}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
