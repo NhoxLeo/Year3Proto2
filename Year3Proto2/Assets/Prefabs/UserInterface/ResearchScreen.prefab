@@ -108,7 +108,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 113.2, y: -83.3}
+  m_AnchoredPosition: {x: 113.200195, y: -83.30005}
   m_SizeDelta: {x: 160, y: 42}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &650649695759565848
@@ -626,9 +626,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildings:
   - card: {fileID: 0}
-    name: 
+    name: Archer Tower
     description: 
-    price: 0
+    price: 360
+    purchased: 1
+    upgrades:
+    - card: {fileID: 0}
+      name: Upgrade One
+      description: Some description of this upgrade
+      price: 240
+      canPurchase: 0
+      purchased: 0
+    - card: {fileID: 0}
+      name: Upgrade Two
+      description: Some description of this upgrade
+      price: 480
+      canPurchase: 0
+      purchased: 0
+    - card: {fileID: 0}
+      name: Upgrade Three
+      description: Some description of this upgrade
+      price: 720
+      canPurchase: 0
+      purchased: 0
+    - card: {fileID: 0}
+      name: Upgrade Four
+      description: Some description of this upgrade
+      price: 1440
+      canPurchase: 0
+      purchased: 0
+    - card: {fileID: 0}
+      name: Upgrade Five
+      description: Some description of this upgrade
+      price: 3200
+      canPurchase: 0
+      purchased: 0
+  - card: {fileID: 0}
+    name: Catapult Tower
+    description: I can't think of what to write here so here is some random rambling.
+    price: 2000
     purchased: 0
     upgrades:
     - card: {fileID: 0}
@@ -638,21 +674,9 @@ MonoBehaviour:
       canPurchase: 0
       purchased: 0
   - card: {fileID: 0}
-    name: 
-    description: 
-    price: 0
-    purchased: 0
-    upgrades:
-    - card: {fileID: 0}
-      name: 
-      description: 
-      price: 0
-      canPurchase: 0
-      purchased: 0
-  - card: {fileID: 0}
-    name: 
-    description: 
-    price: 0
+    name: Mine
+    description: I can't think of what to write here so here is some random rambling.
+    price: 1500
     purchased: 0
     upgrades:
     - card: {fileID: 0}
