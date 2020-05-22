@@ -188,7 +188,7 @@ public class BuildingInfo : MonoBehaviour
                 statValueText.text = "Lumber Mills";
                 statInfoText.text = "";
                 break;
-            case "Hill Environment":
+            case "Hills Environment":
                 foodComponent.SetActive(false);
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Bonus Building Type";

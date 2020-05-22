@@ -7,20 +7,17 @@ public class LumberMill : ResourceStructure
     public bool wasPlacedOnForest = false;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        ResourceStart();
-        wasPlacedOnForest = false;
-        resourceType = ResourceType.wood;
-        structureName = "Lumber Mill";
-        maxHealth = 100f;
-        health = maxHealth;
+        base.Start();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void Awake()
     {
-        ResourceUpdate();
+        base.Awake();
+        resourceType = ResourceType.wood;
+        structureName = "Lumber Mill";
+        health = maxHealth;
     }
 
     public override void OnPlace()

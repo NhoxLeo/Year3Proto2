@@ -7,9 +7,9 @@ public abstract class StorageStructure : Structure
     protected ResourceType resourceType;
     public int storage;
 
-    protected void StorageStart()
+    protected override void Start()
     {
-        StructureStart();
+        base.Start();
         structureType = StructureType.storage;
     }
 

@@ -16,6 +16,8 @@ public class BuildPanel : MonoBehaviour
     private RectTransform rTrans;
 
     private StructureManager structMan;
+
+    [Serializable]
     public enum Buildings
     {
         None,
@@ -61,7 +63,7 @@ public class BuildPanel : MonoBehaviour
         canvas = GetComponent<CanvasGroup>();
         rTrans = GetComponent<RectTransform>();
         structMan = FindObjectOfType<StructureManager>();
-        superMan = FindObjectOfType<SuperManager>();
+        superMan = SuperManager.GetInstance();
         rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;

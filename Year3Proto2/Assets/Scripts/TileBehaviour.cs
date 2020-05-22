@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[ExecuteInEditMode]
 public class TileBehaviour : MonoBehaviour
 {
     [SerializeField] [Tooltip("Determines whether or not the player can place structures on the tile.")]
@@ -17,14 +19,26 @@ public class TileBehaviour : MonoBehaviour
         west
     }
 
-    public Dictionary<TileCode, TileBehaviour> adjacentTiles;
+    private Dictionary<TileCode, TileBehaviour> adjacentTiles;
 
-    public Structure attachedStructure;
+    private Structure attachedStructure = null;
 
-    // Start is called before the first frame update
-    void Awake()
+    public Dictionary<TileCode, TileBehaviour> GetAdjacentTiles()
     {
-        attachedStructure = null;
+        if (adjacentTiles == null)
+        {
+            FindAdjacentTiles();
+        }
+        return adjacentTiles;
+    }
+
+    private void FindAdjacentTiles()
+    {
+        if (adjacentTiles != null)
+        {
+            return;
+        }
+
         adjacentTiles = new Dictionary<TileCode, TileBehaviour>();
 
         // Get the child
@@ -56,19 +70,15 @@ public class TileBehaviour : MonoBehaviour
         if (Physics.Raycast(tileCollider.transform.position, Vector3.left, out hit, .8f, tcLayer))
         {
             adjacentTiles.Add(TileCode.west, hit.collider.GetComponentInParent<TileBehaviour>());
-            //hit.collider.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", colour);
         }
-
-        DetectStructure();
 
         // Turn on the collider
         tcBoxCollider.enabled = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Awake()
     {
-
+        DetectStructure();
     }
 
     public Structure GetAttached()
@@ -98,9 +108,16 @@ public class TileBehaviour : MonoBehaviour
 
     public void Detach()
     {
-        attachedStructure.attachedTile = null;
-        attachedStructure.isPlaced = false;
-        attachedStructure = null;
+        if (attachedStructure)
+        {
+            attachedStructure.attachedTile = null;
+            attachedStructure.isPlaced = false;
+            attachedStructure = null;
+        }
+        else
+        {
+            Debug.LogWarning("Detach called on tile with no attachedStructure: " + name);
+        }
     }
 
     public bool GetPlayable()

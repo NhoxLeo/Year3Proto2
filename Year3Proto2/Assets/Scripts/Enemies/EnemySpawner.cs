@@ -82,9 +82,9 @@ public class EnemySpawner : MonoBehaviour
                     for (int i = 0; i < 4; i++)
                     {
                         TileBehaviour.TileCode tileCodeI = (TileBehaviour.TileCode)i;
-                        if (randomSelectedTile.adjacentTiles.ContainsKey(tileCodeI))
+                        if (randomSelectedTile.GetAdjacentTiles().ContainsKey(tileCodeI))
                         {
-                            TileBehaviour tileI = randomSelectedTile.adjacentTiles[tileCodeI];
+                            TileBehaviour tileI = randomSelectedTile.GetAdjacentTiles()[tileCodeI];
                             if (tileI.GetSpawnTile() && !waveSelectedTiles.Contains(tileI))
                             {
                                 waveValidTiles.Add(tileI);
@@ -129,9 +129,28 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    public void LoadEnemy(SuperManager.EnemySaveData _saveData)
+    {
+        if (_saveData.enemy == "Invader")
+        {
+            Enemy enemy = Instantiate(enemyPrefabs[0]);
+            enemy.transform.position = _saveData.position;
+            enemy.transform.rotation = _saveData.orientation;
+            enemy.SetScale(_saveData.scale);
+            enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.targetPosition));
+            enemy.SetState(_saveData.state);
+            enemies.Add(enemy);
+        }
+    }
+
     public int GetWaveCurrent()
     {
         return waveCounter;
+    }
+
+    public void SetWaveCurrent(int _wave)
+    {
+        waveCounter = _wave;
     }
 
     public void ToggleSpawning()

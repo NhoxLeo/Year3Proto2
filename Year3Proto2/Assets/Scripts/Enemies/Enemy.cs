@@ -39,15 +39,19 @@ public abstract class Enemy : MonoBehaviour
     protected void EnemyStart()
     {
         body = GetComponent<Rigidbody>();
+        SetScale(Random.Range(0.1f, 0.2f));
+    }
 
-        scale = Random.Range(0.1f, 0.2f);
-        jumpHeight = scale;
+    public void SetScale(float _scale)
+    {
+        scale = _scale;
+        jumpHeight = _scale;
         yPosition = transform.position.y;
 
-        transform.localScale = new Vector3(scale, scale, scale);
-        damage = scale * 20.0f;
-        health = scale * 75.0f;
-        finalSpeed = speed + scale / 4.0f;
+        transform.localScale = new Vector3(_scale, _scale, _scale);
+        damage = _scale * 20.0f;
+        health = _scale * 75.0f;
+        finalSpeed = speed + _scale / 4.0f;
     }
 
     public void OnKill()
@@ -232,6 +236,21 @@ public abstract class Enemy : MonoBehaviour
     public Structure GetTarget()
     {
         return target;
+    }
+
+    public EnemyState GetState()
+    {
+        return enemyState;
+    }
+
+    public void SetState(EnemyState _newState)
+    {
+        enemyState = _newState;
+    }
+
+    public void SetTarget(Structure _target)
+    {
+        target = _target;
     }
 
     public void SetTargetNull()

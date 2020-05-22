@@ -12,7 +12,7 @@ public class ResearchManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        superMan = FindObjectOfType<SuperManager>();
+        superMan = SuperManager.GetInstance();
         researchPointsText = GameObject.Find("CurrentResearchPoints").GetComponent<TMP_Text>();
         researchPointsText.text = "Current Research Points: " + superMan.saveData.researchPoints.ToString();
         UpdateButtons();

@@ -7,20 +7,20 @@ public class Mine : ResourceStructure
     public bool wasPlacedOnHills = false;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        ResourceStart();
-        wasPlacedOnHills = false;
+        base.Start();
         resourceType = ResourceType.metal;
         structureName = "Mine";
-        maxHealth = 100f;
         health = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void Awake()
     {
-        ResourceUpdate();
+        base.Awake();
+        resourceType = ResourceType.metal;
+        structureName = "Mine";
+        health = maxHealth;
     }
 
     public override void OnPlace()
