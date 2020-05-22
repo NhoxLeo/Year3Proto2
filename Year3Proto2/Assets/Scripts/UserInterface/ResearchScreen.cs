@@ -31,14 +31,17 @@ public class ResearchScreen : MonoBehaviour
         public bool purchased;
     }
 
+    private TMP_Text RPCounter;
     public GameObject buildingCardPrefab;
     public GameObject upgradeCardPrefab;
-    public Transform cardPanel;
+    private Transform cardPanel;
+
     public List<SuperManager.ResearchElementDefinition> researchDefinitions;
     public Dictionary<int, bool> completedResearch;
 
     private void Start()
     {
+        RPCounter = transform.Find("RPCounter").GetComponent<TMP_Text>();
         cardPanel = transform.Find("BuildingCards");
         GetResearchInfo();
 
@@ -56,7 +59,6 @@ public class ResearchScreen : MonoBehaviour
     private void InitializeCards()
     {
         // Get number of unlockable buildings
-        //buildings = new Buildings[x];
         buildings = new List<Building>();
 
         foreach (SuperManager.ResearchElementDefinition building in researchDefinitions)
@@ -119,6 +121,36 @@ public class ResearchScreen : MonoBehaviour
             }
         }
 
+
+        // Get info from Research Manager
+        GetResearchInfo();
+
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            // Set info on building cards
+            buildings[i].card.transform.Find("BuildingName").GetComponent<TMP_Text>().text = buildings[i].name;
+            buildings[i].card.transform.Find("BuildingIcon").GetComponent<Image>().sprite = FindIcon(buildings[i].name);
+            buildings[i].card.transform.Find("ResearchInfo/Description").GetComponent<TMP_Text>().text = buildings[i].description;
+            buildings[i].card.transform.Find("ResearchInfo/Price").GetComponent<TMP_Text>().text = buildings[i].price.ToString();
+
+            int upgradeLength = Mathf.Clamp(buildings[i].upgrades.Count - 1, 0, 4);
+      
+            // Update upgrade info
+
+            for (int j = 0; j < upgradeLength; j++)
+            {
+                // Set info on standard upgrade cards
+                buildings[i].upgrades[j].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].name;
+                buildings[i].upgrades[j].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].description;
+            }
+
+            // Set info on special upgrade card
+            Upgrade special = buildings[i].upgrades[upgradeLength];
+            special.card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
+            special.card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].name;
+            special.card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].description;
+        }
+
         RefreshCards();
     }
 
@@ -136,12 +168,6 @@ public class ResearchScreen : MonoBehaviour
 
         for (int i = 0; i < buildings.Count; i++)
         {
-            // Set info on building cards
-            buildings[i].card.transform.Find("BuildingName").GetComponent<TMP_Text>().text = buildings[i].name;
-            buildings[i].card.transform.Find("BuildingIcon").GetComponent<Image>().sprite = FindIcon(buildings[i].name);
-            buildings[i].card.transform.Find("ResearchInfo/Description").GetComponent<TMP_Text>().text = buildings[i].description;
-            buildings[i].card.transform.Find("ResearchInfo/Price").GetComponent<TMP_Text>().text = buildings[i].price.ToString();
-
             int upgradeLength = Mathf.Clamp(buildings[i].upgrades.Count - 1, 0, 4);
 
             // Update some stuff depending on whether the building is purchased
@@ -163,7 +189,7 @@ public class ResearchScreen : MonoBehaviour
                 }
 
                 Upgrade specialTemp = buildings[i].upgrades[upgradeLength];
-                specialTemp.canPurchase = (counter == upgradeLength);
+                specialTemp.canPurchase = counter == upgradeLength;
                 buildings[i].upgrades[upgradeLength] = specialTemp;
             }
             else
@@ -189,9 +215,6 @@ public class ResearchScreen : MonoBehaviour
 
             for (int j = 0; j < upgradeLength; j++)
             {
-                // Set info on standard upgrade cards
-                buildings[i].upgrades[j].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].name;
-                buildings[i].upgrades[j].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].description;
                 buildings[i].upgrades[j].card.GetComponent<Button>().interactable = buildings[i].upgrades[j].canPurchase;
 
                 // Show or hide price of standard upgrade based on purchase state
@@ -211,10 +234,8 @@ public class ResearchScreen : MonoBehaviour
             // Set info on special upgrade card
             Upgrade special = buildings[i].upgrades[upgradeLength];
             special.card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
-            special.card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].name;
-            special.card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].description;
-            special.card.transform.Find("Lock").gameObject.SetActive(!buildings[i].upgrades[upgradeLength].canPurchase);
-            special.card.GetComponent<Button>().interactable = buildings[i].upgrades[upgradeLength].canPurchase;
+            special.card.transform.Find("Lock").gameObject.SetActive(!special.canPurchase);
+            special.card.GetComponent<Button>().interactable = special.canPurchase;
             buildings[i].upgrades[upgradeLength] = special;
 
             // Show or hide price of special upgrade based on purchase state
@@ -230,6 +251,8 @@ public class ResearchScreen : MonoBehaviour
                 buildings[i].upgrades[upgradeLength].card.transform.Find("Purchased").gameObject.SetActive(false);
             }
         }
+
+        RPCounter.text = SuperManager.GetInstance().saveData.researchPoints.ToString();
     }
 
     private Sprite FindIcon(string _name)
