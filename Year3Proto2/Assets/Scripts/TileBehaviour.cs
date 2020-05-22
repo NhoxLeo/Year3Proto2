@@ -19,11 +19,20 @@ public class TileBehaviour : MonoBehaviour
         west
     }
 
-    public Dictionary<TileCode, TileBehaviour> adjacentTiles;
+    private Dictionary<TileCode, TileBehaviour> adjacentTiles;
 
-    public Structure attachedStructure;
+    private Structure attachedStructure = null;
 
-    public void FindAdjacentTiles()
+    public Dictionary<TileCode, TileBehaviour> GetAdjacentTiles()
+    {
+        if (adjacentTiles == null)
+        {
+            FindAdjacentTiles();
+        }
+        return adjacentTiles;
+    }
+
+    private void FindAdjacentTiles()
     {
         if (adjacentTiles != null)
         {
@@ -69,14 +78,7 @@ public class TileBehaviour : MonoBehaviour
 
     void Awake()
     {
-        if (Application.isPlaying)
-        {
-            attachedStructure = null;
-
-            FindAdjacentTiles();
-
-            DetectStructure();
-        }
+        DetectStructure();
     }
 
     public Structure GetAttached()
@@ -106,9 +108,16 @@ public class TileBehaviour : MonoBehaviour
 
     public void Detach()
     {
-        attachedStructure.attachedTile = null;
-        attachedStructure.isPlaced = false;
-        attachedStructure = null;
+        if (attachedStructure)
+        {
+            attachedStructure.attachedTile = null;
+            attachedStructure.isPlaced = false;
+            attachedStructure = null;
+        }
+        else
+        {
+            Debug.LogWarning("Detach called on tile with no attachedStructure: " + name);
+        }
     }
 
     public bool GetPlayable()

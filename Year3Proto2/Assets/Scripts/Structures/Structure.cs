@@ -14,7 +14,7 @@ public abstract class Structure : MonoBehaviour
     public TileBehaviour attachedTile = null;
     public string displayName;
     public Sprite icon;
-    public bool isPlaced;
+    public bool isPlaced = false;
     public float sitHeight;
     public string structureName;
     static protected int foodAllocationMax = 5;
@@ -29,6 +29,8 @@ public abstract class Structure : MonoBehaviour
     StructureManager structMan;
     protected BuildingInfo buildingInfo;
     protected HUDManager HUDMan;
+    public bool fromSaveData = false;
+    public bool saveDataStartFrame = false;
 
     public static int GetFoodAllocationMax()
     {
@@ -43,6 +45,16 @@ public abstract class Structure : MonoBehaviour
         if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
         GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
+
+        if (structureType == StructureType.attack)
+        {
+            AttackStructure attackStructure = GetComponent<AttackStructure>();
+            if (attackStructure.GetEnemies().Count == 0)
+            {
+                attackStructure.DetectEnemies();
+            }
+        }
+
         return health <= 0f; 
     }
 
@@ -59,9 +71,19 @@ public abstract class Structure : MonoBehaviour
         return foodAllocation;
     }
 
+    public void SetFoodAllocation(int _newFoodAllocation)
+    {
+        foodAllocation = _newFoodAllocation;
+    }
+
     public float GetHealth()
     {
         return health;
+    }
+
+    public void SetHealth(float _health)
+    {
+        health = _health;
     }
 
     public float GetMaxHealth()
@@ -111,9 +133,12 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void OnDeselected()
     {
-        if (structureType != StructureType.environment)
+        if (healthBar)
         {
-            healthBar.gameObject.SetActive(false);
+            if (structureType != StructureType.environment)
+            {
+                healthBar.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -122,10 +147,7 @@ public abstract class Structure : MonoBehaviour
         healthBar.gameObject.SetActive(false);
     }
 
-    public virtual void OnPlace()
-    {
-
-    }
+    public virtual void OnPlace() {}
 
     protected virtual void OnDestroyed()
     {
@@ -146,13 +168,13 @@ public abstract class Structure : MonoBehaviour
         }
 
         ResourceBundle repairCost = RepairCost();
-        if (gameMan.playerData.CanAfford(repairCost) &&
+        if (gameMan.playerResources.CanAfford(repairCost) &&
             timeSinceLastHit >= 5.0f &&
             !repairCost.IsEmpty())
         {
             GameManager.IncrementRepairCount();
             if (!_mass) { HUDMan.ShowResourceDelta(repairCost, true); }
-            gameMan.playerData.DeductResource(repairCost);
+            gameMan.playerResources.DeductResource(repairCost);
             health = maxHealth;
             return true;
         }
@@ -173,20 +195,24 @@ public abstract class Structure : MonoBehaviour
     {
         foodAllocation = foodAllocationMin;
     }
+
     public void SetHealthbar(Healthbar _healthBar)
     {
         healthBar = _healthBar;
     }
 
-    protected void StructureStart()
+    protected virtual void Awake()
     {
         health = maxHealth;
-        isPlaced = false;
+    }
+
+    protected virtual void Start()
+    {
         structMan = FindObjectOfType<StructureManager>();
         gameMan = FindObjectOfType<GameManager>();
         HUDMan = FindObjectOfType<HUDManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, 1 << LayerMask.NameToLayer("Ground")))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
         {
             hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
         }
@@ -197,27 +223,37 @@ public abstract class Structure : MonoBehaviour
         healthBarInst.SetActive(false);
     }
 
-    protected void StructureUpdate()
+    protected virtual void Update()
     {
-        timeSinceLastHit += Time.deltaTime;
-        if (health <= 0.0f)
+        if (isPlaced)
         {
-            if (GetStructureType() == StructureType.longhaus) { gameMan.longhausDead = true; }
-            GameManager.CreateAudioEffect("buildingDestroy", transform.position);
-            structMan.DecreaseStructureCost(structureName);
-            attachedTile.Detach();
-            Destroy(gameObject);
+            if (fromSaveData && !saveDataStartFrame)
+            {
+                OnPlace();
+                saveDataStartFrame = true;
+            }
+
+            timeSinceLastHit += Time.deltaTime;
+            if (health <= 0.0f)
+            {
+                if (GetStructureType() == StructureType.longhaus) { gameMan.longhausDead = true; }
+                GameManager.CreateAudioEffect("buildingDestroy", transform.position);
+                structMan.DecreaseStructureCost(structureName);
+                attachedTile.Detach();
+                Destroy(gameObject);
+            }
+            else
+            {
+                healthBar.fillAmount = health / maxHealth;
+            }
         }
-        healthBar.fillAmount = health / maxHealth;
     }
+
     private void OnDestroy()
     {
         OnDestroyed();
         if (healthBar) { Destroy(healthBar.gameObject); }
-        if (attachedTile)
-        {
-            attachedTile.Detach();
-        }
+        if (attachedTile) { attachedTile.Detach(); }
     }
 }
 

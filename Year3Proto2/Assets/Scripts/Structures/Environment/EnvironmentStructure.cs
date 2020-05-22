@@ -13,9 +13,9 @@ public abstract class EnvironmentStructure : Structure
 
     protected EnvironmentType environmentType;
 
-    protected void EnvironmentStart()
+    protected override void Start()
     {
-        StructureStart();
+        base.Start();
         structureType = StructureType.environment;
     }
 

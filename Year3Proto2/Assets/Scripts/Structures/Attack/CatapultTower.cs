@@ -16,19 +16,24 @@ public class CatapultTower : AttackStructure
     private float speed = 0.8f;
 
 
-    void Start()
+    protected override void Awake()
     {
-        AttackStart();
+        base.Awake();
         structureName = "Catapult Tower";
         maxHealth = 450f;
         health = maxHealth;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         SetFirerate();
     }
 
-    private void Update()
+    protected override void Update()
     {
-        AttackUpdate();
-        if (target)
+        base.Update();
+        if (target && isPlaced)
         {
             Vector3 catapultPosition = catapult.transform.position;
             Vector3 targetPosition = target.transform.position;
@@ -46,7 +51,7 @@ public class CatapultTower : AttackStructure
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerData.AttemptPurchase(new ResourceBundle(0, 15, 0)))
+            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
                 Fire();
             }

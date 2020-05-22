@@ -14,23 +14,37 @@ public abstract class AttackStructure : Structure
 
     public List<GameObject> GetEnemies()
     {
-        return enemies;
+        return enemies == null ? enemies = new List<GameObject>() : enemies;
     }
 
-    protected void AttackStart()
+    public void DetectEnemies()
     {
+        GetEnemies();
+        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+            if (distanceFromEnemy <= rangeCollider.radius)
+            {
+                if (!enemies.Contains(enemy.gameObject)) { enemies.Add(enemy.gameObject); }
+            }
+        }
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
-        StructureStart();
         structureType = StructureType.attack;
         enemies = new List<GameObject>();
+        DetectEnemies();
     }
 
-    protected void AttackUpdate()
+    protected override void Update()
     {
+        base.Update();
         if (isPlaced)
         {
-            StructureUpdate();
-
             if (enemies.Count > 0)
             {
                 enemies.RemoveAll(enemy => enemy == null);
@@ -65,9 +79,9 @@ public abstract class AttackStructure : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = consumptionTime;
-                if (gameMan.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+                if (gameMan.playerResources.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
                 {
-                    gameMan.AddBatch(new Batch(-foodAllocation, ResourceType.food));
+                    gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
                 }
             }
         }

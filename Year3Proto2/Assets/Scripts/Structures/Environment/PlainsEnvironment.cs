@@ -5,16 +5,10 @@ using UnityEngine;
 public class PlainsEnvironment : EnvironmentStructure
 {
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        EnvironmentStart();
+        base.Start();
         environmentType = EnvironmentType.plains;
         structureName = "Plains Environment";
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

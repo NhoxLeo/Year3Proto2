@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System;
 
-public struct PlayerData
+[Serializable]
+public struct PlayerResources
 {
     private int rFood;
     private int rFoodMax;
@@ -11,7 +13,7 @@ public struct PlayerData
     private int rMetalMax;
     private int rWood;
     private int rWoodMax;
-    public PlayerData(int _startAmount, int _maxAmount)
+    public PlayerResources(int _startAmount, int _maxAmount)
     {
         rWood = _startAmount;
         rMetal = _startAmount;
@@ -22,7 +24,7 @@ public struct PlayerData
         rFoodMax = _maxAmount;
     }
 
-    public void AddBatch(Batch _batch)
+    public void AddBatch(ResourceBatch _batch)
     {
         switch (_batch.type)
         {
@@ -85,7 +87,7 @@ public struct PlayerData
         rFood -= _bundle.foodCost;
     }
 
-    public int GetResource(ResourceType _type)
+    public int Get(ResourceType _type)
     {
         int value = 0;
         switch (_type)
@@ -147,13 +149,13 @@ public struct PlayerData
     }
 }
 
-public class Batch
+public class ResourceBatch
 {
     public float age;
     public int amount;
     public ResourceType type;
 
-    public Batch(int _amount, ResourceType _type)
+    public ResourceBatch(int _amount, ResourceType _type)
     {
         age = 0f;
         amount = _amount;
@@ -167,14 +169,14 @@ public class Batch
 }
 public class GameManager : MonoBehaviour
 {
-    public PlayerData playerData;
+    public PlayerResources playerResources;
     public bool tutorialDone = false;
     private static Dictionary<string, AudioClip> audioClips;
     private float batchMaxAge = 3.0f;
     private bool gameover = false;
     private bool victory = false;
     private float gameoverTimer = 5.0f;
-    private List<Batch> recentBatches;
+    private List<ResourceBatch> recentBatches;
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
     private float tutorialDelay = 2.0f;
@@ -182,13 +184,13 @@ public class GameManager : MonoBehaviour
     private bool switchingScene = false;
     private float musicDelay = 3.0f;
     private static int repairCount = 0;
-    private bool repairMessage = false;
     private MessageBox messageBox;
     private SuperManager superMan;
     private HUDManager HUDMan;
     private EnemySpawner enemySpawner;
     private StructureManager structMan;
     private BuildPanel buildPanel;
+    public bool repairMessage = false;
     public bool longhausDead;
     public bool repairAll = false;
     private float volumeFull;
@@ -199,7 +201,7 @@ public class GameManager : MonoBehaviour
         get
         {
             int runningTotal = 0;
-            foreach (Batch batch in recentBatches)
+            foreach (ResourceBatch batch in recentBatches)
             {
                 if (batch.type == ResourceType.food)
                 {
@@ -215,7 +217,7 @@ public class GameManager : MonoBehaviour
         get
         {
             int runningTotal = 0;
-            foreach (Batch batch in recentBatches)
+            foreach (ResourceBatch batch in recentBatches)
             {
                 if (batch.type == ResourceType.metal)
                 {
@@ -231,7 +233,7 @@ public class GameManager : MonoBehaviour
         get
         {
             int runningTotal = 0;
-            foreach (Batch batch in recentBatches)
+            foreach (ResourceBatch batch in recentBatches)
             {
                 if (batch.type == ResourceType.wood)
                 {
@@ -261,9 +263,9 @@ public class GameManager : MonoBehaviour
         repairCount++;
     }
 
-    public void AddBatch(Batch _newBatch)
+    public void AddBatch(ResourceBatch _newBatch)
     {
-        playerData.AddBatch(_newBatch);
+        playerResources.AddBatch(_newBatch);
         recentBatches.Add(_newBatch);
     }
 
@@ -294,9 +296,9 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        playerData.SetMaximum(ResourceType.wood, newWoodMax);
-        playerData.SetMaximum(ResourceType.metal, newMetalMax);
-        playerData.SetMaximum(ResourceType.food, newFoodMax);
+        playerResources.SetMaximum(ResourceType.wood, newWoodMax);
+        playerResources.SetMaximum(ResourceType.metal, newMetalMax);
+        playerResources.SetMaximum(ResourceType.food, newFoodMax);
     }
 
     public float GetFoodVelocity(int _seconds)
@@ -405,12 +407,12 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerData = new PlayerData(200, 500);
+        playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
-        recentBatches = new List<Batch>();
+        recentBatches = new List<ResourceBatch>();
         messageBox = FindObjectOfType<MessageBox>();
         HUDMan = FindObjectOfType<HUDManager>();
-        superMan = FindObjectOfType<SuperManager>();
+        superMan = SuperManager.GetInstance();
         structMan = GetComponent<StructureManager>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
         buildPanel = FindObjectOfType<BuildPanel>();
@@ -420,7 +422,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        List<Batch> batchesToRemove = new List<Batch>();
+        List<ResourceBatch> batchesToRemove = new List<ResourceBatch>();
         for (int i = 0; i < recentBatches.Count; i++)
         {
             recentBatches[i].AddTime(Time.deltaTime);
@@ -429,7 +431,7 @@ public class GameManager : MonoBehaviour
                 batchesToRemove.Add(recentBatches[i]);
             }
         }
-        foreach (Batch batch in batchesToRemove)
+        foreach (ResourceBatch batch in batchesToRemove)
         {
             recentBatches.Remove(batch);
         }
@@ -471,7 +473,7 @@ public class GameManager : MonoBehaviour
             // do refresh
             for (int i = 1; i <= 8; i++)
             {
-                buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerData.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
+                buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerResources.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
             }
         }
 
@@ -529,6 +531,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SaveMatch()
+    {
+        superMan.SaveCurrentMatch();
+    }
+
     public bool WinConditionIsMet()
     {
         int level = superMan.currentLevel;
@@ -537,7 +544,7 @@ public class GameManager : MonoBehaviour
             case 0:
                 return enemySpawner.GetWaveCurrent() == 5 && enemySpawner.enemyCount == 0;
             case 1:
-                return playerData.GetResource(ResourceType.metal) >= 3000 && playerData.GetResource(ResourceType.food) >= 3000 && playerData.GetResource(ResourceType.wood) >= 3000;
+                return playerResources.Get(ResourceType.metal) >= 3000 && playerResources.Get(ResourceType.food) >= 3000 && playerResources.Get(ResourceType.wood) >= 3000;
 
             default:
                 break;

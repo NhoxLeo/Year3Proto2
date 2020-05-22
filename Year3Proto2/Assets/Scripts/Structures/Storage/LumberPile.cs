@@ -5,19 +5,18 @@ using UnityEngine;
 public class LumberPile : StorageStructure
 {
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        StorageStart();
+        base.Start();
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
         resourceType = ResourceType.wood;
         storage = 500;
         structureName = "Lumber Pile";
         maxHealth = 200f;
         health = maxHealth;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        StructureUpdate();
     }
 }

@@ -1,9 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Runtime.Serialization.Formatters.Binary;
+
+#if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEditor.AnimatedValues;
+#endif
 
 public enum StructManState
 {
@@ -12,6 +16,7 @@ public enum StructManState
     moving
 };
 
+[Serializable]
 public struct ResourceBundle
 {
     public int foodCost;
@@ -74,9 +79,23 @@ public struct StructureDefinition
     }
 }
 
+[Serializable]
+public struct ProceduralGenerationParameters
+{
+    public SuperManager.SaveVector3 forestParameters;
+    public SuperManager.SaveVector3 hillsParameters;
+    public SuperManager.SaveVector3 plainsParameters;
+    public bool useSeed;
+    public int seed;
+}
+
 [ExecuteInEditMode]
 public class StructureManager : MonoBehaviour
 {
+    // constants
+    public static string kPathSaveData;
+    public static string kPathPGP;
+
     // PRE-DEFINED
     private StructManState structureState = StructManState.selecting;
     private bool towerPlaced = false;
@@ -109,7 +128,7 @@ public class StructureManager : MonoBehaviour
         { "Mine", BuildPanel.Buildings.Mine },
         { "Metal Storage", BuildPanel.Buildings.MetalStorage }
     };
-    public Dictionary<BuildPanel.Buildings, int> StructureCounts = new Dictionary<BuildPanel.Buildings, int>
+    public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
     {
         { BuildPanel.Buildings.Archer, 0 },
         { BuildPanel.Buildings.Catapult, 0 },
@@ -129,9 +148,17 @@ public class StructureManager : MonoBehaviour
     [HideInInspector]
     public Vector2Int forestEnvironmentBounds;
     [HideInInspector]
-    public float recursiveGrowthChance;
+    public float recursivePGrowthChance;
+    [HideInInspector]
+    public float recursiveHGrowthChance;
+    [HideInInspector]
+    public float recursiveFGrowthChance;
     [HideInInspector]
     public bool editorGenerated = false;
+    [HideInInspector]
+    public bool useSeed = false;
+    [HideInInspector]
+    public int seed = 0;
     //public float recursiveGrowthFalloff;
 
     // Defined in runtime
@@ -164,6 +191,8 @@ public class StructureManager : MonoBehaviour
 
     private void Awake()
     {
+        kPathSaveData = Application.persistentDataPath + "/saveData.dat";
+        kPathPGP = Application.persistentDataPath + "/PGP.dat";
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                     NAME                                               wC       mC      fC
@@ -213,459 +242,98 @@ public class StructureManager : MonoBehaviour
         superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
+        // read from disk PGPs. if they cannot be found, create & save them
     }
 
-    public bool BuyBuilding()
+    private void OnApplicationQuit()
     {
-        if (structure && structureFromStore)
-        {
-            ResourceBundle cost = structureCosts[structure.GetStructureName()];
-            if (gameMan.playerData.AttemptPurchase(cost))
-            {
-                IncreaseStructureCost(structure.GetStructureName());
-                HUDman.ShowResourceDelta(cost, true);
-                return true;
-            }
-            ShowMessage("You can't afford that!", 1.5f);
-        }
-        return false;
+        superMan.SaveCurrentMatch();
     }
 
-    public void IncreaseStructureCost(string _structureName)
+    public static string GetSaveDataPath()
     {
-        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
-        {
-            int buildingCount = ++StructureCounts[StructureIDs[_structureName]];
-            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-            structureCosts[_structureName] = new ResourceBundle(newCost);
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
-        }
+        return kPathSaveData == null ? kPathSaveData = Application.persistentDataPath + "/saveData.dat" : kPathSaveData;
     }
 
-    public void DecreaseStructureCost(string _structureName)
+    public static string GetPGPPath()
     {
-        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
-        {
-            if (_structureName == "Longhaus") return;
-
-            int buildingCount = --StructureCounts[StructureIDs[_structureName]];
-            if (buildingCount < 0) { buildingCount = StructureCounts[StructureIDs[_structureName]] = 0; }
-            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-            structureCosts[_structureName] = new ResourceBundle(newCost);
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
-        }
+        return kPathPGP == null ? kPathPGP = Application.persistentDataPath + "/PGP.dat" : kPathPGP;
     }
 
-    public void DeselectStructure()
+    public static Structure FindStructureAtPosition(Vector3 _position)
     {
-        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-        if (selectedStructure)
+        Structure returnStructure = null;
+        if (Physics.Raycast(_position + Vector3.up * 10f, Vector3.down, out RaycastHit hit, 20f, LayerMask.GetMask("Structure")))
         {
-            selectedStructure.OnDeselected();
-            selectedStructure = null;
+            returnStructure = hit.collider.gameObject.GetComponent<Structure>();
         }
-        buildingInfo.showPanel = false;
-    }
-
-    public void ResetBuilding()
-    {
-        if (structure)
-        {
-            if (structureState == StructManState.moving)
-            {
-                if (structureFromStore)
-                {
-                    Destroy(structure.gameObject);
-                    panel.UINoneSelected();
-                }
-                else
-                {
-                    Vector3 structPos = structureOldTile.transform.position;
-                    structPos.y = structure.sitHeight;
-                    structure.transform.position = structPos;
-                    structureOldTile.Attach(structure);
-                    structureOldTile = null;
-                }
-                structureState = StructManState.selected;
-            }
-        }
-    }
-
-    public void SelectStructure(Structure _structure)
-    {
-        DeselectStructure();
-        selectedStructure = _structure;
-
-        selectedStructure.OnSelected();
-
-        if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
-
-        Vector3 highlightpos = selectedStructure.attachedTile.transform.position;
-        highlightpos.y = 0.501f;
-        selectedTileHighlight.position = highlightpos;
-
-        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
-        buildingInfo.showPanel = true;
-    }
-
-    public bool SetBuilding(string _building)
-    {
-        if (structureState != StructManState.moving)
-        {
-            DeselectStructure();
-            structureFromStore = true;
-            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
-            structure = structureInstance.GetComponent<Structure>();
-            // Put the manager back into moving mode.
-            structureState = StructManState.moving;
-            if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-            selectedStructure = null;
-            buildingInfo.showPanel = false;
-            return true;
-        }
-        return false;
-    }
-
-    public bool SetBuilding(BuildPanel.Buildings _buildingID)
-    {
-        return SetBuilding(StructureNames[_buildingID]);
-    }
-
-    public void SetIsOverUI(bool _isOverUI)
-    {
-        isOverUI = _isOverUI;
-    }
-
-    public void ProceduralGeneration(int _seed = 0)
-    {
-        if (_seed != 0) { Random.InitState(_seed); }
-        
-        // find our totals
-        int forestTotal = Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
-        int hillsTotal = Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
-        int plainsTotal = Random.Range(plainsEnvironmentBounds.x, plainsEnvironmentBounds.y + 1);
-
-        // get all the tiles
-        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
-        PGPlayableTiles = new List<TileBehaviour>();
-        for (int i = 0; i < tiles.Length; i++)
-        {
-            if (Application.isEditor) { tiles[i].DetectStructure(); }
-            // if the tile is playable and it doesn't have a structure already
-            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
-            {
-                PGPlayableTiles.Add(tiles[i]);
-            }
-        }
-
-        int forestPlaced = 0;
-        while (forestPlaced < forestTotal)
-        {
-            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
-            PGRecursiveWander("Forest Environment", tile, ref forestPlaced, forestTotal);
-        }
-
-        int hillsPlaced = 0;
-        while (hillsPlaced < hillsTotal)
-        {
-            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
-            PGRecursiveWander("Hills Environment", tile, ref hillsPlaced, hillsTotal);
-        }
-
-        int plainsPlaced = 0;
-        while (plainsPlaced < plainsTotal)
-        {
-            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
-            PGRecursiveWander("Plains Environment", tile, ref plainsPlaced, plainsTotal);
-        }
-    }
-
-    public void ProceduralGenerationA(int _seed)
-    {
-
-        if (_seed != 0) { Random.InitState(_seed); }
-
-        // find our totals
-        int forestTotal = Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
-        int hillsTotal = Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
-        int plainsTotal = Random.Range(plainsEnvironmentBounds.x, plainsEnvironmentBounds.y + 1);
-
-        // get all the tiles
-        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
-        PGPlayableTiles = new List<TileBehaviour>();
-        for (int i = 0; i < tiles.Length; i++)
-        {
-            // if the tile is playable and it doesn't have a structure already
-            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
-            {
-                PGPlayableTiles.Add(tiles[i]);
-            }
-        }
-
-        // Generate Forests
-        int forestPlaced = 0;
-        while (forestPlaced < forestTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Forest Environment", tile);
-
-            // update forestPlaced
-            forestPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (forestPlaced == forestTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i];
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
-                {
-                    PGInstatiateEnvironment("Forest Environment", tileI);
-
-                    // update forestPlaced
-                    forestPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (forestPlaced == forestTotal) { break; }
-                }
-            }
-        }
-
-        // Generate Hills
-        int hillsPlaced = 0;
-        while (hillsPlaced < hillsTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Hills Environment", tile);
-
-            // update hillsPlaced
-            hillsPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (hillsPlaced == hillsTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i];
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
-                {
-                    PGInstatiateEnvironment("Hills Environment", tileI);
-
-                    // update hillsPlaced
-                    hillsPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (hillsPlaced == hillsTotal) { break; }
-                }
-            }
-        }
-
-        // Generate Plains
-        int plainsPlaced = 0;
-        while (plainsPlaced < plainsTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Plains Environment", tile);
-
-            // update plainsPlaced
-            plainsPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (plainsPlaced == plainsTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                TileBehaviour tileI = tile.adjacentTiles[(TileBehaviour.TileCode)i];
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
-                {
-                    PGInstatiateEnvironment("Plains Environment", tileI);
-
-                    // update plainsPlaced
-                    plainsPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (plainsPlaced == plainsTotal) { break; }
-                }
-            }
-        }
-    }
-
-    private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int placed, int max)
-    {
-        if (placed == max)
-        {
-            return;
-        }
-        // plant the environment on the tile,
-        // remove the tile from PGPlayableTiles
-        // for each face of the tile, if that face is in PGPlayableTiles, roll the dice on PGRecursiveWander
-        if (PGPlayableTiles.Contains(_tile))
-        {
-            placed++;
-            PGPlayableTiles.Remove(_tile);
-            PGInstatiateEnvironment(_environmentType, _tile);
-        }
-
-        // now try the tiles around it
-        for (int i = 0; i < 4; i++)
-        {
-            if (placed == max) { break; }
-            if (Application.isEditor) { _tile.FindAdjacentTiles(); }
-            TileBehaviour tileI = _tile.adjacentTiles[(TileBehaviour.TileCode)i];
-            if (PGPlayableTiles.Contains(tileI))
-            {
-                if (Random.Range(0f, 100f) <= recursiveGrowthChance * 100f)
-                {
-                    PGRecursiveWander(_environmentType, tileI, ref placed, max);
-                }
-            }
-        }
-    }
-
-    private void PGInstatiateEnvironment(string _environmentType, TileBehaviour _tile)
-    {
-        // define the structures when in editor mode
-        if (!Application.isPlaying)
-        {
-            structureDict = new Dictionary<string, StructureDefinition>
-            {
-                // NAME                                                     NAME                                               wC       mC      fC
-                { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
-
-                { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
-                { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
-
-                { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
-                { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(120,     0,      0)) },
-
-                { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(60,      20,     0)) },
-                { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(120,     0,      0)) },
-
-                { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(100,     20,     0)) },
-                { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(120,     80,     0)) },
-
-                { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0, 0, 0)) },
-                { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0, 0, 0)) },
-                { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0, 0, 0)) },
-            };
-        }
-        // create the structure
-        Structure structure = Instantiate(structureDict[_environmentType].structurePrefab).GetComponent<Structure>();
-        string structName = structure.name;
-        structure.name = "PG " + structName;
-        // move the new structure to the tile
-        Vector3 structPos = _tile.transform.position;
-        structPos.y = structure.sitHeight;
-        structure.transform.position = structPos;
-
-        _tile.Attach(structure);
+        return returnStructure;
     }
 
     private void Start()
     {
-        if (!Application.isEditor)
+#if UNITY_EDITOR
+        // before we start, lets get rid of any NON PG clones
+        ProceduralGenerationWindow.ClearClones(true);
+#endif
+        LoadPGPFromFile();
+        if (Application.isPlaying)
         {
-            foreach (Structure structure in FindObjectsOfType<Structure>())
+            if (!superMan.LoadCurrentMatch())
             {
-                if (structure.name.Contains("PG"))
+                // if there is no current match
+                editorGenerated = false;
+                foreach (Structure structure in FindObjectsOfType<Structure>())
                 {
-                    editorGenerated = true;
-                    break;
+                    if (structure.name.Contains("PG"))
+                    {
+                        editorGenerated = true;
+                        break;
+                    }
+                }
+                if (!editorGenerated)
+                {
+                    ProceduralGeneration(useSeed, seed);
                 }
             }
-            if (!editorGenerated)
-            {
-                ProceduralGeneration();
-            }
         }
     }
 
-    private void HideBuilding()
+    private void LoadPGPFromFile()
     {
-        if (structure && structureState == StructManState.moving)
+        // try to access file
+        BinaryFormatter bf = new BinaryFormatter();
+        // if we found the file...
+        if (System.IO.File.Exists(kPathPGP))
         {
-            structure.transform.position = Vector3.down * 10f;
-        }
-    }
-
-    private void PlayerMouseOver(Structure _structure)
-    {
-        if (!hoveroverStructure)
-        {
-            hoveroverStructure = _structure;
-            hoveroverTime += Time.deltaTime;
-        }
-        else if (hoveroverStructure == _structure)
-        {
-            hoveroverTime += Time.deltaTime;
+            System.IO.FileStream file = System.IO.File.Open(kPathPGP, System.IO.FileMode.Open);
+            ProceduralGenerationParameters PGP = (ProceduralGenerationParameters)bf.Deserialize(file);
+            hillsEnvironmentBounds = PGP.hillsParameters;
+            recursiveHGrowthChance = PGP.hillsParameters.z;
+            forestEnvironmentBounds = PGP.forestParameters;
+            recursiveFGrowthChance = PGP.forestParameters.z;
+            plainsEnvironmentBounds = PGP.plainsParameters;
+            recursivePGrowthChance = PGP.plainsParameters.z;
+            seed = PGP.seed;
+            useSeed = PGP.useSeed;
+            file.Close();
         }
         else
         {
-            hoveroverStructure = _structure;
-            hoveroverTime = 0f;
-        }
-        if (hoveroverTime > 1.0f)
-        {
-            SetHoverInfo(_structure);
-        }
-    }
-
-    private void SetHoverInfo(Structure _structure)
-    {
-        envInfo.SetVisibility(true);
-        switch (_structure.GetStructureName())
-        {
-            case "Longhaus":
-                envInfo.ShowInfo("The Longhaus is your base of operations, protect it at all costs! The Longhaus generates a small amount of wood & food and an even smaller amount of metal.");
-                break;
-            case "Forest Environment":
-                envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
-                break;
-            case "Hill Environment":
-                envInfo.ShowInfo("Placing a Mine on this tile will destroy the hill, and provide a bonus to the Mine. Placing a Mine adjacent to this tile with provide a bonus to the Mine.");
-                break;
-            case "Plains Environment":
-                envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
-                break;
-            case "Farm":
-                envInfo.ShowInfo("The Farm generates Food. It gains a bonus from all plains tiles surrounding it, and an additional bonus if placed on a plains tile.");
-                break;
-            case "Lumber Mill":
-                envInfo.ShowInfo("The Lumber Mill generates Wood. It gains a bonus from all forest tiles surrounding it, and an additional bonus if placed on a forest tile.");
-                break;
-            case "Mine":
-                envInfo.ShowInfo("The Mine generates Metal. It gains a bonus from all hill tiles surrounding it, and an additional bonus if placed on a hill tile.");
-                break;
-            case "Granary":
-                envInfo.ShowInfo("The Granary stores Food. If it is broken, you will lose the additional capacity it gives you, and any excess Food you have will be lost.");
-                break;
-            case "Lumber Pile":
-                envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
-                break;
-            case "Metal Storehouse":
-                envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
-                break;
-            case "Archer Tower":
-                envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
-                break;
-            case "Catapult Tower":
-                envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
-                break;
-        }
-
-    }
-
-    private void ShowMessage(string _message, float _duration)
-    {
-        if (gameMan.tutorialDone)
-        {
-            messageBox.ShowMessage(_message, _duration);
+            // if we can't access the file, we'll make one with default parameters
+            System.IO.FileStream file = System.IO.File.Create(kPathPGP);
+            // File does not exist, load defaults and save
+            ProceduralGenerationParameters PGP = GetPGPHardPreset(0);
+            hillsEnvironmentBounds = PGP.hillsParameters;
+            recursiveHGrowthChance = PGP.hillsParameters.z;
+            forestEnvironmentBounds = PGP.forestParameters;
+            recursiveFGrowthChance = PGP.forestParameters.z;
+            plainsEnvironmentBounds = PGP.plainsParameters;
+            recursivePGrowthChance = PGP.plainsParameters.z;
+            seed = PGP.seed;
+            useSeed = PGP.useSeed;
+            bf.Serialize(file, PGP);
+            file.Close();
         }
     }
 
@@ -878,7 +546,7 @@ public class StructureManager : MonoBehaviour
                                                 if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
 
                                                 if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Hill Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                                else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
                                                 else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
@@ -908,7 +576,7 @@ public class StructureManager : MonoBehaviour
                                                 }
 
                                                 // If player cannot afford the structure, set to red.
-                                                if (!gameMan.playerData.CanAfford(structureCosts[structure.GetStructureName()]))
+                                                if (!gameMan.playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
                                                 {
                                                     structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
                                                 }
@@ -949,15 +617,15 @@ public class StructureManager : MonoBehaviour
                                                                 switch (structure.GetStructureName())
                                                                 {
                                                                     case "Lumber Mill":
-                                                                        gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.wood));
                                                                         structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
                                                                         break;
                                                                     case "Farm":
-                                                                        gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.food));
                                                                         structure.GetComponent<Farm>().wasPlacedOnPlains = true;
                                                                         break;
                                                                     case "Mine":
-                                                                        gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.metal));
                                                                         structure.GetComponent<Mine>().wasPlacedOnHills = true;
                                                                         break;
                                                                 }
@@ -967,13 +635,13 @@ public class StructureManager : MonoBehaviour
                                                                 switch (attached.GetStructureName())
                                                                 {
                                                                     case "Forest Environment":
-                                                                        gameMan.playerData.AddBatch(new Batch(50, ResourceType.wood));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.wood));
                                                                         break;
                                                                     case "Hill Environment":
-                                                                        gameMan.playerData.AddBatch(new Batch(50, ResourceType.metal));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.metal));
                                                                         break;
                                                                     case "Plains Environment":
-                                                                        gameMan.playerData.AddBatch(new Batch(50, ResourceType.food));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.food));
                                                                         break;
                                                                 }
                                                                 Destroy(attached.gameObject);
@@ -1037,57 +705,576 @@ public class StructureManager : MonoBehaviour
             }
         }
     }
+
+    public bool BuyBuilding()
+    {
+        if (structure && structureFromStore)
+        {
+            ResourceBundle cost = structureCosts[structure.GetStructureName()];
+            if (gameMan.playerResources.AttemptPurchase(cost))
+            {
+                IncreaseStructureCost(structure.GetStructureName());
+                HUDman.ShowResourceDelta(cost, true);
+                return true;
+            }
+            ShowMessage("You can't afford that!", 1.5f);
+        }
+        return false;
+    }
+
+    public void IncreaseStructureCost(string _structureName)
+    {
+        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        {
+            if (!structureCosts.ContainsKey(_structureName))
+            {
+                return;
+            }
+            int buildingCount = ++structureCounts[StructureIDs[_structureName]];
+            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
+            structureCosts[_structureName] = new ResourceBundle(newCost);
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+        }
+    }
+
+    public void DecreaseStructureCost(string _structureName)
+    {
+        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        {
+            if (!structureCosts.ContainsKey(_structureName))
+            {
+                return;
+            }
+            int buildingCount = --structureCounts[StructureIDs[_structureName]];
+            if (buildingCount < 0) { buildingCount = structureCounts[StructureIDs[_structureName]] = 0; }
+            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
+            structureCosts[_structureName] = new ResourceBundle(newCost);
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+        }
+    }
+
+    public void DeselectStructure()
+    {
+        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+        if (selectedStructure)
+        {
+            selectedStructure.OnDeselected();
+            selectedStructure = null;
+        }
+        buildingInfo.showPanel = false;
+    }
+
+    public void ResetBuilding()
+    {
+        if (structure)
+        {
+            if (structureState == StructManState.moving)
+            {
+                if (structureFromStore)
+                {
+                    Destroy(structure.gameObject);
+                    panel.UINoneSelected();
+                }
+                else
+                {
+                    Vector3 structPos = structureOldTile.transform.position;
+                    structPos.y = structure.sitHeight;
+                    structure.transform.position = structPos;
+                    structureOldTile.Attach(structure);
+                    structureOldTile = null;
+                }
+                structureState = StructManState.selected;
+            }
+        }
+    }
+
+    public void SelectStructure(Structure _structure)
+    {
+        DeselectStructure();
+        selectedStructure = _structure;
+
+        selectedStructure.OnSelected();
+
+        if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+
+        Vector3 highlightpos = selectedStructure.attachedTile.transform.position;
+        highlightpos.y = 0.501f;
+        selectedTileHighlight.position = highlightpos;
+
+        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+        buildingInfo.showPanel = true;
+    }
+
+    public bool SetBuilding(string _building)
+    {
+        if (structureState != StructManState.moving)
+        {
+            DeselectStructure();
+            structureFromStore = true;
+            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+            structure = structureInstance.GetComponent<Structure>();
+            // Put the manager back into moving mode.
+            structureState = StructManState.moving;
+            if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+            selectedStructure = null;
+            buildingInfo.showPanel = false;
+            return true;
+        }
+        return false;
+    }
+
+    public bool SetBuilding(BuildPanel.Buildings _buildingID)
+    {
+        return SetBuilding(StructureNames[_buildingID]);
+    }
+
+    public void SetIsOverUI(bool _isOverUI)
+    {
+        isOverUI = _isOverUI;
+    }
+
+    public void ProceduralGeneration(bool _useSeed = false, int _seed = 0)
+    {
+        if (_useSeed) { UnityEngine.Random.InitState(_seed); }
+        
+        // find our totals
+        int forestTotal = UnityEngine.Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
+        int hillsTotal = UnityEngine.Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
+        int plainsTotal = UnityEngine.Random.Range(plainsEnvironmentBounds.x, plainsEnvironmentBounds.y + 1);
+
+        // get all the tiles
+        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
+        PGPlayableTiles = new List<TileBehaviour>();
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            if (Application.isEditor) { tiles[i].DetectStructure(); }
+            // if the tile is playable and it doesn't have a structure already
+            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
+            {
+                PGPlayableTiles.Add(tiles[i]);
+            }
+        }
+
+        int hillsPlaced = 0;
+        while (hillsPlaced < hillsTotal)
+        {
+            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
+            PGRecursiveWander("Hills Environment", tile, ref hillsPlaced, hillsTotal, recursiveHGrowthChance);
+        }
+
+        int forestPlaced = 0;
+        while (forestPlaced < forestTotal)
+        {
+            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
+            PGRecursiveWander("Forest Environment", tile, ref forestPlaced, forestTotal, recursiveFGrowthChance);
+        }
+
+        int plainsPlaced = 0;
+        while (plainsPlaced < plainsTotal)
+        {
+            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
+            PGRecursiveWander("Plains Environment", tile, ref plainsPlaced, plainsTotal, recursivePGrowthChance);
+        }
+    }
+
+    public void ProceduralGenerationA(int _seed)
+    {
+
+        if (_seed != 0) { UnityEngine.Random.InitState(_seed); }
+
+        // find our totals
+        int forestTotal = UnityEngine.Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
+        int hillsTotal = UnityEngine.Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
+        int plainsTotal = UnityEngine.Random.Range(plainsEnvironmentBounds.x, plainsEnvironmentBounds.y + 1);
+
+        // get all the tiles
+        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
+        PGPlayableTiles = new List<TileBehaviour>();
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            // if the tile is playable and it doesn't have a structure already
+            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
+            {
+                PGPlayableTiles.Add(tiles[i]);
+            }
+        }
+
+        // Generate Forests
+        int forestPlaced = 0;
+        while (forestPlaced < forestTotal)
+        {
+            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
+
+            PGInstatiateEnvironment("Forest Environment", tile);
+
+            // update forestPlaced
+            forestPlaced++;
+            PGPlayableTiles.Remove(tile);
+            if (forestPlaced == forestTotal) { break; }
+
+            // now try the tiles around it
+            for (int i = 0; i < 4; i++)
+            {
+                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
+                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (PGPlayableTiles.Contains(tileI))
+                {
+                    PGInstatiateEnvironment("Forest Environment", tileI);
+
+                    // update forestPlaced
+                    forestPlaced++;
+                    PGPlayableTiles.Remove(tileI);
+                    if (forestPlaced == forestTotal) { break; }
+                }
+            }
+        }
+
+        // Generate Hills
+        int hillsPlaced = 0;
+        while (hillsPlaced < hillsTotal)
+        {
+            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
+
+            PGInstatiateEnvironment("Hills Environment", tile);
+
+            // update hillsPlaced
+            hillsPlaced++;
+            PGPlayableTiles.Remove(tile);
+            if (hillsPlaced == hillsTotal) { break; }
+
+            // now try the tiles around it
+            for (int i = 0; i < 4; i++)
+            {
+                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
+                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (PGPlayableTiles.Contains(tileI))
+                {
+                    PGInstatiateEnvironment("Hills Environment", tileI);
+
+                    // update hillsPlaced
+                    hillsPlaced++;
+                    PGPlayableTiles.Remove(tileI);
+                    if (hillsPlaced == hillsTotal) { break; }
+                }
+            }
+        }
+
+        // Generate Plains
+        int plainsPlaced = 0;
+        while (plainsPlaced < plainsTotal)
+        {
+            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
+
+            PGInstatiateEnvironment("Plains Environment", tile);
+
+            // update plainsPlaced
+            plainsPlaced++;
+            PGPlayableTiles.Remove(tile);
+            if (plainsPlaced == plainsTotal) { break; }
+
+            // now try the tiles around it
+            for (int i = 0; i < 4; i++)
+            {
+                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
+                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
+                if (PGPlayableTiles.Contains(tileI))
+                {
+                    PGInstatiateEnvironment("Plains Environment", tileI);
+
+                    // update plainsPlaced
+                    plainsPlaced++;
+                    PGPlayableTiles.Remove(tileI);
+                    if (plainsPlaced == plainsTotal) { break; }
+                }
+            }
+        }
+    }
+
+    private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
+    {
+        if (_placed == _max)
+        {
+            return;
+        }
+        // plant the environment on the tile,
+        // remove the tile from PGPlayableTiles
+        // for each face of the tile, if that face is in PGPlayableTiles, roll the dice on PGRecursiveWander
+        if (PGPlayableTiles.Contains(_tile))
+        {
+            _placed++;
+            PGPlayableTiles.Remove(_tile);
+            PGInstatiateEnvironment(_environmentType, _tile);
+        }
+
+        // now try the tiles around it
+        for (int i = 0; i < 4; i++)
+        {
+            if (_placed == _max) { break; }
+            TileBehaviour tileI = _tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
+            if (PGPlayableTiles.Contains(tileI))
+            {
+                if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
+                {
+                    PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance);
+                }
+            }
+        }
+    }
+
+    private void PGInstatiateEnvironment(string _environmentType, TileBehaviour _tile)
+    {
+        // define the structures when in editor mode
+        if (!Application.isPlaying)
+        {
+            structureDict = new Dictionary<string, StructureDefinition>
+            {
+                // NAME                                                     NAME                                               wC       mC      fC
+                { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
+
+                { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
+                { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
+
+                { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
+                { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(120,     0,      0)) },
+
+                { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(60,      20,     0)) },
+                { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(120,     0,      0)) },
+
+                { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(100,     20,     0)) },
+                { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(120,     80,     0)) },
+
+                { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0, 0, 0)) },
+                { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0, 0, 0)) },
+                { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0, 0, 0)) },
+            };
+        }
+        // create the structure
+        Structure structure = Instantiate(structureDict[_environmentType].structurePrefab).GetComponent<Structure>();
+        string structName = structure.name;
+        structure.name = "PG " + structName;
+        // move the new structure to the tile
+        Vector3 structPos = _tile.transform.position;
+        structPos.y = structure.sitHeight;
+        structure.transform.position = structPos;
+
+        _tile.Attach(structure);
+    }
+
+    private void HideBuilding()
+    {
+        if (structure && structureState == StructManState.moving)
+        {
+            structure.transform.position = Vector3.down * 10f;
+        }
+    }
+
+    private void PlayerMouseOver(Structure _structure)
+    {
+        if (!hoveroverStructure)
+        {
+            hoveroverStructure = _structure;
+            hoveroverTime += Time.deltaTime;
+        }
+        else if (hoveroverStructure == _structure)
+        {
+            hoveroverTime += Time.deltaTime;
+        }
+        else
+        {
+            hoveroverStructure = _structure;
+            hoveroverTime = 0f;
+        }
+        if (hoveroverTime > 1.0f)
+        {
+            SetHoverInfo(_structure);
+        }
+    }
+
+    private void SetHoverInfo(Structure _structure)
+    {
+        envInfo.SetVisibility(true);
+        switch (_structure.GetStructureName())
+        {
+            case "Longhaus":
+                envInfo.ShowInfo("The Longhaus is your base of operations, protect it at all costs! The Longhaus generates a small amount of wood & food and an even smaller amount of metal.");
+                break;
+            case "Forest Environment":
+                envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
+                break;
+            case "Hills Environment":
+                envInfo.ShowInfo("Placing a Mine on this tile will destroy the hill, and provide a bonus to the Mine. Placing a Mine adjacent to this tile with provide a bonus to the Mine.");
+                break;
+            case "Plains Environment":
+                envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
+                break;
+            case "Farm":
+                envInfo.ShowInfo("The Farm generates Food. It gains a bonus from all plains tiles surrounding it, and an additional bonus if placed on a plains tile.");
+                break;
+            case "Lumber Mill":
+                envInfo.ShowInfo("The Lumber Mill generates Wood. It gains a bonus from all forest tiles surrounding it, and an additional bonus if placed on a forest tile.");
+                break;
+            case "Mine":
+                envInfo.ShowInfo("The Mine generates Metal. It gains a bonus from all hill tiles surrounding it, and an additional bonus if placed on a hill tile.");
+                break;
+            case "Granary":
+                envInfo.ShowInfo("The Granary stores Food. If it is broken, you will lose the additional capacity it gives you, and any excess Food you have will be lost.");
+                break;
+            case "Lumber Pile":
+                envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
+                break;
+            case "Metal Storehouse":
+                envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
+                break;
+            case "Archer Tower":
+                envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
+                break;
+            case "Catapult Tower":
+                envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
+                break;
+        }
+
+    }
+
+    private void ShowMessage(string _message, float _duration)
+    {
+        if (gameMan.tutorialDone)
+        {
+            messageBox.ShowMessage(_message, _duration);
+        }
+    }
+
+    public void LoadBuilding(SuperManager.StructureSaveData _saveData)
+    {
+        Structure newStructure = Instantiate(structureDict[_saveData.structure].structurePrefab).GetComponent<Structure>();
+        newStructure.transform.position = _saveData.position;
+        if (FindTileAtXZ(_saveData.position.x, _saveData.position.z, out TileBehaviour tile))
+        {
+            tile.Attach(newStructure);
+        }
+        else
+        {
+            Debug.LogError("No tile at _saveData.position, failed to load.");
+            return;
+        }
+        newStructure.SetFoodAllocation(_saveData.foodAllocation);
+        ResourceStructure resourceStructComp = newStructure.gameObject.GetComponent<ResourceStructure>();
+        if (resourceStructComp != null)
+        {
+            if (_saveData.structure == "Farm") { newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn; }
+            if (_saveData.structure == "Mine") { newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn; }
+            if (_saveData.structure == "Lumber Mill") { newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn; }
+        }
+        newStructure.isPlaced = true;
+        newStructure.SetHealth(_saveData.health);
+        newStructure.fromSaveData = true;
+    }
+
+    private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
+    {
+        _tile = null;
+        Vector3 startPos = new Vector3(_x, 20, _z);
+        bool hit = Physics.Raycast(startPos, Vector3.down, out RaycastHit hitInfo, 40f, LayerMask.GetMask("TileCollider"));
+        if (hit) { _tile = hitInfo.collider.transform.parent.GetComponent<TileBehaviour>(); }
+        return hit;
+    }
+
+    public static ProceduralGenerationParameters GetPGPHardPreset(int _preset)
+    {
+        ProceduralGenerationParameters pgp = new ProceduralGenerationParameters();
+        switch (_preset)
+        {
+            case 0:
+                pgp.hillsParameters = new SuperManager.SaveVector3(60f, 80f, 0.5f);
+                pgp.forestParameters = new SuperManager.SaveVector3(60f, 80f, 0.3f);
+                pgp.plainsParameters = new SuperManager.SaveVector3(60f, 80f, 0.3f);
+                pgp.seed = 0;
+                pgp.useSeed = false;
+                break;
+            default:
+                break;
+        }
+        return pgp;
+    }
+
 }
 
-public class StructureManagerWindow : EditorWindow
+#if UNITY_EDITOR
+public class ProceduralGenerationWindow : EditorWindow
 {
-    [MenuItem("EnvStructGeneration/Generation Window")]
+    public static string kPathPresets;
+
+    [MenuItem("EnvStructGeneration/Procedural Generation Window")]
     public static void Init()
     {
-        StructureManagerWindow window = (StructureManagerWindow)GetWindow(typeof(StructureManagerWindow));
+        ProceduralGenerationWindow window = (ProceduralGenerationWindow)GetWindow(typeof(ProceduralGenerationWindow));
         window.Show();
     }
 
-    private int seed = 0;
     AnimBool PGseed;
     StructureManager selectedSM = null;
+    ProceduralGenerationParameters currentPreset;
+    Dictionary<string, ProceduralGenerationParameters> pgpPresets;
+    string currentPresetName;
+    bool showPresets = false;
 
     void OnEnable()
     {
         PGseed = new AnimBool(false);
         PGseed.valueChanged.AddListener(Repaint);
-        //selectedSM = FindObjectOfType<StructureManager>();
+        kPathPresets = Application.dataPath + "/EnvStructGeneration/pgpPresets.dat";
     }
 
-    private void OnFocus()
+    private void Update()
     {
-        selectedSM = FindObjectOfType<StructureManager>();
+        if (!selectedSM)
+        {
+            selectedSM = FindObjectOfType<StructureManager>();
+            LoadEditorData();
+        }
     }
 
     void OnGUI()
     {
         if (selectedSM)
         {
-            selectedSM.plainsEnvironmentBounds = EditorGUILayout.Vector2IntField("Plains min/max", selectedSM.plainsEnvironmentBounds);
-            selectedSM.hillsEnvironmentBounds = EditorGUILayout.Vector2IntField("Hills min/max", selectedSM.hillsEnvironmentBounds);
-            selectedSM.forestEnvironmentBounds = EditorGUILayout.Vector2IntField("Forest min/max", selectedSM.forestEnvironmentBounds);
+            Vector2Int userReturn = EditorGUILayout.Vector2IntField("Hills Min/Max", currentPreset.hillsParameters);
+            currentPreset.hillsParameters.x = userReturn.x; currentPreset.hillsParameters.y = userReturn.y;
+            int percentageGrowthChance = (int)(currentPreset.hillsParameters.z * 100f);
+            currentPreset.hillsParameters.z = EditorGUILayout.IntSlider("Hills G. Chance (%)", percentageGrowthChance, 0, 100) / 100f;
 
-            int percentageGrowthChance = (int)(selectedSM.recursiveGrowthChance * 100f);
-            selectedSM.recursiveGrowthChance = EditorGUILayout.IntSlider("R. G. Chance %", percentageGrowthChance, 0, 100) / 100f;
+            userReturn = EditorGUILayout.Vector2IntField("Forest Min/Max", currentPreset.forestParameters);
+            currentPreset.forestParameters.x = userReturn.x; currentPreset.forestParameters.y = userReturn.y;
+            percentageGrowthChance = (int)(currentPreset.forestParameters.z * 100f);
+            currentPreset.forestParameters.z = EditorGUILayout.IntSlider("Forest G. Chance (%)", percentageGrowthChance, 0, 100) / 100f;
 
-            PGseed.target = EditorGUILayout.Toggle("Generate from seed", PGseed.target);
+            userReturn = EditorGUILayout.Vector2IntField("Plains Min/Max", currentPreset.plainsParameters);
+            currentPreset.plainsParameters.x = userReturn.x; currentPreset.plainsParameters.y = userReturn.y;
+            percentageGrowthChance = (int)(currentPreset.plainsParameters.z * 100f);
+            currentPreset.plainsParameters.z = EditorGUILayout.IntSlider("Plains G. Chance (%)", percentageGrowthChance, 0, 100) / 100f;
+
+            currentPreset.useSeed = EditorGUILayout.Toggle("Generate From Seed", currentPreset.useSeed);
+            PGseed.target = currentPreset.useSeed;
+
             if (EditorGUILayout.BeginFadeGroup(PGseed.faded))
             {
-                seed = EditorGUILayout.IntField("Seed", seed);
+                currentPreset.seed = EditorGUILayout.IntField("Seed", currentPreset.seed);
             }
             EditorGUILayout.EndFadeGroup();
+
             if (GUILayout.Button("Generate New Environment"))
             {
-                ClearEnvironment();
-
-                if (PGseed.target) { selectedSM.ProceduralGeneration(seed); }
-                else { selectedSM.ProceduralGeneration(); }
+                SetSMProperties();
+                if (selectedSM.editorGenerated) { ClearEnvironment(); }
+                selectedSM.ProceduralGeneration(currentPreset.useSeed, currentPreset.seed);
                 selectedSM.editorGenerated = true;
+            }
+
+            if (GUILayout.Button("Save Settings For Runtime"))
+            {
+                SaveCurrentForRuntime();
             }
 
             if (GUILayout.Button("Clear Environment"))
@@ -1095,10 +1282,106 @@ public class StructureManagerWindow : EditorWindow
                 ClearEnvironment();
                 selectedSM.editorGenerated = false;
             }
+
+            EditorGUILayout.Space(10f);
+
+            if (GUILayout.Button("Clear Clones"))
+            {
+                ClearClones();
+            }
+
+            if (GUILayout.Button("Delete File..."))
+            {
+                GenericMenu menu = new GenericMenu();
+
+                menu.AddItem(new GUIContent("saveData.dat"), false, DeleteSaveData);
+                menu.AddItem(new GUIContent("PGP.dat"), false, DeleteStructureManPGP);
+                menu.AddItem(new GUIContent("pgpPresets.dat"), false, DeletePGPPresets);
+
+                menu.ShowAsContext();
+            }
+
+            EditorGUILayout.Space(30f);
+
+            showPresets = EditorGUILayout.BeginFoldoutHeaderGroup(showPresets, "Presets");
+
+            if (showPresets)
+            {
+                if (pgpPresets == null) { LoadEditorData(); }
+
+                currentPresetName = EditorGUILayout.TextField("Preset Name: ", currentPresetName);
+
+                if (GUILayout.Button("Load Preset..."))
+                {
+                    GenericMenu menu = new GenericMenu();
+
+                    foreach (KeyValuePair<string, ProceduralGenerationParameters> entry in pgpPresets)
+                    {
+                        menu.AddItem(new GUIContent(entry.Key), currentPresetName == entry.Key, PresetSelected, entry.Key);
+                    }
+
+                    menu.ShowAsContext();
+                }
+
+                if (GUILayout.Button("Save Preset"))
+                {
+                    if (pgpPresets.ContainsKey(currentPresetName))
+                    {
+                        // overwrite
+                        pgpPresets[currentPresetName] = currentPreset;
+                    }
+                    else
+                    {
+                        // add
+                        pgpPresets.Add(currentPresetName, currentPreset);
+                    }
+                    SaveEditorData();
+                }
+
+                if (GUILayout.Button("Delete Preset..."))
+                {
+                    GenericMenu menu = new GenericMenu();
+
+                    foreach (KeyValuePair<string, ProceduralGenerationParameters> entry in pgpPresets)
+                    {
+                        menu.AddItem(new GUIContent(entry.Key), false, PresetDeleted, entry.Key);
+                    }
+
+                    menu.ShowAsContext();
+                    SaveEditorData();
+                }
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
         }
     }
 
-    void ClearEnvironment()
+    void PresetSelected(object _presetName)
+    {
+        currentPresetName = (string)_presetName;
+        currentPreset = pgpPresets[(string)_presetName];
+    }
+
+    void PresetDeleted(object _presetName)
+    {
+        if (pgpPresets.ContainsKey((string)_presetName))
+        {
+            pgpPresets.Remove((string)_presetName);
+        }
+    }
+
+    void SetSMProperties()
+    {
+        selectedSM.forestEnvironmentBounds = currentPreset.forestParameters;
+        selectedSM.recursiveFGrowthChance = currentPreset.forestParameters.z;
+        selectedSM.hillsEnvironmentBounds = currentPreset.hillsParameters;
+        selectedSM.recursiveFGrowthChance = currentPreset.hillsParameters.z;
+        selectedSM.plainsEnvironmentBounds = currentPreset.plainsParameters;
+        selectedSM.recursiveFGrowthChance = currentPreset.plainsParameters.z;
+    }
+
+
+    public static void ClearEnvironment()
     {
         foreach (Structure structure in FindObjectsOfType<Structure>())
         {
@@ -1108,5 +1391,106 @@ public class StructureManagerWindow : EditorWindow
             }
         }
     }
-}
 
+    public static void ClearClones(bool _avoidPGElements = false)
+    {
+
+        foreach (Structure structure in FindObjectsOfType<Structure>())
+        {
+            if (structure.name.Contains("(Clone)"))
+            {
+                if (_avoidPGElements)
+                {
+                    if (structure.name.Contains("PG"))
+                    {
+                        // skip this one
+                        continue;
+                    }
+                }
+                DestroyImmediate(structure.gameObject);
+            }
+        }
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            if (enemy.name.Contains("(Clone)"))
+            {
+                DestroyImmediate(enemy.gameObject);
+            }
+        }
+    }
+
+    public static void DeleteSaveData()
+    {
+        if (System.IO.File.Exists(StructureManager.GetSaveDataPath()))
+        {
+            System.IO.File.Delete(StructureManager.GetSaveDataPath());
+        }
+    }
+
+    public void DeletePGPPresets()
+    {
+        if (System.IO.File.Exists(kPathPresets))
+        {
+            System.IO.File.Delete(kPathPresets);
+        }
+    }
+
+    public static void DeleteStructureManPGP()
+    {
+        if (System.IO.File.Exists(StructureManager.GetPGPPath()))
+        {
+            System.IO.File.Delete(StructureManager.GetPGPPath());
+        }
+    }
+
+    void SaveCurrentForRuntime()
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        if (System.IO.File.Exists(StructureManager.GetPGPPath()))
+        {
+            System.IO.File.Delete(StructureManager.GetPGPPath());
+        }
+        System.IO.FileStream file = System.IO.File.Create(StructureManager.GetPGPPath());
+
+        bf.Serialize(file, currentPreset);
+
+        file.Close();
+    }
+
+    void SaveEditorData()
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        if (System.IO.File.Exists(kPathPresets))
+        {
+            System.IO.File.Delete(kPathPresets);
+        }
+        System.IO.FileStream file = System.IO.File.Create(kPathPresets);
+
+        bf.Serialize(file, pgpPresets);
+
+        file.Close();
+    }
+
+    void LoadEditorData()
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        if (System.IO.File.Exists(kPathPresets))
+        {
+            System.IO.FileStream file = System.IO.File.Open(kPathPresets, System.IO.FileMode.Open);
+            pgpPresets = (Dictionary<string, ProceduralGenerationParameters>)bf.Deserialize(file);
+            file.Close();
+        }
+        else
+        {
+            // File does not exist, load defaults and save
+            currentPreset = StructureManager.GetPGPHardPreset(0);
+            currentPresetName = "Default";
+            pgpPresets = new Dictionary<string, ProceduralGenerationParameters>();
+            pgpPresets.Add(currentPresetName, currentPreset);
+            System.IO.FileStream file = System.IO.File.Create(kPathPresets);
+            bf.Serialize(file, pgpPresets);
+            file.Close();
+        }
+    }
+}
+#endif
