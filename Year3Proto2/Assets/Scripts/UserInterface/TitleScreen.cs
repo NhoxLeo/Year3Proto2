@@ -58,8 +58,8 @@ public class TitleScreen : MonoBehaviour
         titleSequence.Insert(2.95f, divider.transform.DOScaleX(1.0f, 1.0f).SetEase(Ease.OutQuint));
     }
 
-    public void ResetSaveData()
+    public void ClearMatch()
     {
-        FindObjectOfType<SuperManager>().ResetSaveData();
+        SuperManager.GetInstance().ClearCurrentMatch();
     }
 }

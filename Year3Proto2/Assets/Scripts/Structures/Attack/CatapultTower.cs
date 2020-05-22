@@ -11,19 +11,25 @@ public class CatapultTower : AttackStructure
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
 
-    void Start()
+
+    protected override void Awake()
     {
-        AttackStart();
+        base.Awake();
         structureName = "Catapult Tower";
         maxHealth = 450f;
         health = maxHealth;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         SetFirerate();
     }
 
-    private void Update()
+    protected override void Update()
     {
-        AttackUpdate();
-        if (target)
+        base.Update();
+        if (target && isPlaced)
         {
             Vector3 catapultPosition = catapult.transform.position;
             Vector3 targetPosition = target.transform.position;
@@ -41,16 +47,20 @@ public class CatapultTower : AttackStructure
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerData.AttemptPurchase(new ResourceBundle(0, 15, 0)))
+            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
-                fireCooldown = 0;
-                GameObject newBoulder = Instantiate(boulderPrefab, catapult.transform.position, Quaternion.identity, transform);
-                Boulder boulder = newBoulder.GetComponent<Boulder>();
-                boulder.SetTarget(target);
-
-                GameManager.CreateAudioEffect("catapultFire", transform.position);
+                Fire();
             }
         }
+    }
+
+    void Fire()
+    {
+        fireCooldown = 0;
+        GameObject newBoulder = Instantiate(boulderPrefab, catapult.transform.position, Quaternion.identity, transform);
+        Boulder boulder = newBoulder.GetComponent<Boulder>();
+        boulder.SetTarget(target.transform.gameObject);
+        GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
     public override void IncreaseFoodAllocation()

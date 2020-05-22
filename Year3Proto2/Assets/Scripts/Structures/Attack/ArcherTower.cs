@@ -14,20 +14,27 @@ public class ArcherTower : AttackStructure
     private List<GameObject> spawnedArrows = new List<GameObject>();
     private const float arrowSpeed = 2.5f;
 
-    void Start()
+    protected override void Awake()
     {
-        AttackStart();
+        base.Awake();
+        maxHealth = 350f;
+        health = maxHealth;
+        structureName = "Archer Tower";
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         maxHealth = 350f;
         health = maxHealth;
         structureName = "Archer Tower";
         SetFirerate();
     }
 
-    private void Update()
+    protected override void Update()
     {
-        AttackUpdate();
-
-        if (target)
+        base.Update();
+        if (target && isPlaced)
         {
             Vector3 ballistaPosition = ballista.transform.position;
             Vector3 targetPosition = target.transform.position;
@@ -46,7 +53,7 @@ public class ArcherTower : AttackStructure
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerData.AttemptPurchase(new ResourceBundle(3, 0, 0)))
+            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(3, 0, 0)))
             {
                 Fire();
             }

@@ -17,9 +17,14 @@ public class Longhaus : Structure
     protected float remainingTime = 3f;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        StructureStart();
+        base.Start();
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
         structureType = StructureType.longhaus;
         structureName = "Longhaus";
         maxHealth = 400f;
@@ -27,9 +32,9 @@ public class Longhaus : Structure
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
-        StructureUpdate();
+        base.Update();
         if (health > 0f)
         {
             remainingTime -= Time.deltaTime;
@@ -37,9 +42,9 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                gameMan.AddBatch(new Batch(3, ResourceType.metal));
-                gameMan.AddBatch(new Batch(7, ResourceType.wood));
-                gameMan.AddBatch(new Batch(7, ResourceType.food));
+                gameMan.AddBatch(new ResourceBatch(3, ResourceType.metal));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.wood));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.food));
             }
         }
     }

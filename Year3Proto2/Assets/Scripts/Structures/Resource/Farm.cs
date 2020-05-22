@@ -7,21 +7,17 @@ public class Farm : ResourceStructure
     public bool wasPlacedOnPlains = false;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        ResourceStart();
-        wasPlacedOnPlains = false;
-        resourceType = ResourceType.food;
-        structureName = "Farm";
-        maxHealth = 100f;
-        health = maxHealth;
+        base.Start();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void Awake()
     {
-        ResourceUpdate();
-        
+        base.Awake();
+        resourceType = ResourceType.food;
+        structureName = "Farm";
+        health = maxHealth;
     }
 
     public override void OnPlace()

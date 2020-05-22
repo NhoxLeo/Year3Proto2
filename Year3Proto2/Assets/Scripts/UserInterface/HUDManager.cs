@@ -110,27 +110,27 @@ public class HUDManager : MonoBehaviour
     {
         float foodVel = game.GetFoodVelocity(1);
         string foodVelDP = AddSign(Mathf.Round(foodVel * 10f) * .1f);
-        foodText.text = game.playerData.GetResource(ResourceType.food).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.food).ToString() + " (" + foodVelDP + "/s)";
+        foodText.text = game.playerResources.Get(ResourceType.food).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.food).ToString() + " (" + foodVelDP + "/s)";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
-        if (game.playerData.ResourceIsFull(ResourceType.food))
+        if (game.playerResources.ResourceIsFull(ResourceType.food))
         {
             foodText.color = fullColour;
         }
 
         float woodVel = game.GetWoodVelocity(1);
         string woodVelDP = AddSign(Mathf.Round(woodVel * 10f) * .1f);
-        woodText.text = game.playerData.GetResource(ResourceType.wood).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.wood).ToString() + " (" + woodVelDP + "/s)";
+        woodText.text = game.playerResources.Get(ResourceType.wood).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.wood).ToString() + " (" + woodVelDP + "/s)";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
-        if (game.playerData.ResourceIsFull(ResourceType.wood))
+        if (game.playerResources.ResourceIsFull(ResourceType.wood))
         {
             woodText.color = fullColour;
         }
 
         float metalVel = game.GetMetalVelocity(1);
         string metalVelDP = AddSign(Mathf.Round(metalVel * 10f) * .1f);
-        metalText.text = game.playerData.GetResource(ResourceType.metal).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.metal).ToString() + " (" + metalVelDP + "/s)";
+        metalText.text = game.playerResources.Get(ResourceType.metal).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.metal).ToString() + " (" + metalVelDP + "/s)";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
-        if (game.playerData.ResourceIsFull(ResourceType.metal))
+        if (game.playerResources.ResourceIsFull(ResourceType.metal))
         {
             metalText.color = fullColour;
         }

@@ -1,27 +1,28 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Collections.Generic;
 public class ResearchScreen : MonoBehaviour
 {
     [System.Serializable]
-    public struct Buildings
+    public struct Building
     {
+        public int ID;
         public GameObject card;
         public string name;
         public string description;
         public int price;
         public bool purchased;
-
-        public Upgrades[] upgrades;
+        public List<Upgrade> upgrades;
     }
 
     [SerializeField]
-    private Buildings[] buildings;
+    private List<Building> buildings;
 
     [System.Serializable]
-    public struct Upgrades
+    public struct Upgrade
     {
+        public int ID;
         public GameObject card;
         public string name;
         public string description;
@@ -30,13 +31,19 @@ public class ResearchScreen : MonoBehaviour
         public bool purchased;
     }
 
+    private TMP_Text RPCounter;
     public GameObject buildingCardPrefab;
     public GameObject upgradeCardPrefab;
-    public Transform cardPanel;
+    private Transform cardPanel;
+
+    public List<SuperManager.ResearchElementDefinition> researchDefinitions;
+    public Dictionary<int, bool> completedResearch;
 
     private void Start()
     {
+        RPCounter = transform.Find("RPCounter").GetComponent<TMP_Text>();
         cardPanel = transform.Find("BuildingCards");
+        GetResearchInfo();
 
         InitializeCards();
     }
@@ -52,27 +59,96 @@ public class ResearchScreen : MonoBehaviour
     private void InitializeCards()
     {
         // Get number of unlockable buildings
-        //buildings = new Buildings[x];
+        buildings = new List<Building>();
 
-        for (int i = 0; i < buildings.Length; i++)
+        foreach (SuperManager.ResearchElementDefinition building in researchDefinitions)
         {
-            // Instantiate building cards
-            buildings[i].card = Instantiate(buildingCardPrefab);
-            buildings[i].card.transform.SetParent(cardPanel);
-            buildings[i].card.transform.localScale = Vector3.one;
+            // If the element is a building
+            if (building.reqID == -1)
+            {
+                // set out building data
+                Building newBuilding = new Building
+                {
+                    name = building.name,
+                    price = building.price,
+                    description = building.description,
+                    purchased = completedResearch[building.ID],
+                    ID = building.ID
+                };
+                // create card
+                newBuilding.card = Instantiate(buildingCardPrefab);
+                newBuilding.card.transform.SetParent(cardPanel);
+                newBuilding.card.transform.localScale = Vector3.one;
+                newBuilding.card.transform.Find("ResearchInfo/ResearchButton").GetComponent<ResearchButtonDelegate>().ID = building.ID;
 
-            // Get number of upgrades per building
-            //buildings[i].upgrades = new Upgrades[x];
+                // set out building upgrade data
+                newBuilding.upgrades = new List<Upgrade>();
+                foreach (SuperManager.ResearchElementDefinition upgrade in researchDefinitions)
+                {
+                    // if the upgrade requires the building (it's an upgrade)
+                    if (upgrade.reqID == building.ID)
+                    {
+                        newBuilding.upgrades.Add(new Upgrade
+                        {
+                            name = upgrade.name,
+                            description = upgrade.description,
+                            price = upgrade.price,
+                            purchased = completedResearch[upgrade.ID],
+                            ID = upgrade.ID
+                        });
+                        if (upgrade.isSpecialUpgrade)
+                        {
+                            newBuilding.card.transform.Find("Upgrades/UpgradeSpecial").GetComponent<ResearchButtonDelegate>().ID = upgrade.ID;
+                            break;
+                        }
+                    }
+                }
 
-            // Instantiate standard upgrade cards
-            float upgradeLength = Mathf.Clamp(buildings[i].upgrades.Length - 1, 0, 4);
+                // create upgrade cards
+                int upgradeLength = newBuilding.upgrades.Count - 1;
+                for (int i = 0; i < upgradeLength; i++)
+                {
+                    // Instantiate standard upgrade cards
+                    Upgrade upgrade = newBuilding.upgrades[i];
+                    upgrade.card = Instantiate(upgradeCardPrefab);
+                    upgrade.card.transform.SetParent(newBuilding.card.transform.Find("Upgrades/UpgradesStandard"));
+                    upgrade.card.transform.localScale = Vector3.one;
+                    upgrade.card.GetComponent<ResearchButtonDelegate>().ID = upgrade.ID;
+                    newBuilding.upgrades[i] = upgrade;
+                }
+
+                buildings.Add(newBuilding);
+            }
+        }
+
+
+        // Get info from Research Manager
+        GetResearchInfo();
+
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            // Set info on building cards
+            buildings[i].card.transform.Find("BuildingName").GetComponent<TMP_Text>().text = buildings[i].name;
+            buildings[i].card.transform.Find("BuildingIcon").GetComponent<Image>().sprite = FindIcon(buildings[i].name);
+            buildings[i].card.transform.Find("ResearchInfo/Description").GetComponent<TMP_Text>().text = buildings[i].description;
+            buildings[i].card.transform.Find("ResearchInfo/Price").GetComponent<TMP_Text>().text = buildings[i].price.ToString();
+
+            int upgradeLength = Mathf.Clamp(buildings[i].upgrades.Count - 1, 0, 4);
+      
+            // Update upgrade info
+
             for (int j = 0; j < upgradeLength; j++)
             {
-                // Instantiate standard upgrade cards
-                buildings[i].upgrades[j].card = Instantiate(upgradeCardPrefab);
-                buildings[i].upgrades[j].card.transform.SetParent(buildings[i].card.transform.Find("Upgrades/UpgradesStandard"));
-                buildings[i].upgrades[j].card.transform.localScale = Vector3.one;
+                // Set info on standard upgrade cards
+                buildings[i].upgrades[j].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].name;
+                buildings[i].upgrades[j].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].description;
             }
+
+            // Set info on special upgrade card
+            Upgrade special = buildings[i].upgrades[upgradeLength];
+            special.card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
+            special.card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].name;
+            special.card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].description;
         }
 
         RefreshCards();
@@ -80,7 +156,9 @@ public class ResearchScreen : MonoBehaviour
 
     private void GetResearchInfo()
     {
-
+        SuperManager superMan = SuperManager.GetInstance();
+        researchDefinitions = superMan.researchDefinitions;
+        completedResearch = superMan.saveData.research;
     }
 
     private void RefreshCards()
@@ -88,16 +166,9 @@ public class ResearchScreen : MonoBehaviour
         // Get info from Research Manager
         GetResearchInfo();
 
-        for (int i = 0; i < buildings.Length; i++)
+        for (int i = 0; i < buildings.Count; i++)
         {
-            // Set info on building cards
-            buildings[i].card.transform.Find("BuildingName").GetComponent<TMP_Text>().text = buildings[i].name;
-            Debug.Log(buildings[i].name);
-            buildings[i].card.transform.Find("BuildingIcon").GetComponent<Image>().sprite = FindIcon(buildings[i].name);
-            buildings[i].card.transform.Find("ResearchInfo/Description").GetComponent<TMP_Text>().text = buildings[i].description;
-            buildings[i].card.transform.Find("ResearchInfo/Price").GetComponent<TMP_Text>().text = buildings[i].price.ToString();
-
-            int upgradeLength = Mathf.Clamp(buildings[i].upgrades.Length - 1, 0, 4);
+            int upgradeLength = Mathf.Clamp(buildings[i].upgrades.Count - 1, 0, 4);
 
             // Update some stuff depending on whether the building is purchased
             if (buildings[i].purchased)
@@ -107,16 +178,19 @@ public class ResearchScreen : MonoBehaviour
                 buildings[i].card.transform.Find("Check").gameObject.SetActive(true);
 
                 int counter = 0;
-                for (int j = 0; j < buildings[i].upgrades.Length; j++)
+                for (int j = 0; j < buildings[i].upgrades.Count; j++)
                 {
                     // Enable purchase of upgrades
-                    buildings[i].upgrades[j].canPurchase = true;
-
+                    Upgrade temp = buildings[i].upgrades[j];
+                    temp.canPurchase = true;
+                    buildings[i].upgrades[j] = temp;
                     // Check if special upgrade can be purchased
                     if (buildings[i].upgrades[j].purchased && j < upgradeLength) { counter++; }
                 }
 
-                buildings[i].upgrades[upgradeLength].canPurchase = (counter == upgradeLength);
+                Upgrade specialTemp = buildings[i].upgrades[upgradeLength];
+                specialTemp.canPurchase = counter == upgradeLength;
+                buildings[i].upgrades[upgradeLength] = specialTemp;
             }
             else
             {
@@ -124,22 +198,23 @@ public class ResearchScreen : MonoBehaviour
                 buildings[i].card.transform.Find("ResearchInfo").gameObject.SetActive(true);
                 buildings[i].card.transform.Find("Check").gameObject.SetActive(false);
 
-                for (int j = 0; j < buildings[i].upgrades.Length; j++)
+                for (int j = 0; j < buildings[i].upgrades.Count; j++)
                 {
                     // Disable purchase of upgrades
-                    buildings[i].upgrades[j].canPurchase = false;
+                    Upgrade temp = buildings[i].upgrades[j];
+                    temp.canPurchase = false;
+                    buildings[i].upgrades[j] = temp;
                 }
 
-                buildings[i].upgrades[upgradeLength].canPurchase = false;
+                Upgrade specialTemp = buildings[i].upgrades[upgradeLength];
+                specialTemp.canPurchase = false;
+                buildings[i].upgrades[upgradeLength] = specialTemp;
             }
 
             // Update upgrade info
 
             for (int j = 0; j < upgradeLength; j++)
             {
-                // Set info on standard upgrade cards
-                buildings[i].upgrades[j].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].name;
-                buildings[i].upgrades[j].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[j].description;
                 buildings[i].upgrades[j].card.GetComponent<Button>().interactable = buildings[i].upgrades[j].canPurchase;
 
                 // Show or hide price of standard upgrade based on purchase state
@@ -157,11 +232,11 @@ public class ResearchScreen : MonoBehaviour
             }
 
             // Set info on special upgrade card
-            buildings[i].upgrades[upgradeLength].card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
-            buildings[i].upgrades[upgradeLength].card.transform.Find("UpgradeName").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].name;
-            buildings[i].upgrades[upgradeLength].card.transform.Find("UpgradeDesc").GetComponent<TMP_Text>().text = buildings[i].upgrades[upgradeLength].description;
-            buildings[i].upgrades[upgradeLength].card.transform.Find("Lock").gameObject.SetActive(!buildings[i].upgrades[upgradeLength].canPurchase);
-            buildings[i].upgrades[upgradeLength].card.GetComponent<Button>().interactable = buildings[i].upgrades[upgradeLength].canPurchase;
+            Upgrade special = buildings[i].upgrades[upgradeLength];
+            special.card = buildings[i].card.transform.Find("Upgrades/UpgradeSpecial").gameObject;
+            special.card.transform.Find("Lock").gameObject.SetActive(!special.canPurchase);
+            special.card.GetComponent<Button>().interactable = special.canPurchase;
+            buildings[i].upgrades[upgradeLength] = special;
 
             // Show or hide price of special upgrade based on purchase state
             if (buildings[i].upgrades[upgradeLength].purchased)
@@ -176,6 +251,8 @@ public class ResearchScreen : MonoBehaviour
                 buildings[i].upgrades[upgradeLength].card.transform.Find("Purchased").gameObject.SetActive(false);
             }
         }
+
+        RPCounter.text = SuperManager.GetInstance().saveData.researchPoints.ToString();
     }
 
     private Sprite FindIcon(string _name)
@@ -195,5 +272,58 @@ public class ResearchScreen : MonoBehaviour
         }
 
         return buildingSprite;
+    }
+
+    public void ResearchButton(int _ID)
+    {
+        // attempt the research
+        bool success = SuperManager.GetInstance().AttemptResearch(_ID);
+
+        // we're talking about a building
+        if (researchDefinitions[_ID].reqID == -1)
+        {
+            int buildingNum = BuildingFromResearchID(_ID);
+            Building temp = buildings[buildingNum];
+            temp.purchased = success;
+            buildings[buildingNum] = temp;
+        }
+        else // we're talking about an upgrade
+        {
+            //get the building
+            int buildingNum = BuildingFromResearchID(researchDefinitions[_ID].reqID);
+            int upgradeNum = UpgradeFromResearchID(buildings[buildingNum], _ID);
+            Upgrade temp = buildings[buildingNum].upgrades[upgradeNum];
+            temp.purchased = success;
+            buildings[buildingNum].upgrades[upgradeNum] = temp;
+        }
+        // SuperManager.GetInstance().saveData.researchPoints <<< DAVID
+        // refresh cards
+        RefreshCards();
+    }
+
+    int BuildingFromResearchID(int _ID)
+    {
+        int buildingNum = -1;
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            if (buildings[i].ID == _ID)
+            {
+                buildingNum = i;
+            }
+        }
+        return buildingNum;
+    }
+
+    int UpgradeFromResearchID(Building _building, int _ID)
+    {
+        int upgradeNum = -1;
+        for (int i = 0; i < _building.upgrades.Count; i++)
+        {
+            if (_building.upgrades[i].ID == _ID)
+            {
+                upgradeNum = i;
+            }
+        }
+        return upgradeNum;
     }
 }
