@@ -3056,6 +3056,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3385442721169870011, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3385442721194681268, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -3084,12 +3089,12 @@ PrefabInstance:
     - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
       propertyPath: levels.Array.data[0].modifiers.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
       propertyPath: levels.Array.data[1].modifiers.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
@@ -3150,6 +3155,91 @@ PrefabInstance:
         type: 3}
       propertyPath: levels.Array.data[0].victoryDescription
       value: Collect 750 food, wood and metal
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].inProgress
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].modifiers.Array.data[0].title
+      value: Taxes
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].modifiers.Array.data[0].description
+      value: Buildings of a type will get more expensive the more they are built
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].modifiers.Array.data[0].modBonus
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].modifiers.Array.data[1].modBonus
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].modifiers.Array.data[1].title
+      value: Sparse Resources
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].modifiers.Array.data[1].description
+      value: The number of Resource tiles are reduced
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].victoryTitle
+      value: Endurance
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].victoryDescription
+      value: You must survive a total of 50 invasions
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[1].victoryValue
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[2].victoryTitle
+      value: Large Stockpile
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[2].victoryDescription
+      value: Collect 3000 food, wood and metal
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[2].victoryValue
+      value: 1200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[2].modifiers.Array.data[0].title
+      value: Something
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[2].modifiers.Array.data[0].description
+      value: Some description
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[2].modifiers.Array.data[0].modBonus
+      value: 0.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 4643317965704362056, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: levels.Array.data[0].modifiers.Array.data[0].title
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6489209068347872871, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
@@ -3465,6 +3555,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9151988340114875131, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 193.20117
+      objectReference: {fileID: 0}
+    - target: {fileID: 9151988340114875131, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -83.299805
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 865716adac792ae48be58378569ba4da, type: 3}

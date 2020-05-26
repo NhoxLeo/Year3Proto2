@@ -167,8 +167,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedLevel: 0
   levels: []
-  levelBadges: []
-  modPrefab: {fileID: 0}
+  modPrefab: {fileID: 6912654201860014719, guid: 2020d210b0e19d54196077da1255126f,
+    type: 3}
   victoryIcon: {fileID: 0}
   modifierIcon: {fileID: 0}
 --- !u!1 &1332305593490482048
@@ -306,7 +306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.29803923}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.34901962}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1558,6 +1558,8 @@ GameObject:
   - component: {fileID: 3385442721169870011}
   - component: {fileID: 3385442721169870009}
   - component: {fileID: 3385442721169870010}
+  - component: {fileID: 7951341275446794021}
+  - component: {fileID: 8945924371815416832}
   m_Layer: 5
   m_Name: LevelPanel
   m_TagString: Untagged
@@ -1632,6 +1634,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7951341275446794021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3385442721169869988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showTooltip: 1
+  width: 0
+  height: 0
+  toolSound: {fileID: 0}
+--- !u!225 &8945924371815416832
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3385442721169869988}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3385442721194681269
 GameObject:
   m_ObjectHideFlags: 0
@@ -1645,7 +1675,7 @@ GameObject:
   - component: {fileID: 3385442721194681162}
   - component: {fileID: 3385442721194681163}
   m_Layer: 5
-  m_Name: Price
+  m_Name: Reward
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
