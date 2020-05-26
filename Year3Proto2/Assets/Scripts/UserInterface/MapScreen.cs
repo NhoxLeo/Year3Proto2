@@ -20,6 +20,7 @@ public class MapScreen : MonoBehaviour
         public int bonusTotal;
         public List<Modifier> modifiers;
     }
+
     [SerializeField]
     private List<Level> levels;
 
@@ -39,6 +40,7 @@ public class MapScreen : MonoBehaviour
         public GameObject checkmark;
         public GameObject progressIndicator;
     }
+
     private List<LevelBadge> levelBadges;
 
     private TMP_Text RPCounter;
@@ -63,7 +65,6 @@ public class MapScreen : MonoBehaviour
 
     private void Update()
     {
-
     }
 
     private void InitializeLevels()
@@ -87,13 +88,12 @@ public class MapScreen : MonoBehaviour
 
                 levelBadges.Add(newBadge);
             }
-
         }
 
         SetSelectedLevel(1);
     }
 
-    private void SetLevelPanel() 
+    private void SetLevelPanel()
     {
         // Set level badge of level panel
         levelPanel.Find("LevelBadge/LevelText").GetComponent<TMP_Text>().text = selectedLevel.ToString();
@@ -139,6 +139,7 @@ public class MapScreen : MonoBehaviour
             buttonText.text = "CONTINUE";
         }
 
+        RPCounter.text = SuperManager.GetInstance().saveData.researchPoints.ToString();
     }
 
     public void SetSelectedLevel(int _level)
@@ -161,6 +162,4 @@ public class MapScreen : MonoBehaviour
 
         SetLevelPanel();
     }
-
-
 }
