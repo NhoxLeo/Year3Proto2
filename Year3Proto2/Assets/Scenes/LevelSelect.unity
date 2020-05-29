@@ -2981,6 +2981,31 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 955104860427758366, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 671776917}
+    - target: {fileID: 955104860427758366, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SceneSwitch
+      objectReference: {fileID: 0}
+    - target: {fileID: 955104860427758366, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 955104860427758366, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 955104860427758366, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
+      value: TitleScreen
+      objectReference: {fileID: 0}
     - target: {fileID: 1203317704040303696, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
       propertyPath: m_Name
@@ -3074,7 +3099,7 @@ PrefabInstance:
     - target: {fileID: 3959546620393530739, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4393695040662295431, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
