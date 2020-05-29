@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using TMPro;
 
 public class TitleScreen : MonoBehaviour
 {
     private GameObject gameLogo;
     private GameObject buttonStart;
-    private GameObject buttonTut;
+    private GameObject buttonMap;
+    private GameObject buttonRes;
+    private GameObject buttonCred;
     private GameObject buttonExit;
     private GameObject divider;
     private GameObject decorLeft;
@@ -23,8 +26,14 @@ public class TitleScreen : MonoBehaviour
         buttonStart = transform.Find("ButtonStart").gameObject;
         buttonStart.transform.localScale = new Vector3(0, 0, 0);
 
-        buttonTut = transform.Find("ButtonCredits").gameObject;
-        buttonTut.transform.localScale = new Vector3(0, 0, 0);
+        buttonMap = transform.Find("ButtonMap").gameObject;
+        buttonMap.transform.localScale = new Vector3(0, 0, 0);
+
+        buttonRes = transform.Find("ButtonResearch").gameObject;
+        buttonRes.transform.localScale = new Vector3(0, 0, 0);
+
+        buttonCred = transform.Find("ButtonCredits").gameObject;
+        buttonCred.transform.localScale = new Vector3(0, 0, 0);
 
         buttonExit = transform.Find("ButtonExit").gameObject;
         buttonExit.transform.localScale = new Vector3(0, 0, 0);
@@ -47,15 +56,21 @@ public class TitleScreen : MonoBehaviour
         titleSequence.Insert(1.5f, gameLogo.transform.DOScale(1.0f, 1.0f).SetEase(Ease.InOutBack));
 
         titleSequence.Insert(2.3f, buttonStart.transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.OutBack));
-        titleSequence.Insert(2.5f, buttonTut.transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.OutBack));
-        titleSequence.Insert(2.7f, buttonExit.transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.OutBack));
+        titleSequence.Insert(2.5f, buttonMap.transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.OutBack));
+        titleSequence.Insert(2.7f, buttonRes.transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.OutBack));
+        titleSequence.Insert(2.9f, buttonCred.transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.OutBack));
+        titleSequence.Insert(3.1f, buttonExit.transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.OutBack));
 
-        titleSequence.Insert(2.8f, decorLeft.GetComponent<CanvasGroup>().DOFade(1.0f, 1.0f).SetEase(Ease.OutSine));
-        titleSequence.Insert(2.8f, decorRight.GetComponent<CanvasGroup>().DOFade(1.0f, 1.0f).SetEase(Ease.OutSine));
-        titleSequence.Insert(2.8f, decorLeft.transform.DOLocalMoveX(decorLeftX, 1.0f).SetEase(Ease.OutQuint));
-        titleSequence.Insert(2.8f, decorRight.transform.DOLocalMoveX(decorRightX, 1.0f).SetEase(Ease.OutQuint));
+        titleSequence.Insert(3.1f, decorLeft.GetComponent<CanvasGroup>().DOFade(1.0f, 1.0f).SetEase(Ease.OutSine));
+        titleSequence.Insert(3.1f, decorRight.GetComponent<CanvasGroup>().DOFade(1.0f, 1.0f).SetEase(Ease.OutSine));
+        titleSequence.Insert(3.1f, decorLeft.transform.DOLocalMoveX(decorLeftX, 1.0f).SetEase(Ease.OutQuint));
+        titleSequence.Insert(3.1f, decorRight.transform.DOLocalMoveX(decorRightX, 1.0f).SetEase(Ease.OutQuint));
 
         titleSequence.Insert(2.95f, divider.transform.DOScaleX(1.0f, 1.0f).SetEase(Ease.OutQuint));
+
+        TMP_Text startText = transform.Find("ButtonStart/Text").GetComponent<TMP_Text>();
+        startText.text = SuperManager.GetInstance().saveData.currentMatch.match ? "CONTINUE" : "NEW GAME";
+        Debug.Log(SuperManager.GetInstance().currentLevel);
     }
 
     public void ClearMatch()
