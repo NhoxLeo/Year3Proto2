@@ -724,7 +724,7 @@ public class StructureManager : MonoBehaviour
 
     public void IncreaseStructureCost(string _structureName)
     {
-        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        if (superMan.CurrentLevelHasModifier(0))
         {
             if (!structureCosts.ContainsKey(_structureName))
             {
@@ -739,7 +739,7 @@ public class StructureManager : MonoBehaviour
 
     public void DecreaseStructureCost(string _structureName)
     {
-        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        if (superMan.CurrentLevelHasModifier(0))
         {
             if (!structureCosts.ContainsKey(_structureName))
             {
