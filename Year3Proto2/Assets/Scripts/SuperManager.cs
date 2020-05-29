@@ -97,6 +97,7 @@ public class SuperManager : MonoBehaviour
     public struct MatchSaveData
     {
         public bool match;
+        public int levelID;
         public PlayerResources playerResources;
         public Dictionary<string, ResourceBundle> structureCosts;
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
@@ -146,22 +147,56 @@ public class SuperManager : MonoBehaviour
     {
         public int ID;
         public int reqID;
-        public Dictionary<int, bool> modifiers;
-        public int maxWaves;
+        public int winCond;
+        public List<int> modifiers;
+        public int reward;
 
-        public LevelDefinition(int _id, int _reqID, Dictionary<int, bool> _modifiers, int _maxWaves = 0)
+        public LevelDefinition(int _id, int _reqID, int _winCond, List<int> _modifiers, int _reward)
         {
             ID = _id;
             reqID = _reqID;
+            winCond = _winCond;
             modifiers = _modifiers;
-            maxWaves = _maxWaves;
+            reward = _reward;
+        }
+    }
+
+    public struct ModifierDefinition
+    {
+        public int ID;
+        public string name;
+        public string description;
+        public float coefficient;
+
+        public ModifierDefinition(int _ID, string _name, string _description, float _coefficient)
+        {
+            ID = _ID;
+            name = _name;
+            description = _description;
+            coefficient = _coefficient;
+        }
+    }
+
+    public struct WinConditionDefinition
+    {
+        public int ID;
+        public string name;
+        public string description;
+
+        public WinConditionDefinition(int _ID, string _name, string _description)
+        {
+            ID = _ID;
+            name = _name;
+            description = _description;
         }
     }
 
     private static SuperManager instance = null;
     public GameSaveData saveData;
-    public List<ResearchElementDefinition> researchDefinitions;
-    public static List<LevelDefinition> levels;
+    public static List<ResearchElementDefinition> researchDefinitions;
+    public static List<LevelDefinition> levelDefinitions;
+    public static List<ModifierDefinition> modDefinitions;
+    public static List<WinConditionDefinition> winConditionDefinitions;
     public int currentLevel;
     [SerializeField]
     private bool startMaxed;
@@ -170,10 +205,100 @@ public class SuperManager : MonoBehaviour
     private StructureManager structMan;
     private EnemySpawner enemySpawner;
 
-
     public static SuperManager GetInstance()
     {
         return instance;
+    }
+
+    public static void PlayLevel(int _level)
+    {
+        GetInstance().currentLevel = _level;
+        if (_level != instance.saveData.currentMatch.levelID)
+        { instance.ClearCurrentMatch(); }
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("SamDev");
+    }
+
+    // populates _levelData with the levels
+    public static void GetLevelData(ref List<MapScreen.Level> _levelData)
+    {
+        GetInstance();
+        if (_levelData == null) { _levelData = new List<MapScreen.Level>(); }
+        else { _levelData.Clear(); }
+
+        for (int i = 0; i < levelDefinitions.Count; i++)
+        {
+            MapScreen.Level newLevelData = new MapScreen.Level();
+            newLevelData.completed = instance.saveData.levelCompletion[i];
+            newLevelData.locked = levelDefinitions[i].reqID == -1 ? false : instance.saveData.levelCompletion[levelDefinitions[i].reqID];
+            newLevelData.inProgress = instance.saveData.currentMatch.match && instance.saveData.currentMatch.levelID == i;
+            newLevelData.victoryTitle = winConditionDefinitions[levelDefinitions[i].winCond].name;
+            newLevelData.victoryDescription = winConditionDefinitions[levelDefinitions[i].winCond].description;
+            newLevelData.victoryValue = levelDefinitions[i].reward;
+            newLevelData.modifiers = new List<MapScreen.Modifier>();
+            GetModifierData(i, ref newLevelData.modifiers);
+            newLevelData.reward = Mathf.RoundToInt(newLevelData.victoryValue * (1f + newLevelData.GetTotalCoefficient()));
+            _levelData.Add(newLevelData);
+        }
+    }
+
+    public static bool GetModifier(string _modifierName, ref ModifierDefinition _modifierDefinition)
+    {
+        for (int i = 0; i < modDefinitions.Count; i++)
+        {
+            if (modDefinitions[i].name == _modifierName)
+            {
+                _modifierDefinition = modDefinitions[i];
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // populates _modifierData with the modifiers
+    public static void GetModifierData(int levelID, ref List<MapScreen.Modifier> _modifierData)
+    {
+        if (_modifierData == null) { _modifierData = new List<MapScreen.Modifier>(); }
+        else { _modifierData.Clear(); }
+
+        for (int i = 0; i < levelDefinitions[levelID].modifiers.Count; i++)
+        {
+            MapScreen.Modifier mod = new MapScreen.Modifier();
+            mod.title = modDefinitions[levelDefinitions[levelID].modifiers[i]].name;
+            mod.description = modDefinitions[levelDefinitions[levelID].modifiers[i]].description;
+            mod.modBonus = modDefinitions[levelDefinitions[levelID].modifiers[i]].coefficient;
+            _modifierData.Add(mod);
+        }
+    }
+
+    void DataInitialization()
+    {
+        researchDefinitions = new List<ResearchElementDefinition>()
+        {
+            new ResearchElementDefinition(0, -1, "Archer Tower", "Archer Tower Building Description", 200),
+            new ResearchElementDefinition(1, 0, "Range Boost", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(2, 0, "Power Shot", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(3, 0, "Fortification", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(4, 0, "Efficiency", "Extends defence range by 15%", 100),
+            new ResearchElementDefinition(5, 0, "Piercing Shot", "Extends defence range by 15%", 100, true),
+        };
+        levelDefinitions = new List<LevelDefinition>()
+        {
+            new LevelDefinition(0, -1, 0, new List<int>(){ 0 }, 500),
+            new LevelDefinition(1, 0, 0, new List<int>(), 750),
+            new LevelDefinition(2, 1, 0, new List<int>(){ 1 }, 750),
+            new LevelDefinition(3, 2, 1, new List<int>(), 1000)
+        };
+        modDefinitions = new List<ModifierDefinition>()
+        { 
+            new ModifierDefinition(0, "Snowball Prices", "The cost of building a structure goes up as you build more of the same kind.", 0.3f),
+            new ModifierDefinition(1, "Hermes Boots", "Enemies are 40% faster.", 0.4f)
+        };
+        winConditionDefinitions = new List<WinConditionDefinition>()
+        { 
+            new WinConditionDefinition(0, "Accumulate", "Gather the target total of each resource."),
+            new WinConditionDefinition(1, "Slaughter", "Gather the target total of each resource.")
+        };
+
     }
 
     void Awake()
@@ -189,22 +314,7 @@ public class SuperManager : MonoBehaviour
         gameMan = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
-
-        researchDefinitions = new List<ResearchElementDefinition>()
-        {
-            new ResearchElementDefinition(0, -1, "Archer Tower", "Archer Tower Building Description", 200),
-            new ResearchElementDefinition(1, 0, "Range Boost", "Extends defence range by 15%", 100),
-            new ResearchElementDefinition(2, 0, "Power Shot", "Extends defence range by 15%", 100),
-            new ResearchElementDefinition(3, 0, "Fortification", "Extends defence range by 15%", 100),
-            new ResearchElementDefinition(4, 0, "Efficiency", "Extends defence range by 15%", 100),
-            new ResearchElementDefinition(5, 0, "Piercing Shot", "Extends defence range by 15%", 100, true),
-        };
-        levels = new List<LevelDefinition>()
-        {
-            new LevelDefinition(0, -1, new Dictionary<int, bool>(){ {0, true}, {1, false} }, 5),
-            new LevelDefinition(1, 0, new Dictionary<int, bool>(){ {0, false}, {1, false} }),
-            new LevelDefinition(2, 0, new Dictionary<int, bool>(){ {0, false}, {1, true} })
-        };
+        DataInitialization();
         currentLevel = 0;
         if (startMaxed) { StartNewGame(); }
         else { ReadGameData(); }
@@ -247,6 +357,7 @@ public class SuperManager : MonoBehaviour
         if (_matchData.spawning != enemySpawner.IsSpawning()) { enemySpawner.ToggleSpawning(); }
         enemySpawner.SetWaveCurrent(_matchData.wave);
         enemySpawner.cooldown = _matchData.spawnerCooldown;
+        currentLevel = _matchData.levelID;
         // not so easy stuff...
         
         // structures
@@ -300,6 +411,7 @@ public class SuperManager : MonoBehaviour
         RefreshManagers();
 
         // easy stuff
+        save.levelID = currentLevel;
         save.enemyWaveSize = enemySpawner.enemiesPerWave;
         save.repairAll = gameMan.repairAll;
         save.repairMessage = gameMan.repairMessage;
@@ -360,7 +472,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CanPlayLevel(int _ID)
     {
-        int reqID = levels[_ID].reqID;
+        int reqID = levelDefinitions[_ID].reqID;
         // if the level does not require any levels to be complete
         if (reqID == -1)
         { return true; }
@@ -369,9 +481,9 @@ public class SuperManager : MonoBehaviour
         { return GetLevelComplete(reqID); }
     }
 
-    public bool CurrentLevelHasModifier(Modifiers _modifier)
+    public bool CurrentLevelHasModifier(int _modifierID)
     {
-        return levels[currentLevel].modifiers[(int)_modifier];
+        return levelDefinitions[currentLevel].modifiers.Contains(_modifierID);
     }
 
     public int GetResearchPoints()
@@ -442,45 +554,17 @@ public class SuperManager : MonoBehaviour
     private void StartNewGame()
     {
         saveData = new GameSaveData();
-        if (!startMaxed)
+        saveData.research = new Dictionary<int, bool>();
+        for (int i = 0; i < researchDefinitions.Count; i++)
         {
-            saveData.research = new Dictionary<int, bool>()
-            {
-                { 0, false },
-                { 1, false },
-                { 2, false },
-                { 3, false },
-                { 4, false },
-                { 5, false }
-            };
-            saveData.levelCompletion = new Dictionary<int, bool>()
-            {
-                { 1, false },
-                { 2, false },
-                { 3, false }
-            };
-            saveData.researchPoints = 1000;
+            saveData.research.Add(i, startMaxed);
         }
-        else
+        saveData.levelCompletion = new Dictionary<int, bool>();
+        for (int i = 0; i < levelDefinitions.Count; i++)
         {
-            saveData.research = new Dictionary<int, bool>()
-            {
-                { 0, true },
-                { 1, true },
-                { 2, true },
-                { 3, true },
-                { 4, true },
-                { 5, true }
-            };
-            saveData.levelCompletion = new Dictionary<int, bool>()
-            {
-                { 1, true },
-                { 2, true },
-                { 3, true }
-            };
-            saveData.researchPoints = 1000;
+            saveData.levelCompletion.Add(i, startMaxed);
         }
-
+        saveData.researchPoints = 1000;
         saveData.currentMatch = new MatchSaveData();
         saveData.currentMatch.match = false;
 
