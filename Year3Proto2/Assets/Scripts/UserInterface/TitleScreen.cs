@@ -72,9 +72,4 @@ public class TitleScreen : MonoBehaviour
         startText.text = SuperManager.GetInstance().saveData.currentMatch.match ? "CONTINUE" : "NEW GAME";
         Debug.Log(SuperManager.GetInstance().currentLevel);
     }
-
-    public void ClearMatch()
-    {
-        SuperManager.GetInstance().ClearCurrentMatch();
-    }
 }
