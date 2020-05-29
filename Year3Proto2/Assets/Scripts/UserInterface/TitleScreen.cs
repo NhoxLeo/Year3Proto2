@@ -14,6 +14,8 @@ public class TitleScreen : MonoBehaviour
     private GameObject decorLeft;
     private GameObject decorRight;
 
+    private Sequence titleSequence;
+
     void Start()
     {
         GetComponent<Tooltip>().showTooltip = true;
@@ -51,7 +53,7 @@ public class TitleScreen : MonoBehaviour
         decorRight.transform.DOLocalMoveX(32f, 0.0f);
         decorRight.GetComponent<CanvasGroup>().alpha = 0.0f;
 
-        Sequence titleSequence = DOTween.Sequence();
+        titleSequence = DOTween.Sequence();
         titleSequence.Insert(1.5f, gameLogo.transform.DOLocalMoveY(gameLogoY, 1.0f).SetEase(Ease.InOutBack));
         titleSequence.Insert(1.5f, gameLogo.transform.DOScale(1.0f, 1.0f).SetEase(Ease.InOutBack));
 
@@ -71,5 +73,13 @@ public class TitleScreen : MonoBehaviour
         TMP_Text startText = transform.Find("ButtonStart/Text").GetComponent<TMP_Text>();
         startText.text = SuperManager.GetInstance().saveData.currentMatch.match ? "CONTINUE" : "NEW GAME";
         Debug.Log(SuperManager.GetInstance().currentLevel);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
+        {
+            titleSequence.Complete();
+        }
     }
 }
