@@ -473,17 +473,16 @@ public class GameManager : MonoBehaviour
             // do refresh
             for (int i = 1; i <= 8; i++)
             {
+                if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
+                {
+                    if (!superMan.GetResearchComplete(SuperManager.k_iCatapult))
+                    {
+                        continue;
+                    }
+                }
                 buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerResources.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
             }
         }
-
-
-        /*
-        if (SuperManager.levels[superMan.currentLevel].maxWaves == enemySpawner.GetWaveCurrent() && enemySpawner.IsSpawning())
-        {
-            enemySpawner.ToggleSpawning();
-        }
-        */
 
         if (!gameover)
         {
@@ -538,14 +537,27 @@ public class GameManager : MonoBehaviour
 
     public bool WinConditionIsMet()
     {
-        int level = superMan.currentLevel;
-        switch (level)
+        int winCondition = superMan.GetCurrentWinCondition();
+        switch (winCondition)
         {
-            case 0:
-                return enemySpawner.GetWaveCurrent() == 5 && enemySpawner.enemyCount == 0;
-            case 1:
-                return playerResources.Get(ResourceType.metal) >= 3000 && playerResources.Get(ResourceType.food) >= 3000 && playerResources.Get(ResourceType.wood) >= 3000;
-
+            case SuperManager.k_iAccumulate:
+                return playerResources.Get(ResourceType.metal) >= 1500 && playerResources.Get(ResourceType.food) >= 1500 && playerResources.Get(ResourceType.wood) >= 1500;
+            case SuperManager.k_iAccumulateII:
+                return playerResources.Get(ResourceType.metal) >= 2500 && playerResources.Get(ResourceType.food) >= 2500 && playerResources.Get(ResourceType.wood) >= 2500;
+            case SuperManager.k_iAccumulateIII:
+                return playerResources.Get(ResourceType.metal) >= 7500 && playerResources.Get(ResourceType.food) >= 7500 && playerResources.Get(ResourceType.wood) >= 7500;
+            case SuperManager.k_iSlaughter:
+                return enemySpawner.GetKillCount() > 300;
+            case SuperManager.k_iSlaughterII:
+                return enemySpawner.GetKillCount() > 800;
+            case SuperManager.k_iSlaughterIII:
+                return enemySpawner.GetKillCount() > 2000;
+            case SuperManager.k_iSurvive:
+                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
+            case SuperManager.k_iSurviveII:
+                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
+            case SuperManager.k_iSurviveIII:
+                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
             default:
                 break;
         }

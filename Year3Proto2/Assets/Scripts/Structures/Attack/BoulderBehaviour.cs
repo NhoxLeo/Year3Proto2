@@ -9,6 +9,7 @@ public class BoulderBehaviour : MonoBehaviour
     public Vector3 target = Vector3.zero;
     public float damage = 5f;
     public float speed = 0.8f;
+    public float explosionRadius = 0.5f;
     private float arcFactor = 0.60f;
     private float distanceTravelled = 0f;
     public GameObject puffEffect;
@@ -33,8 +34,9 @@ public class BoulderBehaviour : MonoBehaviour
 
         if (transform.position.y <= 0.51f)
         {
-            RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, 0.5f, Vector3.up, 0f, 1 << LayerMask.NameToLayer("Enemy"));
-            Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+            RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, 1 << LayerMask.NameToLayer("Enemy"));
+            GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+            explosion.transform.localScale *= 2f * explosionRadius;
             foreach (RaycastHit enemyHit in hitEnemies)
             {
                 Enemy enemy = enemyHit.collider.GetComponent<Enemy>();

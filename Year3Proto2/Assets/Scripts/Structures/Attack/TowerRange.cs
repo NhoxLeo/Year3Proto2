@@ -19,18 +19,45 @@ public class TowerRange : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (parent == null) { GetParent(); }
-        if (!parent.GetEnemies().Contains(other.gameObject) && other.gameObject.GetComponent<Enemy>() != null)
+        // if we're talking about the enemy's trigger collider...
+        if (other.gameObject.GetComponent<Enemy>() != null)
         {
-            parent.GetEnemies().Add(other.gameObject);
+            // ignore it
+            return;
+        }
+        // if we're talking about the enemy's structure specific trigger collider...
+        if (other.transform.parent)
+        {
+            if (other.transform.parent.gameObject.GetComponent<Enemy>() != null)
+            {
+                if (!parent.GetEnemies().Contains(other.transform.parent.gameObject))
+                {
+                    parent.GetEnemies().Add(other.transform.parent.gameObject);
+                }
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (parent == null) { GetParent(); }
-        if (parent.GetEnemies().Contains(other.gameObject) && other.gameObject.GetComponent<Enemy>() != null)
+        // if we're talking about the enemy's trigger collider...
+        if (other.gameObject.GetComponent<Enemy>() != null)
         {
-            parent.GetEnemies().Remove(other.gameObject);
+            // ignore it
+            return;
         }
+        // if we're talking about the enemy's structure specific trigger collider...
+        if (other.transform.parent)
+        {
+            if (other.transform.parent.gameObject.GetComponent<Enemy>() != null)
+            {
+                if (parent.GetEnemies().Contains(other.transform.parent.gameObject))
+                {
+                    parent.GetEnemies().Remove(other.transform.parent.gameObject);
+                }
+            }
+        }
+        
     }
 }

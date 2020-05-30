@@ -9,12 +9,13 @@ public abstract class AttackStructure : Structure
     public float consumptionTime = 2f;
     protected float remainingTime = 2f;
     protected GameObject puffPrefab;
+    protected ResourceBundle attackCost;
 
     public abstract void Attack(GameObject target);
 
     public List<GameObject> GetEnemies()
     {
-        return enemies == null ? enemies = new List<GameObject>() : enemies;
+        return enemies ?? (enemies = new List<GameObject>());
     }
 
     public void DetectEnemies()
