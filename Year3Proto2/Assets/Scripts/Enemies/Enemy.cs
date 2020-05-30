@@ -40,6 +40,7 @@ public abstract class Enemy : MonoBehaviour
     {
         body = GetComponent<Rigidbody>();
         SetScale(Random.Range(0.1f, 0.2f));
+        speed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.k_iSwiftFootwork) ? 1.4f : 1.0f;
     }
 
     public void SetScale(float _scale)
@@ -56,7 +57,7 @@ public abstract class Enemy : MonoBehaviour
 
     public void OnKill()
     {
-        FindObjectOfType<EnemySpawner>().RemoveEnemy(GetComponent<Enemy>());
+        FindObjectOfType<EnemySpawner>().OnEnemyDeath(GetComponent<Enemy>());
         Instantiate(puffEffect, transform.position, Quaternion.identity);
     }
 

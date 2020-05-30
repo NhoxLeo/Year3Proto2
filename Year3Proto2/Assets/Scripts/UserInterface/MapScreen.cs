@@ -68,13 +68,9 @@ public class MapScreen : MonoBehaviour
         modifierGroup = transform.Find("LevelPanel/Modifiers");
 
         levels = new List<Level>();
-        SuperManager.GetLevelData(ref levels);
+        SuperManager.GetInstance().GetLevelData(ref levels);
 
         InitializeLevels();
-    }
-
-    private void Update()
-    {
     }
 
     private void InitializeLevels()
@@ -178,6 +174,6 @@ public class MapScreen : MonoBehaviour
     {
         // if we're conquering we need to go to a new level
         // but if we're resuming we need to load 
-        SuperManager.PlayLevel(selectedLevel);
+        SuperManager.GetInstance().PlayLevel(selectedLevel);
     }
 }

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class CatapultTower : AttackStructure
 {
-    public GameObject boulderPrefab;
+    public GameObject boulder;
     public GameObject catapult;
     public float boulderDamage = 5f;
+    public float boulderExplosionRadius = 0.25f;
+    private float boulderSpeed = 1.0f;
     public float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
@@ -24,6 +26,15 @@ public class CatapultTower : AttackStructure
     {
         base.Start();
         SetFirerate();
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultFortification)) { health = maxHealth *= 1.5f; }
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 15 : 30, 0);
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
+        {
+            boulderDamage *= 1.3f;
+            boulderSpeed *= 1.3f;
+        }
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultSuper)) { boulderExplosionRadius *= 1.5f; }
     }
 
     protected override void Update()
@@ -54,12 +65,17 @@ public class CatapultTower : AttackStructure
         }
     }
 
+
     void Fire()
     {
         fireCooldown = 0;
-        GameObject newBoulder = Instantiate(boulderPrefab, catapult.transform.position, Quaternion.identity, transform);
-        Boulder boulder = newBoulder.GetComponent<Boulder>();
-        boulder.SetTarget(target.transform.gameObject);
+        GameObject newBoulder = Instantiate(boulder, catapult.transform.position, Quaternion.identity, transform);
+        BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
+        boulderBehaviour.target = target.transform.position;
+        boulderBehaviour.damage = boulderDamage;
+        boulderBehaviour.speed = boulderSpeed;
+        boulderBehaviour.puffEffect = puffPrefab;
+        boulderBehaviour.explosionRadius = boulderExplosionRadius;
         GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 

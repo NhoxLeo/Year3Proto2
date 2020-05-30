@@ -79,8 +79,7 @@ public class BuildPanel : MonoBehaviour
         buildTip = buildTipBox.GetComponent<Tooltip>();
         buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
-        //if (!superMan.saveData.research[0]) { transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = locked; }
-        //if (!superMan.saveData.research[1]) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = locked; }
+        if (!superMan.GetResearchComplete(SuperManager.k_iCatapult)) { Color transparent = Color.white; transparent.a = 0f; transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = transparent; }
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -175,8 +174,7 @@ public class BuildPanel : MonoBehaviour
     {
         tooltipSelected = (Buildings)tool;
 
-        if (tooltipSelected == Buildings.MetalStorage && !superMan.saveData.research[0]) { return; }
-        if (tooltipSelected == Buildings.Catapult && !superMan.saveData.research[1]) { return; }
+        if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
 
         if (tooltipSelected == Buildings.None)
         {
@@ -213,8 +211,7 @@ public class BuildPanel : MonoBehaviour
 
     public void SelectBuilding(int buildingType)
     {
-        if ((Buildings)buildingType == Buildings.MetalStorage && !superMan.saveData.research[0]) { return; }
-        if ((Buildings)buildingType == Buildings.Catapult && !superMan.saveData.research[1]) { return; }
+        if ((Buildings)buildingType == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
 
         if ((Buildings)buildingType == buildingSelected)
         {
