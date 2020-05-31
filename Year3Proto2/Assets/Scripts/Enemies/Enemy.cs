@@ -89,7 +89,14 @@ public abstract class Enemy : MonoBehaviour
                     }
                     else
                     {
-                        Action(target, damage);
+                        if (structureTypes.Contains(target.GetStructureType()))
+                        {
+                            Action(target, damage);
+                        }
+                        else
+                        {
+                            enemyState = EnemyState.IDLE;
+                        }
                     }
                 }
                 break;

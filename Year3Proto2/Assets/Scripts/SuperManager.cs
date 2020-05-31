@@ -4,6 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using System;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
@@ -380,6 +381,24 @@ public class SuperManager : MonoBehaviour
         else { ReadGameData(); }
     }
 
+    private void Update()
+    {
+        // Hold control
+        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+        {
+            // Press D
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                // To delete saveData
+                if (File.Exists(StructureManager.GetSaveDataPath()))
+                {
+                    File.Delete(StructureManager.GetSaveDataPath());
+                }
+                ReadGameData();
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+        }
+    }
     public void RefreshManagers()
     {
         gameMan = FindObjectOfType<GameManager>();
@@ -482,7 +501,8 @@ public class SuperManager : MonoBehaviour
             wave = enemySpawner.GetWaveCurrent(),
             enemies = new List<EnemySaveData>(),
             structures = new List<StructureSaveData>(),
-            enemiesKilled = enemySpawner.GetKillCount()
+            enemiesKilled = enemySpawner.GetKillCount(),
+            spawnerCooldown = enemySpawner.cooldown            
         };
 
         // not so easy stuff...

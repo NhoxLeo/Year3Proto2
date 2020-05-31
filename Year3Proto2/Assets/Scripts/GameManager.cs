@@ -535,6 +535,11 @@ public class GameManager : MonoBehaviour
         superMan.SaveCurrentMatch();
     }
 
+    public void OnRestart()
+    {
+        superMan.ClearCurrentMatch();
+    }
+
     public bool WinConditionIsMet()
     {
         int winCondition = superMan.GetCurrentWinCondition();

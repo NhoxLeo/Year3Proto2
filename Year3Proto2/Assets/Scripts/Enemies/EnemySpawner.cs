@@ -87,6 +87,7 @@ public class EnemySpawner : MonoBehaviour
                 // then grow from that point until enough tiles are selected...
                 while (tilesSelected < tilesRequired)
                 {
+                    Debug.Log("Tiles selected: " + tilesSelected);
                     int tilesToFind = tilesRequired - tilesSelected;
                     TileBehaviour randomSelectedTile = waveSelectedTiles[Random.Range(0, waveSelectedTiles.Count)];
                     waveValidTiles.Clear();
@@ -111,7 +112,8 @@ public class EnemySpawner : MonoBehaviour
                         tilesSelected++;
                     }
                 }
-                
+
+                Vector3 lastEnemySpawnedPosition = Vector3.zero;
                 // for each tile
                 for (int i = 0; i < waveSelectedTiles.Count; i++)
                 {
@@ -127,12 +129,13 @@ public class EnemySpawner : MonoBehaviour
                         enemySpawnPosition.x += (j % 2 == 0) ? -.25f : .25f;
                         enemySpawnPosition.y += .55f;
                         enemySpawnPosition.z += ((j + 1) % 2 == 0) ? -.25f : .25f;
+                        lastEnemySpawnedPosition = enemySpawnPosition;
                         enemies.Add(Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], enemySpawnPosition, Quaternion.identity));
                         enemiesLeftToSpawn--;
                     }
                 }
                 // The start tile plays the spawn effect
-                GameManager.CreateAudioEffect("horn", startTile.transform.position);
+                GameManager.CreateAudioEffect("horn", lastEnemySpawnedPosition, 1, false);
 
                 // Next wave is bigger
                 enemiesPerWave += newEnemiesPerWave;

@@ -28,7 +28,7 @@ public class CatapultTower : AttackStructure
         SetFirerate();
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultFortification)) { health = maxHealth *= 1.5f; }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 15 : 30, 0);
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 8 : 16, 0);
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
         {
             boulderDamage *= 1.3f;
