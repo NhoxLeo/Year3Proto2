@@ -142,7 +142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3885598224526178540}
   - component: {fileID: 7269768182808550613}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: StructureTriggerObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}

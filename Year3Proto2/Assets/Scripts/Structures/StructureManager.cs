@@ -551,10 +551,15 @@ public class StructureManager : MonoBehaviour
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
                                             }
-                                            // if the tile we hit does not have an attached object...
+                                            // if the structure can be placed here...
                                             else { canPlaceHere = true; }
                                             if (canPlaceHere)
                                             {
+                                                if (structure.GetStructureType() == StructureType.attack)
+                                                {
+                                                    structure.GetComponent<AttackStructure>().ShowRangeDisplay(true);
+                                                }
+
                                                 if (attached)
                                                 {
                                                     if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)

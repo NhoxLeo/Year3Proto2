@@ -34,13 +34,16 @@ public class BoulderBehaviour : MonoBehaviour
 
         if (transform.position.y <= 0.51f)
         {
-            RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, 1 << LayerMask.NameToLayer("Enemy"));
+            RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
             GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
             explosion.transform.localScale *= 2f * explosionRadius;
             foreach (RaycastHit enemyHit in hitEnemies)
             {
-                Enemy enemy = enemyHit.collider.GetComponent<Enemy>();
-                enemy.Damage(damage);
+                Enemy enemy = enemyHit.transform.GetComponent<Enemy>();
+                if (enemy)
+                {
+                    enemy.Damage(damage);
+                }
             }
             Destroy(gameObject);
         }

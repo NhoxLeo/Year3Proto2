@@ -4,35 +4,33 @@ using UnityEngine;
 
 public class TowerRange : MonoBehaviour
 {
-    AttackStructure parent;
+    AttackStructure parentStructure;
+    int enemyStructureColliderLayer;
 
     private void Start()
     {
         GetParent();
+        enemyStructureColliderLayer = LayerMask.NameToLayer("EnemyStructureCollider");
     }
 
     private void GetParent()
     {
-        parent = transform.parent.GetComponent<AttackStructure>();
+        parentStructure = transform.parent.GetComponent<AttackStructure>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (parent == null) { GetParent(); }
-        // if we're talking about the enemy's trigger collider...
-        if (other.gameObject.GetComponent<Enemy>() != null)
+        if (other.gameObject.layer == enemyStructureColliderLayer)
         {
-            // ignore it
-            return;
-        }
-        // if we're talking about the enemy's structure specific trigger collider...
-        if (other.transform.parent)
-        {
-            if (other.transform.parent.gameObject.GetComponent<Enemy>() != null)
+            if (other.transform.parent)
             {
-                if (!parent.GetEnemies().Contains(other.transform.parent.gameObject))
+                if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    parent.GetEnemies().Add(other.transform.parent.gameObject);
+                    if (!parentStructure) { GetParent(); }
+                    if (!parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
+                    {
+                        parentStructure.GetEnemies().Add(other.transform.parent.gameObject);
+                    }
                 }
             }
         }
@@ -40,24 +38,19 @@ public class TowerRange : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (parent == null) { GetParent(); }
-        // if we're talking about the enemy's trigger collider...
-        if (other.gameObject.GetComponent<Enemy>() != null)
+        if (other.gameObject.layer == enemyStructureColliderLayer)
         {
-            // ignore it
-            return;
-        }
-        // if we're talking about the enemy's structure specific trigger collider...
-        if (other.transform.parent)
-        {
-            if (other.transform.parent.gameObject.GetComponent<Enemy>() != null)
+            if (other.transform.parent)
             {
-                if (parent.GetEnemies().Contains(other.transform.parent.gameObject))
+                if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    parent.GetEnemies().Remove(other.transform.parent.gameObject);
+                    if (!parentStructure) { GetParent(); }
+                    if (parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
+                    {
+                        parentStructure.GetEnemies().Remove(other.transform.parent.gameObject);
+                    }
                 }
             }
         }
-        
     }
 }

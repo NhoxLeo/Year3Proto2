@@ -13,7 +13,7 @@ public abstract class Enemy : MonoBehaviour
 {
     protected Structure target = null;
     protected EnemyState enemyState = EnemyState.IDLE;
-    protected readonly List<GameObject> enemiesInArea = new List<GameObject>();
+    protected List<GameObject> enemiesInArea = new List<GameObject>();
     public GameObject puffEffect;
 
     protected bool action = false;
@@ -67,7 +67,7 @@ public abstract class Enemy : MonoBehaviour
         switch (enemyState)
         {
             case EnemyState.ACTION:
-                if (target == null)
+                if (!target)
                 {
                     action = false;
                     enemyState = EnemyState.IDLE;
@@ -96,7 +96,7 @@ public abstract class Enemy : MonoBehaviour
             case EnemyState.WALK:
                 if (target)
                 {
-                    if (target.attachedTile == null)
+                    if (target.attachedTile)
                     {
                         if (!Next()) { target = null; }
                     }
@@ -142,7 +142,7 @@ public abstract class Enemy : MonoBehaviour
 
                 if (!Next()) { target = null; }
 
-                if (target == null)
+                if (!target)
                 {
                     transform.DOKill(false);
                     Destroy(gameObject);
@@ -160,7 +160,7 @@ public abstract class Enemy : MonoBehaviour
         {
             if (structureTypes.Contains(structure.GetStructureType()))
             {
-                if (structure.attachedTile != null)
+                if (structure.attachedTile)
                 {
                     Vector3 directionToTarget = structure.transform.position - currentPosition;
                     float dSqrToTarget = directionToTarget.sqrMagnitude;
@@ -182,7 +182,7 @@ public abstract class Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<Enemy>() != null)
+        if(other.GetComponent<Enemy>())
         {
             if (!enemiesInArea.Contains(other.gameObject)) enemiesInArea.Add(other.gameObject);
         }
@@ -203,7 +203,7 @@ public abstract class Enemy : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<Enemy>() != null)
+        if (other.GetComponent<Enemy>())
         {
             if (enemiesInArea.Contains(other.gameObject)) enemiesInArea.Remove(other.gameObject);
         }
@@ -211,7 +211,7 @@ public abstract class Enemy : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if(target != null)
+        if (target)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, target.transform.position);
@@ -223,7 +223,7 @@ public abstract class Enemy : MonoBehaviour
         // Get the vector between this enemy and the target
         Vector3 toTarget = target.transform.position - transform.position;
         Vector3 finalMotionVector = toTarget;
-        enemiesInArea.RemoveAll(enemy => enemy == null);
+        enemiesInArea.RemoveAll(enemy => !enemy);
         foreach (GameObject enemy in enemiesInArea)
         {
             // get a vector pointing from them to me, indicating a direction for this enemy to push 
