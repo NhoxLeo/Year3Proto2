@@ -19,9 +19,9 @@ public enum StructManState
 [Serializable]
 public struct ResourceBundle
 {
-    public int foodCost;
-    public int metalCost;
     public int woodCost;
+    public int metalCost;
+    public int foodCost;
     public ResourceBundle(int _wCost, int _mCost, int _fCost)
     {
         woodCost = _wCost;
@@ -551,10 +551,15 @@ public class StructureManager : MonoBehaviour
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
                                             }
-                                            // if the tile we hit does not have an attached object...
+                                            // if the structure can be placed here...
                                             else { canPlaceHere = true; }
                                             if (canPlaceHere)
                                             {
+                                                if (structure.GetStructureType() == StructureType.attack)
+                                                {
+                                                    structure.GetComponent<AttackStructure>().ShowRangeDisplay(true);
+                                                }
+
                                                 if (attached)
                                                 {
                                                     if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)
@@ -722,35 +727,30 @@ public class StructureManager : MonoBehaviour
         return false;
     }
 
-    public void IncreaseStructureCost(string _structureName)
+    private void IncreaseStructureCost(string _structureName)
     {
-        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        if (structureCosts.ContainsKey(_structureName))
         {
-            if (!structureCosts.ContainsKey(_structureName))
-            {
-                return;
-            }
-            int buildingCount = ++structureCounts[StructureIDs[_structureName]];
-            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-            structureCosts[_structureName] = new ResourceBundle(newCost);
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+            structureCounts[StructureIDs[_structureName]]++;
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = CalculateStructureCost(_structureName);
         }
     }
 
     public void DecreaseStructureCost(string _structureName)
     {
-        if (superMan.CurrentLevelHasModifier(SuperManager.Modifiers.CostIncrementing))
+        if (structureCosts.ContainsKey(_structureName))
         {
-            if (!structureCosts.ContainsKey(_structureName))
-            {
-                return;
-            }
-            int buildingCount = --structureCounts[StructureIDs[_structureName]];
-            if (buildingCount < 0) { buildingCount = structureCounts[StructureIDs[_structureName]] = 0; }
-            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-            structureCosts[_structureName] = new ResourceBundle(newCost);
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+            structureCounts[StructureIDs[_structureName]]--;
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = CalculateStructureCost(_structureName);
         }
+    }
+
+    private Vector3 CalculateStructureCost(string _structureName)
+    {
+        float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.k_iSnoballPrices) ? 2f : 4f;
+        Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
+        structureCosts[_structureName] = new ResourceBundle(newCost);
+        return newCost;
     }
 
     public void DeselectStructure()

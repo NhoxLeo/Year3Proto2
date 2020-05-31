@@ -16,9 +16,16 @@ public class MapScreen : MonoBehaviour
         public string victoryTitle;
         public string victoryDescription;
         public int victoryValue;
-        public int reward;
-        public int bonusTotal;
         public List<Modifier> modifiers;
+
+        public int reward;
+
+        public float GetTotalCoefficient()
+        {
+            float total = 0f;
+            foreach (Modifier mod in modifiers) { total += mod.modBonus; }
+            return total;
+        }
     }
 
     [SerializeField]
@@ -60,11 +67,10 @@ public class MapScreen : MonoBehaviour
         levelPanel = transform.Find("LevelPanel");
         modifierGroup = transform.Find("LevelPanel/Modifiers");
 
-        InitializeLevels();
-    }
+        levels = new List<Level>();
+        SuperManager.GetInstance().GetLevelData(ref levels);
 
-    private void Update()
-    {
+        InitializeLevels();
     }
 
     private void InitializeLevels()
@@ -89,21 +95,20 @@ public class MapScreen : MonoBehaviour
                 levelBadges.Add(newBadge);
             }
         }
-
-        SetSelectedLevel(1);
+        SetSelectedLevel(SuperManager.GetInstance().saveData.currentMatch.match ? SuperManager.GetInstance().saveData.currentMatch.levelID : 0);
     }
 
-    private void SetLevelPanel()
+    private void RefreshLevelPanel()
     {
         // Set level badge of level panel
-        levelPanel.Find("LevelBadge/LevelText").GetComponent<TMP_Text>().text = selectedLevel.ToString();
-        levelPanel.Find("LevelBadge/Check").gameObject.SetActive(levels[selectedLevel - 1].completed);
-        levelPanel.Find("LevelBadge/InProgress").gameObject.SetActive(levels[selectedLevel - 1].inProgress);
+        levelPanel.Find("LevelBadge/LevelText").GetComponent<TMP_Text>().text = (selectedLevel + 1).ToString();
+        levelPanel.Find("LevelBadge/Check").gameObject.SetActive(levels[selectedLevel].completed);
+        levelPanel.Find("LevelBadge/InProgress").gameObject.SetActive(levels[selectedLevel].inProgress);
 
         // Set victory info
-        levelPanel.Find("VictoryCard/Title").GetComponent<TMP_Text>().text = levels[selectedLevel - 1].victoryTitle;
-        levelPanel.Find("VictoryCard/Description").GetComponent<TMP_Text>().text = levels[selectedLevel - 1].victoryDescription;
-        levelPanel.Find("VictoryCard/Price").GetComponent<TMP_Text>().text = levels[selectedLevel - 1].victoryValue.ToString();
+        levelPanel.Find("VictoryCard/Title").GetComponent<TMP_Text>().text = levels[selectedLevel].victoryTitle;
+        levelPanel.Find("VictoryCard/Description").GetComponent<TMP_Text>().text = levels[selectedLevel].victoryDescription;
+        levelPanel.Find("VictoryCard/Price").GetComponent<TMP_Text>().text = levels[selectedLevel].victoryValue.ToString();
 
         // Destroy old modifier cards
         for (int i = 0; i < modifierGroup.childCount; i++)
@@ -112,8 +117,7 @@ public class MapScreen : MonoBehaviour
         }
 
         // Setup modifier cards
-        float modToalValue = 0.0f;
-        for (int i = 0; i < levels[selectedLevel - 1].modifiers.Count; i++)
+        for (int i = 0; i < levels[selectedLevel].modifiers.Count; i++)
         {
             // Instantiate
             GameObject card = Instantiate(modPrefab);
@@ -121,20 +125,19 @@ public class MapScreen : MonoBehaviour
             card.transform.localScale = Vector3.one;
 
             // Set info
-            card.transform.Find("Title").GetComponent<TMP_Text>().text = levels[selectedLevel - 1].modifiers[i].title;
-            card.transform.Find("Description").GetComponent<TMP_Text>().text = levels[selectedLevel - 1].modifiers[i].description;
-            card.transform.Find("Price").GetComponent<TMP_Text>().text = "+" + (levels[selectedLevel - 1].modifiers[i].modBonus * 100).ToString("0") + "%";
-            modToalValue += levels[selectedLevel - 1].modifiers[i].modBonus;
+            card.transform.Find("Title").GetComponent<TMP_Text>().text = levels[selectedLevel].modifiers[i].title;
+            card.transform.Find("Description").GetComponent<TMP_Text>().text = levels[selectedLevel].modifiers[i].description;
+            card.transform.Find("Price").GetComponent<TMP_Text>().text = "+" + (levels[selectedLevel].modifiers[i].modBonus * 100).ToString("0") + "%";
         }
 
         // Set total bonus and reward text
-        levelPanel.Find("ModifierTotal").GetComponent<TMP_Text>().text = "+" + modToalValue * 100 + "%";
-        levelPanel.Find("Reward").GetComponent<TMP_Text>().text = (levels[selectedLevel - 1].victoryValue * (1.0f + modToalValue)).ToString("0");
+        levelPanel.Find("ModifierTotal").GetComponent<TMP_Text>().text = "+" + levels[selectedLevel].GetTotalCoefficient() * 100 + "%";
+        levelPanel.Find("Reward").GetComponent<TMP_Text>().text = levels[selectedLevel].reward.ToString("0");
 
         // Adjust text on button
         TMP_Text buttonText = levelPanel.Find("Button/Text").GetComponent<TMP_Text>();
-        buttonText.text = levels[selectedLevel - 1].completed ? "REPLAY" : "CONQUER";
-        if (levels[selectedLevel - 1].inProgress)
+        buttonText.text = levels[selectedLevel].completed ? "REPLAY" : "CONQUER";
+        if (levels[selectedLevel].inProgress)
         {
             buttonText.text = "CONTINUE";
         }
@@ -146,20 +149,31 @@ public class MapScreen : MonoBehaviour
     {
         selectedLevel = _level;
 
+        UpdateLevelBadges();
+
+        levelPanel.GetComponent<Tooltip>().PulseTip();
+
+        RefreshLevelPanel();
+    }
+
+    private void UpdateLevelBadges()
+    {
         for (int i = 0; i < levelBadges.Count; i++)
         {
             // Set values of level badges
-            //if (i > 0) { levelBadges[i].button.interactable = (levels[i - 1].completed); }
             levelBadges[i].button.interactable = !levels[i].locked;
             levelBadges[i].levelNumber.text = (i + 1).ToString();
-            levelBadges[i].selectionOutline.showTooltip = (i == selectedLevel - 1);
+            levelBadges[i].selectionOutline.showTooltip = i == selectedLevel;
             levelBadges[i].selectionOutline.PulseTip();
             levelBadges[i].checkmark.SetActive(levels[i].completed);
             levelBadges[i].progressIndicator.SetActive(levels[i].inProgress);
         }
+    }
 
-        levelPanel.GetComponent<Tooltip>().PulseTip();
-
-        SetLevelPanel();
+    public void GoToLevel()
+    {
+        // if we're conquering we need to go to a new level
+        // but if we're resuming we need to load 
+        SuperManager.GetInstance().PlayLevel(selectedLevel);
     }
 }

@@ -20,6 +20,7 @@ public class EnemySpawner : MonoBehaviour
     public int newEnemiesPerWave = 4;
     public float cooldown = 30.0f;
     public float timeBetweenWaves = 30.0f;
+    private int enemiesKilled = 0;
     private int waveCounter = 0;
     private bool spawning = false;
 
@@ -27,6 +28,16 @@ public class EnemySpawner : MonoBehaviour
     List<TileBehaviour> availableTiles;
     List<TileBehaviour> waveValidTiles;
     List<TileBehaviour> waveSelectedTiles;
+
+    public int GetKillCount()
+    {
+        return enemiesKilled;
+    }
+
+    public void SetKillCount(int _killCount)
+    {
+        enemiesKilled = _killCount;
+    }
 
     private void Start()
     {
@@ -163,8 +174,9 @@ public class EnemySpawner : MonoBehaviour
         return spawning;
     }
 
-    public void RemoveEnemy(Enemy _enemy)
+    public void OnEnemyDeath(Enemy _enemy)
     {
+        enemiesKilled++;
         if (enemies.Contains(_enemy))
         {
             enemies.Remove(_enemy);

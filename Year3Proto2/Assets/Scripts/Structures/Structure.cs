@@ -3,12 +3,18 @@ public enum StructureType
 {
     resource,
     environment,
-    attack,
     storage,
+    attack,
     defense,
     longhaus
 };
 
+public enum ResourceType
+{
+    wood,
+    metal,
+    food
+}
 public abstract class Structure : MonoBehaviour
 {
     public TileBehaviour attachedTile = null;
@@ -26,6 +32,7 @@ public abstract class Structure : MonoBehaviour
     protected StructureType structureType;
     protected float timeSinceLastHit = Mathf.Infinity;
     protected GameManager gameMan;
+    protected SuperManager superMan;
     StructureManager structMan;
     protected BuildingInfo buildingInfo;
     protected HUDManager HUDMan;
@@ -210,6 +217,7 @@ public abstract class Structure : MonoBehaviour
     {
         structMan = FindObjectOfType<StructureManager>();
         gameMan = FindObjectOfType<GameManager>();
+        superMan = SuperManager.GetInstance();
         HUDMan = FindObjectOfType<HUDManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
@@ -221,6 +229,8 @@ public abstract class Structure : MonoBehaviour
         healthBar.target = gameObject;
         healthBar.fillAmount = 1.0f;
         healthBarInst.SetActive(false);
+        // health is set in awake, so this is called after and will affect all structures
+        if (superMan.CurrentLevelHasModifier(SuperManager.k_iPoorTimber)) { health = maxHealth *= 0.5f; }
     }
 
     protected virtual void Update()

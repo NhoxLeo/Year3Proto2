@@ -35,12 +35,14 @@ public class ResearchScreen : MonoBehaviour
     public GameObject buildingCardPrefab;
     public GameObject upgradeCardPrefab;
     private Transform cardPanel;
+    private SuperManager superMan;
 
     public List<SuperManager.ResearchElementDefinition> researchDefinitions;
     public Dictionary<int, bool> completedResearch;
 
     private void Start()
     {
+        superMan = SuperManager.GetInstance();
         RPCounter = transform.Find("RPCounter").GetComponent<TMP_Text>();
         cardPanel = transform.Find("BuildingCards");
         GetResearchInfo();
@@ -53,6 +55,12 @@ public class ResearchScreen : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             RefreshCards();
+        }
+        if (Input.GetKey(KeyCode.R))
+        {
+            // give the player some research points, they've earned it
+            superMan.saveData.researchPoints += 100;
+            UpdateRPCounter();
         }
     }
 
@@ -157,7 +165,7 @@ public class ResearchScreen : MonoBehaviour
     private void GetResearchInfo()
     {
         SuperManager superMan = SuperManager.GetInstance();
-        researchDefinitions = superMan.researchDefinitions;
+        researchDefinitions = SuperManager.researchDefinitions;
         completedResearch = superMan.saveData.research;
     }
 
@@ -252,6 +260,11 @@ public class ResearchScreen : MonoBehaviour
             }
         }
 
+        UpdateRPCounter();
+    }
+
+    private void UpdateRPCounter()
+    {
         RPCounter.text = SuperManager.GetInstance().saveData.researchPoints.ToString();
     }
 
