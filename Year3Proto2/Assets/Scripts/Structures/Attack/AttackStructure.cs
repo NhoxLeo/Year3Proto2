@@ -48,8 +48,8 @@ public abstract class AttackStructure : Structure
         {
             if (enemies.Count > 0)
             {
-                enemies.RemoveAll(enemy => enemy == null);
-                if (target == null)
+                enemies.RemoveAll(enemy => !enemy);
+                if (!target)
                 { 
                     float closestDistanceSqr = Mathf.Infinity;
                     Vector3 currentPosition = transform.position;
@@ -67,7 +67,7 @@ public abstract class AttackStructure : Structure
                         }
                     }
 
-                    if (nearestEnemy != null) target = nearestEnemy;
+                    if (nearestEnemy) target = nearestEnemy;
                 }
                 else
                 {
@@ -88,15 +88,20 @@ public abstract class AttackStructure : Structure
         }
     }
 
+    public void ShowRangeDisplay(bool _active)
+    {
+        transform.GetChild(0).GetChild(0).gameObject.SetActive(_active);
+    }
+
     public override void OnSelected()
     {
         base.OnSelected();
-        transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+        ShowRangeDisplay(true);
     }
 
     public override void OnDeselected()
     {
         base.OnDeselected();
-        transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+        ShowRangeDisplay(false);
     }
 }
