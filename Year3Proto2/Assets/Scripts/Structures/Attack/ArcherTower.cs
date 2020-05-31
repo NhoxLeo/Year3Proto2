@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ArcherTower : AttackStructure
 {
+    public const int k_CostArrowBase = 6;
     public GameObject arrow;
     public GameObject ballista;
     public float arrowDamage = 5f;
@@ -26,7 +27,9 @@ public class ArcherTower : AttackStructure
         SetFirerate();
         if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
         if (superMan.GetResearchComplete(SuperManager.k_iBallistaFortification)) { health = maxHealth *= 1.5f; }
-        attackCost = new ResourceBundle(superMan.GetResearchComplete(SuperManager.k_iBallistaEfficiency) ? 5 : 10, 0, 0);
+        bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.k_iBallistaEfficiency);
+        int woodCost = efficiencyUpgrade ? (k_CostArrowBase / 2) : k_CostArrowBase;
+        attackCost = new ResourceBundle(woodCost, 0, 0);
         if (superMan.GetResearchComplete(SuperManager.k_iBallistaPower))
         {
             arrowDamage *= 1.3f;

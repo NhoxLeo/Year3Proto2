@@ -252,12 +252,12 @@ public class StructureManager : MonoBehaviour
 
     public static string GetSaveDataPath()
     {
-        return kPathSaveData == null ? kPathSaveData = Application.persistentDataPath + "/saveData.dat" : kPathSaveData;
+        return kPathSaveData ?? (kPathSaveData = Application.persistentDataPath + "/saveData.dat");
     }
 
     public static string GetPGPPath()
     {
-        return kPathPGP == null ? kPathPGP = Application.persistentDataPath + "/PGP.dat" : kPathPGP;
+        return kPathPGP ?? (kPathPGP = Application.persistentDataPath + "/PGP.dat");
     }
 
     public static Structure FindStructureAtPosition(Vector3 _position)
@@ -351,50 +351,60 @@ public class StructureManager : MonoBehaviour
                 switch (structureState)
                 {
                     case StructManState.selecting:
-                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                        if (!Input.GetMouseButton(1))
                         {
-                            if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
                             {
-                                if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                Vector3 highlightpos = hit.transform.position;
-                                highlightpos.y = 0.501f;
-                                tileHighlight.position = highlightpos;
+                                Structure hitStructure = hit.transform.GetComponent<Structure>();
+                                // If the hit transform has a structure component... (SHOULD ALWAYS)
+                                if (hitStructure)
+                                {
+                                    if (hitStructure.attachedTile.GetPlayable())
+                                    {
+                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                        Vector3 highlightpos = hit.transform.position;
+                                        highlightpos.y = 0.501f;
+                                        tileHighlight.position = highlightpos;
+
+                                        PlayerMouseOver(hitStructure);
+
+                                        if (Input.GetMouseButtonDown(0))
+                                        {
+                                            SelectStructure(hitStructure);
+                                            structureState = StructManState.selected;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                        envInfo.SetVisibility(false);
+                                    }
+                                }
                             }
-                            else
+                            else if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
                             {
-                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                            }
-                        }
-                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
-                        {
-                            Structure hitStructure = hit.transform.GetComponent<Structure>();
-                            // If the hit transform has a structure component... (SHOULD ALWAYS)
-                            if (hitStructure)
-                            {
-                                if (hitStructure.attachedTile.GetPlayable())
+                                if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
                                 {
                                     if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
                                     Vector3 highlightpos = hit.transform.position;
                                     highlightpos.y = 0.501f;
                                     tileHighlight.position = highlightpos;
-
-                                    PlayerMouseOver(hitStructure);
-
-                                    if (Input.GetMouseButtonDown(0))
-                                    {
-                                        SelectStructure(hitStructure);
-                                        structureState = StructManState.selected;
-                                    }
                                 }
                                 else
                                 {
                                     if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                    envInfo.SetVisibility(false);
                                 }
+                            }
+                            else
+                            {
+                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                hoveroverStructure = null;
+                                hoveroverTime = 0f;
                             }
                         }
                         else
                         {
+                            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                             hoveroverStructure = null;
                             hoveroverTime = 0f;
                         }
@@ -417,109 +427,116 @@ public class StructureManager : MonoBehaviour
                             structureState = StructManState.selecting;
                             break;
                         }
-
                         else
                         {
                             Vector3 highlightpos = selectedStructure.transform.position;
                             highlightpos.y = 0.501f;
                             selectedTileHighlight.position = highlightpos;
 
-                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                            if (!Input.GetMouseButton(1))
                             {
-                                if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
                                 {
-                                    if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                    highlightpos = hit.transform.position;
-                                    highlightpos.y = 0.501f;
-                                    tileHighlight.position = highlightpos;
+                                    Structure hitStructure = hit.transform.GetComponent<Structure>();
+                                    if (hitStructure.attachedTile.GetPlayable())
+                                    {
+                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                        highlightpos = hit.transform.position;
+                                        highlightpos.y = 0.501f;
+                                        tileHighlight.position = highlightpos;
+
+                                        PlayerMouseOver(hitStructure);
+                                    }
+                                    else
+                                    {
+                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    }
+                                }
+                                else if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+                                {
+                                    if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                                    {
+                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                        highlightpos = hit.transform.position;
+                                        highlightpos.y = 0.501f;
+                                        tileHighlight.position = highlightpos;
+                                    }
+                                    else
+                                    {
+                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    }
                                 }
                                 else
                                 {
                                     if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    hoveroverStructure = null;
+                                    hoveroverTime = 0f;
                                 }
 
-                            }
-
-                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
-                            {
-                                Structure hitStructure = hit.transform.GetComponent<Structure>();
-                                if (hitStructure.attachedTile.GetPlayable())
+                                // If the player clicks the LMB...
+                                if (Input.GetMouseButtonDown(0))
                                 {
-                                    if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                    highlightpos = hit.transform.position;
-                                    highlightpos.y = 0.501f;
-                                    tileHighlight.position = highlightpos;
-
-                                    PlayerMouseOver(hitStructure);
+                                    // If the player has clicked on a structure...
+                                    if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                                    {
+                                        Structure hitStructure = hit.transform.GetComponent<Structure>();
+                                        // If the hit transform has a structure component... (SHOULD ALWAYS)
+                                        if (hitStructure)
+                                        {
+                                            if (hitStructure != selectedStructure)
+                                            {
+                                                if (hitStructure.attachedTile.GetPlayable())
+                                                {
+                                                    SelectStructure(hitStructure);
+                                                }
+                                            }
+                                        }
+                                        else // The hit transform hasn't got a structure component
+                                        {
+                                            Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DeselectStructure();
+                                        structureState = StructManState.selecting;
+                                        break;
+                                    }
                                 }
-                                else
+                                /*
+                                StructureType structureType = selectedStructure.GetStructureType();
+                                if (structureType == StructureType.resource || structureType == StructureType.attack)
                                 {
-                                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    if (Input.GetKeyDown(KeyCode.RightArrow))
+                                    {
+                                        selectedStructure.IncreaseFoodAllocation();
+                                    }
+                                    if (Input.GetKeyDown(KeyCode.LeftArrow))
+                                    {
+                                        selectedStructure.DecreaseFoodAllocation();
+                                    }
+                                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                                    {
+                                        selectedStructure.SetFoodAllocationMax();
+                                    }
+                                    if (Input.GetKeyDown(KeyCode.DownArrow))
+                                    {
+                                        selectedStructure.SetFoodAllocationMin();
+                                    }
                                 }
+                                */
                             }
                             else
                             {
+                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                 hoveroverStructure = null;
                                 hoveroverTime = 0f;
                             }
-
-                            // If the player clicks the LMB...
-                            if (Input.GetMouseButtonDown(0))
-                            {
-                                // If the player has clicked on a structure...
-                                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
-                                {
-                                    Structure hitStructure = hit.transform.GetComponent<Structure>();
-                                    // If the hit transform has a structure component... (SHOULD ALWAYS)
-                                    if (hitStructure)
-                                    {
-                                        if (hitStructure != selectedStructure)
-                                        {
-                                            if (hitStructure.attachedTile.GetPlayable())
-                                            {
-                                                SelectStructure(hitStructure);
-                                            }
-                                        }
-                                    }
-                                    else // The hit transform hasn't got a structure component
-                                    {
-                                        Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
-                                    }
-                                }
-                                else
-                                {
-                                    DeselectStructure();
-                                    structureState = StructManState.selecting;
-                                    break;
-                                }
-                            }
-
-                            StructureType structureType = selectedStructure.GetStructureType();
-                            if (structureType == StructureType.resource || structureType == StructureType.attack)
-                            {
-                                if (Input.GetKeyDown(KeyCode.RightArrow))
-                                {
-                                    selectedStructure.IncreaseFoodAllocation();
-                                }
-                                if (Input.GetKeyDown(KeyCode.LeftArrow))
-                                {
-                                    selectedStructure.DecreaseFoodAllocation();
-                                }
-                                if (Input.GetKeyDown(KeyCode.UpArrow))
-                                {
-                                    selectedStructure.SetFoodAllocationMax();
-                                }
-                                if (Input.GetKeyDown(KeyCode.DownArrow))
-                                {
-                                    selectedStructure.SetFoodAllocationMin();
-                                }
-                            }
-
                         }
                         break;
                     case StructManState.moving:
                         if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
                         {
                             if (structure.transform != null)
                             {
