@@ -6,8 +6,8 @@ public class EnemySpawner : MonoBehaviour
 {
     [Header("Prefabrication")]
     private List<Enemy> enemies = new List<Enemy>();
-    public Enemy[] enemyPrefabs;
-    public int enemyCount
+    public GameObject[] enemyPrefabs;
+    public int EnemyCount
     {
         get
         {
@@ -130,7 +130,7 @@ public class EnemySpawner : MonoBehaviour
                         enemySpawnPosition.y += .55f;
                         enemySpawnPosition.z += ((j + 1) % 2 == 0) ? -.25f : .25f;
                         lastEnemySpawnedPosition = enemySpawnPosition;
-                        enemies.Add(Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], enemySpawnPosition, Quaternion.identity));
+                        enemies.Add(Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], enemySpawnPosition, Quaternion.identity).GetComponent<Enemy>());
                         enemiesLeftToSpawn--;
                     }
                 }
@@ -147,7 +147,7 @@ public class EnemySpawner : MonoBehaviour
     {
         if (_saveData.enemy == "Invader")
         {
-            Enemy enemy = Instantiate(enemyPrefabs[0]);
+            Enemy enemy = Instantiate(enemyPrefabs[0]).GetComponent<Enemy>();
             enemy.transform.position = _saveData.position;
             enemy.transform.rotation = _saveData.orientation;
             enemy.SetScale(_saveData.scale);

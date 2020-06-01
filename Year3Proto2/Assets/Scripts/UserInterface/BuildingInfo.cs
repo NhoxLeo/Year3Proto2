@@ -8,7 +8,6 @@ public class BuildingInfo : MonoBehaviour
     private RectTransform rTrans;
     private Tooltip tool;
     private BuildPanel buildPanel;
-    private GameManager gameMan;
 
     public GameObject targetBuilding;
     public string buildingName;
@@ -48,7 +47,6 @@ public class BuildingInfo : MonoBehaviour
         foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
         repairButton = transform.Find("PanelMask/RepairButton").GetComponent<Button>();
         statInfoText.text = "";
-        gameMan = FindObjectOfType<GameManager>();
         updateTimer = updateInterval;
     }
     void LateUpdate()
@@ -93,9 +91,9 @@ public class BuildingInfo : MonoBehaviour
         }
         switch (buildingName)
         {
-            case "Archer Tower":
+            case "Ballista Tower":
                 foodComponent.SetActive(true);
-                ArcherTower archer = targetBuilding.GetComponent<ArcherTower>();
+                BallistaTower archer = targetBuilding.GetComponent<BallistaTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = archer.fireRate.ToString("F");
@@ -278,7 +276,7 @@ public class BuildingInfo : MonoBehaviour
             return;
 
         Structure targetStructure = targetBuilding.GetComponent<Structure>();
-        ResourceBundle repairCost = targetStructure.RepairCost();
+        //ResourceBundle repairCost = targetStructure.RepairCost();
         targetStructure.Repair();
         SetInfo();
     }

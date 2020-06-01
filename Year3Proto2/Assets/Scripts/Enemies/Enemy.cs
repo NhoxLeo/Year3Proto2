@@ -15,50 +15,54 @@ public abstract class Enemy : MonoBehaviour
     protected EnemyState enemyState = EnemyState.IDLE;
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     public GameObject puffEffect;
+    protected Animator animator;
 
     protected bool action = false;
 
     public float health = 10.0f;
-    public float avoidForce = 1.0f;
-    public float speed = 0.6f;
+    public float avoidForce = 3.0f;
+    public float speed = 0.3f;
     public float scale = 0.0f;
     public float damage = 2.0f;
     public bool nextReturnFalse = false;
     protected bool needToMoveAway;
-
-    protected float yPosition;
     protected float finalSpeed = 0.0f;
-    protected float jumpHeight = 0.0f;
 
     protected List<StructureType> structureTypes;
 
-    public abstract void Action(Structure structure, float damage);
+    public abstract void Action(Structure _structure, float _damage);
 
     private Rigidbody body;
 
     protected void EnemyStart()
     {
+        animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
-        SetScale(Random.Range(0.1f, 0.2f));
+        SetScale(Random.Range(1f, 2f));
         speed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.k_iSwiftFootwork) ? 1.4f : 1.0f;
+        transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
     }
 
     public void SetScale(float _scale)
     {
         scale = _scale;
-        jumpHeight = _scale;
-        yPosition = transform.position.y;
-
-        transform.localScale = new Vector3(_scale, _scale, _scale);
-        damage = _scale * 20.0f;
-        health = _scale * 75.0f;
-        finalSpeed = speed + _scale / 4.0f;
+        transform.localScale *= _scale;
+        damage = _scale * 2.0f;
+        health = _scale * 7.5f;
+        finalSpeed = speed + (1f / _scale) / 10.0f;
     }
 
     public void OnKill()
     {
         FindObjectOfType<EnemySpawner>().OnEnemyDeath(GetComponent<Enemy>());
         Instantiate(puffEffect, transform.position, Quaternion.identity);
+    }
+
+    protected void LookAtPosition(Vector3 _position)
+    {
+        transform.LookAt(_position);
+        // fixing animation problems
+        transform.right = transform.forward;
     }
 
     private void FixedUpdate()
@@ -69,7 +73,6 @@ public abstract class Enemy : MonoBehaviour
             case EnemyState.ACTION:
                 if (!target)
                 {
-                    action = false;
                     enemyState = EnemyState.IDLE;
                 }
                 else
@@ -103,23 +106,23 @@ public abstract class Enemy : MonoBehaviour
             case EnemyState.WALK:
                 if (target)
                 {
-                    if (target.attachedTile)
+                    animator.SetBool("Attack", false);
+                    if (!target.attachedTile)
                     {
                         if (!Next()) { target = null; }
                     }
 
                     // get the motion vector for this frame
                     Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
-                    transform.LookAt(newPosition);
+                    //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
+                    LookAtPosition(newPosition);
                     transform.position = newPosition;
 
                     // if we are close enough to the target, attack the target
-                    if ((target.transform.position - transform.position).magnitude <= (scale * 2f) + 0.5f)
+                    if ((target.transform.position - transform.position).magnitude <= (scale * 0.2f) + 0.5f)
                     {
                         enemyState = EnemyState.ACTION;
-                        needToMoveAway = (target.transform.position - transform.position).magnitude < (scale * 2f) + 0.45f;
-                        transform.DOKill(false);
-                        transform.DOMoveY(yPosition, 0.25f);
+                        needToMoveAway = (target.transform.position - transform.position).magnitude < (scale * 0.2f) + 0.45f;
                     }
 
 
@@ -143,17 +146,8 @@ public abstract class Enemy : MonoBehaviour
                 }
                 break;
             case EnemyState.IDLE:
-
-                transform.DOKill(false);
-                transform.DOMoveY(yPosition + jumpHeight, finalSpeed / 3.0f).SetLoops(-1, LoopType.Yoyo);
-
                 if (!Next()) { target = null; }
-
-                if (!target)
-                {
-                    transform.DOKill(false);
-                    Destroy(gameObject);
-                }
+                if (!target) { Destroy(gameObject); }
                 break;
         }
     }
@@ -229,13 +223,16 @@ public abstract class Enemy : MonoBehaviour
     {
         // Get the vector between this enemy and the target
         Vector3 toTarget = target.transform.position - transform.position;
+        toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
         enemiesInArea.RemoveAll(enemy => !enemy);
         foreach (GameObject enemy in enemiesInArea)
         {
             // get a vector pointing from them to me, indicating a direction for this enemy to push 
             Vector3 enemyToThis = transform.position - enemy.transform.position;
+            enemyToThis.y = 0f;
             float inverseMag = 1f / enemyToThis.magnitude;
+            if (inverseMag == Mathf.Infinity) { continue; }
             finalMotionVector += enemyToThis.normalized * inverseMag * avoidForce;
         }
         return finalMotionVector.normalized * finalSpeed;
