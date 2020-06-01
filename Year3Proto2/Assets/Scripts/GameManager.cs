@@ -247,7 +247,7 @@ public class GameManager : MonoBehaviour
             return runningTotal;
         }
     }
-    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true)
+    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
         spawnAudio.transform.position = _positon;
@@ -255,6 +255,7 @@ public class GameManager : MonoBehaviour
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(audioClips[_sfxName].length);
         spawnAudioComp.spatialBlend = _spatial ? 1.0f : 0.0f;
+        spawnAudioComp.dopplerLevel = _dopplerLevel;
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];

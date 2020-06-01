@@ -228,8 +228,6 @@ public class StructureManager : MonoBehaviour
         structureCosts = new Dictionary<string, ResourceBundle>
         {
             // NAME                                 wC       mC      fC
-            { "Longhaus",       new ResourceBundle(600,     200,    0) },
-
             { "Ballista Tower",   new ResourceBundle(150,     50,     0) },
             { "Catapult Tower", new ResourceBundle(200,     250,    0) },
 

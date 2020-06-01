@@ -246,7 +246,7 @@ public abstract class Structure : MonoBehaviour
             timeSinceLastHit += Time.deltaTime;
             if (health <= 0.0f)
             {
-                if (GetStructureType() == StructureType.longhaus) { gameMan.longhausDead = true; }
+                if (GetStructureType() == StructureType.longhaus) { gameMan.longhausDead = true; GlobalData.longhausDead = true; }
                 GameManager.CreateAudioEffect("buildingDestroy", transform.position);
                 structMan.DecreaseStructureCost(structureName);
                 attachedTile.Detach();

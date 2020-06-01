@@ -115,12 +115,26 @@ public class SuperManager : MonoBehaviour
     [Serializable]
     public struct EnemySaveData
     {
-        public string enemy;
+        public float health;
         public SaveVector3 position;
         public SaveQuaternion orientation;
         public SaveVector3 targetPosition;
         public EnemyState state;
+    }
+
+
+    [Serializable]
+    public struct InvaderSaveData
+    {
+        public EnemySaveData enemyData;
         public float scale;
+    }
+
+    [Serializable]
+    public struct HeavyInvaderSaveData
+    {
+        public EnemySaveData enemyData;
+        public bool[] equipment; 
     }
 
     [Serializable]
@@ -132,7 +146,8 @@ public class SuperManager : MonoBehaviour
         public Dictionary<string, ResourceBundle> structureCosts;
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
         public List<StructureSaveData> structures;
-        public List<EnemySaveData> enemies;
+        public List<InvaderSaveData> invaders;
+        public List<HeavyInvaderSaveData> heavyInvaders;
         public int enemyWaveSize;
         public int enemiesKilled;
         public float spawnerCooldown;
@@ -318,14 +333,14 @@ public class SuperManager : MonoBehaviour
             // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
             new ResearchElementDefinition(k_iBallista, k_iNoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
             new ResearchElementDefinition(k_iBallistaRange, k_iBallista, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(k_iBallistaPower, k_iBallista, "Power Shot", "Bolt velocity and damage improved by 30%.", 200),
+            new ResearchElementDefinition(k_iBallistaPower, k_iBallista, "Power Shot", "Damage improved by 30%.", 200),
             new ResearchElementDefinition(k_iBallistaFortification, k_iBallista, "Fortification", "Improves building durability by 50%.", 200),
             new ResearchElementDefinition(k_iBallistaEfficiency, k_iBallista, "Efficiency", "Bolt cost reduced by 50%.", 200),
             new ResearchElementDefinition(k_iBallistaSuper, k_iBallista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
 
             new ResearchElementDefinition(k_iCatapult, k_iNoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
             new ResearchElementDefinition(k_iCatapultRange, k_iCatapult, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(k_iCatapultPower, k_iCatapult, "Power Shot", "Boulder velocity and damage improved by 30%.", 200),
+            new ResearchElementDefinition(k_iCatapultPower, k_iCatapult, "Power Shot", "Damage improved by 30%.", 200),
             new ResearchElementDefinition(k_iCatapultFortification, k_iCatapult, "Fortification", "Improves building durability by 50%.", 200),
             new ResearchElementDefinition(k_iCatapultEfficiency, k_iCatapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
             new ResearchElementDefinition(k_iCatapultSuper, k_iCatapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
@@ -466,10 +481,16 @@ public class SuperManager : MonoBehaviour
             }
         }
 
-        // enemies
-        foreach (EnemySaveData saveData in _matchData.enemies)
+        // invaders
+        foreach (InvaderSaveData saveData in _matchData.invaders)
         {
-            enemySpawner.LoadEnemy(saveData);
+            enemySpawner.LoadInvader(saveData);
+        }
+
+        // heavies
+        foreach (HeavyInvaderSaveData saveData in _matchData.heavyInvaders)
+        {
+            enemySpawner.LoadHeavyInvader(saveData);
         }
 
         // enemies are spawned, let the towers detect them
@@ -504,26 +525,48 @@ public class SuperManager : MonoBehaviour
             playerResources = gameMan.playerResources,
             spawning = enemySpawner.IsSpawning(),
             wave = enemySpawner.GetWaveCurrent(),
-            enemies = new List<EnemySaveData>(),
+            invaders = new List<InvaderSaveData>(),
+            heavyInvaders = new List<HeavyInvaderSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = enemySpawner.GetKillCount(),
             spawnerCooldown = enemySpawner.cooldown            
         };
 
         // not so easy stuff...
-        // enemies
-        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        // invaders
+        foreach (Invader invader in FindObjectsOfType<Invader>())
         {
-            EnemySaveData saveData = new EnemySaveData
+            InvaderSaveData saveData = new InvaderSaveData
             {
-                enemy = "Invader", // TODO this needs to detect what kind of enemy it is
-                position = new SaveVector3(enemy.transform.position),
-                orientation = new SaveQuaternion(enemy.transform.rotation),
-                scale = enemy.scale,
-                targetPosition = new SaveVector3(enemy.GetTarget().transform.position),
-                state = enemy.GetState()
+                enemyData = new EnemySaveData
+                {
+                    health = invader.health,
+                    position = new SaveVector3(invader.transform.position),
+                    orientation = new SaveQuaternion(invader.transform.rotation),
+                    targetPosition = new SaveVector3(invader.GetTarget().transform.position),
+                    state = invader.GetState()
+                },
+                scale = invader.scale,
             };
-            save.enemies.Add(saveData);
+            save.invaders.Add(saveData);
+        }
+
+        // heavys
+        foreach (HeavyInvader heavy in FindObjectsOfType<HeavyInvader>())
+        {
+            HeavyInvaderSaveData saveData = new HeavyInvaderSaveData
+            {
+                enemyData = new EnemySaveData 
+                {
+                    health = heavy.health,
+                    position = new SaveVector3(heavy.transform.position),
+                    orientation = new SaveQuaternion(heavy.transform.rotation),
+                    targetPosition = new SaveVector3(heavy.GetTarget().transform.position),
+                    state = heavy.GetState()
+                },
+                equipment = heavy.GetEquipment()
+            };
+            save.heavyInvaders.Add(saveData);
         }
 
         // structures
@@ -680,7 +723,9 @@ public class SuperManager : MonoBehaviour
     {
         // calculate and reward research points
         // set level as completed
-        saveData.researchPoints += 30;
+        List<MapScreen.Level> levels = new List<MapScreen.Level>();
+        GetLevelData(ref levels);
+        saveData.researchPoints += levels[currentLevel].reward;
         saveData.levelCompletion[currentLevel] = true;
         WriteGameData();
     }

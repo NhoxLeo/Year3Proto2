@@ -315,7 +315,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefabs:
-  - {fileID: 916016539519140427, guid: 7c85a205f5e638b4d8eeace9685d07c6, type: 3}
+  - {fileID: 9204120433889576525, guid: 7c85a205f5e638b4d8eeace9685d07c6, type: 3}
+  - {fileID: 988293539997631803, guid: 6264ac47d9f223a48a9997c27bb5f11f, type: 3}
+  puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
+    type: 3}
   enemiesPerWave: 4
   newEnemiesPerWave: 2
   cooldown: 30
