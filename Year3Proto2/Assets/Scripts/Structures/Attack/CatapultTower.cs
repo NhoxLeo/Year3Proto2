@@ -32,7 +32,6 @@ public class CatapultTower : AttackStructure
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
         {
             boulderDamage *= 1.3f;
-            boulderSpeed *= 1.3f;
         }
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultSuper)) { boulderExplosionRadius *= 1.5f; }
     }

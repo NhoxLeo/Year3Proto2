@@ -66,7 +66,7 @@ public class EnvInfo : MonoBehaviour
     {
         if (!textbox)
         {
-            Debug.LogError("textbox implicit bool cast returned false");
+            //Debug.LogError("textbox implicit bool cast returned false");
             return;
         }
         textbox.text = info;

@@ -35,7 +35,6 @@ public class BallistaTower : AttackStructure
         if (superMan.GetResearchComplete(SuperManager.k_iBallistaPower))
         {
             arrowDamage *= 1.3f;
-            arrowSpeed *= 1.3f;
         }
     }
 

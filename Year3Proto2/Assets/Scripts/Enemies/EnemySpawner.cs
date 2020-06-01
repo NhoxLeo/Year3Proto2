@@ -7,6 +7,7 @@ public class EnemySpawner : MonoBehaviour
     [Header("Prefabrication")]
     private List<Enemy> enemies = new List<Enemy>();
     public GameObject[] enemyPrefabs;
+    public GameObject puffEffect;
     public int EnemyCount
     {
         get
@@ -45,7 +46,10 @@ public class EnemySpawner : MonoBehaviour
         availableTiles = new List<TileBehaviour>();
         waveValidTiles = new List<TileBehaviour>();
         waveSelectedTiles = new List<TileBehaviour>();
-
+        foreach (GameObject enemy in enemyPrefabs)
+        {
+            enemy.GetComponent<Enemy>().puffEffect = puffEffect;
+        }
         foreach (TileBehaviour tileBehaviour in FindObjectsOfType<TileBehaviour>())
         {
             if (tileBehaviour.GetSpawnTile()) availableTiles.Add(tileBehaviour);
@@ -55,6 +59,15 @@ public class EnemySpawner : MonoBehaviour
     public TileBehaviour GetRandomSpawnTile()
     {
         return availableTiles[Random.Range(0, availableTiles.Count)];
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            spawning = true;
+            cooldown = 0f;
+        }
     }
 
     private void FixedUpdate()
@@ -126,16 +139,43 @@ public class EnemySpawner : MonoBehaviour
                         // Calculate position to spawn enemy
                         Vector3 startingPosition = spawnTile.transform.position;
                         Vector3 enemySpawnPosition = startingPosition;
+                        // y position is handled by enemy start function
                         enemySpawnPosition.x += (j % 2 == 0) ? -.25f : .25f;
-                        enemySpawnPosition.y += .55f;
                         enemySpawnPosition.z += ((j + 1) % 2 == 0) ? -.25f : .25f;
-                        lastEnemySpawnedPosition = enemySpawnPosition;
-                        enemies.Add(Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], enemySpawnPosition, Quaternion.identity).GetComponent<Enemy>());
-                        enemiesLeftToSpawn--;
+                        if (j == 0 && enemiesToSpawnHere == 4) // we can afford a heavy invader
+                        {
+                            // 25% chance to spawn a heavy invader
+                            if (Random.Range(0f, 1f) > 0.20f)
+                            {
+                                enemySpawnPosition = spawnTile.transform.position;
+                                HeavyInvader newInvader = Instantiate(enemyPrefabs[1], enemySpawnPosition, Quaternion.identity).GetComponent<HeavyInvader>();
+                                lastEnemySpawnedPosition = newInvader.transform.position;
+                                newInvader.Randomize();
+                                enemies.Add(newInvader);
+                                enemiesLeftToSpawn -= 4;
+                                j = 3;
+                            }
+                            else
+                            {
+                                Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
+                                lastEnemySpawnedPosition = newInvader.transform.position;
+                                newInvader.SetScale(Random.Range(1.5f, 2f));
+                                enemies.Add(newInvader);
+                                enemiesLeftToSpawn--;
+                            }
+                        }
+                        else // we can't afford a heavy invader
+                        {
+                            Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
+                            lastEnemySpawnedPosition = newInvader.transform.position;
+                            newInvader.SetScale(Random.Range(1.5f, 2f));
+                            enemies.Add(newInvader);
+                            enemiesLeftToSpawn--;
+                        }
                     }
                 }
                 // The start tile plays the spawn effect
-                GameManager.CreateAudioEffect("horn", lastEnemySpawnedPosition, 1, false);
+                GameManager.CreateAudioEffect("horn", lastEnemySpawnedPosition);
 
                 // Next wave is bigger
                 enemiesPerWave += newEnemiesPerWave;
@@ -143,18 +183,26 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    public void LoadEnemy(SuperManager.EnemySaveData _saveData)
+    public void LoadInvader(SuperManager.InvaderSaveData _saveData)
     {
-        if (_saveData.enemy == "Invader")
-        {
-            Enemy enemy = Instantiate(enemyPrefabs[0]).GetComponent<Enemy>();
-            enemy.transform.position = _saveData.position;
-            enemy.transform.rotation = _saveData.orientation;
-            enemy.SetScale(_saveData.scale);
-            enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.targetPosition));
-            enemy.SetState(_saveData.state);
-            enemies.Add(enemy);
-        }
+        Invader enemy = Instantiate(enemyPrefabs[0]).GetComponent<Invader>();
+        enemy.transform.position = _saveData.enemyData.position;
+        enemy.transform.rotation = _saveData.enemyData.orientation;
+        enemy.SetScale(_saveData.scale);
+        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
+        enemy.SetState(_saveData.enemyData.state);
+        enemies.Add(enemy);
+    }
+
+    public void LoadHeavyInvader(SuperManager.HeavyInvaderSaveData _saveData)
+    {
+        HeavyInvader enemy = Instantiate(enemyPrefabs[0]).GetComponent<HeavyInvader>();
+        enemy.transform.position = _saveData.enemyData.position;
+        enemy.transform.rotation = _saveData.enemyData.orientation;
+        enemy.SetEquipment(_saveData.equipment);
+        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
+        enemy.SetState(_saveData.enemyData.state);
+        enemies.Add(enemy);
     }
 
     public int GetWaveCurrent()
