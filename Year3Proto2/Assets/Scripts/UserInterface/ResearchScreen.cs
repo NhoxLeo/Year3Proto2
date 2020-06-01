@@ -59,7 +59,7 @@ public class ResearchScreen : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             // give the player some research points, they've earned it
-            superMan.saveData.researchPoints = 9001;
+            superMan.SetResearchPoints(9001);
             superMan.WriteGameData();
             UpdateRPCounter();
         }
@@ -167,7 +167,7 @@ public class ResearchScreen : MonoBehaviour
     {
         SuperManager superMan = SuperManager.GetInstance();
         researchDefinitions = SuperManager.researchDefinitions;
-        completedResearch = superMan.saveData.research;
+        completedResearch = superMan.GetResearch();
     }
 
     private void RefreshCards()
@@ -266,7 +266,7 @@ public class ResearchScreen : MonoBehaviour
 
     private void UpdateRPCounter()
     {
-        RPCounter.text = SuperManager.GetInstance().saveData.researchPoints.ToString();
+        RPCounter.text = SuperManager.GetInstance().GetResearchPoints().ToString();
     }
 
     private Sprite FindIcon(string _name)

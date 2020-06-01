@@ -18,37 +18,25 @@ public class Invader : Enemy
         }); 
     }
 
-    public override void Action(Structure structure, float damage)
+    public override void Action(Structure _structure, float _damage)
     {
-        if (structure.GetHealth() != 0)
+        if (_structure.GetHealth() > 0)
         {
+            animator.SetBool("Attack", true);
             cooldown -= Time.deltaTime;
             if (cooldown <= 0)
             {
+                LookAtPosition(_structure.transform.position);
                 cooldown = finalSpeed / 0.6f;
-                transform.LookAt(target.transform.position);
-                if (structure.Damage(damage))
+                if (_structure.Damage(_damage))
                 {
-                    action = false;
                     enemyState = EnemyState.IDLE;
                 }
-            }
-
-            if (!action)
-            {
-                transform.DOKill(false);
-                transform.DOMoveY(yPosition, 0.0f);
-
-                transform.DOKill(false);
-                transform.LookAt(target.transform.position);
-                transform.DOMove(transform.position + (transform.forward * scale), finalSpeed / 3.0f).SetLoops(-1, LoopType.Yoyo);
-
-                action = true;
             }
         }
         else
         {
-            action = false;
+            animator.SetBool("Attack", false);
             enemyState = EnemyState.IDLE;
         }
     }

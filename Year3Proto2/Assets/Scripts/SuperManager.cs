@@ -225,7 +225,7 @@ public class SuperManager : MonoBehaviour
     }
 
     private static SuperManager instance = null;
-    public GameSaveData saveData;
+    private GameSaveData saveData;
     public static List<ResearchElementDefinition> researchDefinitions;
     public static List<LevelDefinition> levelDefinitions;
     public static List<ModifierDefinition> modDefinitions;
@@ -316,12 +316,12 @@ public class SuperManager : MonoBehaviour
         researchDefinitions = new List<ResearchElementDefinition>()
         {
             // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
-            new ResearchElementDefinition(k_iBallista, k_iNoRequirement, "Archer Tower", "The Archer Tower is great for single target damage, firing bolts at deadly speeds.", 0),
+            new ResearchElementDefinition(k_iBallista, k_iNoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
             new ResearchElementDefinition(k_iBallistaRange, k_iBallista, "Range Boost", "Extends tower range by 25%.", 200),
             new ResearchElementDefinition(k_iBallistaPower, k_iBallista, "Power Shot", "Bolt velocity and damage improved by 30%.", 200),
             new ResearchElementDefinition(k_iBallistaFortification, k_iBallista, "Fortification", "Improves building durability by 50%.", 200),
             new ResearchElementDefinition(k_iBallistaEfficiency, k_iBallista, "Efficiency", "Bolt cost reduced by 50%.", 200),
-            new ResearchElementDefinition(k_iBallistaSuper, k_iBallista, "Piercing Shot [WIP]", "Bolts rip right through their targets.", 500, true),
+            new ResearchElementDefinition(k_iBallistaSuper, k_iBallista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
 
             new ResearchElementDefinition(k_iCatapult, k_iNoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
             new ResearchElementDefinition(k_iCatapultRange, k_iCatapult, "Range Boost", "Extends tower range by 25%.", 200),
@@ -389,16 +389,21 @@ public class SuperManager : MonoBehaviour
             // Press D
             if (Input.GetKeyDown(KeyCode.D))
             {
-                // To delete saveData
-                if (File.Exists(StructureManager.GetSaveDataPath()))
-                {
-                    File.Delete(StructureManager.GetSaveDataPath());
-                }
-                ReadGameData();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                WipeReloadScene();
             }
         }
     }
+
+    private void WipeReloadScene()
+    {
+        if (File.Exists(StructureManager.GetSaveDataPath()))
+        {
+            File.Delete(StructureManager.GetSaveDataPath());
+        }
+        ReadGameData();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
     public void RefreshManagers()
     {
         gameMan = FindObjectOfType<GameManager>();
@@ -547,12 +552,47 @@ public class SuperManager : MonoBehaviour
 
     public bool GetResearchComplete(int _ID)
     {
+        if (saveData.research == null) { RestoreSaveData(); }
         return saveData.research[_ID];
+    }
+
+    public Dictionary<int, bool> GetResearch()
+    {
+        if (saveData.research == null) { RestoreSaveData(); }
+        return saveData.research;
     }
 
     public bool GetLevelComplete(int _ID)
     {
+        if (saveData.levelCompletion == null) { RestoreSaveData(); }
         return saveData.levelCompletion[_ID];
+    }
+
+    public bool CheckData()
+    {
+        return saveData.research != null && saveData.levelCompletion != null;
+    }
+
+    public void RestoreSaveData()
+    {
+        Debug.LogWarning("RestoreSaveData begins...");
+        Debug.Log("Attempting ReadGameData...");
+        ReadGameData();
+        if (CheckData())
+        {
+            Debug.Log("CheckData returns true, returning...");
+        }
+        else
+        {
+            Debug.LogWarning("CheckData returns false, saveData appears corrupt. Calling WipeReloadScene...");
+            WipeReloadScene();
+        }
+        Debug.Log("RestoreSaveData ends...");
+    }
+
+    public MatchSaveData GetSavedMatch()
+    {
+        return saveData.currentMatch;
     }
 
     public bool CanPlayLevel(int _ID)
@@ -574,6 +614,15 @@ public class SuperManager : MonoBehaviour
     public int GetResearchPoints()
     {
         return saveData.researchPoints;
+    }
+    public void AddResearchPoints(int _researchPoints)
+    {
+        saveData.researchPoints += _researchPoints;
+    }
+
+    public void SetResearchPoints(int _newResearchPoints)
+    {
+        saveData.researchPoints = _newResearchPoints;
     }
 
     public bool AttemptResearch(int _ID)
@@ -638,6 +687,10 @@ public class SuperManager : MonoBehaviour
 
     private void StartNewGame()
     {
+        if (!Application.isEditor)
+        {
+            startMaxed = false;
+        }
         saveData = new GameSaveData
         {
             research = new Dictionary<int, bool>(),

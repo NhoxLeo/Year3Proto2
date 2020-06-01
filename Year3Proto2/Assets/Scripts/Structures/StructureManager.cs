@@ -108,7 +108,7 @@ public class StructureManager : MonoBehaviour
 
     public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
     {
-        { BuildPanel.Buildings.Archer, "Archer Tower" },
+        { BuildPanel.Buildings.Ballista, "Ballista Tower" },
         { BuildPanel.Buildings.Catapult, "Catapult Tower" },
         { BuildPanel.Buildings.Farm, "Farm" },
         { BuildPanel.Buildings.Granary, "Granary" },
@@ -117,9 +117,20 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Mine" },
         { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
     };
+    public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
+    {
+        { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
+        { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
+        { BuildPanel.Buildings.Farm, "Collects Food from nearby plains tiles. Bonus if constructed on plains." },
+        { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
+        { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
+        { BuildPanel.Buildings.LumberPile, "Increases maximum Wood storage capacity." },
+        { BuildPanel.Buildings.Mine, "Collects Metal from nearby rocky hill tiles. Bonus if constructed on hills." },
+        { BuildPanel.Buildings.MetalStorage, "Increases maximum Metal storage capacity." }
+    };
     public static Dictionary<string, BuildPanel.Buildings> StructureIDs = new Dictionary<string, BuildPanel.Buildings>
     {
-        { "Archer Tower", BuildPanel.Buildings.Archer },
+        { "Ballista Tower", BuildPanel.Buildings.Ballista },
         { "Catapult Tower", BuildPanel.Buildings.Catapult },
         { "Farm", BuildPanel.Buildings.Farm },
         { "Granary", BuildPanel.Buildings.Granary },
@@ -130,7 +141,7 @@ public class StructureManager : MonoBehaviour
     };
     public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
     {
-        { BuildPanel.Buildings.Archer, 0 },
+        { BuildPanel.Buildings.Ballista, 0 },
         { BuildPanel.Buildings.Catapult, 0 },
         { BuildPanel.Buildings.Farm, 0 },
         { BuildPanel.Buildings.Granary, 0 },
@@ -198,7 +209,7 @@ public class StructureManager : MonoBehaviour
             // NAME                                                     NAME                                               wC       mC      fC
             { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
 
-            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
+            { "Ballista Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
             { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
 
             { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
@@ -219,7 +230,7 @@ public class StructureManager : MonoBehaviour
             // NAME                                 wC       mC      fC
             { "Longhaus",       new ResourceBundle(600,     200,    0) },
 
-            { "Archer Tower",   new ResourceBundle(150,     50,     0) },
+            { "Ballista Tower",   new ResourceBundle(150,     50,     0) },
             { "Catapult Tower", new ResourceBundle(200,     250,    0) },
 
             { "Farm",           new ResourceBundle(40,      0,      0) },
@@ -1051,7 +1062,7 @@ public class StructureManager : MonoBehaviour
                 // NAME                                                     NAME                                               wC       mC      fC
                 { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
 
-                { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
+                { "Ballista Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
                 { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
 
                 { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
@@ -1145,8 +1156,8 @@ public class StructureManager : MonoBehaviour
             case "Metal Storehouse":
                 envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
                 break;
-            case "Archer Tower":
-                envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
+            case "Ballista Tower":
+                envInfo.ShowInfo("The Ballista Tower fires bolts at enemy units.");
                 break;
             case "Catapult Tower":
                 envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
@@ -1502,8 +1513,10 @@ public class ProceduralGenerationWindow : EditorWindow
             // File does not exist, load defaults and save
             currentPreset = StructureManager.GetPGPHardPreset(0);
             currentPresetName = "Default";
-            pgpPresets = new Dictionary<string, ProceduralGenerationParameters>();
-            pgpPresets.Add(currentPresetName, currentPreset);
+            pgpPresets = new Dictionary<string, ProceduralGenerationParameters>
+            {
+                { currentPresetName, currentPreset }
+            };
             System.IO.FileStream file = System.IO.File.Create(kPathPresets);
             bf.Serialize(file, pgpPresets);
             file.Close();

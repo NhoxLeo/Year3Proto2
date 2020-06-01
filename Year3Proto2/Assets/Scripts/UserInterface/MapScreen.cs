@@ -95,7 +95,7 @@ public class MapScreen : MonoBehaviour
                 levelBadges.Add(newBadge);
             }
         }
-        SetSelectedLevel(SuperManager.GetInstance().saveData.currentMatch.match ? SuperManager.GetInstance().saveData.currentMatch.levelID : 0);
+        SetSelectedLevel(SuperManager.GetInstance().GetSavedMatch().match ? SuperManager.GetInstance().GetSavedMatch().levelID : 0);
     }
 
     private void RefreshLevelPanel()
@@ -142,7 +142,7 @@ public class MapScreen : MonoBehaviour
             buttonText.text = "CONTINUE";
         }
 
-        RPCounter.text = SuperManager.GetInstance().saveData.researchPoints.ToString();
+        RPCounter.text = SuperManager.GetInstance().GetResearchPoints().ToString();
     }
 
     public void SetSelectedLevel(int _level)
