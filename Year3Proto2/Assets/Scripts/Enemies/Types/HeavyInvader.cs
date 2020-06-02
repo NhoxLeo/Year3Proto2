@@ -135,14 +135,14 @@ public class HeavyInvader : Enemy
         Transform lowPoly = transform.GetChild(1);
         if (equipment[0]) // if sword
         {
-            damage = 20f;
-            animator.SetFloat("AttackSpeed", 1.5f);
+            damage = 10f;
+            animator.SetFloat("AttackSpeed", 1.2f);
             // disable axe
             lowPoly.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
         else // !sword means axe
         {
-            damage = 30f;
+            damage = 12f;
             animator.SetFloat("AttackSpeed", 1.0f);
             // disable sword
             lowPoly.GetChild(2).GetComponent<SkinnedMeshRenderer>().enabled = false;

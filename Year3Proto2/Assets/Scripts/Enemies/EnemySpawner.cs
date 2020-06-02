@@ -145,7 +145,8 @@ public class EnemySpawner : MonoBehaviour
                         if (j == 0 && enemiesToSpawnHere == 4) // we can afford a heavy invader
                         {
                             // 25% chance to spawn a heavy invader
-                            if (Random.Range(0f, 1f) > 0.20f)
+                            float random = Random.Range(0f, 1f);
+                            if (random < 0.20f)
                             {
                                 enemySpawnPosition = spawnTile.transform.position;
                                 HeavyInvader newInvader = Instantiate(enemyPrefabs[1], enemySpawnPosition, Quaternion.identity).GetComponent<HeavyInvader>();

@@ -348,7 +348,7 @@ public class SuperManager : MonoBehaviour
         levelDefinitions = new List<LevelDefinition>()
         {
             // ID, ID requirement, Win Condition, Modifiers, Base Reward
-            new LevelDefinition(0, k_iNoRequirement, k_iAccumulate, new List<int>(){ k_iSnoballPrices }, 500),
+            new LevelDefinition(0, k_iNoRequirement, k_iAccumulate, new List<int>(), 500),
             new LevelDefinition(1, 0, k_iSurvive, new List<int>(){ k_iSnoballPrices, k_iSwiftFootwork }, 750),
             new LevelDefinition(2, 1, k_iSurviveII, new List<int>(){ k_iDryFields, k_iPoorTimber }, 1000),
             new LevelDefinition(3, 2, k_iAccumulateIII, new List<int>(){ k_iSnoballPrices, k_iDryFields, k_iPoorTimber }, 1500)

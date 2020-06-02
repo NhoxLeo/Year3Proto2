@@ -105,7 +105,7 @@ public class Invader : Enemy
         transform.localScale *= _scale;
         damage = _scale * 2.0f;
         health = _scale * 7.5f;
-        finalSpeed = 0.3f + (1f / _scale) / 10.0f;
+        finalSpeed = 0.4f + (1f / _scale) / 10.0f;
         if (!animator) { animator = GetComponent<Animator>(); }
         animator.SetFloat("AttackSpeed", 1f / _scale);
     }
