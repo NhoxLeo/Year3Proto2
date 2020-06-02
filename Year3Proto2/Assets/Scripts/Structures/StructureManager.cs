@@ -251,7 +251,7 @@ public class StructureManager : MonoBehaviour
         superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
-        // read from disk PGPs. if they cannot be found, create & save them
+        GlobalData.longhausDead = false;
     }
 
     private void OnApplicationQuit()
