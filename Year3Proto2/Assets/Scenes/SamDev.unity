@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.41975814, g: 0.26420742, b: 0.17901911, a: 1}
+  m_IndirectSpecularColor: {r: 0.37818834, g: 0.21951954, b: 0.12142691, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -13419,6 +13419,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlainsEnvironment
       objectReference: {fileID: 0}
+    - target: {fileID: 867630619333440005, guid: 679644405cdfb064d99dcd82b25a1043,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 867630619333440026, guid: 679644405cdfb064d99dcd82b25a1043,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -22847,8 +22852,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1623785028}
   - {fileID: 1285681947}
+  - {fileID: 1623785028}
   - {fileID: 4254515843614187020}
   - {fileID: 1632502882}
   - {fileID: 1394582263}
@@ -28936,6 +28941,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ForestEnvironment
+      objectReference: {fileID: 0}
+    - target: {fileID: 5341910814397929053, guid: 4e9f2f5f61448494193a47ec524751b6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e9f2f5f61448494193a47ec524751b6, type: 3}
@@ -36141,6 +36151,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -46
+      objectReference: {fileID: 0}
+    - target: {fileID: 4539744038071132922, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4539744038071132922, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4539744038071132922, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4539744038071132922, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1443956078}
+    - target: {fileID: 4539744038071132922, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: OnRestart
+      objectReference: {fileID: 0}
+    - target: {fileID: 4539744038071132922, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4625095535303491183, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -72612,7 +72652,7 @@ Transform:
   - {fileID: 1381606763}
   - {fileID: 2085511499}
   m_Father: {fileID: 527962895}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1625295716 stripped
 Transform:
@@ -92558,6 +92598,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: HillsEnvironment
       objectReference: {fileID: 0}
+    - target: {fileID: 630367718963713476, guid: 68c1017aa6f7692489c20c4dbc2f7177,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 630367718963713499, guid: 68c1017aa6f7692489c20c4dbc2f7177,
         type: 3}
       propertyPath: m_RootOrder
@@ -97725,7 +97770,7 @@ PrefabInstance:
     - target: {fileID: 8430537201359463650, guid: 2567f6a73b42d0c4abb92e4b0f578a52,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8430537201359463650, guid: 2567f6a73b42d0c4abb92e4b0f578a52,
         type: 3}
@@ -97845,6 +97890,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlainsEnvironment
+      objectReference: {fileID: 0}
+    - target: {fileID: 867630619333440005, guid: 679644405cdfb064d99dcd82b25a1043,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 867630619333440026, guid: 679644405cdfb064d99dcd82b25a1043,
         type: 3}

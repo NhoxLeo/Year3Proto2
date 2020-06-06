@@ -2,33 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArcherTower : AttackStructure
+public class BallistaTower : AttackStructure
 {
+    public const int k_CostArrowBase = 6;
     public GameObject arrow;
     public GameObject ballista;
+    public static bool arrowPierce;
     public float arrowDamage = 5f;
+    private float arrowSpeed = 7.5f;
     public float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
-
-    private List<GameObject> spawnedArrows = new List<GameObject>();
-    private const float arrowSpeed = 2.5f;
 
     protected override void Awake()
     {
         base.Awake();
         maxHealth = 350f;
         health = maxHealth;
-        structureName = "Archer Tower";
+        structureName = "Ballista Tower";
     }
 
     protected override void Start()
     {
         base.Start();
-        maxHealth = 350f;
-        health = maxHealth;
-        structureName = "Archer Tower";
         SetFirerate();
+        if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.k_iBallistaFortification)) { health = maxHealth *= 1.5f; }
+        bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.k_iBallistaEfficiency);
+        int woodCost = efficiencyUpgrade ? (k_CostArrowBase / 2) : k_CostArrowBase;
+        attackCost = new ResourceBundle(woodCost, 0, 0);
+        arrowPierce = superMan.GetResearchComplete(SuperManager.k_iBallistaSuper);
+        if (superMan.GetResearchComplete(SuperManager.k_iBallistaPower))
+        {
+            arrowDamage *= 1.3f;
+        }
     }
 
     protected override void Update()
@@ -53,7 +60,7 @@ public class ArcherTower : AttackStructure
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(3, 0, 0)))
+            if (gameMan.playerResources.AttemptPurchase(attackCost))
             {
                 Fire();
             }
@@ -76,12 +83,12 @@ public class ArcherTower : AttackStructure
     {
         fireCooldown = 0;
         GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
-        ArrowBehaviour arrowBehaviour = newArrow.GetComponent<ArrowBehaviour>();
-        spawnedArrows.Add(newArrow);
+        BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
         arrowBehaviour.target = target.transform;
         arrowBehaviour.damage = arrowDamage;
         arrowBehaviour.speed = arrowSpeed;
         arrowBehaviour.puffEffect = puffPrefab;
+        arrowBehaviour.pierce = arrowPierce;
         GameManager.CreateAudioEffect("arrow", transform.position);
     }
 

@@ -64,6 +64,11 @@ public class EnvInfo : MonoBehaviour
 
     public void ShowInfo(string info)
     {
+        if (!textbox)
+        {
+            //Debug.LogError("textbox implicit bool cast returned false");
+            return;
+        }
         textbox.text = info;
         tool.SetHeight(tool.height);
     }

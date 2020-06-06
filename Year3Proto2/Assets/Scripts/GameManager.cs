@@ -115,6 +115,8 @@ public struct PlayerResources
                 return rMetalMax;
             case ResourceType.food:
                 return rFoodMax;
+            default:
+                break;
         }
         return 0;
     }
@@ -129,6 +131,8 @@ public struct PlayerResources
                 return (rMetal == rMetalMax);
             case ResourceType.food:
                 return (rFood == rFoodMax);
+            default:
+                break;
         }
         return false;
     }
@@ -196,7 +200,7 @@ public class GameManager : MonoBehaviour
     private float volumeFull;
     private float panelRefreshTimer = 0.0f;
     private float panelRefreshCooldown = 0.5f;
-    int recentFood
+    int RecentFood
     {
         get
         {
@@ -212,7 +216,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    int recentMetal
+    int RecentMetal
     {
         get
         {
@@ -228,7 +232,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    int recentWood
+    int RecentWood
     {
         get
         {
@@ -243,7 +247,7 @@ public class GameManager : MonoBehaviour
             return runningTotal;
         }
     }
-    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true)
+    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
         spawnAudio.transform.position = _positon;
@@ -251,6 +255,7 @@ public class GameManager : MonoBehaviour
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(audioClips[_sfxName].length);
         spawnAudioComp.spatialBlend = _spatial ? 1.0f : 0.0f;
+        spawnAudioComp.dopplerLevel = _dopplerLevel;
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];
@@ -303,17 +308,17 @@ public class GameManager : MonoBehaviour
 
     public float GetFoodVelocity(int _seconds)
     {
-        return recentFood * _seconds / batchMaxAge;
+        return RecentFood * _seconds / batchMaxAge;
     }
 
     public float GetMetalVelocity(int _seconds)
     {
-        return recentMetal * _seconds / batchMaxAge;
+        return RecentMetal * _seconds / batchMaxAge;
     }
 
     public float GetWoodVelocity(int _seconds)
     {
-        return recentWood * _seconds / batchMaxAge;
+        return RecentWood * _seconds / batchMaxAge;
     }
 
     public void OnStructurePlace()
@@ -473,17 +478,16 @@ public class GameManager : MonoBehaviour
             // do refresh
             for (int i = 1; i <= 8; i++)
             {
+                if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
+                {
+                    if (!superMan.GetResearchComplete(SuperManager.k_iCatapult))
+                    {
+                        continue;
+                    }
+                }
                 buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerResources.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
             }
         }
-
-
-        /*
-        if (SuperManager.levels[superMan.currentLevel].maxWaves == enemySpawner.GetWaveCurrent() && enemySpawner.IsSpawning())
-        {
-            enemySpawner.ToggleSpawning();
-        }
-        */
 
         if (!gameover)
         {
@@ -536,16 +540,34 @@ public class GameManager : MonoBehaviour
         superMan.SaveCurrentMatch();
     }
 
+    public void OnRestart()
+    {
+        superMan.ClearCurrentMatch();
+    }
+
     public bool WinConditionIsMet()
     {
-        int level = superMan.currentLevel;
-        switch (level)
+        int winCondition = superMan.GetCurrentWinCondition();
+        switch (winCondition)
         {
-            case 0:
-                return enemySpawner.GetWaveCurrent() == 5 && enemySpawner.enemyCount == 0;
-            case 1:
-                return playerResources.Get(ResourceType.metal) >= 3000 && playerResources.Get(ResourceType.food) >= 3000 && playerResources.Get(ResourceType.wood) >= 3000;
-
+            case SuperManager.k_iAccumulate:
+                return playerResources.Get(ResourceType.metal) >= 1500 && playerResources.Get(ResourceType.food) >= 1500 && playerResources.Get(ResourceType.wood) >= 1500;
+            case SuperManager.k_iAccumulateII:
+                return playerResources.Get(ResourceType.metal) >= 2500 && playerResources.Get(ResourceType.food) >= 2500 && playerResources.Get(ResourceType.wood) >= 2500;
+            case SuperManager.k_iAccumulateIII:
+                return playerResources.Get(ResourceType.metal) >= 7500 && playerResources.Get(ResourceType.food) >= 7500 && playerResources.Get(ResourceType.wood) >= 7500;
+            case SuperManager.k_iSlaughter:
+                return enemySpawner.GetKillCount() > 300;
+            case SuperManager.k_iSlaughterII:
+                return enemySpawner.GetKillCount() > 800;
+            case SuperManager.k_iSlaughterIII:
+                return enemySpawner.GetKillCount() > 2000;
+            case SuperManager.k_iSurvive:
+                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
+            case SuperManager.k_iSurviveII:
+                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
+            case SuperManager.k_iSurviveIII:
+                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
             default:
                 break;
         }

@@ -18,10 +18,10 @@ public class Boulder : Projectile
 
         for(int i = 0; i < hitColliders.Length; i++)
         {
-            if (hitColliders[i].GetComponent<Enemy>() != null)
+            Enemy enemy = hitColliders[i].gameObject.GetComponent<Enemy>();
+            if (enemy != null)
             {
                 Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
-                Enemy enemy = hitColliders[i].gameObject.GetComponent<Enemy>();
                 enemy.Damage((1.0f / Vector3.Distance(enemy.transform.position, _contactPoint)) * damage);
             }
         }

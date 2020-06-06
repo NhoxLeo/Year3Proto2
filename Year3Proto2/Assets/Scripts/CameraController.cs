@@ -83,8 +83,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        float mouseScroll = 0;
-        mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
+        float mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
         scrollOffset += mouseScroll;
 
         if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }

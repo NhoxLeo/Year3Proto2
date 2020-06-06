@@ -19,9 +19,9 @@ public enum StructManState
 [Serializable]
 public struct ResourceBundle
 {
-    public int foodCost;
-    public int metalCost;
     public int woodCost;
+    public int metalCost;
+    public int foodCost;
     public ResourceBundle(int _wCost, int _mCost, int _fCost)
     {
         woodCost = _wCost;
@@ -108,7 +108,7 @@ public class StructureManager : MonoBehaviour
 
     public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
     {
-        { BuildPanel.Buildings.Archer, "Archer Tower" },
+        { BuildPanel.Buildings.Ballista, "Ballista Tower" },
         { BuildPanel.Buildings.Catapult, "Catapult Tower" },
         { BuildPanel.Buildings.Farm, "Farm" },
         { BuildPanel.Buildings.Granary, "Granary" },
@@ -117,9 +117,20 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Mine" },
         { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
     };
+    public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
+    {
+        { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
+        { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
+        { BuildPanel.Buildings.Farm, "Collects Food from nearby plains tiles. Bonus if constructed on plains." },
+        { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
+        { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
+        { BuildPanel.Buildings.LumberPile, "Increases maximum Wood storage capacity." },
+        { BuildPanel.Buildings.Mine, "Collects Metal from nearby rocky hill tiles. Bonus if constructed on hills." },
+        { BuildPanel.Buildings.MetalStorage, "Increases maximum Metal storage capacity." }
+    };
     public static Dictionary<string, BuildPanel.Buildings> StructureIDs = new Dictionary<string, BuildPanel.Buildings>
     {
-        { "Archer Tower", BuildPanel.Buildings.Archer },
+        { "Ballista Tower", BuildPanel.Buildings.Ballista },
         { "Catapult Tower", BuildPanel.Buildings.Catapult },
         { "Farm", BuildPanel.Buildings.Farm },
         { "Granary", BuildPanel.Buildings.Granary },
@@ -130,7 +141,7 @@ public class StructureManager : MonoBehaviour
     };
     public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
     {
-        { BuildPanel.Buildings.Archer, 0 },
+        { BuildPanel.Buildings.Ballista, 0 },
         { BuildPanel.Buildings.Catapult, 0 },
         { BuildPanel.Buildings.Farm, 0 },
         { BuildPanel.Buildings.Granary, 0 },
@@ -198,7 +209,7 @@ public class StructureManager : MonoBehaviour
             // NAME                                                     NAME                                               wC       mC      fC
             { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
 
-            { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
+            { "Ballista Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
             { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
 
             { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
@@ -217,9 +228,7 @@ public class StructureManager : MonoBehaviour
         structureCosts = new Dictionary<string, ResourceBundle>
         {
             // NAME                                 wC       mC      fC
-            { "Longhaus",       new ResourceBundle(600,     200,    0) },
-
-            { "Archer Tower",   new ResourceBundle(150,     50,     0) },
+            { "Ballista Tower",   new ResourceBundle(150,     50,     0) },
             { "Catapult Tower", new ResourceBundle(200,     250,    0) },
 
             { "Farm",           new ResourceBundle(40,      0,      0) },
@@ -242,7 +251,7 @@ public class StructureManager : MonoBehaviour
         superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
-        // read from disk PGPs. if they cannot be found, create & save them
+        GlobalData.longhausDead = false;
     }
 
     private void OnApplicationQuit()
@@ -252,12 +261,12 @@ public class StructureManager : MonoBehaviour
 
     public static string GetSaveDataPath()
     {
-        return kPathSaveData == null ? kPathSaveData = Application.persistentDataPath + "/saveData.dat" : kPathSaveData;
+        return kPathSaveData ?? (kPathSaveData = Application.persistentDataPath + "/saveData.dat");
     }
 
     public static string GetPGPPath()
     {
-        return kPathPGP == null ? kPathPGP = Application.persistentDataPath + "/PGP.dat" : kPathPGP;
+        return kPathPGP ?? (kPathPGP = Application.persistentDataPath + "/PGP.dat");
     }
 
     public static Structure FindStructureAtPosition(Vector3 _position)
@@ -351,50 +360,60 @@ public class StructureManager : MonoBehaviour
                 switch (structureState)
                 {
                     case StructManState.selecting:
-                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                        if (!Input.GetMouseButton(1))
                         {
-                            if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
                             {
-                                if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                Vector3 highlightpos = hit.transform.position;
-                                highlightpos.y = 0.501f;
-                                tileHighlight.position = highlightpos;
+                                Structure hitStructure = hit.transform.GetComponent<Structure>();
+                                // If the hit transform has a structure component... (SHOULD ALWAYS)
+                                if (hitStructure)
+                                {
+                                    if (hitStructure.attachedTile.GetPlayable())
+                                    {
+                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                        Vector3 highlightpos = hit.transform.position;
+                                        highlightpos.y = 0.501f;
+                                        tileHighlight.position = highlightpos;
+
+                                        PlayerMouseOver(hitStructure);
+
+                                        if (Input.GetMouseButtonDown(0))
+                                        {
+                                            SelectStructure(hitStructure);
+                                            structureState = StructManState.selected;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                        envInfo.SetVisibility(false);
+                                    }
+                                }
                             }
-                            else
+                            else if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
                             {
-                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                            }
-                        }
-                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
-                        {
-                            Structure hitStructure = hit.transform.GetComponent<Structure>();
-                            // If the hit transform has a structure component... (SHOULD ALWAYS)
-                            if (hitStructure)
-                            {
-                                if (hitStructure.attachedTile.GetPlayable())
+                                if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
                                 {
                                     if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
                                     Vector3 highlightpos = hit.transform.position;
                                     highlightpos.y = 0.501f;
                                     tileHighlight.position = highlightpos;
-
-                                    PlayerMouseOver(hitStructure);
-
-                                    if (Input.GetMouseButtonDown(0))
-                                    {
-                                        SelectStructure(hitStructure);
-                                        structureState = StructManState.selected;
-                                    }
                                 }
                                 else
                                 {
                                     if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                    envInfo.SetVisibility(false);
                                 }
+                            }
+                            else
+                            {
+                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                hoveroverStructure = null;
+                                hoveroverTime = 0f;
                             }
                         }
                         else
                         {
+                            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                             hoveroverStructure = null;
                             hoveroverTime = 0f;
                         }
@@ -417,109 +436,116 @@ public class StructureManager : MonoBehaviour
                             structureState = StructManState.selecting;
                             break;
                         }
-
                         else
                         {
                             Vector3 highlightpos = selectedStructure.transform.position;
                             highlightpos.y = 0.501f;
                             selectedTileHighlight.position = highlightpos;
 
-                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                            if (!Input.GetMouseButton(1))
                             {
-                                if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
                                 {
-                                    if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                    highlightpos = hit.transform.position;
-                                    highlightpos.y = 0.501f;
-                                    tileHighlight.position = highlightpos;
+                                    Structure hitStructure = hit.transform.GetComponent<Structure>();
+                                    if (hitStructure.attachedTile.GetPlayable())
+                                    {
+                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                        highlightpos = hit.transform.position;
+                                        highlightpos.y = 0.501f;
+                                        tileHighlight.position = highlightpos;
+
+                                        PlayerMouseOver(hitStructure);
+                                    }
+                                    else
+                                    {
+                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    }
+                                }
+                                else if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+                                {
+                                    if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
+                                    {
+                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+                                        highlightpos = hit.transform.position;
+                                        highlightpos.y = 0.501f;
+                                        tileHighlight.position = highlightpos;
+                                    }
+                                    else
+                                    {
+                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    }
                                 }
                                 else
                                 {
                                     if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    hoveroverStructure = null;
+                                    hoveroverTime = 0f;
                                 }
 
-                            }
-
-                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
-                            {
-                                Structure hitStructure = hit.transform.GetComponent<Structure>();
-                                if (hitStructure.attachedTile.GetPlayable())
+                                // If the player clicks the LMB...
+                                if (Input.GetMouseButtonDown(0))
                                 {
-                                    if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                    highlightpos = hit.transform.position;
-                                    highlightpos.y = 0.501f;
-                                    tileHighlight.position = highlightpos;
-
-                                    PlayerMouseOver(hitStructure);
+                                    // If the player has clicked on a structure...
+                                    if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                                    {
+                                        Structure hitStructure = hit.transform.GetComponent<Structure>();
+                                        // If the hit transform has a structure component... (SHOULD ALWAYS)
+                                        if (hitStructure)
+                                        {
+                                            if (hitStructure != selectedStructure)
+                                            {
+                                                if (hitStructure.attachedTile.GetPlayable())
+                                                {
+                                                    SelectStructure(hitStructure);
+                                                }
+                                            }
+                                        }
+                                        else // The hit transform hasn't got a structure component
+                                        {
+                                            Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DeselectStructure();
+                                        structureState = StructManState.selecting;
+                                        break;
+                                    }
                                 }
-                                else
+                                /*
+                                StructureType structureType = selectedStructure.GetStructureType();
+                                if (structureType == StructureType.resource || structureType == StructureType.attack)
                                 {
-                                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                    if (Input.GetKeyDown(KeyCode.RightArrow))
+                                    {
+                                        selectedStructure.IncreaseFoodAllocation();
+                                    }
+                                    if (Input.GetKeyDown(KeyCode.LeftArrow))
+                                    {
+                                        selectedStructure.DecreaseFoodAllocation();
+                                    }
+                                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                                    {
+                                        selectedStructure.SetFoodAllocationMax();
+                                    }
+                                    if (Input.GetKeyDown(KeyCode.DownArrow))
+                                    {
+                                        selectedStructure.SetFoodAllocationMin();
+                                    }
                                 }
+                                */
                             }
                             else
                             {
+                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                 hoveroverStructure = null;
                                 hoveroverTime = 0f;
                             }
-
-                            // If the player clicks the LMB...
-                            if (Input.GetMouseButtonDown(0))
-                            {
-                                // If the player has clicked on a structure...
-                                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Structure")))
-                                {
-                                    Structure hitStructure = hit.transform.GetComponent<Structure>();
-                                    // If the hit transform has a structure component... (SHOULD ALWAYS)
-                                    if (hitStructure)
-                                    {
-                                        if (hitStructure != selectedStructure)
-                                        {
-                                            if (hitStructure.attachedTile.GetPlayable())
-                                            {
-                                                SelectStructure(hitStructure);
-                                            }
-                                        }
-                                    }
-                                    else // The hit transform hasn't got a structure component
-                                    {
-                                        Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
-                                    }
-                                }
-                                else
-                                {
-                                    DeselectStructure();
-                                    structureState = StructManState.selecting;
-                                    break;
-                                }
-                            }
-
-                            StructureType structureType = selectedStructure.GetStructureType();
-                            if (structureType == StructureType.resource || structureType == StructureType.attack)
-                            {
-                                if (Input.GetKeyDown(KeyCode.RightArrow))
-                                {
-                                    selectedStructure.IncreaseFoodAllocation();
-                                }
-                                if (Input.GetKeyDown(KeyCode.LeftArrow))
-                                {
-                                    selectedStructure.DecreaseFoodAllocation();
-                                }
-                                if (Input.GetKeyDown(KeyCode.UpArrow))
-                                {
-                                    selectedStructure.SetFoodAllocationMax();
-                                }
-                                if (Input.GetKeyDown(KeyCode.DownArrow))
-                                {
-                                    selectedStructure.SetFoodAllocationMin();
-                                }
-                            }
-
                         }
                         break;
                     case StructManState.moving:
                         if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Ground")))
+                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
                         {
                             if (structure.transform != null)
                             {
@@ -551,10 +577,15 @@ public class StructureManager : MonoBehaviour
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
                                                 else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
                                             }
-                                            // if the tile we hit does not have an attached object...
+                                            // if the structure can be placed here...
                                             else { canPlaceHere = true; }
                                             if (canPlaceHere)
                                             {
+                                                if (structure.GetStructureType() == StructureType.attack)
+                                                {
+                                                    structure.GetComponent<AttackStructure>().ShowRangeDisplay(true);
+                                                }
+
                                                 if (attached)
                                                 {
                                                     if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)
@@ -722,35 +753,30 @@ public class StructureManager : MonoBehaviour
         return false;
     }
 
-    public void IncreaseStructureCost(string _structureName)
+    private void IncreaseStructureCost(string _structureName)
     {
-        if (superMan.CurrentLevelHasModifier(0))
+        if (structureCosts.ContainsKey(_structureName))
         {
-            if (!structureCosts.ContainsKey(_structureName))
-            {
-                return;
-            }
-            int buildingCount = ++structureCounts[StructureIDs[_structureName]];
-            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-            structureCosts[_structureName] = new ResourceBundle(newCost);
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+            structureCounts[StructureIDs[_structureName]]++;
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = CalculateStructureCost(_structureName);
         }
     }
 
     public void DecreaseStructureCost(string _structureName)
     {
-        if (superMan.CurrentLevelHasModifier(0))
+        if (structureCosts.ContainsKey(_structureName))
         {
-            if (!structureCosts.ContainsKey(_structureName))
-            {
-                return;
-            }
-            int buildingCount = --structureCounts[StructureIDs[_structureName]];
-            if (buildingCount < 0) { buildingCount = structureCounts[StructureIDs[_structureName]] = 0; }
-            Vector3 newCost = (2f + buildingCount) / 2f * (Vector3)structureDict[_structureName].originalCost;
-            structureCosts[_structureName] = new ResourceBundle(newCost);
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = newCost;
+            structureCounts[StructureIDs[_structureName]]--;
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = CalculateStructureCost(_structureName);
         }
+    }
+
+    private Vector3 CalculateStructureCost(string _structureName)
+    {
+        float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.k_iSnoballPrices) ? 2f : 4f;
+        Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
+        structureCosts[_structureName] = new ResourceBundle(newCost);
+        return newCost;
     }
 
     public void DeselectStructure()
@@ -1034,7 +1060,7 @@ public class StructureManager : MonoBehaviour
                 // NAME                                                     NAME                                               wC       mC      fC
                 { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
 
-                { "Archer Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
+                { "Ballista Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
                 { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
 
                 { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
@@ -1128,8 +1154,8 @@ public class StructureManager : MonoBehaviour
             case "Metal Storehouse":
                 envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
                 break;
-            case "Archer Tower":
-                envInfo.ShowInfo("The Archer Tower fires arrows at enemy units.");
+            case "Ballista Tower":
+                envInfo.ShowInfo("The Ballista Tower fires bolts at enemy units.");
                 break;
             case "Catapult Tower":
                 envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
@@ -1485,8 +1511,10 @@ public class ProceduralGenerationWindow : EditorWindow
             // File does not exist, load defaults and save
             currentPreset = StructureManager.GetPGPHardPreset(0);
             currentPresetName = "Default";
-            pgpPresets = new Dictionary<string, ProceduralGenerationParameters>();
-            pgpPresets.Add(currentPresetName, currentPreset);
+            pgpPresets = new Dictionary<string, ProceduralGenerationParameters>
+            {
+                { currentPresetName, currentPreset }
+            };
             System.IO.FileStream file = System.IO.File.Create(kPathPresets);
             bf.Serialize(file, pgpPresets);
             file.Close();
