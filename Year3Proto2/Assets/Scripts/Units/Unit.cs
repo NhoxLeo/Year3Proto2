@@ -210,6 +210,7 @@ public class Unit : MonoBehaviour, IDamageable
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
         bool enemyWasNull = false;
+
         foreach (Transform transform in surroundings)
         {
             if (!transform)
@@ -217,6 +218,7 @@ public class Unit : MonoBehaviour, IDamageable
                 enemyWasNull = true;
                 continue;
             }
+
             // get a vector pointing from them to me, indicating a direction for this enemy to push 
             Vector3 enemyToThis = this.transform.position - transform.transform.position;
             enemyToThis.y = 0f;
@@ -224,10 +226,8 @@ public class Unit : MonoBehaviour, IDamageable
             if (inverseMag == Mathf.Infinity) { continue; }
             finalMotionVector += enemyToThis.normalized * inverseMag * unitProperties.avoidForce;
         }
-        if (enemyWasNull)
-        {
-            surroundings.RemoveAll(enemy => !enemy);
-        }
+
+        if (enemyWasNull) surroundings.RemoveAll(enemy => !enemy);
         return finalMotionVector.normalized * unitProperties.speed;
     }
 

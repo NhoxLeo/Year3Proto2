@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.41935843, g: 0.26418394, b: 0.17947997, a: 1}
+  m_IndirectSpecularColor: {r: 0.41937298, g: 0.2640099, b: 0.17902626, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -35696,7 +35696,7 @@ PrefabInstance:
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 259.115
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -35966,7 +35966,7 @@ PrefabInstance:
     - target: {fileID: 3078092809196356110, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 49.78
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3078092809196356110, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36051,7 +36051,7 @@ PrefabInstance:
     - target: {fileID: 3847762394655144842, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 32
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3847762394655144842, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36191,7 +36191,7 @@ PrefabInstance:
     - target: {fileID: 4625095535303491183, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 49.78
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4625095535303491183, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36261,7 +36261,7 @@ PrefabInstance:
     - target: {fileID: 5002416158502939124, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 49.78
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5002416158502939124, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36341,7 +36341,7 @@ PrefabInstance:
     - target: {fileID: 5439771201644419989, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 487.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5439771201644419989, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36396,7 +36396,7 @@ PrefabInstance:
     - target: {fileID: 5798551897833080833, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 339.06
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5798551897833080833, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36511,7 +36511,7 @@ PrefabInstance:
     - target: {fileID: 6326406072697009261, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 190.97
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6326406072697009261, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36672,7 +36672,7 @@ PrefabInstance:
     - target: {fileID: 7675371014826506130, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7675371014826506130, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -36692,7 +36692,7 @@ PrefabInstance:
     - target: {fileID: 7878361466410564590, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 32
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7878361466410564590, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
