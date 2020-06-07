@@ -10,6 +10,10 @@ public class HUDManager : MonoBehaviour
     private float updateInterval = 0.667f;
     private float updateTimer;
 
+    private CanvasGroup canvas;
+    public bool doShowHUD = true;
+    private bool hudShown;
+
     public Color gainColour;
     public Color lossColour;
     public Color fullColour;
@@ -36,6 +40,8 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
+        canvas = GetComponent<CanvasGroup>();
+
         game = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
         spawner = FindObjectOfType<EnemySpawner>();
@@ -57,6 +63,19 @@ public class HUDManager : MonoBehaviour
 
     void LateUpdate()
     {
+        if (doShowHUD && !hudShown)
+        {
+            ShowHUD();
+            hudShown = true;
+        }
+
+        if (!doShowHUD && hudShown)
+        {
+            HideHUD();
+            hudShown = false;
+        }
+
+
         updateTimer -= Time.unscaledDeltaTime;
         if (updateTimer <= 0)
         {
@@ -190,5 +209,21 @@ public class HUDManager : MonoBehaviour
         string _signedValue = (_value > 0) ? "+" : "";
 
         return _signedValue + _value;
+    }
+
+    private void ShowHUD()
+    {
+        canvas.DOKill(true);
+        canvas.DOFade(1.0f, 0.3f).SetEase(Ease.InOutSine);
+        canvas.interactable = true;
+        canvas.blocksRaycasts = true;
+    }
+
+    private void HideHUD()
+    {
+        canvas.DOKill(true);
+        canvas.DOFade(0.0f, 0.3f).SetEase(Ease.InOutSine);
+        canvas.interactable = false;
+        canvas.blocksRaycasts = false;
     }
 }
