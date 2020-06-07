@@ -195,6 +195,7 @@ public class StructureManager : MonoBehaviour
     private GameManager gameMan;
     private BuildPanel panel;
     private GameObject buildingPuff;
+    private UnitSpawner unitSpawner;
     private EnemySpawner enemySpawner;
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
@@ -246,6 +247,7 @@ public class StructureManager : MonoBehaviour
         canvas = FindObjectOfType<Canvas>();
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
+        unitSpawner = FindObjectOfType<UnitSpawner>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
         HUDman = FindObjectOfType<HUDManager>();
         superMan = SuperManager.GetInstance();
@@ -687,10 +689,14 @@ public class StructureManager : MonoBehaviour
                                                         }
                                                         if (!towerPlaced)
                                                         {
+                                                            if(!unitSpawner.IsSpawning()) unitSpawner.ToggleSpawning(); 
+                                                            
+                                                            /*
                                                             if (!enemySpawner.IsSpawning())
                                                             {
                                                                 enemySpawner.ToggleSpawning();
                                                             }
+                                                            */
                                                             towerPlaced = true;
                                                         }
                                                         SelectStructure(structure);

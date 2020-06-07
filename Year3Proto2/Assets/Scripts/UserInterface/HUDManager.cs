@@ -31,6 +31,7 @@ public class HUDManager : MonoBehaviour
     private Tooltip metalDeltaTip;
     private TMP_Text metalDeltaText;
 
+    private UnitSpawner unitSpawner;
     private EnemySpawner spawner;
     private TMP_Text waveText;
 
@@ -39,6 +40,7 @@ public class HUDManager : MonoBehaviour
         game = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
         spawner = FindObjectOfType<EnemySpawner>();
+        unitSpawner = FindObjectOfType<UnitSpawner>();
 
         foodText = transform.Find("ResourceBar/FoodText").GetComponent<TMP_Text>();
         woodText = transform.Find("ResourceBar/WoodText").GetComponent<TMP_Text>();
@@ -100,8 +102,8 @@ public class HUDManager : MonoBehaviour
 
         // Info Bar
 
-        int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
-        if (spawner.GetWaveCurrent() >= 1 && spawner.EnemyCount == 0) { wavesSurvived++; }
+        int wavesSurvived = Mathf.Clamp(unitSpawner.GetWaveCurrent() - 1, 0, 999);
+        if (unitSpawner.GetWaveCurrent() >= 1 && unitSpawner.unitCount == 0) { wavesSurvived++; }
         string plural = (wavesSurvived == 1) ? "" : "s";
         waveText.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }

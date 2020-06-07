@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37818834, g: 0.21951954, b: 0.12142691, a: 1}
+  m_IndirectSpecularColor: {r: 0.41935843, g: 0.26418394, b: 0.17947997, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -35061,6 +35061,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a78c4e5611283ba4f91d5962e6e727a2, type: 3}
+--- !u!4 &811312527 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7626114356415375197, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+    type: 3}
+  m_PrefabInstance: {fileID: 2533957956603039803}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &813093195
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -63151,6 +63157,58 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 401230655}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1421505570
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1421505571}
+  - component: {fileID: 1421505572}
+  m_Layer: 0
+  m_Name: Unit Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1421505571
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421505570}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 811312527}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1421505572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421505570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2c726b41e9cb2941b38928fe3cdcb87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitPrefabs:
+  - {fileID: 3094410212912660524, guid: 5e2ebca78058f484f9d85641098b7efb, type: 3}
+  - {fileID: 5489032262172500052, guid: fa66fa1b8ad636842a9bbfb104a61dea, type: 3}
+  puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
+    type: 3}
+  unitsPerWave: 8
+  newUnitsPerWave: 4
+  cooldown: 30
+  timeBetweenWaves: 30
 --- !u!1001 &1421715758
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -97852,6 +97910,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3792998656608216644, guid: 21434597174a3114398c4b8d02c1a600,
         type: 3}
+    - target: {fileID: 3545930471103010973, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7067514012913874853, guid: 629c5237a924bfe4f8b3c0ac2a797eba,
         type: 3}
       propertyPath: m_LocalPosition.y

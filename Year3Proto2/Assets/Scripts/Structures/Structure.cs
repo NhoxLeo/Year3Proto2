@@ -15,7 +15,7 @@ public enum ResourceType
     metal,
     food
 }
-public abstract class Structure : MonoBehaviour
+public abstract class Structure : MonoBehaviour, IDamageable
 {
     public TileBehaviour attachedTile = null;
     public string displayName;
@@ -51,18 +51,16 @@ public abstract class Structure : MonoBehaviour
         health -= amount;
         if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
+        
         GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
 
         if (structureType == StructureType.attack)
         {
             AttackStructure attackStructure = GetComponent<AttackStructure>();
-            if (attackStructure.GetEnemies().Count == 0)
-            {
-                attackStructure.DetectEnemies();
-            }
+            if (attackStructure.GetEnemies().Count == 0) attackStructure.DetectEnemies();
         }
 
-        return health <= 0f; 
+        return health <= 0f;
     }
 
     public virtual void DecreaseFoodAllocation()
@@ -154,7 +152,7 @@ public abstract class Structure : MonoBehaviour
         healthBar.gameObject.SetActive(false);
     }
 
-    public virtual void OnPlace() {}
+    public virtual void OnPlace() { }
 
     protected virtual void OnDestroyed()
     {
@@ -264,6 +262,11 @@ public abstract class Structure : MonoBehaviour
         OnDestroyed();
         if (healthBar) { Destroy(healthBar.gameObject); }
         if (attachedTile) { attachedTile.Detach(); }
+    }
+
+    public Transform GetTransform()
+    {
+        return transform;
     }
 }
 
