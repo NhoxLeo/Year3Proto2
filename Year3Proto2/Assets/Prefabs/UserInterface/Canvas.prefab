@@ -13121,7 +13121,7 @@ PrefabInstance:
     - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_text
-      value: TITLE SCREEN
+      value: WORLD MAP
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -13306,7 +13306,7 @@ PrefabInstance:
     - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_text
-      value: TITLE SCREEN
+      value: WORLD MAP
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
