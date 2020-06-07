@@ -14587,7 +14587,7 @@ PrefabInstance:
     - target: {fileID: 8179312044486000854, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -210.00002
+      value: -126
       objectReference: {fileID: 0}
     - target: {fileID: 8179312044486000854, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -14764,7 +14764,7 @@ PrefabInstance:
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -14775,11 +14775,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 6934129992323979970}
+      objectReference: {fileID: 7569037028227236675}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SceneSwitch
+      value: HideEndscreen
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -14789,27 +14789,27 @@ PrefabInstance:
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
-      value: TitleScreen
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 6934129992323979970}
+      objectReference: {fileID: 7569037028227236675}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SceneSwitch
+      value: HideEndscreen
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: TitleScreen
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
