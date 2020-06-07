@@ -193,15 +193,6 @@ public class UnitSpawner : MonoBehaviour
         unit.transform.rotation = unitSaveData.orientation;
         unit.SetScale(unitSaveData.scale);
         unit.SetUnitType(unitSaveData.unitType);
-
-        IDamageable damageable = null;
-        if (Physics.Raycast(unitSaveData.targetPosition + Vector3.up * 10f, Vector3.down, out RaycastHit hit, 20f))
-        {
-            if (hit.collider.transform.GetComponent<IDamageable>() != null) damageable = hit.collider.gameObject.GetComponent<IDamageable>();
-        }
-
-        if (damageable != null) unit.SetTarget(damageable);
-
         unit.SetState(UnitState.IDLE);
         units.Add(unit);
     }
