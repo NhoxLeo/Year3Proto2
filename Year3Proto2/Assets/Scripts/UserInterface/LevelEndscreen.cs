@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 using TMPro;
 
 public class LevelEndscreen : MonoBehaviour
@@ -34,12 +35,15 @@ public class LevelEndscreen : MonoBehaviour
 
     private void GetVictoryInfo()
     {
-        //transform.Find("LevelModCard/Title").GetComponent<TMP_Text>().text = // win title
-        //transform.Find("LevelModCard/Description").GetComponent<TMP_Text>().text = // win description
-        //transform.Find("LevelModCard/Price").GetComponent<TMP_Text>().text = // win value
+        List<MapScreen.Level> levels = new List<MapScreen.Level>();
+        superMan.GetLevelData(ref levels);
 
-        //transform.Find("ModBonus").GetComponent<TMP_Text>().text = // modifer total bonus
-        //transform.Find("Reward").GetComponent<TMP_Text>().text = // total reward
+        transform.Find("Victory/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryTitle;
+        transform.Find("Victory/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryDescription;
+        transform.Find("Victory/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
+
+        transform.Find("Victory/ModBonus").GetComponent<TMP_Text>().text = "+" + levels[superMan.currentLevel].GetTotalCoefficient() * 100 + "%";
+        transform.Find("Victory/Reward").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].reward.ToString();
     }
 
     public void ShowVictoryScreen()
@@ -51,6 +55,8 @@ public class LevelEndscreen : MonoBehaviour
         GetComponent<Tooltip>().showTooltip = true;
         GetComponent<Image>().color = victoryColour;
         showingVictory = true;
+
+        FindObjectOfType<HUDManager>().doShowHUD = false;
     }
 
     public void ShowDeafeatScreen()
@@ -60,6 +66,8 @@ public class LevelEndscreen : MonoBehaviour
         GetComponent<Tooltip>().showTooltip = true;
         GetComponent<Image>().color = defeatColour;
         showingDefeat = true;
+
+        FindObjectOfType<HUDManager>().doShowHUD = false;
     }
 
     public void HideEndscreen()
@@ -69,5 +77,9 @@ public class LevelEndscreen : MonoBehaviour
         GetComponent<Tooltip>().showTooltip = false;
         showingVictory = false;
         showingDefeat = false;
+
+        FindObjectOfType<HUDManager>().doShowHUD = true;
     }
+
+
 }

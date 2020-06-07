@@ -2997,6 +2997,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9981c0b68b5a7144dad08f40b6e07b5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doShowHUD: 1
   gainColour: {r: 0.30867198, g: 0.546, b: 0.19000803, a: 1}
   lossColour: {r: 0.669, g: 0.26559302, b: 0.29921034, a: 1}
   fullColour: {r: 0.285815, g: 0.58557224, b: 0.603, a: 1}
@@ -13120,7 +13121,7 @@ PrefabInstance:
     - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_text
-      value: TITLE SCREEN
+      value: WORLD MAP
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -13305,7 +13306,7 @@ PrefabInstance:
     - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_text
-      value: TITLE SCREEN
+      value: WORLD MAP
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
