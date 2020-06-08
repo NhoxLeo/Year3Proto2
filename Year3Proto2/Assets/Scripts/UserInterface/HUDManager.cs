@@ -10,6 +10,7 @@ public class HUDManager : MonoBehaviour
     private float updateInterval = 0.667f;
     private float updateTimer;
 
+    HorizontalLayoutGroup hLayoutGroup;
     private CanvasGroup canvas;
     public bool doShowHUD = true;
     private bool hudShown;
@@ -41,6 +42,7 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
+        hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
         canvas = GetComponent<CanvasGroup>();
 
         game = FindObjectOfType<GameManager>();
@@ -49,8 +51,8 @@ public class HUDManager : MonoBehaviour
         unitSpawner = FindObjectOfType<UnitSpawner>();
 
         foodText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText").GetComponent<TMP_Text>();
-        woodText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/ResourceBar/WoodText").GetComponent<TMP_Text>();
-        metalText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/ResourceBar/MetalText").GetComponent<TMP_Text>();
+        woodText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText").GetComponent<TMP_Text>();
+        metalText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText").GetComponent<TMP_Text>();
         victoryProgress = transform.Find("ResourceBar/VictoryProgress/ProgressText").GetComponent<TMP_Text>();
 
         foodDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText/FoodIcon/FoodDelta").GetComponent<Tooltip>();
@@ -61,6 +63,8 @@ public class HUDManager : MonoBehaviour
 
         metalDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
         metalDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
+
+        GetVictoryInfo();
     }
 
     void LateUpdate()
@@ -131,6 +135,17 @@ public class HUDManager : MonoBehaviour
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
 
+    private void GetVictoryInfo()
+    {
+        List<MapScreen.Level> levels = new List<MapScreen.Level>();
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.GetLevelData(ref levels);
+
+        transform.Find("ResourceBar/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryTitle;
+        transform.Find("ResourceBar/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryDescription;
+        transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
+    }
+
     private void RefreshResources()
     {
         float foodVel = game.GetFoodVelocity(1);
@@ -161,7 +176,9 @@ public class HUDManager : MonoBehaviour
         }
 
         // Update content size fitters
-        transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>().enabled = true;
+        Canvas.ForceUpdateCanvases();
+        HorizontalLayoutGroup hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
+        hLayoutGroup.SetLayoutHorizontal();
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
@@ -193,6 +210,7 @@ public class HUDManager : MonoBehaviour
 
         RefreshResources();
     }
+
     public void ShowResourceDelta(ResourceBundle _resourceDelta, bool _makeNegative = false)
     {
         if (_makeNegative)

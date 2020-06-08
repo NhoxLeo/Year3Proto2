@@ -6341,7 +6341,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3745757213977141429}
-  - {fileID: 600443226636769072}
+  - {fileID: 6321819888759543166}
   - {fileID: 2640882017143391595}
   - {fileID: 6077846840317155063}
   - {fileID: 2176033115338780482}
@@ -7683,7 +7683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.29803923}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.4}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -11798,7 +11798,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 626060686499462130, guid: 2020d210b0e19d54196077da1255126f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2020d210b0e19d54196077da1255126f, type: 3}
---- !u!224 &600443226636769072 stripped
+--- !u!224 &6321819888759543166 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6912654201860014718, guid: 2020d210b0e19d54196077da1255126f,
     type: 3}
