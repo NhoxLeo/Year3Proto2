@@ -37,7 +37,7 @@ public class HUDManager : MonoBehaviour
 
     private UnitSpawner unitSpawner;
     private EnemySpawner spawner;
-    private TMP_Text waveText;
+    private TMP_Text victoryProgress;
 
     void Start()
     {
@@ -48,19 +48,19 @@ public class HUDManager : MonoBehaviour
         spawner = FindObjectOfType<EnemySpawner>();
         unitSpawner = FindObjectOfType<UnitSpawner>();
 
-        foodText = transform.Find("ResourceBar/FoodText").GetComponent<TMP_Text>();
-        woodText = transform.Find("ResourceBar/WoodText").GetComponent<TMP_Text>();
-        metalText = transform.Find("ResourceBar/MetalText").GetComponent<TMP_Text>();
-        waveText = transform.Find("InfoBar/Waves").GetComponent<TMP_Text>();
+        foodText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText").GetComponent<TMP_Text>();
+        woodText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/ResourceBar/WoodText").GetComponent<TMP_Text>();
+        metalText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/ResourceBar/MetalText").GetComponent<TMP_Text>();
+        victoryProgress = transform.Find("ResourceBar/VictoryProgress/ProgressText").GetComponent<TMP_Text>();
 
-        foodDeltaTip = transform.Find("ResourceBar/FoodText/FoodIcon/FoodDelta").GetComponent<Tooltip>();
-        foodDeltaText = transform.Find("ResourceBar/FoodText/FoodIcon/FoodDelta/FoodDeltaText").GetComponent<TMP_Text>();
+        foodDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText/FoodIcon/FoodDelta").GetComponent<Tooltip>();
+        foodDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText/FoodIcon/FoodDelta/FoodDeltaText").GetComponent<TMP_Text>();
 
-        woodDeltaTip = transform.Find("ResourceBar/WoodText/WoodIcon/WoodDelta").GetComponent<Tooltip>();
-        woodDeltaText = transform.Find("ResourceBar/WoodText/WoodIcon/WoodDelta/WoodDeltaText").GetComponent<TMP_Text>();
+        woodDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText/WoodIcon/WoodDelta").GetComponent<Tooltip>();
+        woodDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText/WoodIcon/WoodDelta/WoodDeltaText").GetComponent<TMP_Text>();
 
-        metalDeltaTip = transform.Find("ResourceBar/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
-        metalDeltaText = transform.Find("ResourceBar/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
+        metalDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
+        metalDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
     }
 
     void LateUpdate()
@@ -128,7 +128,7 @@ public class HUDManager : MonoBehaviour
         int wavesSurvived = Mathf.Clamp(unitSpawner.GetWaveCurrent() - 1, 0, 999);
         if (unitSpawner.GetWaveCurrent() >= 1 && unitSpawner.unitCount == 0) { wavesSurvived++; }
         string plural = (wavesSurvived == 1) ? "" : "s";
-        waveText.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
+        victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
 
     private void RefreshResources()
@@ -159,6 +159,9 @@ public class HUDManager : MonoBehaviour
         {
             metalText.color = fullColour;
         }
+
+        // Update content size fitters
+        transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>().enabled = true;
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)

@@ -11,6 +11,7 @@ public class BuildPanel : MonoBehaviour
     public bool showPanel;
     [SerializeField]
     public Color cannotAfford;
+    public Sprite lockedBuilding;
 
     private CanvasGroup canvas;
     private RectTransform rTrans;
@@ -23,11 +24,12 @@ public class BuildPanel : MonoBehaviour
         None,
         Ballista,
         Catapult,
+        Barracks,
         Farm,
-        Granary,
         LumberMill,
-        LumberPile,
         Mine,
+        Granary,
+        LumberPile,
         MetalStorage
     }
 
@@ -64,7 +66,7 @@ public class BuildPanel : MonoBehaviour
         rTrans = GetComponent<RectTransform>();
         structMan = FindObjectOfType<StructureManager>();
         superMan = SuperManager.GetInstance();
-        rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
+        //rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
         tooltip = tooltipBox.GetComponent<Tooltip>();
@@ -81,7 +83,7 @@ public class BuildPanel : MonoBehaviour
 
         GetInfo();
 
-        if (!superMan.GetResearchComplete(SuperManager.k_iCatapult)) { Color transparent = Color.white; transparent.a = 0f; transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = transparent; }
+        if (!superMan.GetResearchComplete(SuperManager.k_iCatapult)) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -174,10 +176,11 @@ public class BuildPanel : MonoBehaviour
 
     private void GetInfo()
     {
-        toolInfo.heading = new string[9];
+        toolInfo.heading = new string[10];
         toolInfo.heading[(int)Buildings.None]               = "";
         toolInfo.heading[(int)Buildings.Ballista]           = StructureManager.StructureNames[Buildings.Ballista];
         toolInfo.heading[(int)Buildings.Catapult]           = StructureManager.StructureNames[Buildings.Catapult];
+        toolInfo.heading[(int)Buildings.Barracks]           = "Barracks";
         toolInfo.heading[(int)Buildings.Farm]               = StructureManager.StructureNames[Buildings.Farm];
         toolInfo.heading[(int)Buildings.Granary]            = StructureManager.StructureNames[Buildings.Granary];
         toolInfo.heading[(int)Buildings.LumberMill]         = StructureManager.StructureNames[Buildings.LumberMill];
@@ -185,10 +188,11 @@ public class BuildPanel : MonoBehaviour
         toolInfo.heading[(int)Buildings.Mine]               = StructureManager.StructureNames[Buildings.Mine];
         toolInfo.heading[(int)Buildings.MetalStorage]       = StructureManager.StructureNames[Buildings.MetalStorage];
 
-        toolInfo.description = new string[9];
+        toolInfo.description = new string[10];
         toolInfo.description[(int)Buildings.None]           = "";
         toolInfo.description[(int)Buildings.Ballista]       = StructureManager.StructureDescriptions[Buildings.Ballista];
         toolInfo.description[(int)Buildings.Catapult]       = StructureManager.StructureDescriptions[Buildings.Catapult];
+        toolInfo.description[(int)Buildings.Barracks]       = "Spawns multiple mobile ground units that will attack nearby enemies.";
         toolInfo.description[(int)Buildings.Farm]           = StructureManager.StructureDescriptions[Buildings.Farm];
         toolInfo.description[(int)Buildings.Granary]        = StructureManager.StructureDescriptions[Buildings.Granary];
         toolInfo.description[(int)Buildings.LumberMill]     = StructureManager.StructureDescriptions[Buildings.LumberMill];
@@ -223,7 +227,7 @@ public class BuildPanel : MonoBehaviour
             metalCostText.gameObject.SetActive((metalCost > 0));
             
 
-            float targetPos = transform.Find("PanelMask").GetChild(tool + 7).transform.localPosition.x;
+            float targetPos = transform.Find("PanelMask").GetChild(tool + 5).transform.localPosition.x;
             if (tooltipTimer > 0.15f)
             {
                 tooltipBox.transform.DOLocalMoveX(targetPos, 0.0f);
@@ -264,7 +268,7 @@ public class BuildPanel : MonoBehaviour
                 buildIndicator.SetActive(true);
                 buildIndicator.transform.DOKill(true);
                 buildIndicator.transform.DOPunchScale(new Vector3(0.25f, 0.25f, 0.0f), 0.15f, 1, 0.5f);
-                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
+                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 5).transform.localPosition;
                 Vector2 indiPos = buildIndicator.transform.localPosition;
                 indiPos.x = targetPos.x;
                 buildIndicator.transform.localPosition = indiPos;
