@@ -32,10 +32,7 @@ public class BoltBehaviour : MonoBehaviour
         if (!endPositionReached)
         {
             transform.position = Vector3.MoveTowards(transform.position, endPosition, Time.deltaTime * speed);
-            if ((transform.position - endPosition).magnitude <= 0.01f)
-            {
-                endPositionReached = true;
-            }
+            if ((transform.position - endPosition).magnitude <= 0.01f) endPositionReached = true;
         }
     }
 
@@ -45,14 +42,11 @@ public class BoltBehaviour : MonoBehaviour
         {
             if (other.gameObject.layer == LayerMask.NameToLayer("EnemyStructureCollider"))
             {
-                Enemy enemy = other.GetComponentInParent<Enemy>();
-                if (enemy)
+                Unit unit = other.GetComponentInParent<Unit>();
+                if(unit)
                 {
-                    enemy.Damage(damage);
-                    if (!pierce)
-                    {
-                        Destroy(gameObject);
-                    }
+                    unit.Damage(damage);
+                    if (!pierce) Destroy(gameObject);
                 }
             }
         }

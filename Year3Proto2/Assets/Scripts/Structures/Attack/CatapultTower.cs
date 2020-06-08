@@ -52,7 +52,7 @@ public class CatapultTower : AttackStructure
         }
     }
 
-    public override void Attack(GameObject target)
+    public override void Attack(Transform target)
     {
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
