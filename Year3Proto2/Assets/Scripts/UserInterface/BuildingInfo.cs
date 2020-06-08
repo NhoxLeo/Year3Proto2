@@ -79,7 +79,7 @@ public class BuildingInfo : MonoBehaviour
             headingText.text = newHeading;
         }
 
-        SetPosition();
+        //SetPosition();
     }
 
     public void SetInfo()
@@ -209,7 +209,7 @@ public class BuildingInfo : MonoBehaviour
                 break;
         }
 
-        tool.SetHeight(foodComponent.activeSelf ? 242.0f : 152.0f);
+        tool.SetHeight(foodComponent.activeSelf ? 272.0f : 182.0f);
     }
 
     private void SetPosition()
