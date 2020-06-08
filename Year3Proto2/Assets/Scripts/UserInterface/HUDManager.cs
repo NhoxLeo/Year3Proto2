@@ -77,6 +77,10 @@ public class HUDManager : MonoBehaviour
             hudShown = false;
         }
 
+        if (Input.GetKeyDown(KeyCode.Backslash))
+        {
+            doShowHUD = !doShowHUD;
+        }
 
         updateTimer -= Time.unscaledDeltaTime;
         if (updateTimer <= 0)
