@@ -55,7 +55,7 @@ public class BallistaTower : AttackStructure
         }
     }
 
-    public override void Attack(GameObject target)
+    public override void Attack(Transform target)
     {
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
