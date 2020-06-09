@@ -15,7 +15,7 @@ public class Granary : StorageStructure
         base.Awake();
         resourceType = ResourceType.food;
         storage = 500;
-        structureName = "Granary";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Granary];
         maxHealth = 200f;
         health = maxHealth;
     }

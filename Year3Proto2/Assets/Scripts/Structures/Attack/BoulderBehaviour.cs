@@ -39,8 +39,11 @@ public class BoulderBehaviour : MonoBehaviour
             explosion.transform.localScale *= 2f * explosionRadius;
             foreach (RaycastHit enemyHit in hitEnemies)
             {
-                Unit unit = enemyHit.transform.GetComponent<Unit>();
-                if (unit) unit.Damage(damage);
+                Enemy enemy = enemyHit.transform.GetComponent<Enemy>();
+                if (enemy)
+                {
+                    enemy.Damage(damage);
+                }
             }
             Destroy(gameObject);
         }

@@ -96,6 +96,9 @@ public class BuildPanel : MonoBehaviour
             case Buildings.Catapult:
                 transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = _colour;
                 break;
+            case Buildings.Barracks:
+                transform.Find("PanelMask/IconBarracks").GetComponent<Image>().color = _colour;
+                break;
             case Buildings.Farm:
                 transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
                 break;

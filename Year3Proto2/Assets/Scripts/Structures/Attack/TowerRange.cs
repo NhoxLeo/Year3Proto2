@@ -24,16 +24,12 @@ public class TowerRange : MonoBehaviour
         {
             if (other.transform.parent)
             {
-                Unit unit = other.transform.parent.GetComponent<Unit>();
-                if(unit)
+                if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    if(unit.GetType() == UnitType.ENEMY)
+                    if (!parentStructure) { GetParent(); }
+                    if (!parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
                     {
-                        if (!parentStructure) { GetParent(); }
-                        if (!parentStructure.GetEnemies().Contains(other.transform.parent))
-                        {
-                            parentStructure.GetEnemies().Add(other.transform.parent);
-                        }
+                        parentStructure.GetEnemies().Add(other.transform.parent.gameObject);
                     }
                 }
             }
@@ -46,16 +42,12 @@ public class TowerRange : MonoBehaviour
         {
             if (other.transform.parent)
             {
-                Unit unit = other.transform.parent.GetComponent<Unit>();
-                if (unit)
+                if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    if (unit.GetType() == UnitType.ENEMY)
+                    if (!parentStructure) { GetParent(); }
+                    if (parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
                     {
-                        if (!parentStructure) { GetParent(); }
-                        if (parentStructure.GetEnemies().Contains(other.transform.parent))
-                        {
-                            parentStructure.GetEnemies().Remove(other.transform.parent);
-                        }
+                        parentStructure.GetEnemies().Remove(other.transform.parent.gameObject);
                     }
                 }
             }
