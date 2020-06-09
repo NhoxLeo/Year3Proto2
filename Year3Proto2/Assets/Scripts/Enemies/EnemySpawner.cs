@@ -184,7 +184,6 @@ public class EnemySpawner : MonoBehaviour
         }
     }
     
-    /*
     public void LoadInvader(SuperManager.InvaderSaveData _saveData)
     {
         Invader enemy = Instantiate(enemyPrefabs[0]).GetComponent<Invader>();
@@ -206,7 +205,6 @@ public class EnemySpawner : MonoBehaviour
         enemy.SetState(_saveData.enemyData.state);
         enemies.Add(enemy);
     }
-    */
 
     public int GetWaveCurrent()
     {

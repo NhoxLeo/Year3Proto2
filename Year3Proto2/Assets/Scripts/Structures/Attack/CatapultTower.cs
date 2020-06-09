@@ -17,7 +17,7 @@ public class CatapultTower : AttackStructure
     protected override void Awake()
     {
         base.Awake();
-        structureName = "Catapult Tower";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
         maxHealth = 450f;
         health = maxHealth;
     }
@@ -52,7 +52,7 @@ public class CatapultTower : AttackStructure
         }
     }
 
-    public override void Attack(Transform target)
+    public override void Attack(GameObject target)
     {
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)

@@ -17,7 +17,7 @@ public class Farm : ResourceStructure
     {
         base.Awake();
         resourceType = ResourceType.food;
-        structureName = "Farm";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Farm];
         health = maxHealth;
     }
 
