@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2849273494007033561}
   - component: {fileID: 514497469319593487}
   - component: {fileID: 3959126258250277566}
+  - component: {fileID: 5536855984110090044}
   m_Layer: 9
   m_Name: Barracks
   m_TagString: Untagged
@@ -133,3 +134,16 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 6902099423753999680, guid: e44aed2dd6129ec4a9882c8cd8f9efb0, type: 3}
+--- !u!135 &5536855984110090044
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8231167998158137851}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.47
+  m_Center: {x: 0, y: 0, z: 0}

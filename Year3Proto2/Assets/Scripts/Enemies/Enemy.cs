@@ -15,6 +15,7 @@ public abstract class Enemy : MonoBehaviour
     private float delayedDeathTimer = 0f;
     private float avoidForce = 0.05f;
     protected Structure target = null;
+    protected Soldier defenseTarget = null;
     protected EnemyState enemyState = EnemyState.IDLE;
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     protected bool needToMoveAway;
@@ -32,9 +33,9 @@ public abstract class Enemy : MonoBehaviour
 
     protected List<StructureType> structureTypes;
 
-    public abstract void Action();
-
     private Rigidbody body;
+
+    public abstract void Action();
 
     protected void EnemyStart()
     {

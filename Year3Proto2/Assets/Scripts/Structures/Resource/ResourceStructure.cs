@@ -39,6 +39,7 @@ public abstract class ResourceStructure : Structure
 
     public override void OnPlace()
     {
+        base.OnPlace();
         tileBonus = 1;
         OnDeselected();
         if (tileHighlights != null) { tileHighlights.Clear(); }
