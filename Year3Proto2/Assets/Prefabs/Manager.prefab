@@ -321,8 +321,8 @@ MonoBehaviour:
     type: 3}
   enemiesPerWave: 4
   newEnemiesPerWave: 2
-  cooldown: 30
-  timeBetweenWaves: 30
+  cooldown: 50
+  timeBetweenWaves: 50
 --- !u!1001 &1934217215400905385
 PrefabInstance:
   m_ObjectHideFlags: 0
