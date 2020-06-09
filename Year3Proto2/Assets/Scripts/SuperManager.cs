@@ -102,17 +102,28 @@ public class SuperManager : MonoBehaviour
     }
 
     [Serializable]
-    public struct UnitSaveData
+    public struct EnemySaveData
     {
+        public float health;
         public SaveVector3 position;
         public SaveQuaternion orientation;
         public SaveVector3 targetPosition;
-        public UnitProperties unitProperties;
-        public UnitState unitState;
-        public UnitTarget unitTarget;
-        public UnitType unitType;
-        public StructureType[] structureTypes;
+        public EnemyState state;
+    }
+
+
+    [Serializable]
+    public struct InvaderSaveData
+    {
+        public EnemySaveData enemyData;
         public float scale;
+    }
+
+    [Serializable]
+    public struct HeavyInvaderSaveData
+    {
+        public EnemySaveData enemyData;
+        public bool[] equipment;
     }
 
     [Serializable]
@@ -134,12 +145,11 @@ public class SuperManager : MonoBehaviour
         public PlayerResources playerResources;
         public Dictionary<string, ResourceBundle> structureCosts;
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
-        public List<UnitSaveData> units;
         public List<StructureSaveData> structures;
-
-        public int unitWaveSize;
-        public int enemyUnitsKilled;
-
+        public List<InvaderSaveData> invaders;
+        public List<HeavyInvaderSaveData> heavyInvaders;
+        public int enemyWaveSize;
+        public int enemiesKilled;
         public float spawnerCooldown;
         public bool spawning;
         public int wave;
@@ -241,8 +251,7 @@ public class SuperManager : MonoBehaviour
 
     private GameManager gameMan;
     private StructureManager structMan;
-
-    private UnitSpawner unitSpawner;
+    private EnemySpawner enemySpawner;
 
     public static SuperManager GetInstance()
     {
@@ -380,7 +389,7 @@ public class SuperManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         gameMan = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
-        unitSpawner = FindObjectOfType<UnitSpawner>();
+        enemySpawner = FindObjectOfType<EnemySpawner>();
         DataInitialization();
         currentLevel = 0;
         if (startMaxed) { StartNewGame(); }
@@ -414,7 +423,7 @@ public class SuperManager : MonoBehaviour
     {
         gameMan = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
-        unitSpawner = FindObjectOfType<UnitSpawner>();
+        enemySpawner = FindObjectOfType<EnemySpawner>();
     }
 
 
@@ -437,23 +446,20 @@ public class SuperManager : MonoBehaviour
         }
 
         // easy stuff
-        unitSpawner.unitsPerWave = _matchData.unitWaveSize;
+        enemySpawner.enemiesPerWave = _matchData.enemyWaveSize;
         gameMan.repairAll = _matchData.repairAll;
         gameMan.repairMessage = _matchData.repairMessage;
         gameMan.tutorialDone = _matchData.tutorialDone;
         structMan.structureCosts = _matchData.structureCosts;
         structMan.structureCounts = _matchData.structureCounts;
         gameMan.playerResources = _matchData.playerResources;
-        if(_matchData.spawning != unitSpawner.IsSpawning()) { unitSpawner.ToggleSpawning(); }
-
-        unitSpawner.SetWaveCurrent(_matchData.wave);
-        unitSpawner.cooldown = _matchData.spawnerCooldown;
-        unitSpawner.SetKillCount(_matchData.enemyUnitsKilled);
-
-
+        if (_matchData.spawning != enemySpawner.IsSpawning()) { enemySpawner.ToggleSpawning(); }
+        enemySpawner.SetWaveCurrent(_matchData.wave);
+        enemySpawner.cooldown = _matchData.spawnerCooldown;
         currentLevel = _matchData.levelID;
+        enemySpawner.SetKillCount(_matchData.enemiesKilled);
         // not so easy stuff...
-        
+
         // structures
         // first, environment structures
         // environment structures are done first so that resource structures can recalculate their tileBonus
@@ -475,14 +481,19 @@ public class SuperManager : MonoBehaviour
             }
         }
 
-        foreach(UnitSaveData unitSaveData in _matchData.units)
+        // invaders
+        foreach (InvaderSaveData saveData in _matchData.invaders)
         {
-            unitSpawner.LoadUnit(unitSaveData);
+            enemySpawner.LoadInvader(saveData);
+        }
+
+        // heavies
+        foreach (HeavyInvaderSaveData saveData in _matchData.heavyInvaders)
+        {
+            enemySpawner.LoadHeavyInvader(saveData);
         }
 
         // enemies are spawned, let the towers detect them
-
-        //TODO: UNIT DETECTION
         foreach (AttackStructure attackStructure in FindObjectsOfType<AttackStructure>())
         {
             attackStructure.DetectEnemies();
@@ -505,35 +516,57 @@ public class SuperManager : MonoBehaviour
         {
             match = true,
             levelID = currentLevel,
-            unitWaveSize = unitSpawner.unitsPerWave,
+            enemyWaveSize = enemySpawner.enemiesPerWave,
             repairAll = gameMan.repairAll,
             repairMessage = gameMan.repairMessage,
             tutorialDone = gameMan.tutorialDone,
             structureCosts = structMan.structureCosts,
             structureCounts = structMan.structureCounts,
             playerResources = gameMan.playerResources,
-            spawning = unitSpawner.IsSpawning(),
-            wave = unitSpawner.GetWaveCurrent(),
-            units = new List<UnitSaveData>(),
+            spawning = enemySpawner.IsSpawning(),
+            wave = enemySpawner.GetWaveCurrent(),
+            invaders = new List<InvaderSaveData>(),
+            heavyInvaders = new List<HeavyInvaderSaveData>(),
             structures = new List<StructureSaveData>(),
-            enemyUnitsKilled = unitSpawner.GetKillCount(),
-            spawnerCooldown = unitSpawner.cooldown            
+            enemiesKilled = enemySpawner.GetKillCount(),
+            spawnerCooldown = enemySpawner.cooldown
         };
 
         // not so easy stuff...
-
-        foreach (Unit unit in FindObjectsOfType<Unit>())
+        // invaders
+        foreach (Invader invader in FindObjectsOfType<Invader>())
         {
-            UnitSaveData unitSaveData = new UnitSaveData();
-            unitSaveData.unitState = unit.GetUnitState();
-            unitSaveData.unitTarget = unit.GetUnitTarget();
-            unitSaveData.unitType = unit.GetType();
-            unitSaveData.structureTypes = unit.GetStructureTypes();
-            unitSaveData.position = new SaveVector3(unit.transform.position);
-            unitSaveData.orientation = new SaveQuaternion(unit.transform.rotation);
-            unitSaveData.unitProperties = unit.unitProperties;
-            if(unit.GetTarget() != null) unitSaveData.targetPosition = new SaveVector3(unit.GetTarget().GetTransform().position);
-            save.units.Add(unitSaveData);
+            InvaderSaveData saveData = new InvaderSaveData
+            {
+                enemyData = new EnemySaveData
+                {
+                    health = invader.health,
+                    position = new SaveVector3(invader.transform.position),
+                    orientation = new SaveQuaternion(invader.transform.rotation),
+                    targetPosition = new SaveVector3(invader.GetTarget().transform.position),
+                    state = invader.GetState()
+                },
+                scale = invader.scale,
+            };
+            save.invaders.Add(saveData);
+        }
+
+        // heavys
+        foreach (HeavyInvader heavy in FindObjectsOfType<HeavyInvader>())
+        {
+            HeavyInvaderSaveData saveData = new HeavyInvaderSaveData
+            {
+                enemyData = new EnemySaveData
+                {
+                    health = heavy.health,
+                    position = new SaveVector3(heavy.transform.position),
+                    orientation = new SaveQuaternion(heavy.transform.rotation),
+                    targetPosition = new SaveVector3(heavy.GetTarget().transform.position),
+                    state = heavy.GetState()
+                },
+                equipment = heavy.GetEquipment()
+            };
+            save.heavyInvaders.Add(saveData);
         }
 
         // structures

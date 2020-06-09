@@ -113,6 +113,17 @@ public class BuildingInfo : MonoBehaviour
 
                 repairButton.interactable = catapult.CanBeRepaired();
                 break;
+            case "Barracks":
+                foodComponent.SetActive(true);
+                Barracks barracks = targetBuilding.GetComponent<Barracks>();
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "To Be Implemented"; // TODO
+                statValueText.text = "To Be Implemented";
+                statInfoText.text = "To Be Implemented";
+                foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+
+                repairButton.interactable = barracks.CanBeRepaired();
+                break;
 
             case "Farm":
                 foodComponent.SetActive(false);

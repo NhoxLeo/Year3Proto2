@@ -15,7 +15,7 @@ public enum ResourceType
     metal,
     food
 }
-public abstract class Structure : MonoBehaviour, IDamageable
+public abstract class Structure : MonoBehaviour
 {
     public TileBehaviour attachedTile = null;
     public string displayName;
@@ -152,7 +152,10 @@ public abstract class Structure : MonoBehaviour, IDamageable
         healthBar.gameObject.SetActive(false);
     }
 
-    public virtual void OnPlace() { }
+    public virtual void OnPlace() 
+    {
+    
+    }
 
     protected virtual void OnDestroyed()
     {

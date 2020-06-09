@@ -1,35 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class AttackStructure : Structure
 {
-    protected List<Transform> units;
-    protected Transform target = null;
+    protected List<GameObject> enemies;
+    protected GameObject target = null;
     public float consumptionTime = 2f;
     protected float remainingTime = 2f;
     protected GameObject puffPrefab;
     protected ResourceBundle attackCost;
 
-    public abstract void Attack(Transform target);
+    public abstract void Attack(GameObject target);
 
-    public List<Transform> GetEnemies()
+    public List<GameObject> GetEnemies()
     {
-        return units ?? (units = new List<Transform>());
+        return enemies ?? (enemies = new List<GameObject>());
     }
 
     public void DetectEnemies()
     {
         GetEnemies();
         SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
-        foreach(Unit unit in FindObjectsOfType<Unit>())
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
         {
-            if (unit.GetType() == UnitType.ENEMY)
+            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+            if (distanceFromEnemy <= rangeCollider.radius)
             {
-                float distanceFromEnemy = (unit.transform.position - transform.position).magnitude;
-                if (distanceFromEnemy <= rangeCollider.radius)
-                {
-                    if (!units.Contains(unit.transform)) { units.Add(transform); }
-                }
+                if (!enemies.Contains(enemy.gameObject)) { enemies.Add(enemy.gameObject); }
             }
         }
     }
@@ -39,7 +37,7 @@ public abstract class AttackStructure : Structure
         base.Start();
         puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
         structureType = StructureType.attack;
-        units = new List<Transform>();
+        enemies = new List<GameObject>();
         DetectEnemies();
     }
 
@@ -48,24 +46,24 @@ public abstract class AttackStructure : Structure
         base.Update();
         if (isPlaced)
         {
-            if (units.Count > 0)
+            if (enemies.Count > 0)
             {
-                units.RemoveAll(unit => !unit);
+                enemies.RemoveAll(enemy => !enemy);
                 if (!target)
-                { 
+                {
                     float closestDistanceSqr = Mathf.Infinity;
                     Vector3 currentPosition = transform.position;
 
-                    Transform nearestEnemy = null;
+                    GameObject nearestEnemy = null;
 
-                    foreach (Transform unit in units)
+                    foreach (GameObject enemy in enemies)
                     {
-                        Vector3 directionToTarget = unit.position - currentPosition;
+                        Vector3 directionToTarget = enemy.transform.position - currentPosition;
                         float dSqrToTarget = directionToTarget.sqrMagnitude;
                         if (dSqrToTarget < closestDistanceSqr)
                         {
                             closestDistanceSqr = dSqrToTarget;
-                            nearestEnemy = unit;
+                            nearestEnemy = enemy;
                         }
                     }
 
