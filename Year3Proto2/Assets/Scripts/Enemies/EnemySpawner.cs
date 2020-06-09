@@ -197,7 +197,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void LoadHeavyInvader(SuperManager.HeavyInvaderSaveData _saveData)
     {
-        HeavyInvader enemy = Instantiate(enemyPrefabs[0]).GetComponent<HeavyInvader>();
+        HeavyInvader enemy = Instantiate(enemyPrefabs[1]).GetComponent<HeavyInvader>();
         enemy.transform.position = _saveData.enemyData.position;
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetEquipment(_saveData.equipment);

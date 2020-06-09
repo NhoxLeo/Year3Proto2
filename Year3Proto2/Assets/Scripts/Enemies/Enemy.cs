@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
+[Serializable]
 public enum EnemyState
 {
     IDLE,
@@ -64,7 +66,7 @@ public abstract class Enemy : MonoBehaviour
             if (!delayedDeathCalled)
             {
                 delayedDeathCalled = true;
-                delayedDeathTimer = Random.Range(0.5f, 3.5f);
+                delayedDeathTimer = UnityEngine.Random.Range(0.5f, 3.5f);
             }
             delayedDeathTimer -= Time.deltaTime;
             if (delayedDeathTimer <= 0f)
@@ -164,6 +166,10 @@ public abstract class Enemy : MonoBehaviour
         if (enemyWasNull)
         {
             enemiesInArea.RemoveAll(enemy => !enemy);
+        }
+        if (Vector3.Angle(finalMotionVector.normalized, toTarget.normalized) > 90f)
+        {
+            return Vector3.zero;
         }
         return finalMotionVector.normalized * finalSpeed;
     }
