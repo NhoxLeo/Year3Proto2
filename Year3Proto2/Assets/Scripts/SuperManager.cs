@@ -740,7 +740,7 @@ public class SuperManager : MonoBehaviour
         {
             research = new Dictionary<int, bool>(),
             levelCompletion = new Dictionary<int, bool>(),
-            researchPoints = 1000,
+            researchPoints = 0,
             currentMatch = new MatchSaveData()
         };
         saveData.currentMatch.match = false;
