@@ -1401,9 +1401,9 @@ public class ProceduralGenerationWindow : EditorWindow
         selectedSM.forestEnvironmentBounds = currentPreset.forestParameters;
         selectedSM.recursiveFGrowthChance = currentPreset.forestParameters.z;
         selectedSM.hillsEnvironmentBounds = currentPreset.hillsParameters;
-        selectedSM.recursiveFGrowthChance = currentPreset.hillsParameters.z;
+        selectedSM.recursiveHGrowthChance = currentPreset.hillsParameters.z;
         selectedSM.plainsEnvironmentBounds = currentPreset.plainsParameters;
-        selectedSM.recursiveFGrowthChance = currentPreset.plainsParameters.z;
+        selectedSM.recursivePGrowthChance = currentPreset.plainsParameters.z;
     }
 
 
