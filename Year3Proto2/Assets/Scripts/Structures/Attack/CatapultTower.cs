@@ -78,18 +78,30 @@ public class CatapultTower : AttackStructure
         GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
-    public override void IncreaseFoodAllocation()
+    public override void SetFoodAllocation(int _newFoodAllocation)
     {
-        base.IncreaseFoodAllocation();
+        base.SetFoodAllocation(_newFoodAllocation);
         SetFirerate();
     }
 
-    public override void DecreaseFoodAllocation()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        base.DecreaseFoodAllocation();
-        SetFirerate();
+        foreach (CatapultTower catapult in FindObjectsOfType<CatapultTower>())
+        {
+            catapult.SetFoodAllocation(_allocation);
+        }
     }
 
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
+        if (catapultTowers.Length >= 2)
+        {
+            CatapultTower other = (catapultTowers[0] == this) ? catapultTowers[1] : catapultTowers[0];
+            SetFoodAllocation(other.foodAllocation);
+        }
+    }
 
     void SetFirerate()
     {

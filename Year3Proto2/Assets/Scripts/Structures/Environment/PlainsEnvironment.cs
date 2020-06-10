@@ -11,4 +11,9 @@ public class PlainsEnvironment : EnvironmentStructure
         environmentType = EnvironmentType.plains;
         structureName = "Plains Environment";
     }
+
+    public override void SetFoodAllocationGlobal(int _allocation)
+    {
+        Debug.LogError("Food Allocation should not be called for " + structureName);
+    }
 }

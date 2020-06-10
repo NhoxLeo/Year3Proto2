@@ -103,7 +103,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = archer.fireRate.ToString("F");
                 statInfoText.text = "per second";
-                foodValueText.text = archer.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                foodValueText.text = archer.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 repairButton.interactable = archer.CanBeRepaired();
                 break;
@@ -114,7 +114,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = catapult.fireRate.ToString("F");
                 statInfoText.text = "per second";
-                foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 repairButton.interactable = catapult.CanBeRepaired();
                 break;
@@ -125,7 +125,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Training Time";
                 statValueText.text = barracks.GetTrainTime().ToString("F");
                 statInfoText.text = "seconds";
-                foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 repairButton.interactable = barracks.CanBeRepaired();
                 break;
@@ -156,7 +156,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
-                foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
                 repairButton.interactable = mill.CanBeRepaired();
                 break;
             case "Lumber Pile":
@@ -175,7 +175,7 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mine.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mine.productionTime.ToString("0") + "s";
-                foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
                 repairButton.interactable = mine.CanBeRepaired();
                 break;
             case "Metal Storage":
