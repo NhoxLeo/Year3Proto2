@@ -80,7 +80,7 @@ public abstract class AttackStructure : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = consumptionTime;
-                if (gameMan.playerResources.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+                if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
                 {
                     gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
                 }

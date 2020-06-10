@@ -478,7 +478,7 @@ public class GameManager : MonoBehaviour
         {
             panelRefreshTimer = panelRefreshCooldown;
             // do refresh
-            for (int i = 1; i <= 8; i++)
+            for (int i = 1; i <= 9; i++)
             {
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
                 {
