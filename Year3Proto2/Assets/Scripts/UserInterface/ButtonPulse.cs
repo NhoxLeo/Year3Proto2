@@ -15,6 +15,7 @@ public class ButtonPulse : MonoBehaviour
         audioSource.volume = 0.825f;
         clickSound = FindObjectOfType<SceneSwitcher>().clickSound;
         audioSource.clip = clickSound;
+        audioSource.playOnAwake = false;
 
         soundSet = true;
     }
