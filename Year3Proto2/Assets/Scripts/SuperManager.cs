@@ -41,6 +41,12 @@ public class SuperManager : MonoBehaviour
     public const int k_iCatapultFortification = 9;
     public const int k_iCatapultEfficiency = 10;
     public const int k_iCatapultSuper = 11;
+    public const int k_iBarracks = 12;
+    public const int k_iBarracksSoldierDamage = 13;
+    public const int k_iBarracksSoldierHealth = 14;
+    public const int k_iBarracksSoldierSpeed = 15;
+    public const int k_iBarracksFortification = 16;
+    public const int k_iBarracksSuper = 17;
 
     [Serializable]
     public struct SaveQuaternion
@@ -142,6 +148,7 @@ public class SuperManager : MonoBehaviour
     {
         public bool match;
         public int levelID;
+        public bool matchWon;
         public PlayerResources playerResources;
         public Dictionary<string, ResourceBundle> structureCosts;
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
@@ -344,6 +351,13 @@ public class SuperManager : MonoBehaviour
             new ResearchElementDefinition(k_iCatapultFortification, k_iCatapult, "Fortification", "Improves building durability by 50%.", 200),
             new ResearchElementDefinition(k_iCatapultEfficiency, k_iCatapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
             new ResearchElementDefinition(k_iCatapultSuper, k_iCatapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
+
+            new ResearchElementDefinition(k_iBarracks, k_iNoRequirement, "Barracks", "The Barracks spawns enemy soldiers, which automatically chase down enemies.", 300),
+            new ResearchElementDefinition(k_iBarracksSoldierDamage, k_iBarracks, "Soldier Damage", "Damage improved by 30%.", 200),
+            new ResearchElementDefinition(k_iBarracksSoldierHealth, k_iBarracks, "Soldier Health", "Health increased by 50%.", 200),
+            new ResearchElementDefinition(k_iBarracksSoldierSpeed, k_iBarracks, "Soldier Speed", "Speed increased by 30%.", 200),
+            new ResearchElementDefinition(k_iBarracksFortification, k_iBarracks, "Fortification", "Improves building durability by 50%.", 200),
+            new ResearchElementDefinition(k_iBarracksSuper, k_iBarracks, "Reinforcements", "Barracks can spawn up to 8 soldiers.", 500, true),
         };
         levelDefinitions = new List<LevelDefinition>()
         {
@@ -405,6 +419,16 @@ public class SuperManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.D))
             {
                 WipeReloadScene();
+            }
+            // Press M
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                if(gameMan)
+                {
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.food));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.wood));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.metal));
+                }
             }
         }
     }
@@ -529,7 +553,8 @@ public class SuperManager : MonoBehaviour
             heavyInvaders = new List<HeavyInvaderSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = enemySpawner.GetKillCount(),
-            spawnerCooldown = enemySpawner.cooldown
+            spawnerCooldown = enemySpawner.cooldown,
+            matchWon = gameMan.victory
         };
 
         // not so easy stuff...
@@ -740,10 +765,11 @@ public class SuperManager : MonoBehaviour
         {
             research = new Dictionary<int, bool>(),
             levelCompletion = new Dictionary<int, bool>(),
-            researchPoints = 1000,
+            researchPoints = 0,
             currentMatch = new MatchSaveData()
         };
         saveData.currentMatch.match = false;
+        saveData.currentMatch.matchWon = false;
         for (int i = 0; i < researchDefinitions.Count; i++)
         {
             if (i == 0) { saveData.research.Add(0, true); }

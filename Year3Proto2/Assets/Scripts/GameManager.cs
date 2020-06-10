@@ -178,7 +178,8 @@ public class GameManager : MonoBehaviour
     private static Dictionary<string, AudioClip> audioClips;
     private float batchMaxAge = 3.0f;
     private bool gameover = false;
-    private bool victory = false;
+    [HideInInspector]
+    public bool victory = false;
     private float gameoverTimer = 5.0f;
     private List<ResourceBatch> recentBatches;
     private float tutorialAMessageTimer = 5.0f;
@@ -406,6 +407,7 @@ public class GameManager : MonoBehaviour
             { "UIclick2", Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip },
             { "UIclick3", Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip },
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
+            { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
         };
     }
 
@@ -487,7 +489,10 @@ public class GameManager : MonoBehaviour
                 }
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Barracks)
                 {
-                    continue;
+                    if (!superMan.GetResearchComplete(SuperManager.k_iBarracks))
+                    {
+                        continue;
+                    }
                 }
                 buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerResources.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
             }
@@ -503,7 +508,7 @@ public class GameManager : MonoBehaviour
                 GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
             }
-            else if (WinConditionIsMet())
+            else if (WinConditionIsMet() && !superMan.GetSavedMatch().matchWon)
             {
                 gameover = true;
                 victory = true;

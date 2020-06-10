@@ -84,7 +84,7 @@ public class BuildPanel : MonoBehaviour
         GetInfo();
 
         if (!superMan.GetResearchComplete(SuperManager.k_iCatapult)) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
-        transform.Find("PanelMask/IconBarracks").GetComponent<Image>().sprite = lockedBuilding;
+        if (!superMan.GetResearchComplete(SuperManager.k_iBarracks)) { transform.Find("PanelMask/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -210,7 +210,7 @@ public class BuildPanel : MonoBehaviour
         tooltipSelected = (Buildings)tool;
 
         if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
-        if (tooltipSelected == Buildings.Barracks) { return; }
+        if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.k_iBarracks)) { return; }
 
         if (tooltipSelected == Buildings.None)
         {
@@ -248,7 +248,7 @@ public class BuildPanel : MonoBehaviour
     public void SelectBuilding(int buildingType)
     {
         if ((Buildings)buildingType == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
-        if ((Buildings)buildingType == Buildings.Barracks) { return; }
+        if ((Buildings)buildingType == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.k_iBarracks)) { return; }
 
         if ((Buildings)buildingType == buildingSelected)
         {

@@ -557,11 +557,7 @@ public class StructureManager : MonoBehaviour
                                                 hitPos.y = structure.sitHeight;
                                                 structure.transform.position = hitPos;
 
-                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
-                                                if (structure.IsStructure("Barracks"))
-                                                {
-                                                    structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.red);
-                                                }
+                                                SetStructureColour(Color.red);
 
                                                 if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                                 if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
@@ -593,35 +589,23 @@ public class StructureManager : MonoBehaviour
                                                     {
                                                         if (newStructureType == StructureType.resource)
                                                         {
-                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                                                            SetStructureColour(Color.green);
                                                         }
                                                         else if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
                                                         {
-                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
-                                                            if (structure.IsStructure("Barracks"))
-                                                            {
-                                                                structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.yellow);
-                                                            }
+                                                            SetStructureColour(Color.yellow);
                                                         }
                                                     }
                                                 }
                                                 else // the tile can be placed on, and has no attached structure
                                                 {
-                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
-                                                    if (structure.IsStructure("Barracks"))
-                                                    {
-                                                        structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.green);
-                                                    }
+                                                    SetStructureColour(Color.green);
                                                 }
 
                                                 // If player cannot afford the structure, set to red.
                                                 if (!gameMan.playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
                                                 {
-                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
-                                                    if (structure.IsStructure("Barracks"))
-                                                    {
-                                                        structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.red);
-                                                    }
+                                                    SetStructureColour(Color.red);
                                                 }
 
                                                 Vector3 structPos = hit.transform.position;
@@ -642,11 +626,7 @@ public class StructureManager : MonoBehaviour
                                                     if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                                     {
                                                         GameManager.CreateAudioEffect("build", structure.transform.position);
-                                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
-                                                        if (structure.IsStructure("Barracks"))
-                                                        {
-                                                            structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.white);
-                                                        }
+                                                        SetStructureColour(Color.white);
                                                         // Attach the structure to the tile and vica versa
                                                         if (attached) { attached.attachedTile.Detach(); }
                                                         tile.Attach(structure);
@@ -659,7 +639,6 @@ public class StructureManager : MonoBehaviour
                                                             StructureType structType = structure.GetStructureType();
                                                             if (attachedStructType == StructureType.environment && structType == StructureType.resource)
                                                             {
-                                                                Destroy(attached.gameObject);
                                                                 messageBox.HideMessage();
                                                                 switch (structure.GetStructureName())
                                                                 {
@@ -677,23 +656,7 @@ public class StructureManager : MonoBehaviour
                                                                         break;
                                                                 }
                                                             }
-                                                            else if (attachedStructType == StructureType.environment && (structType == StructureType.attack || structType == StructureType.storage))
-                                                            {
-                                                                switch (attached.GetStructureName())
-                                                                {
-                                                                    case "Forest Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.wood));
-                                                                        break;
-                                                                    case "Hill Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.metal));
-                                                                        break;
-                                                                    case "Plains Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.food));
-                                                                        break;
-                                                                }
-                                                                Destroy(attached.gameObject);
-                                                                messageBox.HideMessage();
-                                                            }
+                                                            Destroy(attached.gameObject);
                                                         }
                                                         gameMan.OnStructurePlace();
                                                         if (structureFromStore)
@@ -1036,6 +999,14 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    private void SetStructureColour(Color _colour)
+    {
+        foreach (Material mat in structure.GetComponent<MeshRenderer>().materials)
+        {
+            mat.SetColor("_BaseColor", _colour);
+        }
+    }
+
     private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
     {
         if (_placed == _max)
@@ -1148,7 +1119,7 @@ public class StructureManager : MonoBehaviour
             case "Lumber Pile":
                 envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
                 break;
-            case "Metal Storehouse":
+            case "Metal Storage":
                 envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
                 break;
             case "Ballista Tower":

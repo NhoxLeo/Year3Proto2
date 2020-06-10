@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4203729, g: 0.26458973, b: 0.17918266, a: 1}
+  m_IndirectSpecularColor: {r: 0.42018026, g: 0.26447636, b: 0.17913999, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -35837,6 +35837,21 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1392424125078357318, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 817593756}
+    - target: {fileID: 1392424125078357318, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: SaveCurrentMatch
+      objectReference: {fileID: 0}
+    - target: {fileID: 1392424125078357318, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1588544872531097061, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -38750,6 +38765,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: baca440b2bf69734497f80ed08a4d9ce, type: 3}
+--- !u!114 &817593756 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7569037028227236675, guid: baca440b2bf69734497f80ed08a4d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 817593755}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ecbba7dd089d7248a1438d9e1e1b402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &818243514
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39939,6 +39966,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3484729769825983032, guid: b2c76e2fd0fbfd740a580dad2478f702,
+        type: 3}
+      propertyPath: startMaxed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3484729769825983032, guid: b2c76e2fd0fbfd740a580dad2478f702,
+        type: 3}
+      propertyPath: currentLevel
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3484729769825983033, guid: b2c76e2fd0fbfd740a580dad2478f702,
         type: 3}
       propertyPath: m_Name

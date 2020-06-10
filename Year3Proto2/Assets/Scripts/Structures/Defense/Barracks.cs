@@ -5,10 +5,18 @@ using UnityEngine;
 public class Barracks : DefenseStructure
 {
     private GameObject soldierPrefab;
+    private GameObject puffEffect;
     private int maxSoldiers = 5;
-    private List<Soldier> soldiers;
+    [HideInInspector]
+    public List<Soldier> soldiers;
     private float trainTime = 20f;
     private float timeTrained = 0f;
+    private SuperManager superMan;
+
+    public float GetTrainTime()
+    {
+        return trainTime;
+    }
 
     private void UpdateHealAndTrainRate()
     {
@@ -16,26 +24,22 @@ public class Barracks : DefenseStructure
         {
             case 1:
                 trainTime = 30f;
-                SetHealRate(1f);
                 break;
             case 2:
                 trainTime = 25f;
-                SetHealRate(1.2f);
                 break;
             case 3:
                 trainTime = 20f;
-                SetHealRate(1.5f);
                 break;
             case 4:
                 trainTime = 15f;
-                SetHealRate(2f);
                 break;
             case 5:
                 trainTime = 10f;
-                SetHealRate(3f);
                 break;
         }
-
+        float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth) ? 1.5f : 1.0f);
+        SetHealRate(soldierMaxHealth / trainTime);
     }
 
     private void SetHealRate(float _healRate)
@@ -67,10 +71,26 @@ public class Barracks : DefenseStructure
     protected override void Awake()
     {
         base.Awake();
+        superMan = SuperManager.GetInstance();
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Barracks];
-
+        soldiers = new List<Soldier>();
+        soldierPrefab = Resources.Load("Soldier") as GameObject;
         maxHealth = 200f;
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksFortification))
+        {
+            maxHealth *= 1.5f;
+        }
         health = maxHealth;
+        if (superMan.GetResearchComplete(SuperManager.k_iBallistaSuper))
+        {
+            maxSoldiers = 8;
+        }
+        puffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
     }
 
     protected override void Update()
@@ -89,32 +109,33 @@ public class Barracks : DefenseStructure
 
     private void SpawnSoldier()
     {
-        // instantiate
-        // set home
-        // disable a random shield
-    }
+        Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
+        newSoldier.home = this;
+        float vectorSampler = Random.Range(0f, 1f);
+        newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
+        newSoldier.puffEffect = puffEffect;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        Soldier soldier = other.gameObject.GetComponent<Soldier>();
-        if (soldier)
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierDamage))
         {
-            if (soldier.home == this)
-            {
-                soldier.canHeal = true;
-            }
+            newSoldier.damage *= 1.3f;
         }
-    }
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth))
+        {
+            newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
+            newSoldier.maxHealth *= 1.5f;
+            newSoldier.health *= 1.5f;
+        }
+        else
+        {
+            newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
+        }
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierSpeed))
+        {
+            newSoldier.movementSpeed *= 1.3f;
+        }
 
-    private void OnTriggerExit(Collider other)
-    {
-        Soldier soldier = other.gameObject.GetComponent<Soldier>();
-        if (soldier)
-        {
-            if (soldier.home == this)
-            {
-                soldier.canHeal = false;
-            }
-        }
+        soldiers.Add(newSoldier);
+
+        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, 0.3f);
     }
 }

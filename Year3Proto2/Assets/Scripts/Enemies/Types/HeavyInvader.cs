@@ -15,7 +15,8 @@ public class HeavyInvader : Enemy
         {
             StructureType.attack,
             StructureType.storage,
-            StructureType.longhaus
+            StructureType.longhaus,
+            StructureType.defense
         };
     }
 
@@ -33,36 +34,43 @@ public class HeavyInvader : Enemy
             switch (enemyState)
             {
                 case EnemyState.ACTION:
-                    if (!target)
+                    if (defending)
                     {
-                        animator.SetBool("Attack", false);
-                        enemyState = EnemyState.IDLE;
+                        Action();
                     }
                     else
                     {
-                        if (needToMoveAway)
+                        if (!target)
                         {
-                            if ((target.transform.position - transform.position).magnitude < 0.5f)
-                            {
-                                Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
-                                LookAtPosition(newPosition);
-                                transform.position = newPosition;
-                            }
-                            else
-                            {
-                                needToMoveAway = false;
-                            }
+                            animator.SetBool("Attack", false);
+                            enemyState = EnemyState.IDLE;
                         }
                         else
                         {
-                            if (structureTypes.Contains(target.GetStructureType()))
+                            if (needToMoveAway)
                             {
-                                Action();
+                                if ((target.transform.position - transform.position).magnitude < 0.5f)
+                                {
+                                    Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
+                                    LookAtPosition(newPosition);
+                                    transform.position = newPosition;
+                                }
+                                else
+                                {
+                                    needToMoveAway = false;
+                                }
                             }
                             else
                             {
-                                animator.SetBool("Attack", false);
-                                enemyState = EnemyState.IDLE;
+                                if (structureTypes.Contains(target.GetStructureType()))
+                                {
+                                    Action();
+                                }
+                                else
+                                {
+                                    animator.SetBool("Attack", false);
+                                    enemyState = EnemyState.IDLE;
+                                }
                             }
                         }
                     }
@@ -103,6 +111,10 @@ public class HeavyInvader : Enemy
                     if (!target) { Destroy(gameObject); }
                     break;
             }
+        }
+        else
+        {
+            action = false;
         }
     }
 
@@ -159,21 +171,43 @@ public class HeavyInvader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect, transform.position, Quaternion.identity);
+        GameObject puff = Instantiate(puffEffect);
+        puff.transform.position = transform.position;
         puff.transform.localScale *= 3f;
     }
 
     public override void Action()
     {
-        if (target.GetHealth() > 0)
+        if (defending)
         {
-            action = true;
+            if (defenseTarget)
+            {
+                if (defenseTarget.health > 0)
+                {
+                    LookAtPosition(defenseTarget.transform.position);
+                    action = true;
+                }
+            }
+            else
+            {
+                defending = false;
+                animator.SetBool("Attack", false);
+                action = false;
+                enemyState = EnemyState.IDLE;
+            }
         }
         else
         {
-            animator.SetBool("Attack", false);
-            action = false;
-            enemyState = EnemyState.IDLE;
+            if (target.GetHealth() > 0)
+            {
+                action = true;
+            }
+            else
+            {
+                animator.SetBool("Attack", false);
+                action = false;
+                enemyState = EnemyState.IDLE;
+            }
         }
     }
 
@@ -181,7 +215,23 @@ public class HeavyInvader : Enemy
     {
         if (action)
         {
-            target.Damage(damage);
+            if (defending)
+            {
+                if (defenseTarget)
+                {
+                    if (defenseTarget.Damage(damage))
+                    {
+                        defenseTarget = null;
+                    }
+                }
+            }
+            else
+            {
+                if (target)
+                {
+                    target.Damage(damage);
+                }
+            }
         }
     }
 }

@@ -82,4 +82,16 @@ public class TitleScreen : MonoBehaviour
             titleSequence.Complete();
         }
     }
+
+    public void PlayButton()
+    {
+        if (!SuperManager.GetInstance().GetSavedMatch().match)
+        {
+            SuperManager.GetInstance().PlayLevel(0);
+        }
+        else
+        {
+            FindObjectOfType<SceneSwitcher>().SceneSwitch("SamDev");
+        }
+    }
 }
