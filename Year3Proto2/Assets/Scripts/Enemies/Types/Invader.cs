@@ -15,7 +15,8 @@ public class Invader : Enemy
             StructureType.attack,
             StructureType.resource,
             StructureType.storage,
-            StructureType.longhaus
+            StructureType.longhaus,
+            StructureType.defense
         };
     }
 
@@ -26,36 +27,43 @@ public class Invader : Enemy
             switch (enemyState)
             {
                 case EnemyState.ACTION:
-                    if (!target)
+                    if (defending)
                     {
-                        animator.SetBool("Attack", false);
-                        enemyState = EnemyState.IDLE;
+                        Action();
                     }
                     else
                     {
-                        if (needToMoveAway)
+                        if (!target)
                         {
-                            if ((target.transform.position - transform.position).magnitude < (scale * 0.04f) + 0.5f)
-                            {
-                                Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
-                                LookAtPosition(newPosition);
-                                transform.position = newPosition;
-                            }
-                            else
-                            {
-                                needToMoveAway = false;
-                            }
+                            animator.SetBool("Attack", false);
+                            enemyState = EnemyState.IDLE;
                         }
                         else
                         {
-                            if (structureTypes.Contains(target.GetStructureType()))
+                            if (needToMoveAway)
                             {
-                                Action();
+                                if ((target.transform.position - transform.position).magnitude < (scale * 0.04f) + 0.5f)
+                                {
+                                    Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
+                                    LookAtPosition(newPosition);
+                                    transform.position = newPosition;
+                                }
+                                else
+                                {
+                                    needToMoveAway = false;
+                                }
                             }
                             else
                             {
-                                animator.SetBool("Attack", false);
-                                enemyState = EnemyState.IDLE;
+                                if (structureTypes.Contains(target.GetStructureType()))
+                                {
+                                    Action();
+                                }
+                                else
+                                {
+                                    animator.SetBool("Attack", false);
+                                    enemyState = EnemyState.IDLE;
+                                }
                             }
                         }
                     }
@@ -97,6 +105,10 @@ public class Invader : Enemy
                     break;
             }
         }
+        else
+        {
+            action = false;
+        }
     }
 
     public void SetScale(float _scale)
@@ -113,32 +125,68 @@ public class Invader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect, transform.position, Quaternion.identity);
+        GameObject puff = Instantiate(puffEffect);
+        puff.transform.position = transform.position;
         puff.transform.localScale *= scale;
     }
 
 
     public override void Action()
     {
-        if (target.GetHealth() > 0)
+        if (defending)
         {
-            action = true;
+            if (defenseTarget)
+            {
+                if (defenseTarget.health > 0)
+                {
+                    LookAtPosition(defenseTarget.transform.position);
+                    action = true;
+                }
+            }
+            else
+            {
+                defending = false;
+                animator.SetBool("Attack", false);
+                action = false;
+                enemyState = EnemyState.IDLE;
+            }
         }
         else
         {
-            animator.SetBool("Attack", false);
-            action = false;
-            enemyState = EnemyState.IDLE;
+            if (target.GetHealth() > 0)
+            {
+                action = true;
+            }
+            else
+            {
+                animator.SetBool("Attack", false);
+                action = false;
+                enemyState = EnemyState.IDLE;
+            }
         }
+        
     }
 
     public void SwingContact()
     {
         if (action)
         {
-            if (target)
+            if (defending)
             {
-                target.Damage(damage);
+                if (defenseTarget)
+                {
+                    if (defenseTarget.Damage(damage))
+                    {
+                        defenseTarget = null;
+                    }
+                }
+            }
+            else
+            {
+                if (target)
+                {
+                    target.Damage(damage);
+                }
             }
         }
     }

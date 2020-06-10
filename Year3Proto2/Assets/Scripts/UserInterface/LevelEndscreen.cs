@@ -22,6 +22,7 @@ public class LevelEndscreen : MonoBehaviour
 
     void Update()
     {
+        /*
         if (Input.GetKeyDown(KeyCode.Z))
         {
             ShowVictoryScreen();
@@ -31,6 +32,7 @@ public class LevelEndscreen : MonoBehaviour
         {
             ShowDeafeatScreen();
         }
+        */
     }
 
     private void GetVictoryInfo()
@@ -81,5 +83,8 @@ public class LevelEndscreen : MonoBehaviour
         FindObjectOfType<HUDManager>().doShowHUD = true;
     }
 
-
+    public void SaveCurrentMatch()
+    {
+        SuperManager.GetInstance().SaveCurrentMatch();
+    }
 }

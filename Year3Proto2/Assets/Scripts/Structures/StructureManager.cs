@@ -110,6 +110,7 @@ public class StructureManager : MonoBehaviour
     {
         { BuildPanel.Buildings.Ballista, "Ballista Tower" },
         { BuildPanel.Buildings.Catapult, "Catapult Tower" },
+        { BuildPanel.Buildings.Barracks, "Barracks" },
         { BuildPanel.Buildings.Farm, "Farm" },
         { BuildPanel.Buildings.Granary, "Granary" },
         { BuildPanel.Buildings.LumberMill, "Lumber Mill" },
@@ -117,10 +118,13 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Mine" },
         { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
     };
+
+
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
         { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
+        { BuildPanel.Buildings.Barracks, "Spawns soldiers, who automatically attack enemies." },
         { BuildPanel.Buildings.Farm, "Collects Food from nearby plains tiles. Bonus if constructed on plains." },
         { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
         { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
@@ -130,19 +134,21 @@ public class StructureManager : MonoBehaviour
     };
     public static Dictionary<string, BuildPanel.Buildings> StructureIDs = new Dictionary<string, BuildPanel.Buildings>
     {
-        { "Ballista Tower", BuildPanel.Buildings.Ballista },
-        { "Catapult Tower", BuildPanel.Buildings.Catapult },
-        { "Farm", BuildPanel.Buildings.Farm },
-        { "Granary", BuildPanel.Buildings.Granary },
-        { "Lumber Mill", BuildPanel.Buildings.LumberMill },
-        { "Lumber Pile", BuildPanel.Buildings.LumberPile },
-        { "Mine", BuildPanel.Buildings.Mine },
-        { "Metal Storage", BuildPanel.Buildings.MetalStorage }
+        { StructureNames[BuildPanel.Buildings.Ballista], BuildPanel.Buildings.Ballista },
+        { StructureNames[BuildPanel.Buildings.Catapult], BuildPanel.Buildings.Catapult },
+        { StructureNames[BuildPanel.Buildings.Barracks], BuildPanel.Buildings.Barracks },
+        { StructureNames[BuildPanel.Buildings.Farm], BuildPanel.Buildings.Farm },
+        { StructureNames[BuildPanel.Buildings.Granary], BuildPanel.Buildings.Granary },
+        { StructureNames[BuildPanel.Buildings.LumberMill], BuildPanel.Buildings.LumberMill },
+        { StructureNames[BuildPanel.Buildings.LumberPile], BuildPanel.Buildings.LumberPile },
+        { StructureNames[BuildPanel.Buildings.Mine], BuildPanel.Buildings.Mine },
+        { StructureNames[BuildPanel.Buildings.MetalStorage], BuildPanel.Buildings.MetalStorage }
     };
     public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
     {
         { BuildPanel.Buildings.Ballista, 0 },
         { BuildPanel.Buildings.Catapult, 0 },
+        { BuildPanel.Buildings.Barracks, 0 },
         { BuildPanel.Buildings.Farm, 0 },
         { BuildPanel.Buildings.Granary, 0 },
         { BuildPanel.Buildings.LumberMill, 0 },
@@ -195,59 +201,62 @@ public class StructureManager : MonoBehaviour
     private GameManager gameMan;
     private BuildPanel panel;
     private GameObject buildingPuff;
-    private UnitSpawner unitSpawner;
     private EnemySpawner enemySpawner;
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private MessageBox messageBox;
 
+    private void DefineDictionaries()
+    {
+        structureDict = new Dictionary<string, StructureDefinition>
+        {
+            // NAME                                                     NAME                                                        wC       mC      fC
+            { "Longhaus",           new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(600,     200,    0)) },
+
+            { "Ballista Tower",     new StructureDefinition(Resources.Load("Archer Tower") as GameObject,       new ResourceBundle(150,     50,     0)) },
+            { "Catapult Tower",     new StructureDefinition(Resources.Load("Catapult Tower") as GameObject,     new ResourceBundle(200,     250,    0)) },
+            { "Barracks",           new StructureDefinition(Resources.Load("Barracks") as GameObject,           new ResourceBundle(200,     250,    0)) },
+
+            { "Farm",               new StructureDefinition(Resources.Load("Farm") as GameObject,               new ResourceBundle(40,      0,      0)) },
+            { "Lumber Mill",        new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(60,      20,     0)) },
+            { "Mine",               new StructureDefinition(Resources.Load("Mine") as GameObject,               new ResourceBundle(100,     20,     0)) },
+
+            { "Granary",            new StructureDefinition(Resources.Load("Granary") as GameObject,            new ResourceBundle(120,     0,      0)) },
+            { "Lumber Pile",        new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,        new ResourceBundle(120,     0,      0)) },
+            { "Metal Storage",      new StructureDefinition(Resources.Load("Metal Storage") as GameObject,      new ResourceBundle(120,     80,     0)) },
+
+            { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0,       0,      0)) },
+            { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0,       0,      0)) },
+            { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0,       0,      0)) },
+        };
+        structureCosts = new Dictionary<string, ResourceBundle>
+        {
+            // NAME                                    wC       mC      fC
+            { "Ballista Tower",     new ResourceBundle(150,     50,     0) },
+            { "Catapult Tower",     new ResourceBundle(200,     250,    0) },
+            { "Barracks",           new ResourceBundle(200,     100,    0) },
+
+            { "Farm",               new ResourceBundle(40,      0,      0) },
+            { "Lumber Mill",        new ResourceBundle(60,      20,     0) },
+            { "Mine",               new ResourceBundle(100,     20,     0) },
+
+            { "Granary",            new ResourceBundle(120,     0,      0) },
+            { "Lumber Pile",        new ResourceBundle(120,     0,      0) },
+            { "Metal Storage",      new ResourceBundle(120,     80,     0) }
+        };
+    }
+
     private void Awake()
     {
         kPathSaveData = Application.persistentDataPath + "/saveData.dat";
         kPathPGP = Application.persistentDataPath + "/PGP.dat";
-        structureDict = new Dictionary<string, StructureDefinition>
-        {
-            // NAME                                                     NAME                                               wC       mC      fC
-            { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
-
-            { "Ballista Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
-            { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
-
-            { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
-            { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(120,     0,      0)) },
-
-            { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(60,      20,     0)) },
-            { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(120,     0,      0)) },
-
-            { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(100,     20,     0)) },
-            { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(120,     80,     0)) },
-
-            { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0, 0, 0)) },
-            { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0, 0, 0)) },
-            { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0, 0, 0)) },
-        };
-        structureCosts = new Dictionary<string, ResourceBundle>
-        {
-            // NAME                                 wC       mC      fC
-            { "Ballista Tower",   new ResourceBundle(150,     50,     0) },
-            { "Catapult Tower", new ResourceBundle(200,     250,    0) },
-
-            { "Farm",           new ResourceBundle(40,      0,      0) },
-            { "Granary",        new ResourceBundle(120,     0,      0) },
-
-            { "Lumber Mill",    new ResourceBundle(60,      20,     0) },
-            { "Lumber Pile",    new ResourceBundle(120,     0,      0) },
-
-            { "Mine",           new ResourceBundle(100,     20,     0) },
-            { "Metal Storage",  new ResourceBundle(120,     80,     0) }
-        };
+        DefineDictionaries();
         panel = FindObjectOfType<BuildPanel>();
         gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         canvas = FindObjectOfType<Canvas>();
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
-        unitSpawner = FindObjectOfType<UnitSpawner>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
         HUDman = FindObjectOfType<HUDManager>();
         superMan = SuperManager.GetInstance();
@@ -514,28 +523,6 @@ public class StructureManager : MonoBehaviour
                                         break;
                                     }
                                 }
-                                /*
-                                StructureType structureType = selectedStructure.GetStructureType();
-                                if (structureType == StructureType.resource || structureType == StructureType.attack)
-                                {
-                                    if (Input.GetKeyDown(KeyCode.RightArrow))
-                                    {
-                                        selectedStructure.IncreaseFoodAllocation();
-                                    }
-                                    if (Input.GetKeyDown(KeyCode.LeftArrow))
-                                    {
-                                        selectedStructure.DecreaseFoodAllocation();
-                                    }
-                                    if (Input.GetKeyDown(KeyCode.UpArrow))
-                                    {
-                                        selectedStructure.SetFoodAllocationMax();
-                                    }
-                                    if (Input.GetKeyDown(KeyCode.DownArrow))
-                                    {
-                                        selectedStructure.SetFoodAllocationMin();
-                                    }
-                                }
-                                */
                             }
                             else
                             {
@@ -562,13 +549,15 @@ public class StructureManager : MonoBehaviour
                                             bool canPlaceHere = false;
                                             // If the tile we hit has an attached object...
                                             Structure attached = tile.GetAttached();
+                                            StructureType newStructureType = structure.GetStructureType();
                                             if (attached)
                                             {
+                                                StructureType attachedStructureType = attached.GetStructureType();
                                                 Vector3 hitPos = hit.point;
                                                 hitPos.y = structure.sitHeight;
                                                 structure.transform.position = hitPos;
 
-                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
+                                                SetStructureColour(Color.red);
 
                                                 if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                                 if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
@@ -576,11 +565,16 @@ public class StructureManager : MonoBehaviour
                                                 if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
                                                 else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
                                                 else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                                else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack) { canPlaceHere = true; }
-                                                else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage) { canPlaceHere = true; }
+                                                else if (attachedStructureType == StructureType.environment)
+                                                {
+                                                    if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                    {
+                                                        canPlaceHere = true;
+                                                    }
+                                                }
                                             }
-                                            // if the structure can be placed here...
                                             else { canPlaceHere = true; }
+                                            // if the structure can be placed here...
                                             if (canPlaceHere)
                                             {
                                                 if (structure.GetStructureType() == StructureType.attack)
@@ -590,28 +584,28 @@ public class StructureManager : MonoBehaviour
 
                                                 if (attached)
                                                 {
-                                                    if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.resource)
+                                                    StructureType attachedStructureType = attached.GetStructureType();
+                                                    if (attachedStructureType == StructureType.environment)
                                                     {
-                                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
-                                                    }
-                                                    else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.attack)
-                                                    {
-                                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
-                                                    }
-                                                    else if (attached.GetStructureType() == StructureType.environment && structure.GetStructureType() == StructureType.storage)
-                                                    {
-                                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
+                                                        if (newStructureType == StructureType.resource)
+                                                        {
+                                                            SetStructureColour(Color.green);
+                                                        }
+                                                        else if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                        {
+                                                            SetStructureColour(Color.yellow);
+                                                        }
                                                     }
                                                 }
                                                 else // the tile can be placed on, and has no attached structure
                                                 {
-                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
+                                                    SetStructureColour(Color.green);
                                                 }
 
                                                 // If player cannot afford the structure, set to red.
                                                 if (!gameMan.playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
                                                 {
-                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
+                                                    SetStructureColour(Color.red);
                                                 }
 
                                                 Vector3 structPos = hit.transform.position;
@@ -632,7 +626,7 @@ public class StructureManager : MonoBehaviour
                                                     if ((structureFromStore && BuyBuilding()) || !structureFromStore)
                                                     {
                                                         GameManager.CreateAudioEffect("build", structure.transform.position);
-                                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
+                                                        SetStructureColour(Color.white);
                                                         // Attach the structure to the tile and vica versa
                                                         if (attached) { attached.attachedTile.Detach(); }
                                                         tile.Attach(structure);
@@ -645,7 +639,6 @@ public class StructureManager : MonoBehaviour
                                                             StructureType structType = structure.GetStructureType();
                                                             if (attachedStructType == StructureType.environment && structType == StructureType.resource)
                                                             {
-                                                                Destroy(attached.gameObject);
                                                                 messageBox.HideMessage();
                                                                 switch (structure.GetStructureName())
                                                                 {
@@ -663,23 +656,7 @@ public class StructureManager : MonoBehaviour
                                                                         break;
                                                                 }
                                                             }
-                                                            else if (attachedStructType == StructureType.environment && (structType == StructureType.attack || structType == StructureType.storage))
-                                                            {
-                                                                switch (attached.GetStructureName())
-                                                                {
-                                                                    case "Forest Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.wood));
-                                                                        break;
-                                                                    case "Hill Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.metal));
-                                                                        break;
-                                                                    case "Plains Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.food));
-                                                                        break;
-                                                                }
-                                                                Destroy(attached.gameObject);
-                                                                messageBox.HideMessage();
-                                                            }
+                                                            Destroy(attached.gameObject);
                                                         }
                                                         gameMan.OnStructurePlace();
                                                         if (structureFromStore)
@@ -689,14 +666,10 @@ public class StructureManager : MonoBehaviour
                                                         }
                                                         if (!towerPlaced)
                                                         {
-                                                            if(!unitSpawner.IsSpawning()) unitSpawner.ToggleSpawning(); 
-                                                            
-                                                            /*
                                                             if (!enemySpawner.IsSpawning())
                                                             {
                                                                 enemySpawner.ToggleSpawning();
                                                             }
-                                                            */
                                                             towerPlaced = true;
                                                         }
                                                         SelectStructure(structure);
@@ -843,7 +816,8 @@ public class StructureManager : MonoBehaviour
         {
             DeselectStructure();
             structureFromStore = true;
-            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab, Vector3.down * 10f, Quaternion.Euler(0f, 0f, 0f));
+            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab);
+            structureInstance.transform.position = Vector3.down * 10f;
             structure = structureInstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
             structureState = StructManState.moving;
@@ -1025,6 +999,14 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    private void SetStructureColour(Color _colour)
+    {
+        foreach (Material mat in structure.GetComponent<MeshRenderer>().materials)
+        {
+            mat.SetColor("_BaseColor", _colour);
+        }
+    }
+
     private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
     {
         if (_placed == _max)
@@ -1061,27 +1043,7 @@ public class StructureManager : MonoBehaviour
         // define the structures when in editor mode
         if (!Application.isPlaying)
         {
-            structureDict = new Dictionary<string, StructureDefinition>
-            {
-                // NAME                                                     NAME                                               wC       mC      fC
-                { "Longhaus",       new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(600,     200,    0)) },
-
-                { "Ballista Tower",   new StructureDefinition(Resources.Load("Archer Tower") as GameObject,   new ResourceBundle(150,     50,     0)) },
-                { "Catapult Tower", new StructureDefinition(Resources.Load("Catapult Tower") as GameObject, new ResourceBundle(200,     250,    0)) },
-
-                { "Farm",           new StructureDefinition(Resources.Load("Farm") as GameObject,           new ResourceBundle(40,      0,      0)) },
-                { "Granary",        new StructureDefinition(Resources.Load("Granary") as GameObject,        new ResourceBundle(120,     0,      0)) },
-
-                { "Lumber Mill",    new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,    new ResourceBundle(60,      20,     0)) },
-                { "Lumber Pile",    new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,    new ResourceBundle(120,     0,      0)) },
-
-                { "Mine",           new StructureDefinition(Resources.Load("Mine") as GameObject,           new ResourceBundle(100,     20,     0)) },
-                { "Metal Storage",  new StructureDefinition(Resources.Load("Metal Storage") as GameObject,  new ResourceBundle(120,     80,     0)) },
-
-                { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0, 0, 0)) },
-                { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0, 0, 0)) },
-                { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0, 0, 0)) },
-            };
+            if (structureDict == null) { DefineDictionaries(); }
         }
         // create the structure
         Structure structure = Instantiate(structureDict[_environmentType].structurePrefab).GetComponent<Structure>();
@@ -1157,7 +1119,7 @@ public class StructureManager : MonoBehaviour
             case "Lumber Pile":
                 envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
                 break;
-            case "Metal Storehouse":
+            case "Metal Storage":
                 envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
                 break;
             case "Ballista Tower":
@@ -1165,6 +1127,9 @@ public class StructureManager : MonoBehaviour
                 break;
             case "Catapult Tower":
                 envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
+                break;
+            case "Barracks":
+                envInfo.ShowInfo("The Barracks spawns soldiers which attack enemy units automatically.");
                 break;
         }
 
@@ -1407,9 +1372,9 @@ public class ProceduralGenerationWindow : EditorWindow
         selectedSM.forestEnvironmentBounds = currentPreset.forestParameters;
         selectedSM.recursiveFGrowthChance = currentPreset.forestParameters.z;
         selectedSM.hillsEnvironmentBounds = currentPreset.hillsParameters;
-        selectedSM.recursiveFGrowthChance = currentPreset.hillsParameters.z;
+        selectedSM.recursiveHGrowthChance = currentPreset.hillsParameters.z;
         selectedSM.plainsEnvironmentBounds = currentPreset.plainsParameters;
-        selectedSM.recursiveFGrowthChance = currentPreset.plainsParameters.z;
+        selectedSM.recursivePGrowthChance = currentPreset.plainsParameters.z;
     }
 
 

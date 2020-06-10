@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
+[Serializable]
 public enum EnemyState
 {
     IDLE,
@@ -11,16 +13,6 @@ public enum EnemyState
 
 public abstract class Enemy : MonoBehaviour
 {
-    private bool delayedDeathCalled = false;
-    private float delayedDeathTimer = 0f;
-    private float avoidForce = 0.05f;
-    protected Structure target = null;
-    protected EnemyState enemyState = EnemyState.IDLE;
-    protected List<GameObject> enemiesInArea = new List<GameObject>();
-    protected bool needToMoveAway;
-    protected float finalSpeed = 0.0f;
-    protected Animator animator;
-    protected bool action = false;
     [HideInInspector]
     public GameObject puffEffect;
     [HideInInspector]
@@ -29,12 +21,25 @@ public abstract class Enemy : MonoBehaviour
     public float damage = 2.0f;
     [HideInInspector]
     public bool nextReturnFalse = false;
-
+    protected bool delayedDeathCalled = false;
+    protected float delayedDeathTimer = 0f;
+    protected float avoidForce = 0.05f;
+    protected Structure target = null;
+    [HideInInspector]
+    public Soldier defenseTarget = null;
+    protected EnemyState enemyState = EnemyState.IDLE;
+    protected List<GameObject> enemiesInArea = new List<GameObject>();
+    protected bool needToMoveAway;
+    protected float finalSpeed = 0.0f;
+    protected Animator animator;
+    protected bool action = false;
+    protected Rigidbody body;
     protected List<StructureType> structureTypes;
+    protected bool defending = false;
+
+
 
     public abstract void Action();
-
-    private Rigidbody body;
 
     protected void EnemyStart()
     {
@@ -47,6 +52,16 @@ public abstract class Enemy : MonoBehaviour
     public virtual void OnKill()
     {
         FindObjectOfType<EnemySpawner>().OnEnemyDeath(this);
+    }
+
+    public virtual void OnDamagedBySoldier(Soldier _soldier)
+    {
+        enemyState = EnemyState.ACTION;
+        defenseTarget = _soldier;
+        defending = true;
+        animator.SetBool("Attack", true);
+        action = true;
+        LookAtPosition(_soldier.transform.position);
     }
 
     protected virtual void LookAtPosition(Vector3 _position)
@@ -63,7 +78,7 @@ public abstract class Enemy : MonoBehaviour
             if (!delayedDeathCalled)
             {
                 delayedDeathCalled = true;
-                delayedDeathTimer = Random.Range(0.5f, 3.5f);
+                delayedDeathTimer = UnityEngine.Random.Range(0.5f, 3.5f);
             }
             delayedDeathTimer -= Time.deltaTime;
             if (delayedDeathTimer <= 0f)
@@ -107,19 +122,6 @@ public abstract class Enemy : MonoBehaviour
         {
             if (!enemiesInArea.Contains(other.gameObject)) enemiesInArea.Add(other.gameObject);
         }
-        /*
-        if (target)
-        {
-            if (other.gameObject == target.gameObject)
-            {
-                //Debug.Log(target.name);
-                enemyState = EnemyState.ACTION; 
-
-                transform.DOKill(false);
-                transform.DOMoveY(yPosition, 0.25f);
-            }
-        }
-        */
     }
 
     private void OnTriggerExit(Collider other)
@@ -145,24 +147,27 @@ public abstract class Enemy : MonoBehaviour
         Vector3 toTarget = target.transform.position - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        bool enemyWasNull = false;
-        foreach (GameObject enemy in enemiesInArea)
+        if (toTarget.magnitude > 1.5f)
         {
-            if (!enemy)
+            bool enemyWasNull = false;
+            foreach (GameObject enemy in enemiesInArea)
             {
-                enemyWasNull = true;
-                continue;
+                if (!enemy)
+                {
+                    enemyWasNull = true;
+                    continue;
+                }
+                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                Vector3 enemyToThis = transform.position - enemy.transform.position;
+                enemyToThis.y = 0f;
+                float inverseMag = 1f / enemyToThis.magnitude;
+                if (inverseMag == Mathf.Infinity) { continue; }
+                finalMotionVector += enemyToThis.normalized * inverseMag * avoidForce;
             }
-            // get a vector pointing from them to me, indicating a direction for this enemy to push 
-            Vector3 enemyToThis = transform.position - enemy.transform.position;
-            enemyToThis.y = 0f;
-            float inverseMag = 1f / enemyToThis.magnitude;
-            if (inverseMag == Mathf.Infinity) { continue; }
-            finalMotionVector += enemyToThis.normalized * inverseMag * avoidForce;
-        }
-        if (enemyWasNull)
-        {
-            enemiesInArea.RemoveAll(enemy => !enemy);
+            if (enemyWasNull)
+            {
+                enemiesInArea.RemoveAll(enemy => !enemy);
+            }
         }
         return finalMotionVector.normalized * finalSpeed;
     }
@@ -197,13 +202,15 @@ public abstract class Enemy : MonoBehaviour
         return body;
     }
 
-    public void Damage(float _damage)
+    public bool Damage(float _damage)
     {
         health -= _damage;
         if (health <= 0f)
         {
             OnKill();
             Destroy(gameObject);
+            return true;
         }
+        return false;
     }
 }

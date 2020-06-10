@@ -20,6 +20,7 @@ public abstract class StorageStructure : Structure
 
     public override void OnPlace()
     {
+        base.OnPlace();
         gameMan.CalculateStorageMaximum();
     }
 

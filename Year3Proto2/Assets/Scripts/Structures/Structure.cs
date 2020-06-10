@@ -15,7 +15,7 @@ public enum ResourceType
     metal,
     food
 }
-public abstract class Structure : MonoBehaviour, IDamageable
+public abstract class Structure : MonoBehaviour
 {
     public TileBehaviour attachedTile = null;
     public string displayName;
@@ -113,10 +113,8 @@ public abstract class Structure : MonoBehaviour, IDamageable
 
     public virtual void IncreaseFoodAllocation()
     {
-        //string debug = gameObject.ToString() + " foodAlloc was " + foodAllocation.ToString() + " and is now ";
         foodAllocation++;
         if (foodAllocation > foodAllocationMax) { foodAllocation = foodAllocationMax; }
-        //Debug.Log(debug + foodAllocation);
     }
     public bool IsStructure(string _structureName)
     {
@@ -152,7 +150,10 @@ public abstract class Structure : MonoBehaviour, IDamageable
         healthBar.gameObject.SetActive(false);
     }
 
-    public virtual void OnPlace() { }
+    public virtual void OnPlace() 
+    {
+    
+    }
 
     protected virtual void OnDestroyed()
     {

@@ -19,7 +19,7 @@ public class BallistaTower : AttackStructure
         base.Awake();
         maxHealth = 350f;
         health = maxHealth;
-        structureName = "Ballista Tower";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Ballista];
     }
 
     protected override void Start()
@@ -55,7 +55,7 @@ public class BallistaTower : AttackStructure
         }
     }
 
-    public override void Attack(Transform target)
+    public override void Attack(GameObject target)
     {
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)

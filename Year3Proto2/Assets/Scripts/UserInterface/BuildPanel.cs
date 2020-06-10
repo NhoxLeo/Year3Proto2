@@ -84,6 +84,7 @@ public class BuildPanel : MonoBehaviour
         GetInfo();
 
         if (!superMan.GetResearchComplete(SuperManager.k_iCatapult)) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.k_iBarracks)) { transform.Find("PanelMask/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -95,6 +96,9 @@ public class BuildPanel : MonoBehaviour
                 break;
             case Buildings.Catapult:
                 transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Barracks:
+                transform.Find("PanelMask/IconBarracks").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Farm:
                 transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
@@ -180,7 +184,7 @@ public class BuildPanel : MonoBehaviour
         toolInfo.heading[(int)Buildings.None]               = "";
         toolInfo.heading[(int)Buildings.Ballista]           = StructureManager.StructureNames[Buildings.Ballista];
         toolInfo.heading[(int)Buildings.Catapult]           = StructureManager.StructureNames[Buildings.Catapult];
-        toolInfo.heading[(int)Buildings.Barracks]           = "Barracks";
+        toolInfo.heading[(int)Buildings.Barracks]           = StructureManager.StructureNames[Buildings.Barracks];
         toolInfo.heading[(int)Buildings.Farm]               = StructureManager.StructureNames[Buildings.Farm];
         toolInfo.heading[(int)Buildings.Granary]            = StructureManager.StructureNames[Buildings.Granary];
         toolInfo.heading[(int)Buildings.LumberMill]         = StructureManager.StructureNames[Buildings.LumberMill];
@@ -192,7 +196,7 @@ public class BuildPanel : MonoBehaviour
         toolInfo.description[(int)Buildings.None]           = "";
         toolInfo.description[(int)Buildings.Ballista]       = StructureManager.StructureDescriptions[Buildings.Ballista];
         toolInfo.description[(int)Buildings.Catapult]       = StructureManager.StructureDescriptions[Buildings.Catapult];
-        toolInfo.description[(int)Buildings.Barracks]       = "Spawns multiple mobile ground units that will attack nearby enemies.";
+        toolInfo.description[(int)Buildings.Barracks]       = StructureManager.StructureDescriptions[Buildings.Barracks];
         toolInfo.description[(int)Buildings.Farm]           = StructureManager.StructureDescriptions[Buildings.Farm];
         toolInfo.description[(int)Buildings.Granary]        = StructureManager.StructureDescriptions[Buildings.Granary];
         toolInfo.description[(int)Buildings.LumberMill]     = StructureManager.StructureDescriptions[Buildings.LumberMill];
@@ -206,6 +210,7 @@ public class BuildPanel : MonoBehaviour
         tooltipSelected = (Buildings)tool;
 
         if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
+        if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.k_iBarracks)) { return; }
 
         if (tooltipSelected == Buildings.None)
         {
@@ -243,6 +248,7 @@ public class BuildPanel : MonoBehaviour
     public void SelectBuilding(int buildingType)
     {
         if ((Buildings)buildingType == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
+        if ((Buildings)buildingType == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.k_iBarracks)) { return; }
 
         if ((Buildings)buildingType == buildingSelected)
         {

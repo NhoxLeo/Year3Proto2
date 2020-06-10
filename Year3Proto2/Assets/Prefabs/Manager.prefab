@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialDone: 0
+  victory: 0
   repairMessage: 0
   longhausDead: 0
   repairAll: 0
@@ -91,7 +92,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e6c65cd252a53704884e1c6f422c704a, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.3
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -321,8 +322,8 @@ MonoBehaviour:
     type: 3}
   enemiesPerWave: 4
   newEnemiesPerWave: 2
-  cooldown: 30
-  timeBetweenWaves: 30
+  cooldown: 50
+  timeBetweenWaves: 50
 --- !u!1001 &1934217215400905385
 PrefabInstance:
   m_ObjectHideFlags: 0

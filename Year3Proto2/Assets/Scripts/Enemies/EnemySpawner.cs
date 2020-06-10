@@ -184,7 +184,6 @@ public class EnemySpawner : MonoBehaviour
         }
     }
     
-    /*
     public void LoadInvader(SuperManager.InvaderSaveData _saveData)
     {
         Invader enemy = Instantiate(enemyPrefabs[0]).GetComponent<Invader>();
@@ -198,7 +197,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void LoadHeavyInvader(SuperManager.HeavyInvaderSaveData _saveData)
     {
-        HeavyInvader enemy = Instantiate(enemyPrefabs[0]).GetComponent<HeavyInvader>();
+        HeavyInvader enemy = Instantiate(enemyPrefabs[1]).GetComponent<HeavyInvader>();
         enemy.transform.position = _saveData.enemyData.position;
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetEquipment(_saveData.equipment);
@@ -206,7 +205,6 @@ public class EnemySpawner : MonoBehaviour
         enemy.SetState(_saveData.enemyData.state);
         enemies.Add(enemy);
     }
-    */
 
     public int GetWaveCurrent()
     {

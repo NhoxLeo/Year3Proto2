@@ -15,7 +15,7 @@ public class LumberPile : StorageStructure
         base.Awake();
         resourceType = ResourceType.wood;
         storage = 500;
-        structureName = "Lumber Pile";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberPile];
         maxHealth = 200f;
         health = maxHealth;
     }

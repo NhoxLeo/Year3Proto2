@@ -16,7 +16,7 @@ public class LumberMill : ResourceStructure
     {
         base.Awake();
         resourceType = ResourceType.wood;
-        structureName = "Lumber Mill";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberMill];
         health = maxHealth;
     }
 
