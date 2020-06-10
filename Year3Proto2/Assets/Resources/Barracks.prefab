@@ -55,6 +55,7 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
+  soldiers: []
 --- !u!54 &6193169271181408757
 Rigidbody:
   m_ObjectHideFlags: 0

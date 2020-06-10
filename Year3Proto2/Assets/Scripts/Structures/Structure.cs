@@ -113,10 +113,8 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void IncreaseFoodAllocation()
     {
-        //string debug = gameObject.ToString() + " foodAlloc was " + foodAllocation.ToString() + " and is now ";
         foodAllocation++;
         if (foodAllocation > foodAllocationMax) { foodAllocation = foodAllocationMax; }
-        //Debug.Log(debug + foodAllocation);
     }
     public bool IsStructure(string _structureName)
     {

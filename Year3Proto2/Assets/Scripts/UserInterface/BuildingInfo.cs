@@ -117,9 +117,9 @@ public class BuildingInfo : MonoBehaviour
                 foodComponent.SetActive(true);
                 Barracks barracks = targetBuilding.GetComponent<Barracks>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "To Be Implemented"; // TODO
-                statValueText.text = "To Be Implemented";
-                statInfoText.text = "To Be Implemented";
+                statHeadingText.text = "Training Time";
+                statValueText.text = barracks.GetTrainTime().ToString("F");
+                statInfoText.text = "seconds";
                 foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
 
                 repairButton.interactable = barracks.CanBeRepaired();
