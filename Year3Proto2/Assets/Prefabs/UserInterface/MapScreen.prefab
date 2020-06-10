@@ -1584,7 +1584,7 @@ RectTransform:
   - {fileID: 3385442721586811193}
   - {fileID: 3385442720574839248}
   - {fileID: 3385442721439193590}
-  - {fileID: 3385442720339081660}
+  - {fileID: 8148467928363465716}
   - {fileID: 3385442721037931157}
   - {fileID: 3385442721392986059}
   - {fileID: 3385442719910016986}
@@ -4351,7 +4351,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2020d210b0e19d54196077da1255126f, type: 3}
---- !u!224 &3385442720339081660 stripped
+--- !u!224 &8148467928363465716 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6912654201860014718, guid: 2020d210b0e19d54196077da1255126f,
     type: 3}
