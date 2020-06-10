@@ -58,6 +58,8 @@ public class HeavyInvader : Enemy
                                 else
                                 {
                                     needToMoveAway = false;
+                                    LookAtPosition(target.transform.position);
+                                    animator.SetBool("Attack", true);
                                 }
                             }
                             else
@@ -222,6 +224,7 @@ public class HeavyInvader : Enemy
                     if (defenseTarget.Damage(damage))
                     {
                         defenseTarget = null;
+                        defending = false;
                     }
                 }
             }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Soldier : MonoBehaviour
 {
-    private Rigidbody body;
     private Enemy target = null;
     private Animator animator;
     [HideInInspector]
@@ -38,7 +37,6 @@ public class Soldier : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
-        body = GetComponent<Rigidbody>();
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
     }
 
@@ -49,7 +47,7 @@ public class Soldier : MonoBehaviour
         switch (state)
         {
             case 0:
-                if (!target)
+                if (home)
                 {
                     Vector3 toHome = home.transform.position - transform.position;
                     toHome.y = 0f;
@@ -76,10 +74,6 @@ public class Soldier : MonoBehaviour
                         }
                         canHeal = true;
                     }
-                }
-                else
-                {
-                    state = 1;
                 }
                 break;
             case 1:
@@ -130,7 +124,6 @@ public class Soldier : MonoBehaviour
 
     private void FindEnemy()
     {
-        Enemy oldTarget = target;
         Enemy[] enemies = FindObjectsOfType<Enemy>();
         if (enemies.Length > 0)
         {
@@ -140,36 +133,17 @@ public class Soldier : MonoBehaviour
                 float thisDistance = (enemy.transform.position - transform.position).magnitude;
                 if (thisDistance < distance)
                 {
-                    Invader enemyInvader = enemy.GetComponent<Invader>();
-                    if (enemyInvader)
-                    {
-                        if (!enemy.defenseTarget || enemy.defenseTarget == this)
-                        {
-                            distance = thisDistance;
-                            target = enemy;
-                            state = 1;
-                        }
-                    }
-                    else
-                    {
-                        distance = thisDistance;
-                        target = enemy;
-                        state = 1;
-                    }
+                    distance = thisDistance;
+                    target = enemy;
+                    state = 1;
                 }
             }
         }
-        if (target)
-        {
-            target.defenseTarget = this;
-        }
-        if (oldTarget)
-        {
-            if (oldTarget != target)
-            {
-                oldTarget.defenseTarget = null;
-            }
-        }
+    }
+
+    private void Update()
+    {
+        
     }
 
     private void Idle()
@@ -205,7 +179,7 @@ public class Soldier : MonoBehaviour
 
     public void SwingContact()
     {
-        if (target)
+        if (target && state == 2)
         {
             target.OnDamagedBySoldier(this);
             if (target.Damage(damage))

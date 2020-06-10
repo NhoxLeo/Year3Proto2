@@ -4,9 +4,28 @@ using UnityEngine;
 
 public class DefenseStructure : Structure
 {
+    public float consumptionTime = 2f;
+    protected float remainingTime = 2f;
+
     protected override void Start()
     {
         base.Start();
         structureType = StructureType.defense;
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        // Food consumption
+        remainingTime -= Time.deltaTime;
+        if (remainingTime <= 0f)
+        {
+            remainingTime = consumptionTime;
+            if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
+            {
+                gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
+            }
+        }
     }
 }

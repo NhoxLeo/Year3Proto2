@@ -138,17 +138,17 @@ public abstract class ResourceStructure : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                if (structureName != "Farm")
+                if (structureName == "Farm")
                 {
-                    if (gameMan.playerResources.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
+                    gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
+                }
+                else
+                {
+                    if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
                     {
                         gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
                         gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
                     }
-                }
-                else
-                {
-                    gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
                 }
             }
         }

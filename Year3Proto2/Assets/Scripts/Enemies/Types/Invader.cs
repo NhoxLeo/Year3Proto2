@@ -51,6 +51,8 @@ public class Invader : Enemy
                                 else
                                 {
                                     needToMoveAway = false;
+                                    LookAtPosition(target.transform.position);
+                                    animator.SetBool("Attack", true);
                                 }
                             }
                             else
@@ -178,6 +180,7 @@ public class Invader : Enemy
                     if (defenseTarget.Damage(damage))
                     {
                         defenseTarget = null;
+                        defending = false;
                     }
                 }
             }
