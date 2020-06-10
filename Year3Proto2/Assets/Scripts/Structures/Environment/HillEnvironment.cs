@@ -11,4 +11,9 @@ public class HillEnvironment : EnvironmentStructure
         environmentType = EnvironmentType.hill;
         structureName = "Hills Environment";
     }
+
+    public override void SetFoodAllocationGlobal(int _allocation)
+    {
+        Debug.LogError("Food Allocation should not be called for " + structureName);
+    }
 }

@@ -23,8 +23,8 @@ public abstract class Structure : MonoBehaviour
     public bool isPlaced = false;
     public float sitHeight;
     public string structureName;
-    static protected int foodAllocationMax = 5;
-    static protected int foodAllocationMin = 1;
+    static readonly public int foodAllocationMax = 5;
+    static readonly public int foodAllocationMin = 1;
     protected int foodAllocation = 3;
     protected float health;
     protected Healthbar healthBar;
@@ -38,10 +38,34 @@ public abstract class Structure : MonoBehaviour
     protected HUDManager HUDMan;
     public bool fromSaveData = false;
     public bool saveDataStartFrame = false;
+    private GameObject destructionEffect;
 
-    public static int GetFoodAllocationMax()
+    public int GetFoodAllocation()
     {
-        return foodAllocationMax;
+        return foodAllocation;
+    }
+
+    public void DecreaseFoodAllocation()
+    {
+        if (foodAllocation > foodAllocationMin)
+        {
+            SetFoodAllocationGlobal(foodAllocation - 1);
+        }
+    }
+
+    public virtual void SetFoodAllocation(int _newFoodAllocation)
+    {
+        foodAllocation = _newFoodAllocation;
+    }
+
+    public abstract void SetFoodAllocationGlobal(int _allocation);
+
+    public void IncreaseFoodAllocation()
+    {
+        if (foodAllocation < foodAllocationMax)
+        {
+            SetFoodAllocationGlobal(foodAllocation + 1);
+        }
     }
 
     public bool Damage(float amount)
@@ -60,25 +84,13 @@ public abstract class Structure : MonoBehaviour
             if (attackStructure.GetEnemies().Count == 0) attackStructure.DetectEnemies();
         }
 
+        if (health <= 0f)
+        {
+            GameObject destroyedVFX = Instantiate(destructionEffect);
+            destroyedVFX.transform.position = transform.position;
+        }
+
         return health <= 0f;
-    }
-
-    public virtual void DecreaseFoodAllocation()
-    {
-        //string debug = gameObject.ToString() + " foodAlloc was " + foodAllocation.ToString() + " and is now ";
-        foodAllocation--;
-        if (foodAllocation < foodAllocationMin) { foodAllocation = foodAllocationMin; }
-        //Debug.Log(debug + foodAllocation);
-    }
-
-    public int GetFoodAllocation()
-    {
-        return foodAllocation;
-    }
-
-    public void SetFoodAllocation(int _newFoodAllocation)
-    {
-        foodAllocation = _newFoodAllocation;
     }
 
     public float GetHealth()
@@ -109,12 +121,6 @@ public abstract class Structure : MonoBehaviour
     public StructureType GetStructureType()
     {
         return structureType;
-    }
-
-    public virtual void IncreaseFoodAllocation()
-    {
-        foodAllocation++;
-        if (foodAllocation > foodAllocationMax) { foodAllocation = foodAllocationMax; }
     }
     public bool IsStructure(string _structureName)
     {
@@ -192,16 +198,6 @@ public abstract class Structure : MonoBehaviour
         return structMan.structureDict[structureName].originalCost * (1.0f - (health / maxHealth));
     }
 
-    public void SetFoodAllocationMax()
-    {
-        foodAllocation = foodAllocationMax;
-    }
-
-    public void SetFoodAllocationMin()
-    {
-        foodAllocation = foodAllocationMin;
-    }
-
     public void SetHealthbar(Healthbar _healthBar)
     {
         healthBar = _healthBar;
@@ -209,16 +205,17 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void Awake()
     {
+        structMan = FindObjectOfType<StructureManager>();
+        gameMan = FindObjectOfType<GameManager>();
+        HUDMan = FindObjectOfType<HUDManager>();
+        buildingInfo = FindObjectOfType<BuildingInfo>();
         health = maxHealth;
+        destructionEffect = Resources.Load("DestructionEffect") as GameObject;
     }
 
     protected virtual void Start()
     {
-        structMan = FindObjectOfType<StructureManager>();
-        gameMan = FindObjectOfType<GameManager>();
         superMan = SuperManager.GetInstance();
-        HUDMan = FindObjectOfType<HUDManager>();
-        buildingInfo = FindObjectOfType<BuildingInfo>();
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
         {
             hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);

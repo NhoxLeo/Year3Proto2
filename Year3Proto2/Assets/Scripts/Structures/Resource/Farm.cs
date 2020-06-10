@@ -21,6 +21,11 @@ public class Farm : ResourceStructure
         health = maxHealth;
     }
 
+    public override void SetFoodAllocationGlobal(int _allocation)
+    {
+        Debug.LogError("Food Allocation should not be called for " + structureName);
+    }
+
     public override void OnPlace()
     {
         base.OnPlace();

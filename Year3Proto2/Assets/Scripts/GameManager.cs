@@ -173,7 +173,9 @@ public class ResourceBatch
 }
 public class GameManager : MonoBehaviour
 {
+    [HideInInspector]
     public PlayerResources playerResources;
+    [HideInInspector]
     public bool tutorialDone = false;
     private static Dictionary<string, AudioClip> audioClips;
     private float batchMaxAge = 3.0f;
@@ -195,12 +197,18 @@ public class GameManager : MonoBehaviour
     private EnemySpawner enemySpawner;
     private StructureManager structMan;
     private BuildPanel buildPanel;
+    [HideInInspector]
     public bool repairMessage = false;
+    [HideInInspector]
     public bool longhausDead;
+    [HideInInspector]
     public bool repairAll = false;
     private float volumeFull;
     private float panelRefreshTimer = 0.0f;
     private float panelRefreshCooldown = 0.5f;
+    [HideInInspector]
+    public bool gameAlreadyWon = false;
+
     int RecentFood
     {
         get
