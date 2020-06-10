@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DefenseStructure : Structure
+public abstract class DefenseStructure : Structure
 {
     public float consumptionTime = 2f;
     protected float remainingTime = 2f;

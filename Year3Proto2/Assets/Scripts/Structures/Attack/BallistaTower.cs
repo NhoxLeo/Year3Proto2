@@ -67,16 +67,29 @@ public class BallistaTower : AttackStructure
         }
     }
 
-    public override void IncreaseFoodAllocation()
+    public override void SetFoodAllocation(int _newFoodAllocation)
     {
-        base.IncreaseFoodAllocation();
+        base.SetFoodAllocation(_newFoodAllocation);
         SetFirerate();
     }
 
-    public override void DecreaseFoodAllocation()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        base.DecreaseFoodAllocation();
-        SetFirerate();
+        foreach (BallistaTower ballista in FindObjectsOfType<BallistaTower>())
+        {
+            ballista.SetFoodAllocation(_allocation);
+        }
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        BallistaTower[] ballistaTowers = FindObjectsOfType<BallistaTower>();
+        if (ballistaTowers.Length >= 2)
+        {
+            BallistaTower other = (ballistaTowers[0] == this) ? ballistaTowers[1] : ballistaTowers[0];
+            SetFoodAllocation(other.foodAllocation);
+        }
     }
 
     void Fire()

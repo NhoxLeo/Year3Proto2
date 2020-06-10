@@ -50,16 +50,29 @@ public class Barracks : DefenseStructure
         }
     }
 
-    public override void IncreaseFoodAllocation()
+    public override void SetFoodAllocation(int _newFoodAllocation)
     {
-        base.IncreaseFoodAllocation();
+        base.SetFoodAllocation(_newFoodAllocation);
         UpdateHealAndTrainRate();
     }
 
-    public override void DecreaseFoodAllocation()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        base.DecreaseFoodAllocation();
-        UpdateHealAndTrainRate();
+        foreach (Barracks barracks in FindObjectsOfType<Barracks>())
+        {
+            barracks.SetFoodAllocation(_allocation);
+        }
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        Barracks[] barracks = FindObjectsOfType<Barracks>();
+        if (barracks.Length >= 2)
+        {
+            Barracks other = (barracks[0] == this) ? barracks[1] : barracks[0];
+            SetFoodAllocation(other.foodAllocation);
+        }
     }
 
     protected override void Start()
@@ -86,11 +99,6 @@ public class Barracks : DefenseStructure
             maxSoldiers = 8;
         }
         puffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
-    }
-
-    public override void OnPlace()
-    {
-        base.OnPlace();
     }
 
     protected override void Update()

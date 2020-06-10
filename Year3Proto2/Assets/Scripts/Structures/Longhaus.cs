@@ -48,4 +48,9 @@ public class Longhaus : Structure
             }
         }
     }
+
+    public override void SetFoodAllocationGlobal(int _allocation)
+    {
+        Debug.LogError("Food Allocation should not be called for " + structureName);
+    }
 }

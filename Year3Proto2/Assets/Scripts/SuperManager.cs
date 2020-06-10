@@ -482,6 +482,7 @@ public class SuperManager : MonoBehaviour
         enemySpawner.cooldown = _matchData.spawnerCooldown;
         currentLevel = _matchData.levelID;
         enemySpawner.SetKillCount(_matchData.enemiesKilled);
+        gameMan.gameAlreadyWon = _matchData.matchWon;
         // not so easy stuff...
 
         // structures
@@ -554,7 +555,7 @@ public class SuperManager : MonoBehaviour
             structures = new List<StructureSaveData>(),
             enemiesKilled = enemySpawner.GetKillCount(),
             spawnerCooldown = enemySpawner.cooldown,
-            matchWon = gameMan.victory
+            matchWon = gameMan.WinConditionIsMet() || gameMan.gameAlreadyWon
         };
 
         // not so easy stuff...
