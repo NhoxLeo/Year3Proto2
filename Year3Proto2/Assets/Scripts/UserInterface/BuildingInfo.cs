@@ -25,10 +25,11 @@ public class BuildingInfo : MonoBehaviour
     private Image statIcon;                     // Icon shown next to stat value
     private GameObject foodComponent;           // Section for food allocation
     private TMP_Text foodValueText;             // Text showing current food allocation
+    private TMP_Text globalFoodText;            // "Affects all Buildings"
     private Button repairButton;                // Button for repairing buildings
 
     public bool doAutoUpdate;                   // Whether to automatically update info panel
-    public float updateInterval = 0.25f;         // Time between info panel updates
+    public float updateInterval = 0.25f;        // Time between info panel updates
     private float updateTimer;
 
     void Start()
@@ -45,7 +46,7 @@ public class BuildingInfo : MonoBehaviour
 
         foodComponent = transform.Find("PanelMask/Allocation").gameObject;
         foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
-        repairButton = transform.Find("PanelMask/RepairButton").GetComponent<Button>();
+        repairButton = transform.Find("RepairButton").GetComponent<Button>();        globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
         statInfoText.text = "";
         updateTimer = updateInterval;
     }
@@ -55,7 +56,11 @@ public class BuildingInfo : MonoBehaviour
 
         if (targetBuilding != null)
         {
-            headingText.text = buildingName;
+            headingText.text = buildingName;
+
+            if (buildingName == "Barracks") { globalFoodText.text = "Affects all " + buildingName; }
+            else { globalFoodText.text = "Affects all " + buildingName + "s"; }
+
             // Auto update info
             if (showPanel && doAutoUpdate)
             {
@@ -220,7 +225,7 @@ public class BuildingInfo : MonoBehaviour
                 break;
         }
 
-        tool.SetHeight(foodComponent.activeSelf ? 272.0f : 182.0f);
+        tool.SetHeight(foodComponent.activeSelf ? 308.0f : 182.0f);
     }
 
     private void SetPosition()
@@ -265,7 +270,11 @@ public class BuildingInfo : MonoBehaviour
     public void SetTargetBuilding(GameObject building, string name)
     {
         targetBuilding = building;
-        buildingName = name;
+        buildingName = name;        if (tool.showTooltip)
+        {
+            tool.PulseTip();
+        }
+
         SetInfo();
     }
 
