@@ -752,6 +752,7 @@ public class SuperManager : MonoBehaviour
         GetLevelData(ref levels);
         saveData.researchPoints += levels[currentLevel].reward;
         saveData.levelCompletion[currentLevel] = true;
+        saveData.currentMatch.matchWon = true;
         WriteGameData();
     }
 
