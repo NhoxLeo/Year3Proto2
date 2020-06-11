@@ -146,7 +146,9 @@ public class HUDManager : MonoBehaviour
 
     private void RefreshResources()
     {
-        float foodVel = game.GetFoodVelocity(1);
+        Vector3 velocity = game.GetResourceVelocity();
+
+        float foodVel = velocity.z;
         string foodVelDP = AddSign(Mathf.Round(foodVel * 10f) * .1f);
         foodText.text = game.playerResources.Get(ResourceType.food).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.food).ToString() + " (" + foodVelDP + "/s)";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
@@ -155,7 +157,7 @@ public class HUDManager : MonoBehaviour
             foodText.color = fullColour;
         }
 
-        float woodVel = game.GetWoodVelocity(1);
+        float woodVel = velocity.x;
         string woodVelDP = AddSign(Mathf.Round(woodVel * 10f) * .1f);
         woodText.text = game.playerResources.Get(ResourceType.wood).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.wood).ToString() + " (" + woodVelDP + "/s)";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
@@ -164,7 +166,7 @@ public class HUDManager : MonoBehaviour
             woodText.color = fullColour;
         }
 
-        float metalVel = game.GetMetalVelocity(1);
+        float metalVel = velocity.y;
         string metalVelDP = AddSign(Mathf.Round(metalVel * 10f) * .1f);
         metalText.text = game.playerResources.Get(ResourceType.metal).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.metal).ToString() + " (" + metalVelDP + "/s)";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;

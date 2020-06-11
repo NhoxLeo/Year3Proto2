@@ -127,4 +127,14 @@ public class BallistaTower : AttackStructure
         }
         fireDelay = 1 / fireRate;
     }
+
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+        if (target)
+        {
+            resourceDelta -= attackCost * fireRate;
+        }
+        return resourceDelta;
+    }
 }

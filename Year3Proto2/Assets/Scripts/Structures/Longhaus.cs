@@ -49,6 +49,15 @@ public class Longhaus : Structure
         }
     }
 
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+
+        resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime);
+
+        return resourceDelta;
+    }
+
     public override void SetFoodAllocationGlobal(int _allocation)
     {
         Debug.LogError("Food Allocation should not be called for " + structureName);
