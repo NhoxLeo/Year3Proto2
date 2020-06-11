@@ -88,6 +88,15 @@ public abstract class AttackStructure : Structure
         }
     }
 
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+
+        resourceDelta -= new Vector3(0f, 0f, foodAllocation / consumptionTime);
+
+        return resourceDelta;
+    }
+
     public void ShowRangeDisplay(bool _active)
     {
         transform.GetChild(0).GetChild(0).gameObject.SetActive(_active);

@@ -68,6 +68,12 @@ public abstract class Structure : MonoBehaviour
         }
     }
 
+    public virtual Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = Vector3.zero;
+        return resourceDelta;
+    }
+
     public bool Damage(float amount)
     {
         timeSinceLastHit = 0.0f;
