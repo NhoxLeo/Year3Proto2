@@ -23,7 +23,7 @@ public class EnvInfo : MonoBehaviour
     void Update()
     {
         tool.showTooltip = showInfo;
-
+        /*
         if (Input.GetKeyDown(KeyCode.P))
         {
             ShowInfo("this is a test tooltip");
@@ -33,6 +33,7 @@ public class EnvInfo : MonoBehaviour
         {
             showInfo = !showInfo;
         }
+        */
     }
 
     private void LateUpdate()

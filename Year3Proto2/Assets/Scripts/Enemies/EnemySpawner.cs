@@ -61,6 +61,7 @@ public class EnemySpawner : MonoBehaviour
         return availableTiles[Random.Range(0, availableTiles.Count)];
     }
 
+    /*
     private void Update()
     {
         if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
@@ -69,7 +70,7 @@ public class EnemySpawner : MonoBehaviour
             cooldown = 0f;
         }
     }
-
+    */
     private void FixedUpdate()
     {
         if (spawning)

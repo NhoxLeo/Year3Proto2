@@ -11,7 +11,6 @@ public class Barracks : DefenseStructure
     public List<Soldier> soldiers;
     private float trainTime = 20f;
     private float timeTrained = 0f;
-    private SuperManager superMan;
 
     public float GetTrainTime()
     {

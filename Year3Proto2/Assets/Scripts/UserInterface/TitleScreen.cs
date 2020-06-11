@@ -75,6 +75,7 @@ public class TitleScreen : MonoBehaviour
         Debug.Log(SuperManager.GetInstance().currentLevel);
     }
 
+    /*
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
@@ -82,6 +83,7 @@ public class TitleScreen : MonoBehaviour
             titleSequence.Complete();
         }
     }
+    */
 
     public void PlayButton()
     {

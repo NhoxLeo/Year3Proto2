@@ -421,6 +421,7 @@ public class SuperManager : MonoBehaviour
                 WipeReloadScene();
             }
             // Press M
+            /*
             if (Input.GetKeyDown(KeyCode.M))
             {
                 if(gameMan)
@@ -430,6 +431,7 @@ public class SuperManager : MonoBehaviour
                     gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.metal));
                 }
             }
+            */
         }
     }
 

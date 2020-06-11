@@ -50,6 +50,7 @@ public class ResearchScreen : MonoBehaviour
         InitializeCards();
     }
 
+    /*
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
@@ -64,6 +65,7 @@ public class ResearchScreen : MonoBehaviour
             UpdateRPCounter();
         }
     }
+    */
 
     private void InitializeCards()
     {
