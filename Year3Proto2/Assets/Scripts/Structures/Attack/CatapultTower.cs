@@ -18,6 +18,7 @@ public class CatapultTower : AttackStructure
     {
         base.Awake();
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.k_iCatapultFortification)) { health = maxHealth *= 1.5f; }
         maxHealth = 450f;
         health = maxHealth;
     }
@@ -27,7 +28,6 @@ public class CatapultTower : AttackStructure
         base.Start();
         SetFirerate();
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.k_iCatapultFortification)) { health = maxHealth *= 1.5f; }
         attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 8 : 16, 0);
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
         {
