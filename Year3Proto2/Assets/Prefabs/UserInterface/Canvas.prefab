@@ -3555,7 +3555,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Repair (R: Repair All)'
+  m_text: Your Available Resources
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: acba5489bbd17a04187dc1d23f1eef45, type: 2}
   m_sharedMaterial: {fileID: 2092400340085329678, guid: acba5489bbd17a04187dc1d23f1eef45,
