@@ -315,6 +315,18 @@ public class GameManager : MonoBehaviour
         playerResources.SetMaximum(ResourceType.food, newFoodMax);
     }
 
+    public Vector3 GetResourceVelocity()
+    {
+        Vector3 resourceVelocity = Vector3.zero;
+
+        foreach (Structure structure in FindObjectsOfType<Structure>())
+        {
+            resourceVelocity += structure.GetResourceDelta();
+        }
+
+        return resourceVelocity;
+    }
+
     public float GetFoodVelocity(int _seconds)
     {
         return RecentFood * _seconds / batchMaxAge;

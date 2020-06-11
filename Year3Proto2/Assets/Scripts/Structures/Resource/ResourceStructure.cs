@@ -153,4 +153,29 @@ public abstract class ResourceStructure : Structure
             }
         }
     }
+
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+
+        if (structureName == "Farm")
+        {
+            resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * foodAllocation / productionTime);
+        }
+        else
+        {
+            switch (resourceType)
+            {
+                case ResourceType.metal:
+                    resourceDelta += new Vector3(0f, tileBonus * batchSize * foodAllocation / productionTime, 0f);
+                    break;
+                case ResourceType.wood:
+                    resourceDelta += new Vector3(tileBonus * batchSize * foodAllocation / productionTime, 0f, 0f);
+                    break;
+            }
+            resourceDelta -= new Vector3(0f, 0f, foodAllocation / productionTime);
+        }
+
+        return resourceDelta;
+    }
 }
