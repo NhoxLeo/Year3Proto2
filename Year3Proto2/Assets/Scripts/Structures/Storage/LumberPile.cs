@@ -4,25 +4,18 @@ using UnityEngine;
 
 public class LumberPile : StorageStructure
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override void Awake()
     {
-        StorageStart();
+        base.Awake();
         resourceType = ResourceType.wood;
         storage = 500;
-        structureName = "Lumber Pile";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberPile];
         maxHealth = 200f;
         health = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        StructureUpdate();
-    }
-
-    public override void OnPlace()
-    {
-        FindObjectOfType<GameManager>().CalculateStorageMaximum();
+        Debug.LogError("Food Allocation should not be called for " + structureName);
     }
 }

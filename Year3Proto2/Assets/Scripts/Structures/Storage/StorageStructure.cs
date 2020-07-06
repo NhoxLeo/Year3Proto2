@@ -7,14 +7,26 @@ public abstract class StorageStructure : Structure
     protected ResourceType resourceType;
     public int storage;
 
-    protected void StorageStart()
+    protected override void Start()
     {
-        StructureStart();
+        base.Start();
         structureType = StructureType.storage;
     }
 
     public ResourceType GetResourceType()
     {
         return resourceType;
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        gameMan.CalculateStorageMaximum();
+    }
+
+    protected override void OnDestroyed()
+    {
+        base.OnDestroyed();
+        gameMan.CalculateStorageMaximum();
     }
 }

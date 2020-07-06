@@ -7,25 +7,36 @@ public class LumberMill : ResourceStructure
     public bool wasPlacedOnForest = false;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        ResourceStart();
-        wasPlacedOnForest = false;
+        base.Start();
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
         resourceType = ResourceType.wood;
-        structureName = "Lumber Mill";
-        maxHealth = 100f;
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberMill];
         health = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        ResourceUpdate();
+        foreach (LumberMill mill in FindObjectsOfType<LumberMill>())
+        {
+            mill.SetFoodAllocation(_allocation);
+        }
     }
 
     public override void OnPlace()
     {
         base.OnPlace();
+        LumberMill[] lumberMills = FindObjectsOfType<LumberMill>();
+        if (lumberMills.Length >= 2)
+        {
+            LumberMill other = (lumberMills[0] == this) ? lumberMills[1] : lumberMills[0];
+            SetFoodAllocation(other.foodAllocation);
+        }
         if (wasPlacedOnForest)
         {
             tileBonus++;

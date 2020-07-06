@@ -16,35 +16,50 @@ public class Longhaus : Structure
     public float productionTime = 3f;
     protected float remainingTime = 3f;
 
-    private bool longhausDead;
-
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        StructureStart();
+        base.Start();
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
         structureType = StructureType.longhaus;
         structureName = "Longhaus";
-        longhausDead = false;
         maxHealth = 400f;
         health = maxHealth;
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
-        StructureUpdate();
-        if (health > 0)
+        base.Update();
+        if (health > 0f)
         {
             remainingTime -= Time.deltaTime;
 
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                GameManager game = FindObjectOfType<GameManager>();
-                game.AddBatch(new Batch(3, ResourceType.metal));
-                game.AddBatch(new Batch(7, ResourceType.wood));
-                game.AddBatch(new Batch(7, ResourceType.food));
+                gameMan.AddBatch(new ResourceBatch(3, ResourceType.metal));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.wood));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.food));
             }
         }
+    }
+
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+
+        resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime);
+
+        return resourceDelta;
+    }
+
+    public override void SetFoodAllocationGlobal(int _allocation)
+    {
+        Debug.LogError("Food Allocation should not be called for " + structureName);
     }
 }

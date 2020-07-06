@@ -7,21 +7,23 @@ public class Farm : ResourceStructure
     public bool wasPlacedOnPlains = false;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        ResourceStart();
-        wasPlacedOnPlains = false;
+        base.Start();
+        if (superMan.CurrentLevelHasModifier(SuperManager.k_iDryFields)) { batchSize = Mathf.CeilToInt(batchSize / 2f); }
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
         resourceType = ResourceType.food;
-        structureName = "Farm";
-        maxHealth = 100f;
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Farm];
         health = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        ResourceUpdate();
-        
+        Debug.LogError("Food Allocation should not be called for " + structureName);
     }
 
     public override void OnPlace()

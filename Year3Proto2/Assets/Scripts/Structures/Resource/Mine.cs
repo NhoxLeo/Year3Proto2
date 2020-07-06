@@ -6,26 +6,31 @@ public class Mine : ResourceStructure
 {
     public bool wasPlacedOnHills = false;
 
-    // Start is called before the first frame update
-    void Start()
+    protected override void Awake()
     {
-        ResourceStart();
-        wasPlacedOnHills = false;
+        base.Awake();
         resourceType = ResourceType.metal;
-        structureName = "Mine";
-        maxHealth = 100f;
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Mine];
         health = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        ResourceUpdate();
+        foreach (Mine mine in FindObjectsOfType<Mine>())
+        {
+            mine.SetFoodAllocation(_allocation);
+        }
     }
 
     public override void OnPlace()
     {
         base.OnPlace();
+        Mine[] mines = FindObjectsOfType<Mine>();
+        if (mines.Length >= 2)
+        {
+            Mine other = (mines[0] == this) ? mines[1] : mines[0];
+            SetFoodAllocation(other.foodAllocation);
+        }
         if (wasPlacedOnHills)
         {
             tileBonus++;

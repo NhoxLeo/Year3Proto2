@@ -2,27 +2,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 
 public class BuildPanel : MonoBehaviour
 {
     public bool showPanel;
+    [SerializeField]
+    public Color cannotAfford;
+    public Sprite lockedBuilding;
 
     private CanvasGroup canvas;
     private RectTransform rTrans;
 
     private StructureManager structMan;
+
+    [Serializable]
     public enum Buildings
     {
         None,
-        Archer,
+        Ballista,
         Catapult,
+        Barracks,
         Farm,
-        Granary,
         LumberMill,
-        LumberPile,
         Mine,
+        Granary,
+        LumberPile,
         MetalStorage
     }
 
@@ -40,6 +47,7 @@ public class BuildPanel : MonoBehaviour
     private GameObject buildTipBox;
     private Tooltip buildTip;
     private TMP_Text buildTipHeading;
+    private SuperManager superMan;
 
     [Serializable]
     public struct TooltipInfo
@@ -57,7 +65,8 @@ public class BuildPanel : MonoBehaviour
         canvas = GetComponent<CanvasGroup>();
         rTrans = GetComponent<RectTransform>();
         structMan = FindObjectOfType<StructureManager>();
-        rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
+        superMan = SuperManager.GetInstance();
+        //rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
         tooltip = tooltipBox.GetComponent<Tooltip>();
@@ -72,6 +81,46 @@ public class BuildPanel : MonoBehaviour
         buildTip = buildTipBox.GetComponent<Tooltip>();
         buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
+        GetInfo();
+
+        if (!superMan.GetResearchComplete(SuperManager.k_iCatapult)) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.k_iBarracks)) { transform.Find("PanelMask/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
+    }
+
+    public void SetButtonColour(Buildings _button, Color _colour)
+    {
+        switch (_button)
+        {
+            case Buildings.Ballista:
+                transform.Find("PanelMask/IconArcher").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Catapult:
+                transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Barracks:
+                transform.Find("PanelMask/IconBarracks").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Farm:
+                transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Granary:
+                transform.Find("PanelMask/IconSilo").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LumberMill:
+                transform.Find("PanelMask/IconLumberMill").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LumberPile:
+                transform.Find("PanelMask/IconLumberPile").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.Mine:
+                transform.Find("PanelMask/IconMine").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.MetalStorage:
+                transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = _colour;
+                break;
+            default:
+                break;
+        }
     }
 
     void Update()
@@ -87,6 +136,10 @@ public class BuildPanel : MonoBehaviour
         }
     }
 
+    public TooltipInfo GetToolInfo()
+    {
+        return toolInfo;
+    }
 
     public void TogglePanel()
     {
@@ -125,9 +178,39 @@ public class BuildPanel : MonoBehaviour
         showPanel = false;
     }
 
+    private void GetInfo()
+    {
+        toolInfo.heading = new string[10];
+        toolInfo.heading[(int)Buildings.None]               = "";
+        toolInfo.heading[(int)Buildings.Ballista]           = StructureManager.StructureNames[Buildings.Ballista];
+        toolInfo.heading[(int)Buildings.Catapult]           = StructureManager.StructureNames[Buildings.Catapult];
+        toolInfo.heading[(int)Buildings.Barracks]           = StructureManager.StructureNames[Buildings.Barracks];
+        toolInfo.heading[(int)Buildings.Farm]               = StructureManager.StructureNames[Buildings.Farm];
+        toolInfo.heading[(int)Buildings.Granary]            = StructureManager.StructureNames[Buildings.Granary];
+        toolInfo.heading[(int)Buildings.LumberMill]         = StructureManager.StructureNames[Buildings.LumberMill];
+        toolInfo.heading[(int)Buildings.LumberPile]         = StructureManager.StructureNames[Buildings.LumberPile];
+        toolInfo.heading[(int)Buildings.Mine]               = StructureManager.StructureNames[Buildings.Mine];
+        toolInfo.heading[(int)Buildings.MetalStorage]       = StructureManager.StructureNames[Buildings.MetalStorage];
+
+        toolInfo.description = new string[10];
+        toolInfo.description[(int)Buildings.None]           = "";
+        toolInfo.description[(int)Buildings.Ballista]       = StructureManager.StructureDescriptions[Buildings.Ballista];
+        toolInfo.description[(int)Buildings.Catapult]       = StructureManager.StructureDescriptions[Buildings.Catapult];
+        toolInfo.description[(int)Buildings.Barracks]       = StructureManager.StructureDescriptions[Buildings.Barracks];
+        toolInfo.description[(int)Buildings.Farm]           = StructureManager.StructureDescriptions[Buildings.Farm];
+        toolInfo.description[(int)Buildings.Granary]        = StructureManager.StructureDescriptions[Buildings.Granary];
+        toolInfo.description[(int)Buildings.LumberMill]     = StructureManager.StructureDescriptions[Buildings.LumberMill];
+        toolInfo.description[(int)Buildings.LumberPile]     = StructureManager.StructureDescriptions[Buildings.LumberPile];
+        toolInfo.description[(int)Buildings.Mine]           = StructureManager.StructureDescriptions[Buildings.Mine];
+        toolInfo.description[(int)Buildings.MetalStorage]   = StructureManager.StructureDescriptions[Buildings.MetalStorage];
+    }
+
     public void SetTooltip(int tool)
     {
         tooltipSelected = (Buildings)tool;
+
+        if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
+        if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.k_iBarracks)) { return; }
 
         if (tooltipSelected == Buildings.None)
         {
@@ -149,7 +232,7 @@ public class BuildPanel : MonoBehaviour
             metalCostText.gameObject.SetActive((metalCost > 0));
             
 
-            float targetPos = transform.Find("PanelMask").GetChild(tool + 7).transform.localPosition.x;
+            float targetPos = transform.Find("PanelMask").GetChild(tool + 5).transform.localPosition.x;
             if (tooltipTimer > 0.15f)
             {
                 tooltipBox.transform.DOLocalMoveX(targetPos, 0.0f);
@@ -164,6 +247,9 @@ public class BuildPanel : MonoBehaviour
 
     public void SelectBuilding(int buildingType)
     {
+        if ((Buildings)buildingType == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.k_iCatapult)) { return; }
+        if ((Buildings)buildingType == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.k_iBarracks)) { return; }
+
         if ((Buildings)buildingType == buildingSelected)
         {
             buildingSelected = Buildings.None;
@@ -188,7 +274,7 @@ public class BuildPanel : MonoBehaviour
                 buildIndicator.SetActive(true);
                 buildIndicator.transform.DOKill(true);
                 buildIndicator.transform.DOPunchScale(new Vector3(0.25f, 0.25f, 0.0f), 0.15f, 1, 0.5f);
-                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 7).transform.localPosition;
+                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 5).transform.localPosition;
                 Vector2 indiPos = buildIndicator.transform.localPosition;
                 indiPos.x = targetPos.x;
                 buildIndicator.transform.localPosition = indiPos;

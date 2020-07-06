@@ -5,99 +5,134 @@ using UnityEngine;
 public class CatapultTower : AttackStructure
 {
     public GameObject boulder;
-    //public GameObject catapult;
-
-    private GameObject spawnedBoulder;
-
-    private float speed = 0.8f; 
-    private float arcFactor = 0.60f;
-    private float distanceTravelled;
-
-    private Vector3 current;
-    private Vector3 origin;
-
-    private Vector3 final;
+    public GameObject catapult;
+    public float boulderDamage = 5f;
+    public float boulderExplosionRadius = 0.25f;
+    private float boulderSpeed = 1.0f;
+    public float fireRate = 0f;
+    private float fireDelay = 0f;
+    private float fireCooldown = 0f;
 
 
-    void Start()
+    protected override void Awake()
     {
-        AttackStart();
-        structureName = "Catapult Tower";
+        base.Awake();
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.k_iCatapultFortification)) { health = maxHealth *= 1.5f; }
         maxHealth = 450f;
         health = maxHealth;
     }
 
-    private void Update()
+    protected override void Start()
     {
-        AttackUpdate();
+        base.Start();
+        SetFirerate();
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 8 : 16, 0);
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
+        {
+            boulderDamage *= 1.3f;
+        }
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultSuper)) { boulderExplosionRadius *= 1.5f; }
     }
 
-    public override void Attack(GameObject target)
+    protected override void Update()
     {
-        if (attachedTile == null && spawnedBoulder != null)
-        { 
-            enemies.Clear();
-            if (spawnedBoulder) Destroy(spawnedBoulder);
-        }
-
-        if (enemies.Count <= 0)
+        base.Update();
+        if (target && isPlaced)
         {
-            if (spawnedBoulder) Destroy(spawnedBoulder);
-        }
-
-        if (target == null)
-        {
-            if (spawnedBoulder) Destroy(spawnedBoulder);
-        }
-        else
-        {
-            /*Vector3 catapultPosition = catapult.transform.position;
+            Vector3 catapultPosition = catapult.transform.position;
             Vector3 targetPosition = target.transform.position;
 
             Vector3 difference = catapultPosition - targetPosition;
             difference.y = 0;
 
             Quaternion rotation = Quaternion.LookRotation(difference);
-            catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * speed);
-            */
+            catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * 2.5f);
         }
+    }
 
-        if (spawnedBoulder == null)
+    public override void Attack(GameObject target)
+    {
+        fireCooldown += Time.deltaTime;
+        if (fireCooldown >= fireDelay)
         {
-            Vector3 initialPosition = transform.position + new Vector3(0.0f, transform.localScale.y / 2.0f, 0.0f);
-            spawnedBoulder = Instantiate(boulder, initialPosition, Quaternion.identity, transform);
-            GameManager.CreateAudioEffect("catapultFire", transform.position);
-            origin = current = initialPosition;
-            distanceTravelled = 0.0f;
-            final = target.transform.position;
-        }
-        else
-        {
-            if (spawnedBoulder)
+            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
-                Vector3 direction = final - current;
-                current += direction.normalized * speed * Time.deltaTime;
-                distanceTravelled += speed * Time.deltaTime;
-
-                float totalDistance = Vector3.Distance(origin, final);
-                float heightOffset = arcFactor * totalDistance * Mathf.Sin(distanceTravelled * Mathf.PI / totalDistance);
-                spawnedBoulder.transform.position = current + new Vector3(0, heightOffset, 0);
-
-                if (spawnedBoulder.transform.position.y <= 0.51f)
-                {
-                    foreach (GameObject enemy in new List<GameObject>(enemies))
-                    {
-                        if (Vector3.Distance(enemy.transform.position, spawnedBoulder.transform.position) < 1.0f)
-                        {
-                            enemies.Remove(enemy);
-                            Destroy(enemy);
-                        }
-                    }
-
-                    Instantiate(Resources.Load("Explosion") as GameObject, spawnedBoulder.transform.position, Quaternion.identity);
-                    Destroy(spawnedBoulder);
-                }
+                Fire();
             }
         }
+    }
+
+
+    void Fire()
+    {
+        fireCooldown = 0;
+        GameObject newBoulder = Instantiate(boulder, catapult.transform.position, Quaternion.identity, transform);
+        BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
+        boulderBehaviour.target = target.transform.position;
+        boulderBehaviour.damage = boulderDamage;
+        boulderBehaviour.speed = boulderSpeed;
+        boulderBehaviour.puffEffect = puffPrefab;
+        boulderBehaviour.explosionRadius = boulderExplosionRadius;
+        GameManager.CreateAudioEffect("catapultFire", transform.position);
+    }
+
+    public override void SetFoodAllocation(int _newFoodAllocation)
+    {
+        base.SetFoodAllocation(_newFoodAllocation);
+        SetFirerate();
+    }
+
+    public override void SetFoodAllocationGlobal(int _allocation)
+    {
+        foreach (CatapultTower catapult in FindObjectsOfType<CatapultTower>())
+        {
+            catapult.SetFoodAllocation(_allocation);
+        }
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
+        if (catapultTowers.Length >= 2)
+        {
+            CatapultTower other = (catapultTowers[0] == this) ? catapultTowers[1] : catapultTowers[0];
+            SetFoodAllocation(other.foodAllocation);
+        }
+    }
+
+    void SetFirerate()
+    {
+        switch (foodAllocation)
+        {
+            case 1:
+                fireRate = 0.25f;
+                break;
+            case 2:
+                fireRate = 1f / 3.5f;
+                break;
+            case 3:
+                fireRate = 1f / 3f;
+                break;
+            case 4:
+                fireRate = 1f / 2.5f;
+                break;
+            case 5:
+                fireRate = 0.5f;
+                break;
+        }
+        fireDelay = 1 / fireRate;
+    }
+
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+        if (target)
+        {
+            resourceDelta -= attackCost * fireRate;
+        }
+        return resourceDelta;
     }
 }

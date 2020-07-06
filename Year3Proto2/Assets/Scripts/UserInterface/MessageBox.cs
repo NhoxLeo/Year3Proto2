@@ -14,7 +14,7 @@ public class MessageBox : MonoBehaviour
     void Awake()
     {
         tool = GetComponent<Tooltip>();
-        displayText = transform.GetChild(1).GetComponent<TMP_Text>();
+        displayText = transform.GetComponentInChildren<TMP_Text>();
         timerMode = true;
         timer = 0.0f;
     }
@@ -46,14 +46,14 @@ public class MessageBox : MonoBehaviour
         {
             if (tool)
             {
-                Debug.Log("tool returns.");
+                //Debug.Log("tool returns.");
                 if (tool.showTooltip)
                 {
-                    Debug.Log("tool.showTooltip is true.");
+                    //Debug.Log("tool.showTooltip is true.");
                 }
                 else
                 {
-                    Debug.Log("tool.showTooltip is false.");
+                    //Debug.Log("tool.showTooltip is false.");
                 }
             }
             else
@@ -62,8 +62,8 @@ public class MessageBox : MonoBehaviour
             }
             if (displayText)
             {
-                Debug.Log("displayText returns.");
-                Debug.Log("displayText.text == " + displayText.text);
+                //Debug.Log("displayText returns.");
+                //Debug.Log("displayText.text == " + displayText.text);
             }
             else
             {

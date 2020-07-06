@@ -11,6 +11,7 @@ public abstract class ResourceStructure : Structure
     protected ResourceType resourceType;
     protected int tileBonus = 0;
     private GameObject tileHighlight;
+
     public virtual int GetProductionVolume()
     {
         return tileBonus * batchSize * foodAllocation;
@@ -26,44 +27,45 @@ public abstract class ResourceStructure : Structure
         base.OnDeselected();
         for (int i = 0; i < 4; i++)
         {
-            if (tileHighlights.ContainsKey((TileBehaviour.TileCode)i))
+            if (tileHighlights != null)
             {
-                tileHighlights[(TileBehaviour.TileCode)i].SetActive(false);
+                if (tileHighlights.ContainsKey((TileBehaviour.TileCode)i))
+                {
+                    tileHighlights[(TileBehaviour.TileCode)i].SetActive(false);
+                }
             }
         }
     }
 
     public override void OnPlace()
     {
+        base.OnPlace();
         tileBonus = 1;
         OnDeselected();
-        tileHighlights.Clear();
+        if (tileHighlights != null) { tileHighlights.Clear(); }
         if (attachedTile)
         {
             // For each possible tile
             for (int i = 0; i < 4; i++)
             {
-                if (attachedTile.adjacentTiles.ContainsKey((TileBehaviour.TileCode)i))
+                if (attachedTile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    if (attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetPlayable())
+                    if (attachedTile.GetAdjacentTiles()[(TileBehaviour.TileCode)i].GetPlayable())
                     {
-                        GameObject newTileHighlight = Instantiate(tileHighlight, transform);
+                        GameObject newTileHighlight = Instantiate(GetTileHighlight(), transform);
                         tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
-                        Vector3 highlightPos = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].transform.position;
+                        Vector3 highlightPos = attachedTile.GetAdjacentTiles()[(TileBehaviour.TileCode)i].transform.position;
                         highlightPos.y = 0.55f;
                         newTileHighlight.transform.position = highlightPos;
-                        Structure adjStructure = attachedTile.adjacentTiles[(TileBehaviour.TileCode)i].GetAttached();
+                        Structure adjStructure = attachedTile.GetAdjacentTiles()[(TileBehaviour.TileCode)i].GetAttached();
                         // If there is a structure on the tile...
                         if (adjStructure)
                         {
                             string adjStructType = "Forest Environment";
                             switch (resourceType)
                             {
-                                case ResourceType.wood:
-                                    adjStructType = "Forest Environment";
-                                    break;
                                 case ResourceType.metal:
-                                    adjStructType = "Hill Environment";
+                                    adjStructType = "Hills Environment";
                                     break;
                                 case ResourceType.food:
                                     adjStructType = "Plains Environment";
@@ -105,38 +107,75 @@ public abstract class ResourceStructure : Structure
         }
     }
 
-    protected void ResourceStart()
+    public int GetTileBonus()
     {
-        StructureStart();
+        return tileBonus;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         structureType = StructureType.resource;
-        tileHighlight = Resources.Load("TileHighlight") as GameObject;
         tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
     }
 
-    protected void ResourceUpdate()
+    private GameObject GetTileHighlight()
     {
+        if (tileHighlight == null)
+        {
+            tileHighlight = Resources.Load("TileHighlight") as GameObject;
+        }
+        return tileHighlight;
+    }
+
+    protected override void Update()
+    {
+        base.Update();
         if (isPlaced)
         {
-            StructureUpdate();
             remainingTime -= Time.deltaTime;
 
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                GameManager game = FindObjectOfType<GameManager>();
-                if (structureName != "Farm")
+                if (structureName == "Farm")
                 {
-                    if (game.playerData.CanAfford(new ResourceBundle(foodAllocation, 0, 0)))
-                    {
-                        game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
-                        game.AddBatch(new Batch(-foodAllocation, ResourceType.food));
-                    }
+                    gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
                 }
                 else
                 {
-                    game.AddBatch(new Batch(tileBonus * batchSize * foodAllocation, resourceType));
+                    if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
+                    {
+                        gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
+                        gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
+                    }
                 }
             }
         }
+    }
+
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+
+        if (structureName == "Farm")
+        {
+            resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * foodAllocation / productionTime);
+        }
+        else
+        {
+            switch (resourceType)
+            {
+                case ResourceType.metal:
+                    resourceDelta += new Vector3(0f, tileBonus * batchSize * foodAllocation / productionTime, 0f);
+                    break;
+                case ResourceType.wood:
+                    resourceDelta += new Vector3(tileBonus * batchSize * foodAllocation / productionTime, 0f, 0f);
+                    break;
+            }
+            resourceDelta -= new Vector3(0f, 0f, foodAllocation / productionTime);
+        }
+
+        return resourceDelta;
     }
 }
