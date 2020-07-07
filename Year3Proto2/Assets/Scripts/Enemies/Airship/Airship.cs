@@ -9,9 +9,9 @@ public class Airship : MonoBehaviour
     [SerializeField] private float steeringForce = 0.1f;
     [SerializeField] private float time = 2.0f;
 
-    private List<Transform> enemies;
-
-    //Reference to enemyspawner.
+    [Header("Indicator")]
+    [SerializeField] private Transform indicatorPrefab;
+    private Transform indicator;
 
     private Transform target;
     private Vector3 velocity;
@@ -61,13 +61,15 @@ public class Airship : MonoBehaviour
 
     public void Embark(List<Transform> enemies)
     {
+        indicator = Instantiate(indicatorPrefab, transform);
+
         if (target)
         {
             float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
             velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
             distance = Mathf.Sqrt(distance);
 
-            this.enemies = enemies;
+            //this.enemies = enemies;
             return;
         }
 
@@ -76,10 +78,12 @@ public class Airship : MonoBehaviour
 
     private void Deploy()
     {
+        if(indicator) Destroy(indicator.gameObject);
+
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         if(tileBehaviour)
         {
-            if(enemies != null) enemies.ForEach(enemy=> { }); //Place enemies nicely on a tile.   
+            //if(enemies != null) enemies.ForEach(enemy=> { }); Place enemies nicely on a tile.   
 
             //Bens Idea
 
