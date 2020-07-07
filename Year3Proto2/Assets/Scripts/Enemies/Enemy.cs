@@ -64,6 +64,15 @@ public abstract class Enemy : MonoBehaviour
         LookAtPosition(_soldier.transform.position);
     }
 
+    public void ForgetSoldier()
+    {
+        defenseTarget = null;
+        defending = false;
+        action = false;
+        enemyState = EnemyState.IDLE;
+        animator.SetBool("Attack", false);
+    }
+
     protected virtual void LookAtPosition(Vector3 _position)
     {
         transform.LookAt(_position);
