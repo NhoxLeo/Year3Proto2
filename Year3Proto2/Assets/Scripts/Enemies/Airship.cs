@@ -9,6 +9,8 @@ public class Airship : MonoBehaviour
     [SerializeField] private float steeringForce = 0.1f;
     [SerializeField] private float time = 2.0f;
 
+    private List<Transform> enemies;
+
     //Reference to enemyspawner.
 
     private Transform target;
@@ -35,16 +37,6 @@ public class Airship : MonoBehaviour
                 target = tile.transform;
             }
         });
-
-        if (target)
-        {
-            float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
-            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
-            distance = Mathf.Sqrt(distance);
-            return;
-        }
-
-        Destroy(this);
     }
 
     private void Update() 
@@ -67,12 +59,34 @@ public class Airship : MonoBehaviour
         }
     }
 
+    public void Embark(List<Transform> enemies)
+    {
+        if (target)
+        {
+            float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
+            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
+            distance = Mathf.Sqrt(distance);
+
+            this.enemies = enemies;
+            return;
+        }
+
+        Destroy(this);
+    }
+
     private void Deploy()
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         if(tileBehaviour)
         {
-            //Spawn enemies here
+            if(enemies != null) enemies.ForEach(enemy=> { }); //Place enemies nicely on a tile.   
+
+            //Bens Idea
+
+            // Each enemy jumps out one after another
+            // The scale up once they physically jump out
+            // Once all the enemies are out of the airship:
+            // They will start moving to their targets location.
         }
     }
 
