@@ -20,7 +20,7 @@ TagManager:
   - TileCollider
   - Enemy
   - EnemyStructureCollider
-  - 
+  - FogMask
   - 
   - 
   - 
