@@ -20,7 +20,9 @@ public class Soldier : MonoBehaviour
     public bool canHeal = false;
     public float healRate = 0.5f;
     public Barracks home;
+    public bool returnHome;
     public int state = 0; // 0 idle, 1 moving, 2 attacking
+    public int barracksID;
     private float searchTimer = 0f;
     private float searchDelay = 0.3f;
     private float avoidance = 0.05f;
@@ -43,7 +45,13 @@ public class Soldier : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        Idle();
+        // if the soldier has been recalled
+        if (returnHome) { state = 3; }
+        // if the soldier was responding to a recall but no longer needs to be recalled
+        if (state == 3 && !returnHome) { state = 0; }
+        // if the soldier is not responding to a recall
+        if (state != 3) { Idle(); }
+
         switch (state)
         {
             case 0:
@@ -73,6 +81,21 @@ public class Soldier : MonoBehaviour
                             animator.SetInteger("State", 1);
                         }
                         canHeal = true;
+                    }
+                }
+                else
+                {
+                    // stop walking animation
+                    Vector3 avoidance = GetAvoidanceOnly();
+                    if (avoidance == Vector3.zero)
+                    {
+                        animator.SetInteger("State", 0);
+                    }
+                    else
+                    {
+                        Vector3 futurePos = transform.position + (avoidance * Time.fixedDeltaTime);
+                        transform.position = futurePos;
+                        animator.SetInteger("State", 1);
                     }
                 }
                 break;
@@ -109,6 +132,35 @@ public class Soldier : MonoBehaviour
                     FindEnemy();
                 }
                 break;
+            case 3:
+                animator.SetInteger("State", 1);
+                canHeal = false;
+                if (!home)
+                {
+                    state = 0;
+                    break;
+                }
+                else
+                {
+                    if (target)
+                    {
+                        target.ForgetSoldier();
+                    }
+                    Vector3 toHome = home.transform.position - transform.position;
+                    toHome.y = 0f;
+                    if (toHome.magnitude > 0.8f)
+                    {
+                        LookAtPosition(home.transform.position);
+                        transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
+                        canHeal = false;
+                        animator.SetInteger("State", 1);
+                    }
+                    else
+                    {
+                        Damage(health);
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -139,11 +191,6 @@ public class Soldier : MonoBehaviour
                 }
             }
         }
-    }
-
-    private void Update()
-    {
-        
     }
 
     private void Idle()

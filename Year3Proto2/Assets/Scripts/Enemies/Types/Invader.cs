@@ -137,7 +137,19 @@ public class Invader : Enemy
     {
         if (defending)
         {
+            bool defend = true;
             if (defenseTarget)
+            { 
+                if (defenseTarget.returnHome || defenseTarget.health <= 0)
+                {
+                    defend = false;
+                }
+            }
+            else
+            {
+                defend = false;
+            }
+            if (defend)
             {
                 if (defenseTarget.health > 0)
                 {
@@ -145,26 +157,12 @@ public class Invader : Enemy
                     action = true;
                 }
             }
-            else
-            {
-                defending = false;
-                animator.SetBool("Attack", false);
-                action = false;
-                enemyState = EnemyState.IDLE;
-            }
+            else { ForgetSoldier(); }
         }
         else
         {
-            if (target.GetHealth() > 0)
-            {
-                action = true;
-            }
-            else
-            {
-                animator.SetBool("Attack", false);
-                action = false;
-                enemyState = EnemyState.IDLE;
-            }
+            if (target.GetHealth() > 0) { action = true; }
+            else { ForgetSoldier(); }
         }
         
     }
@@ -179,8 +177,7 @@ public class Invader : Enemy
                 {
                     if (defenseTarget.Damage(damage))
                     {
-                        defenseTarget = null;
-                        defending = false;
+                        ForgetSoldier();
                     }
                 }
             }
