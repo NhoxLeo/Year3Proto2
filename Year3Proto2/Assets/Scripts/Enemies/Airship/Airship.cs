@@ -9,9 +9,9 @@ public class Airship : MonoBehaviour
     [SerializeField] private float steeringForce = 0.1f;
     [SerializeField] private float time = 2.0f;
 
-    [Header("Indicator")]
-    [SerializeField] private Transform indicatorPrefab;
-    private Transform indicator;
+    [Header("Pointer")]
+    [SerializeField] private Transform pointerPrefab;
+    private Transform pointer;
 
     private Transform target;
     private Vector3 velocity;
@@ -37,6 +37,8 @@ public class Airship : MonoBehaviour
                 target = tile.transform;
             }
         });
+
+        Embark();
     }
 
     private void Update() 
@@ -59,12 +61,15 @@ public class Airship : MonoBehaviour
         }
     }
 
-    public void Embark(List<Transform> enemies)
+    public void Embark(/*List<Transform> enemies*/)
     {
-        indicator = Instantiate(indicatorPrefab, transform);
-
         if (target)
         {
+            pointer = Instantiate(pointerPrefab, transform);
+            AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
+            if (airshipPointer) airshipPointer.SetTargetPosition(transform);
+            
+
             float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
             velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
             distance = Mathf.Sqrt(distance);
@@ -78,7 +83,7 @@ public class Airship : MonoBehaviour
 
     private void Deploy()
     {
-        if(indicator) Destroy(indicator.gameObject);
+        if(pointer) Destroy(pointer.gameObject);
 
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         if(tileBehaviour)
@@ -93,6 +98,8 @@ public class Airship : MonoBehaviour
             // They will start moving to their targets location.
         }
     }
+
+    
 
     IEnumerator Depart(int seconds)
     {

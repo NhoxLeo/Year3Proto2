@@ -31,4 +31,10 @@ public class AirshipSpawner : MonoBehaviour
      
         Instantiate(airshipPrefab, location, Quaternion.identity, transform);
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(Vector3.zero, distance);
+    }
 }
