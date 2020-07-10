@@ -26,7 +26,7 @@ public class Airship : MonoBehaviour
     private void Start()
     {
         List<TileBehaviour> list = new List<TileBehaviour>(FindObjectsOfType<TileBehaviour>());
-        list.RemoveAll(element => element.GetAttached() != null);
+        list.RemoveAll(element => element.GetAttached() != null && element.GetApproached());
 
         list.ForEach(tile =>
         {
@@ -74,6 +74,9 @@ public class Airship : MonoBehaviour
             velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
             distance = Mathf.Sqrt(distance);
 
+            TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
+            if (tileBehaviour) tileBehaviour.SetApproached(true);
+
             //this.enemies = enemies;
             return;
         }
@@ -86,8 +89,10 @@ public class Airship : MonoBehaviour
         if(pointer) Destroy(pointer.gameObject);
 
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
-        if(tileBehaviour)
+        if (tileBehaviour)
         {
+            tileBehaviour.SetApproached(false);
+
             //if(enemies != null) enemies.ForEach(enemy=> { }); Place enemies nicely on a tile.   
 
             //Bens Idea

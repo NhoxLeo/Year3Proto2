@@ -20,7 +20,7 @@ public class AirshipSpawner : MonoBehaviour
 
         distance = Mathf.Sqrt(distance) + radiusOffset;
 
-        for (int i = 0; i < 10; i++) Spawn();
+        for (int i = 0; i < 20; i++) Spawn();
     } 
     
     private void Spawn()

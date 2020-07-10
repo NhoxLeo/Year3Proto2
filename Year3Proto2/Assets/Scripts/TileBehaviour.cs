@@ -6,10 +6,16 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class TileBehaviour : MonoBehaviour
 {
-    [SerializeField] [Tooltip("Determines whether or not the player can place structures on the tile.")]
+    [SerializeField] 
+    [Tooltip("Determines whether or not the player can place structures on the tile.")]
     private bool isPlayable;
-    [SerializeField] [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
+
+    [SerializeField] 
+    [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
     private bool isValidSpawnTile;
+
+    //Determines whether or not it is being approached by an airship.")]
+    private bool isApproached;
     
     public enum TileCode
     { 
@@ -99,6 +105,11 @@ public class TileBehaviour : MonoBehaviour
         return false;
     }
 
+    public void SetApproached(bool _isApproached)
+    {
+        isApproached = _isApproached;
+    }
+
     public void Attach(Structure _structure)
     {
         _structure.attachedTile = this;
@@ -128,5 +139,10 @@ public class TileBehaviour : MonoBehaviour
     public bool GetSpawnTile()
     {
         return isValidSpawnTile;
+    }
+
+    public bool GetApproached()
+    {
+        return isApproached;
     }
 }
