@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Barracks : DefenseStructure
 {
@@ -33,9 +34,14 @@ public class Barracks : DefenseStructure
         return maxSoldiers;
     }
 
+    private void EnableFogMask()
+    {
+        transform.GetChild(0).gameObject.SetActive(true);
+        transform.GetChild(0).DOScale(Vector3.one * 3.0f, 1.0f).SetEase(Ease.OutQuint);
+    }
+
     private void UpdateCapacity()
     {
-        int oldMaxSoldiers = maxSoldiers;
         maxSoldiers = foodAllocation;
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
@@ -76,6 +82,7 @@ public class Barracks : DefenseStructure
     public override void OnPlace()
     {
         base.OnPlace();
+        EnableFogMask();
         Barracks[] barracks = FindObjectsOfType<Barracks>();
         if (barracks.Length >= 2)
         {
