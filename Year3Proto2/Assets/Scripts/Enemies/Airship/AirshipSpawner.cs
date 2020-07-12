@@ -6,6 +6,7 @@ public class AirshipSpawner : MonoBehaviour
 {
     [SerializeField] private Transform airshipPrefab;
     [SerializeField] private float radiusOffset;
+    [SerializeField] private float spawnAmount;
 
     private float distance = 0.0f;
 
@@ -20,15 +21,17 @@ public class AirshipSpawner : MonoBehaviour
 
         distance = Mathf.Sqrt(distance) + radiusOffset;
 
-        for (int i = 0; i < 20; i++) Spawn();
+        for (int i = 0; i < spawnAmount; i++) Spawn();
     } 
     
     private void Spawn()
     {
         float angle = Random.Range(0.0f, 360.0f);
-        Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance);
-        location.y = 0.0f;
-     
+        Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance)
+        {
+            y = 0.0f
+        };
+
         Instantiate(airshipPrefab, location, Quaternion.identity, transform);
     }
 
