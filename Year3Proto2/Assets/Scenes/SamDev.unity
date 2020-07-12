@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.41941005, g: 0.26397532, b: 0.17891087, a: 1}
+  m_IndirectSpecularColor: {r: 0.4199236, g: 0.2643097, b: 0.1777028, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14445,6 +14445,7 @@ MonoBehaviour:
   airshipPrefab: {fileID: 3056834929655612559, guid: 8eb991c5726be7640a78e32e6e27599e,
     type: 3}
   radiusOffset: 10
+  spawnAmount: 0
 --- !u!4 &738540013
 Transform:
   m_ObjectHideFlags: 0

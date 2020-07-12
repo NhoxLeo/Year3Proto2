@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.5463179, g: 0.3375709, b: 0.22194783, a: 1}
+  m_IndirectSpecularColor: {r: 0.5463188, g: 0.33757377, b: 0.22194783, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -11346,6 +11346,81 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2132156315}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &678926886
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1440092810}
+    m_Modifications:
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 12.724514
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.981804
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.57436
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.0000004768371
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 5561349426305759274, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+    - target: {fileID: -927199367670048503, guid: 9b739ed16a479714c85e7f65eb297682,
+        type: 3}
+      propertyPath: m_Name
+      value: IslandCliffEdge_01 (48)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9b739ed16a479714c85e7f65eb297682, type: 3}
 --- !u!4 &680880404 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3596017079741575809, guid: a78c4e5611283ba4f91d5962e6e727a2,
@@ -24333,6 +24408,7 @@ Transform:
   - {fileID: 1502368162}
   - {fileID: 1696978276}
   - {fileID: 514381027}
+  - {fileID: 2095625831}
   m_Father: {fileID: 0}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -37917,6 +37993,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a78c4e5611283ba4f91d5962e6e727a2, type: 3}
+--- !u!4 &2095625831 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 9b739ed16a479714c85e7f65eb297682,
+    type: 3}
+  m_PrefabInstance: {fileID: 678926886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2097045651
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class AirshipPointer : MonoBehaviour
 {
-    [SerializeField] private float offset = 180.0f;
+    [SerializeField] private float xOffset = 200.0f;
+    [SerializeField] private float yOffset = 80.0f;
     [SerializeField] private float scale = 1.0f;
 
     private RectTransform indicator;
@@ -42,7 +43,7 @@ public class AirshipPointer : MonoBehaviour
 
             float width = Mathf.Abs(center.x / Mathf.Cos(angle));
             float height = Mathf.Abs(center.y / Mathf.Cos(angle + (Mathf.PI * 0.5f)));
-            float minimum = Mathf.Min(width + (offset * 2.0f), height + offset);
+            float minimum = Mathf.Min(width + (xOffset * 2.0f), height + yOffset);
 
             //Updating Indicator
 

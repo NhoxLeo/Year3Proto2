@@ -108,7 +108,7 @@ public abstract class AttackStructure : Structure
 
     private void EnableFogMask()
     {
-        transform.GetChild(0).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
+        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 
     public override void OnSelected()

@@ -12,6 +12,7 @@ public class Airship : MonoBehaviour
     [Header("Pointer")]
     [SerializeField] private Transform pointerPrefab;
     private Transform pointer;
+    private GameObject pointerParent;
 
     private Transform target;
     private Vector3 velocity;
@@ -25,6 +26,7 @@ public class Airship : MonoBehaviour
 
     private void Start()
     {
+        pointerParent = GameObject.Find("Airship Pointers");
         List<TileBehaviour> list = new List<TileBehaviour>(FindObjectsOfType<TileBehaviour>());
         list.RemoveAll(element => element.GetAttached() != null && element.GetApproached());
 
@@ -65,10 +67,9 @@ public class Airship : MonoBehaviour
     {
         if (target)
         {
-            pointer = Instantiate(pointerPrefab, transform);
+            if(pointerPrefab && pointerParent) pointer = Instantiate(pointerPrefab, pointerParent.transform);
             AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
             if (airshipPointer) airshipPointer.SetTargetPosition(transform);
-            
 
             float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
             velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
