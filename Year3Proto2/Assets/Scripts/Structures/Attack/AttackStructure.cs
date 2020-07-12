@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 public abstract class AttackStructure : Structure
 {
@@ -115,7 +115,6 @@ public abstract class AttackStructure : Structure
     {
         base.OnSelected();
         ShowRangeDisplay(true);
-        EnableFogMask();
     }
 
     public override void OnDeselected()

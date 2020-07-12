@@ -548,33 +548,37 @@ public class StructureManager : MonoBehaviour
                                         if (tile.GetPlayable())
                                         {
                                             bool canPlaceHere = false;
+                                            bool hitFogMask = Physics.Raycast(tile.transform.position + Vector3.up * 5f, Vector3.down, out RaycastHit fogMaskHit, Mathf.Infinity, LayerMask.GetMask("FogMask"));
                                             // If the tile we hit has an attached object...
                                             Structure attached = tile.GetAttached();
                                             StructureType newStructureType = structure.GetStructureType();
                                             if (attached)
                                             {
-                                                StructureType attachedStructureType = attached.GetStructureType();
-                                                Vector3 hitPos = hit.point;
-                                                hitPos.y = structure.sitHeight;
-                                                structure.transform.position = hitPos;
-
-                                                SetStructureColour(Color.red);
-
-                                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-
-                                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                                else if (attachedStructureType == StructureType.environment)
+                                                if (hitFogMask)
                                                 {
-                                                    if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                    StructureType attachedStructureType = attached.GetStructureType();
+                                                    Vector3 hitPos = hit.point;
+                                                    hitPos.y = structure.sitHeight;
+                                                    structure.transform.position = hitPos;
+
+                                                    SetStructureColour(Color.red);
+
+                                                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                                    if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+
+                                                    if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                                    else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                                    else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
+                                                    else if (attachedStructureType == StructureType.environment)
                                                     {
-                                                        canPlaceHere = true;
+                                                        if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                        {
+                                                            canPlaceHere = true;
+                                                        }
                                                     }
                                                 }
                                             }
-                                            else { canPlaceHere = true; }
+                                            else { canPlaceHere = hitFogMask; }
                                             // if the structure can be placed here...
                                             if (canPlaceHere)
                                             {

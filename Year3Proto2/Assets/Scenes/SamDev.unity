@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4199236, g: 0.2643097, b: 0.1777028, a: 1}
+  m_IndirectSpecularColor: {r: 0.41975933, g: 0.26420885, b: 0.17901506, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14445,7 +14445,7 @@ MonoBehaviour:
   airshipPrefab: {fileID: 3056834929655612559, guid: 8eb991c5726be7640a78e32e6e27599e,
     type: 3}
   radiusOffset: 10
-  spawnAmount: 0
+  spawnAmount: 5
 --- !u!4 &738540013
 Transform:
   m_ObjectHideFlags: 0
@@ -53386,6 +53386,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2583936287728896004, guid: 0062490a6299c9647892643895518e38,
+        type: 3}
+      propertyPath: RotationBySpeedModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5399324124556269650, guid: 0062490a6299c9647892643895518e38,
         type: 3}
       propertyPath: m_Name
@@ -53445,6 +53450,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8483279851538694752, guid: 0062490a6299c9647892643895518e38,
+        type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0062490a6299c9647892643895518e38, type: 3}
