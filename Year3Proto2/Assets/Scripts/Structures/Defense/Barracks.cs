@@ -6,39 +6,49 @@ public class Barracks : DefenseStructure
 {
     private GameObject soldierPrefab;
     private GameObject puffEffect;
-    private int maxSoldiers = 5;
+    private int barracksID;
+    private int maxSoldiers = 3;
     [HideInInspector]
     public List<Soldier> soldiers;
     private float trainTime = 20f;
     private float timeTrained = 0f;
 
-    public float GetTrainTime()
+    public float GetTimeTrained()
     {
-        return trainTime;
+        return timeTrained;
     }
 
-    private void UpdateHealAndTrainRate()
+    public void SetTimeTrained(float _timeTrained)
     {
-        switch (foodAllocation)
+        timeTrained = _timeTrained;
+    }
+
+    public int GetBarracksID()
+    {
+        return barracksID;
+    }
+
+    public float GetTroopCapacity()
+    {
+        return maxSoldiers;
+    }
+
+    private void UpdateCapacity()
+    {
+        int oldMaxSoldiers = maxSoldiers;
+        maxSoldiers = foodAllocation;
+        // recall excess soldiers
+        for (int i = 0; i < soldiers.Count; i++)
         {
-            case 1:
-                trainTime = 30f;
-                break;
-            case 2:
-                trainTime = 25f;
-                break;
-            case 3:
-                trainTime = 20f;
-                break;
-            case 4:
-                trainTime = 15f;
-                break;
-            case 5:
-                trainTime = 10f;
-                break;
+            if (i >= maxSoldiers)
+            {
+                soldiers[i].returnHome = true;
+            }
+            else
+            {
+                soldiers[i].returnHome = false;
+            }
         }
-        float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth) ? 1.5f : 1.0f);
-        SetHealRate(soldierMaxHealth / trainTime);
     }
 
     private void SetHealRate(float _healRate)
@@ -52,7 +62,7 @@ public class Barracks : DefenseStructure
     public override void SetFoodAllocation(int _newFoodAllocation)
     {
         base.SetFoodAllocation(_newFoodAllocation);
-        UpdateHealAndTrainRate();
+        UpdateCapacity();
     }
 
     public override void SetFoodAllocationGlobal(int _allocation)
@@ -77,7 +87,7 @@ public class Barracks : DefenseStructure
     protected override void Start()
     {
         base.Start();
-        UpdateHealAndTrainRate();
+        UpdateCapacity();
     }
 
     protected override void Awake()
@@ -93,9 +103,11 @@ public class Barracks : DefenseStructure
             maxHealth *= 1.5f;
         }
         health = maxHealth;
-        if (superMan.GetResearchComplete(SuperManager.k_iBallistaSuper))
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSuper))
         {
-            maxSoldiers = 8;
+            trainTime = 10f;
+            float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth) ? 1.5f : 1.0f);
+            SetHealRate(soldierMaxHealth / trainTime);
         }
         puffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
     }
@@ -117,6 +129,7 @@ public class Barracks : DefenseStructure
     private void SpawnSoldier()
     {
         Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
+        newSoldier.barracksID = ID;
         newSoldier.home = this;
         float vectorSampler = Random.Range(0f, 1f);
         newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
@@ -130,7 +143,7 @@ public class Barracks : DefenseStructure
         {
             newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
             newSoldier.maxHealth *= 1.5f;
-            newSoldier.health *= 1.5f;
+            newSoldier.health = newSoldier.maxHealth;
         }
         else
         {
@@ -144,5 +157,38 @@ public class Barracks : DefenseStructure
         soldiers.Add(newSoldier);
 
         GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, 0.3f);
+    }
+
+    public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
+    {
+        Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
+        newSoldier.barracksID = ID;
+        newSoldier.home = this;
+        newSoldier.puffEffect = puffEffect;
+        newSoldier.transform.position = _saveData.position;
+        newSoldier.transform.rotation = _saveData.orientation;
+        newSoldier.state = _saveData.state;
+        newSoldier.health = _saveData.health;
+        newSoldier.returnHome = _saveData.returnHome;
+
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierDamage))
+        {
+            newSoldier.damage *= 1.3f;
+        }
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth))
+        {
+            newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
+            newSoldier.maxHealth *= 1.5f;
+        }
+        else
+        {
+            newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
+        }
+        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierSpeed))
+        {
+            newSoldier.movementSpeed *= 1.3f;
+        }
+
+        soldiers.Add(newSoldier);
     }
 }

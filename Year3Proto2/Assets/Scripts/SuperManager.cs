@@ -117,6 +117,17 @@ public class SuperManager : MonoBehaviour
         public EnemyState state;
     }
 
+    [Serializable]
+    public struct SoldierSaveData
+    {
+        public float health;
+        public SaveVector3 position;
+        public SaveQuaternion orientation;
+        public int barracksID;
+        public int state;
+        public bool returnHome;
+    }
+
 
     [Serializable]
     public struct InvaderSaveData
@@ -136,11 +147,13 @@ public class SuperManager : MonoBehaviour
     public struct StructureSaveData
     {
         public string structure;
+        public int ID;
         public float health;
         public StructureType type;
         public SaveVector3 position;
         public int foodAllocation;
         public bool wasPlacedOn;
+        public float timeTrained;
     }
 
     [Serializable]
@@ -155,6 +168,7 @@ public class SuperManager : MonoBehaviour
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
         public List<HeavyInvaderSaveData> heavyInvaders;
+        public List<SoldierSaveData> soldiers;
         public int enemyWaveSize;
         public int enemiesKilled;
         public float spawnerCooldown;
@@ -163,6 +177,7 @@ public class SuperManager : MonoBehaviour
         public bool tutorialDone;
         public bool repairMessage;
         public bool repairAll;
+        public int nextStructureID;
     }
 
     [Serializable]
@@ -357,7 +372,7 @@ public class SuperManager : MonoBehaviour
             new ResearchElementDefinition(k_iBarracksSoldierHealth, k_iBarracks, "Soldier Health", "Health increased by 50%.", 200),
             new ResearchElementDefinition(k_iBarracksSoldierSpeed, k_iBarracks, "Soldier Speed", "Speed increased by 30%.", 200),
             new ResearchElementDefinition(k_iBarracksFortification, k_iBarracks, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(k_iBarracksSuper, k_iBarracks, "Reinforcements", "Barracks can spawn up to 8 soldiers.", 500, true),
+            new ResearchElementDefinition(k_iBarracksSuper, k_iBarracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
         };
         levelDefinitions = new List<LevelDefinition>()
         {
@@ -421,7 +436,6 @@ public class SuperManager : MonoBehaviour
                 WipeReloadScene();
             }
             // Press M
-            /*
             if (Input.GetKeyDown(KeyCode.M))
             {
                 if(gameMan)
@@ -431,7 +445,6 @@ public class SuperManager : MonoBehaviour
                     gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.metal));
                 }
             }
-            */
         }
     }
 
@@ -478,6 +491,7 @@ public class SuperManager : MonoBehaviour
         gameMan.tutorialDone = _matchData.tutorialDone;
         structMan.structureCosts = _matchData.structureCosts;
         structMan.structureCounts = _matchData.structureCounts;
+        structMan.SetNextStructureID(_matchData.nextStructureID);
         gameMan.playerResources = _matchData.playerResources;
         if (_matchData.spawning != enemySpawner.IsSpawning()) { enemySpawner.ToggleSpawning(); }
         enemySpawner.SetWaveCurrent(_matchData.wave);
@@ -520,6 +534,20 @@ public class SuperManager : MonoBehaviour
             enemySpawner.LoadHeavyInvader(saveData);
         }
 
+        // soldiers
+        Barracks[] allBarracks = FindObjectsOfType<Barracks>();
+        foreach (SoldierSaveData saveData in _matchData.soldiers)
+        {
+            foreach (Barracks barr in allBarracks)
+            {
+                if (barr.GetID() == saveData.barracksID)
+                {
+                    barr.LoadSoldier(saveData);
+                    break;
+                }
+            }
+        }
+
         // enemies are spawned, let the towers detect them
         foreach (AttackStructure attackStructure in FindObjectsOfType<AttackStructure>())
         {
@@ -554,10 +582,12 @@ public class SuperManager : MonoBehaviour
             wave = enemySpawner.GetWaveCurrent(),
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
+            soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = enemySpawner.GetKillCount(),
             spawnerCooldown = enemySpawner.cooldown,
-            matchWon = gameMan.WinConditionIsMet() || gameMan.gameAlreadyWon
+            matchWon = gameMan.WinConditionIsMet() || gameMan.gameAlreadyWon,
+            nextStructureID = structMan.GetNextStructureID()
         };
 
         // not so easy stuff...
@@ -597,6 +627,21 @@ public class SuperManager : MonoBehaviour
             save.heavyInvaders.Add(saveData);
         }
 
+        // soldiers
+        foreach (Soldier soldier in FindObjectsOfType<Soldier>())
+        {
+            SoldierSaveData saveData = new SoldierSaveData
+            {
+                health = soldier.health,
+                position = new SaveVector3(soldier.transform.position),
+                orientation = new SaveQuaternion(soldier.transform.rotation),
+                barracksID = soldier.barracksID,
+                state = soldier.state,
+                returnHome = soldier.returnHome
+            };
+            save.soldiers.Add(saveData);
+        }
+
         // structures
         foreach (Structure structure in FindObjectsOfType<Structure>())
         {
@@ -609,11 +654,13 @@ public class SuperManager : MonoBehaviour
                     type = structure.GetStructureType(),
                     position = new SaveVector3(structure.transform.position),
                     foodAllocation = structure.GetFoodAllocation(),
-                    health = structure.GetHealth()
+                    health = structure.GetHealth(),
+                    ID = structure.GetID()
                 };
                 if (structure.IsStructure("Farm")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains; }
                 if (structure.IsStructure("Mine")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills; }
                 if (structure.IsStructure("Lumber Mill")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest; }
+                if (structure.IsStructure("Barracks")) { saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained(); }
                 save.structures.Add(saveData);
             }
         }
