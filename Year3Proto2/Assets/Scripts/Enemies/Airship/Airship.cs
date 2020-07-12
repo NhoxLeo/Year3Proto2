@@ -11,6 +11,7 @@ public class Airship : MonoBehaviour
 
     [Header("Pointer")]
     [SerializeField] private Transform pointerPrefab;
+    [SerializeField] private Transform pointerTarget;
     private Transform pointer;
     private GameObject pointerParent;
 
@@ -47,7 +48,11 @@ public class Airship : MonoBehaviour
     {
         if(target)
         {
-            float distance = (target.position - transform.position).sqrMagnitude;
+            Vector3 displacement = target.position - transform.position;
+            Vector3 direction = displacement.normalized;
+
+            float distance = displacement.sqrMagnitude;
+            Quaternion rotation = Quaternion.LookRotation(direction);
 
             if (distance < 0.25f)
             {
@@ -60,6 +65,9 @@ public class Airship : MonoBehaviour
             if (velocity.sqrMagnitude > (maxSpeed * maxSpeed)) velocity = velocity.normalized * maxSpeed;
 
             transform.position += velocity * Time.deltaTime;
+            transform.rotation = rotation;
+
+
         }
     }
 
@@ -69,10 +77,12 @@ public class Airship : MonoBehaviour
         {
             if(pointerPrefab && pointerParent) pointer = Instantiate(pointerPrefab, pointerParent.transform);
             AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
-            if (airshipPointer) airshipPointer.SetTargetPosition(transform);
+            if (airshipPointer) airshipPointer.SetTarget(pointerTarget);
 
+            Vector3 displacement = target.position - transform.position;
             float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
-            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
+
+            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * displacement.normalized * 2.0f;
             distance = Mathf.Sqrt(distance);
 
             TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();

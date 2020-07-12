@@ -58,7 +58,7 @@ public class AirshipPointer : MonoBehaviour
         }
     }
 
-    public void SetTargetPosition(Transform target)
+    public void SetTarget(Transform target)
     {
         this.target = target;
     }
