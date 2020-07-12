@@ -28,6 +28,7 @@ public class BallistaTower : AttackStructure
         base.Start();
         SetFirerate();
         if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
         bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.k_iBallistaEfficiency);
         int woodCost = efficiencyUpgrade ? (k_CostArrowBase / 2) : k_CostArrowBase;
         attackCost = new ResourceBundle(woodCost, 0, 0);

@@ -182,12 +182,15 @@ public class Soldier : MonoBehaviour
             float distance = Mathf.Infinity;
             foreach (Enemy enemy in enemies)
             {
-                float thisDistance = (enemy.transform.position - transform.position).magnitude;
-                if (thisDistance < distance)
+                if (enemy.IsBeingObserved())
                 {
-                    distance = thisDistance;
-                    target = enemy;
-                    state = 1;
+                    float thisDistance = (enemy.transform.position - transform.position).magnitude;
+                    if (thisDistance < distance)
+                    {
+                        distance = thisDistance;
+                        target = enemy;
+                        state = 1;
+                    }
                 }
             }
         }
