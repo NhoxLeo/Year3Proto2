@@ -36,8 +36,22 @@ public abstract class Enemy : MonoBehaviour
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
+    protected int observers = 0;
 
+    public void AddObserver()
+    {
+        observers++;
+    }
 
+    public void RemoveObserver()
+    {
+        observers--;
+    }
+
+    public bool IsBeingObserved()
+    {
+        return observers > 0;
+    }
 
     public abstract void Action();
 
@@ -62,6 +76,15 @@ public abstract class Enemy : MonoBehaviour
         animator.SetBool("Attack", true);
         action = true;
         LookAtPosition(_soldier.transform.position);
+    }
+
+    public void ForgetSoldier()
+    {
+        defenseTarget = null;
+        defending = false;
+        action = false;
+        enemyState = EnemyState.IDLE;
+        animator.SetBool("Attack", false);
     }
 
     protected virtual void LookAtPosition(Vector3 _position)

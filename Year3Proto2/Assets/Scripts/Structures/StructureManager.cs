@@ -105,6 +105,7 @@ public class StructureManager : MonoBehaviour
     private Structure structure = null;
     private TileBehaviour structureOldTile = null;
     private float hoveroverTime = 0f;
+    private int nextStructureID = 0;
 
     public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -248,8 +249,8 @@ public class StructureManager : MonoBehaviour
 
     private void Awake()
     {
-        kPathSaveData = Application.persistentDataPath + "/saveData.dat";
-        kPathPGP = Application.persistentDataPath + "/PGP.dat";
+        kPathSaveData = GetSaveDataPath();
+        kPathPGP = GetPGPPath();
         DefineDictionaries();
         panel = FindObjectOfType<BuildPanel>();
         gameMan = FindObjectOfType<GameManager>();
@@ -324,7 +325,7 @@ public class StructureManager : MonoBehaviour
         // try to access file
         BinaryFormatter bf = new BinaryFormatter();
         // if we found the file...
-        if (System.IO.File.Exists(kPathPGP))
+        if (System.IO.File.Exists(GetPGPPath()))
         {
             System.IO.FileStream file = System.IO.File.Open(kPathPGP, System.IO.FileMode.Open);
             ProceduralGenerationParameters PGP = (ProceduralGenerationParameters)bf.Deserialize(file);
@@ -547,33 +548,37 @@ public class StructureManager : MonoBehaviour
                                         if (tile.GetPlayable())
                                         {
                                             bool canPlaceHere = false;
+                                            bool hitFogMask = Physics.Raycast(tile.transform.position + Vector3.up * 5f, Vector3.down, out RaycastHit fogMaskHit, Mathf.Infinity, LayerMask.GetMask("FogMask"));
                                             // If the tile we hit has an attached object...
                                             Structure attached = tile.GetAttached();
                                             StructureType newStructureType = structure.GetStructureType();
                                             if (attached)
                                             {
-                                                StructureType attachedStructureType = attached.GetStructureType();
-                                                Vector3 hitPos = hit.point;
-                                                hitPos.y = structure.sitHeight;
-                                                structure.transform.position = hitPos;
-
-                                                SetStructureColour(Color.red);
-
-                                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-
-                                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                                else if (attachedStructureType == StructureType.environment)
+                                                if (hitFogMask)
                                                 {
-                                                    if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                    StructureType attachedStructureType = attached.GetStructureType();
+                                                    Vector3 hitPos = hit.point;
+                                                    hitPos.y = structure.sitHeight;
+                                                    structure.transform.position = hitPos;
+
+                                                    SetStructureColour(Color.red);
+
+                                                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                                    if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+
+                                                    if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                                    else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                                    else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
+                                                    else if (attachedStructureType == StructureType.environment)
                                                     {
-                                                        canPlaceHere = true;
+                                                        if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                        {
+                                                            canPlaceHere = true;
+                                                        }
                                                     }
                                                 }
                                             }
-                                            else { canPlaceHere = true; }
+                                            else { canPlaceHere = hitFogMask; }
                                             // if the structure can be placed here...
                                             if (canPlaceHere)
                                             {
@@ -631,7 +636,7 @@ public class StructureManager : MonoBehaviour
                                                         if (attached) { attached.attachedTile.Detach(); }
                                                         tile.Attach(structure);
                                                         structure.OnPlace();
-
+                                                        structure.SetID(GetNewID());
                                                         Instantiate(buildingPuff, structure.transform.position, Quaternion.Euler(-90f, 0f, 0f));
                                                         if (attached)
                                                         {
@@ -837,6 +842,21 @@ public class StructureManager : MonoBehaviour
     public void SetIsOverUI(bool _isOverUI)
     {
         isOverUI = _isOverUI;
+    }
+
+    public void SetNextStructureID(int _ID)
+    {
+        nextStructureID = _ID;
+    }
+
+    public int GetNextStructureID()
+    {
+        return nextStructureID;
+    }
+
+    public int GetNewID()
+    {
+        return nextStructureID++;
     }
 
     public void ProceduralGeneration(bool _useSeed = false, int _seed = 0)
@@ -1158,15 +1178,18 @@ public class StructureManager : MonoBehaviour
         }
         newStructure.SetFoodAllocation(_saveData.foodAllocation);
         ResourceStructure resourceStructComp = newStructure.gameObject.GetComponent<ResourceStructure>();
-        if (resourceStructComp != null)
+        if (resourceStructComp)
         {
             if (_saveData.structure == "Farm") { newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn; }
             if (_saveData.structure == "Mine") { newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn; }
             if (_saveData.structure == "Lumber Mill") { newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn; }
         }
+        Barracks barracksComponent = newStructure.gameObject.GetComponent<Barracks>();
+        if (barracksComponent) { barracksComponent.SetTimeTrained(_saveData.timeTrained); }
         newStructure.isPlaced = true;
         newStructure.SetHealth(_saveData.health);
         newStructure.fromSaveData = true;
+        newStructure.SetID(_saveData.ID);
     }
 
     private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
@@ -1184,9 +1207,9 @@ public class StructureManager : MonoBehaviour
         switch (_preset)
         {
             case 0:
-                pgp.hillsParameters = new SuperManager.SaveVector3(60f, 80f, 0.5f);
-                pgp.forestParameters = new SuperManager.SaveVector3(60f, 80f, 0.3f);
-                pgp.plainsParameters = new SuperManager.SaveVector3(60f, 80f, 0.3f);
+                pgp.hillsParameters = new SuperManager.SaveVector3(55f, 70f, 0.25f);
+                pgp.forestParameters = new SuperManager.SaveVector3(80f, 90f, 0.3f);
+                pgp.plainsParameters = new SuperManager.SaveVector3(85f, 100f, 0.3f);
                 pgp.seed = 0;
                 pgp.useSeed = false;
                 break;

@@ -1,55 +1,33 @@
-﻿using DG.Tweening;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Airship : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Attributes")]
     [SerializeField] private float maxSpeed = 1.0f;
     [SerializeField] private float steeringForce = 0.1f;
     [SerializeField] private float time = 2.0f;
-    
-    [Header("Spawn Location")]
-    [SerializeField] private float spawnPointOffset = 1.2f;
-    [SerializeField] private int spawnPointColumns = 3;
-    [SerializeField] private int capacity = 9;
 
     [Header("Pointer")]
     [SerializeField] private Transform pointerPrefab;
+    [SerializeField] private Transform pointerTarget;
     private Transform pointer;
+    private GameObject pointerParent;
 
     private Transform target;
-    private Vector3 velocity, initialLocation;
+    private Vector3 velocity;
     private float distance = float.MaxValue;
+    private bool docked = false;
 
-    private List<Transform> enemies;
-
-    private void Update() 
+    private void OnBecameInvisible()
     {
-        if(target)
-        {
-            float distance = (target.transform.position - transform.position).sqrMagnitude;
-
-            if (distance < 0.25f)
-            {
-                Deploy();
-                return;
-            }
-
-            velocity += steeringForce * Time.deltaTime * (target.transform.position - (transform.position + velocity * time));
-
-            if (velocity.sqrMagnitude > (maxSpeed * maxSpeed))
-            {
-                velocity = velocity.normalized * maxSpeed;
-            }
-
-            transform.position += velocity * Time.deltaTime;
-        }
+        if (docked) Destroy(this);
     }
 
-    public bool HasTarget()
+    private void Start()
     {
+        pointerParent = GameObject.Find("Airship Pointers");
         List<TileBehaviour> list = new List<TileBehaviour>(FindObjectsOfType<TileBehaviour>());
         list.RemoveAll(element => element.GetAttached() != null && element.GetApproached());
 
@@ -63,31 +41,58 @@ public class Airship : MonoBehaviour
             }
         });
 
-        return target;
+        Embark();
     }
 
-    public void Embark(List<Transform> enemies)
+    private void Update() 
     {
-
-        TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
-        if (tileBehaviour)
+        if(target)
         {
-            tileBehaviour.SetApproached(true);
+            Vector3 displacement = target.position - transform.position;
+            Vector3 direction = displacement.normalized;
 
-            initialLocation = target.transform.position;
+            float distance = displacement.sqrMagnitude;
+            Quaternion rotation = Quaternion.LookRotation(direction);
 
-            pointer = Instantiate(pointerPrefab, transform);
+            if (distance < 0.25f)
+            {
+                Deploy();
+                //StartCoroutine(Depart(2));
+                return;
+            }
+
+            velocity += steeringForce * Time.deltaTime * (target.position - (transform.position + velocity * time));
+            if (velocity.sqrMagnitude > (maxSpeed * maxSpeed)) velocity = velocity.normalized * maxSpeed;
+
+            transform.position += velocity * Time.deltaTime;
+            transform.rotation = rotation;
+
+
+        }
+    }
+
+    public void Embark(/*List<Transform> enemies*/)
+    {
+        if (target)
+        {
+            if(pointerPrefab && pointerParent) pointer = Instantiate(pointerPrefab, pointerParent.transform);
             AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
+            if (airshipPointer) airshipPointer.SetTarget(pointerTarget);
 
-            if (airshipPointer) airshipPointer.SetTargetPosition(transform);
-
-
+            Vector3 displacement = target.position - transform.position;
             float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
-            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (initialLocation - transform.position).normalized * 2.0f;
+
+            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * displacement.normalized * 2.0f;
             distance = Mathf.Sqrt(distance);
 
-            this.enemies = enemies;
+            TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
+            if (tileBehaviour) tileBehaviour.SetApproached(true);
+
+            //this.enemies = enemies;
+            return;
         }
+
+        Destroy(this);
     }
 
     private void Deploy()
@@ -99,74 +104,23 @@ public class Airship : MonoBehaviour
         {
             tileBehaviour.SetApproached(false);
 
-            if (enemies != null)
-            {
+            //if(enemies != null) enemies.ForEach(enemy=> { }); Place enemies nicely on a tile.   
 
-                StartCoroutine(Disembark());
-                return;
-            }
+            //Bens Idea
 
-            Destroy(gameObject);
+            // Each enemy jumps out one after another
+            // The scale up once they physically jump out
+            // Once all the enemies are out of the airship:
+            // They will start moving to their targets location.
         }
     }
 
-    IEnumerator Disembark()
+    
+
+    IEnumerator Depart(int seconds)
     {
-        List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, enemies.Count);
-
-        float time = 0.0f;
-
-        for (int i = 0; i < enemies.Count; i++)
-        {
-            time += 1.0f;
-            Transform enemyPrefab = enemies[i];
-            Vector3 enemySpawnPoint = spawnPoints[i];
-
-            if (enemySpawnPoint != null)
-            {
-                Transform enemy = Instantiate(enemyPrefab, null);
-                enemy.position = transform.position;
-                enemy.DOJump(enemySpawnPoint, 0.2f, 1, 1.0f);
-            }
-        }
-
-        yield return new WaitForSeconds(time);
-
-        Depart();
-
-        yield return 0;
-    }
-
-    private List<Vector3> GenerateSpawnPoints(Transform _transform, int amount)
-    {
-        List<Vector3> vectors = new List<Vector3>();
-
-        Vector3 halfScale = _transform.localScale / 2.0f;
-
-        float xOffset = halfScale.x - spawnPointOffset;
-        float zOffset = halfScale.z - spawnPointOffset;
-
-        for (int i = 0; i < amount; i++)
-        {
-            Vector3 position = new Vector3(
-                _transform.position.x + (i % (Mathf.Sqrt(capacity) / 2.0f * xOffset)) - (xOffset / 2.0f),
-                _transform.position.y + halfScale.y,
-                _transform.position.z + (i / (Mathf.Sqrt(capacity) / 2.0f * zOffset)) - (zOffset / 2.0f)
-            );
-
-            vectors.Add(position);
-        }
-        return vectors;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        if(target) GenerateSpawnPoints(target.transform, capacity).ForEach(point => Gizmos.DrawSphere(point, 0.1f));
-    }
-
-    private void Depart()
-    {
-        target = null;
+        yield return new WaitForSeconds(seconds);
+        //Potentially depart airship...
+        yield return null;
     }
 }

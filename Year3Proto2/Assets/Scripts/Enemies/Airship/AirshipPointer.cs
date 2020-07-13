@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class AirshipPointer : MonoBehaviour
 {
-    [SerializeField] private float offset = 180.0f;
+    [SerializeField] private float xOffset = 200.0f;
+    [SerializeField] private float yOffset = 80.0f;
+    [SerializeField] private float scale = 1.0f;
 
     private RectTransform indicator;
     private Transform target;
@@ -14,7 +16,7 @@ public class AirshipPointer : MonoBehaviour
     {
         center = new Vector3(Screen.width, Screen.height, 0.0f) / 2.0f;
         indicator = GetComponent<RectTransform>();
-        indicator.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        indicator.localScale = Vector3.one * scale;
         transform.SetParent(FindObjectOfType<Canvas>().transform);
     }
 
@@ -41,13 +43,12 @@ public class AirshipPointer : MonoBehaviour
 
             float width = Mathf.Abs(center.x / Mathf.Cos(angle));
             float height = Mathf.Abs(center.y / Mathf.Cos(angle + (Mathf.PI * 0.5f)));
-            float minimum = Mathf.Min(width + (offset * 2.0f), height + offset);
+            float minimum = Mathf.Min(width + (xOffset * 2.0f), height + yOffset);
 
             //Updating Indicator
 
             indicator.localPosition = minimum * direction;
             indicator.localEulerAngles = new Vector3(0.0f, 0.0f, angle * Mathf.Rad2Deg);
-
         }
         else
         {
@@ -57,7 +58,7 @@ public class AirshipPointer : MonoBehaviour
         }
     }
 
-    public void SetTargetPosition(Transform target)
+    public void SetTarget(Transform target)
     {
         this.target = target;
     }

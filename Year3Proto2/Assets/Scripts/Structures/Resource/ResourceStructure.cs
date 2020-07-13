@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public abstract class ResourceStructure : Structure
 {
@@ -11,6 +12,13 @@ public abstract class ResourceStructure : Structure
     protected ResourceType resourceType;
     protected int tileBonus = 0;
     private GameObject tileHighlight;
+
+
+    private void EnableFogMask()
+    {
+        transform.GetChild(0).gameObject.SetActive(true);
+        transform.GetChild(0).DOScale(Vector3.one * 2.0f, 1.0f).SetEase(Ease.OutQuint);
+    }
 
     public virtual int GetProductionVolume()
     {
@@ -40,6 +48,7 @@ public abstract class ResourceStructure : Structure
     public override void OnPlace()
     {
         base.OnPlace();
+        EnableFogMask();
         tileBonus = 1;
         OnDeselected();
         if (tileHighlights != null) { tileHighlights.Clear(); }

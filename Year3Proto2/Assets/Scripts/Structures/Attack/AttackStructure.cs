@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,22 +53,24 @@ public abstract class AttackStructure : Structure
                 if (!target)
                 {
                     float closestDistanceSqr = Mathf.Infinity;
-                    Vector3 currentPosition = transform.position;
 
-                    GameObject nearestEnemy = null;
+                    GameObject nearestSpottedEnemy = null;
 
                     foreach (GameObject enemy in enemies)
                     {
-                        Vector3 directionToTarget = enemy.transform.position - currentPosition;
-                        float dSqrToTarget = directionToTarget.sqrMagnitude;
-                        if (dSqrToTarget < closestDistanceSqr)
+                        if (enemy.GetComponent<Enemy>().IsBeingObserved())
                         {
-                            closestDistanceSqr = dSqrToTarget;
-                            nearestEnemy = enemy;
+                            Vector3 directionToTarget = enemy.transform.position - transform.position;
+                            float dSqrToTarget = directionToTarget.sqrMagnitude;
+                            if (dSqrToTarget < closestDistanceSqr)
+                            {
+                                closestDistanceSqr = dSqrToTarget;
+                                nearestSpottedEnemy = enemy;
+                            }
                         }
                     }
 
-                    if (nearestEnemy) target = nearestEnemy;
+                    if (nearestSpottedEnemy) target = nearestSpottedEnemy;
                 }
                 else
                 {
@@ -100,6 +103,12 @@ public abstract class AttackStructure : Structure
     public void ShowRangeDisplay(bool _active)
     {
         transform.GetChild(0).GetChild(0).gameObject.SetActive(_active);
+        transform.GetChild(1).GetChild(0).gameObject.SetActive(_active);
+    }
+
+    private void EnableFogMask()
+    {
+        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 
     public override void OnSelected()

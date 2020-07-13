@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class BallistaTower : AttackStructure
 {
@@ -28,6 +29,7 @@ public class BallistaTower : AttackStructure
         base.Start();
         SetFirerate();
         if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
         bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.k_iBallistaEfficiency);
         int woodCost = efficiencyUpgrade ? (k_CostArrowBase / 2) : k_CostArrowBase;
         attackCost = new ResourceBundle(woodCost, 0, 0);
@@ -84,6 +86,7 @@ public class BallistaTower : AttackStructure
     public override void OnPlace()
     {
         base.OnPlace();
+        EnableFogMask();
         BallistaTower[] ballistaTowers = FindObjectsOfType<BallistaTower>();
         if (ballistaTowers.Length >= 2)
         {
@@ -136,5 +139,11 @@ public class BallistaTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
+    }
+
+    private void EnableFogMask()
+    {
+        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
+        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 }

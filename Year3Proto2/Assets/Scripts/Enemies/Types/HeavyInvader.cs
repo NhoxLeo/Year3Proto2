@@ -192,10 +192,7 @@ public class HeavyInvader : Enemy
             }
             else
             {
-                defending = false;
-                animator.SetBool("Attack", false);
-                action = false;
-                enemyState = EnemyState.IDLE;
+                ForgetSoldier();
             }
         }
         else
@@ -206,9 +203,7 @@ public class HeavyInvader : Enemy
             }
             else
             {
-                animator.SetBool("Attack", false);
-                action = false;
-                enemyState = EnemyState.IDLE;
+                ForgetSoldier();
             }
         }
     }
@@ -223,8 +218,7 @@ public class HeavyInvader : Enemy
                 {
                     if (defenseTarget.Damage(damage))
                     {
-                        defenseTarget = null;
-                        defending = false;
+                        ForgetSoldier();
                     }
                 }
             }
