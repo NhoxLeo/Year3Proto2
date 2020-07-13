@@ -7218,6 +7218,11 @@ PrefabInstance:
       propertyPath: m_UseContactShadow.m_UseOverride
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6331100484764424316, guid: 0062490a6299c9647892643895518e38,
+        type: 3}
+      propertyPath: m_Cookie
+      value: 
+      objectReference: {fileID: 8600000, guid: 5d3b7759344b6e14fa89f45fcbdbdfe0, type: 2}
     - target: {fileID: 7413800287715975970, guid: 0062490a6299c9647892643895518e38,
         type: 3}
       propertyPath: m_LocalPosition.x
