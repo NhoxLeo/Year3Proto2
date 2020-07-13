@@ -28,6 +28,7 @@ public class CatapultTower : AttackStructure
         base.Start();
         SetFirerate();
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
         attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 8 : 16, 0);
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
         {
