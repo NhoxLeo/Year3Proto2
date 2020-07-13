@@ -1,29 +1,54 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Airship : MonoBehaviour
 {
-    [Header("Attributes")]
+    [Header("Movement")]
     [SerializeField] private float maxSpeed = 1.0f;
     [SerializeField] private float steeringForce = 0.1f;
     [SerializeField] private float time = 2.0f;
+    
+    [Header("Spawn Location")]
+    [SerializeField] private float spawnPointOffset = 1.2f;
+    [SerializeField] private int spawnPointColumns = 3;
+    [SerializeField] private int capacity = 9;
 
     [Header("Pointer")]
     [SerializeField] private Transform pointerPrefab;
     private Transform pointer;
 
     private Transform target;
-    private Vector3 velocity;
+    private Vector3 velocity, initialLocation;
     private float distance = float.MaxValue;
-    private bool docked = false;
 
-    private void OnBecameInvisible()
+    private List<Transform> enemies;
+
+    private void Update() 
     {
-        if (docked) Destroy(this);
+        if(target)
+        {
+            float distance = (target.transform.position - transform.position).sqrMagnitude;
+
+            if (distance < 0.25f)
+            {
+                Deploy();
+                return;
+            }
+
+            velocity += steeringForce * Time.deltaTime * (target.transform.position - (transform.position + velocity * time));
+
+            if (velocity.sqrMagnitude > (maxSpeed * maxSpeed))
+            {
+                velocity = velocity.normalized * maxSpeed;
+            }
+
+            transform.position += velocity * Time.deltaTime;
+        }
     }
 
-    private void Start()
+    public bool HasTarget()
     {
         List<TileBehaviour> list = new List<TileBehaviour>(FindObjectsOfType<TileBehaviour>());
         list.RemoveAll(element => element.GetAttached() != null && element.GetApproached());
@@ -38,50 +63,31 @@ public class Airship : MonoBehaviour
             }
         });
 
-        Embark();
+        return target;
     }
 
-    private void Update() 
+    public void Embark(List<Transform> enemies)
     {
-        if(target)
+
+        TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
+        if (tileBehaviour)
         {
-            float distance = (target.position - transform.position).sqrMagnitude;
+            tileBehaviour.SetApproached(true);
 
-            if (distance < 0.25f)
-            {
-                Deploy();
-                //StartCoroutine(Depart(2));
-                return;
-            }
+            initialLocation = target.transform.position;
 
-            velocity += steeringForce * Time.deltaTime * (target.position - (transform.position + velocity * time));
-            if (velocity.sqrMagnitude > (maxSpeed * maxSpeed)) velocity = velocity.normalized * maxSpeed;
-
-            transform.position += velocity * Time.deltaTime;
-        }
-    }
-
-    public void Embark(/*List<Transform> enemies*/)
-    {
-        if (target)
-        {
             pointer = Instantiate(pointerPrefab, transform);
             AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
+
             if (airshipPointer) airshipPointer.SetTargetPosition(transform);
-            
+
 
             float angle = Random.Range(60.0f, 80.0f) * (Random.Range(0, 1) * 2 - 1);
-            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (target.position - transform.position).normalized * 2.0f;
+            velocity = Quaternion.Euler(0.0f, angle, 0.0f) * (initialLocation - transform.position).normalized * 2.0f;
             distance = Mathf.Sqrt(distance);
 
-            TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
-            if (tileBehaviour) tileBehaviour.SetApproached(true);
-
-            //this.enemies = enemies;
-            return;
+            this.enemies = enemies;
         }
-
-        Destroy(this);
     }
 
     private void Deploy()
@@ -93,23 +99,74 @@ public class Airship : MonoBehaviour
         {
             tileBehaviour.SetApproached(false);
 
-            //if(enemies != null) enemies.ForEach(enemy=> { }); Place enemies nicely on a tile.   
+            if (enemies != null)
+            {
 
-            //Bens Idea
+                StartCoroutine(Disembark());
+                return;
+            }
 
-            // Each enemy jumps out one after another
-            // The scale up once they physically jump out
-            // Once all the enemies are out of the airship:
-            // They will start moving to their targets location.
+            Destroy(gameObject);
         }
     }
 
-    
-
-    IEnumerator Depart(int seconds)
+    IEnumerator Disembark()
     {
-        yield return new WaitForSeconds(seconds);
-        //Potentially depart airship...
-        yield return null;
+        List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, enemies.Count);
+
+        float time = 0.0f;
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            time += 1.0f;
+            Transform enemyPrefab = enemies[i];
+            Vector3 enemySpawnPoint = spawnPoints[i];
+
+            if (enemySpawnPoint != null)
+            {
+                Transform enemy = Instantiate(enemyPrefab, null);
+                enemy.position = transform.position;
+                enemy.DOJump(enemySpawnPoint, 0.2f, 1, 1.0f);
+            }
+        }
+
+        yield return new WaitForSeconds(time);
+
+        Depart();
+
+        yield return 0;
+    }
+
+    private List<Vector3> GenerateSpawnPoints(Transform _transform, int amount)
+    {
+        List<Vector3> vectors = new List<Vector3>();
+
+        Vector3 halfScale = _transform.localScale / 2.0f;
+
+        float xOffset = halfScale.x - spawnPointOffset;
+        float zOffset = halfScale.z - spawnPointOffset;
+
+        for (int i = 0; i < amount; i++)
+        {
+            Vector3 position = new Vector3(
+                _transform.position.x + (i % (Mathf.Sqrt(capacity) / 2.0f * xOffset)) - (xOffset / 2.0f),
+                _transform.position.y + halfScale.y,
+                _transform.position.z + (i / (Mathf.Sqrt(capacity) / 2.0f * zOffset)) - (zOffset / 2.0f)
+            );
+
+            vectors.Add(position);
+        }
+        return vectors;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        if(target) GenerateSpawnPoints(target.transform, capacity).ForEach(point => Gizmos.DrawSphere(point, 0.1f));
+    }
+
+    private void Depart()
+    {
+        target = null;
     }
 }

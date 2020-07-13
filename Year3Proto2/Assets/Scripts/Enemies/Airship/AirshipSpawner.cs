@@ -7,6 +7,8 @@ public class AirshipSpawner : MonoBehaviour
     [SerializeField] private Transform airshipPrefab;
     [SerializeField] private float radiusOffset;
 
+    [SerializeField] List<Transform> enemyPrefabs;
+
     private float distance = 0.0f;
 
     private void Start()
@@ -20,16 +22,19 @@ public class AirshipSpawner : MonoBehaviour
 
         distance = Mathf.Sqrt(distance) + radiusOffset;
 
-        for (int i = 0; i < 20; i++) Spawn();
-    } 
-    
+        Spawn();
+    }
+
     private void Spawn()
     {
         float angle = Random.Range(0.0f, 360.0f);
         Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance);
         location.y = 0.0f;
      
-        Instantiate(airshipPrefab, location, Quaternion.identity, transform);
+        Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
+
+        Airship airship = instantiatedAirship.GetComponent<Airship>();
+        if (airship.HasTarget()) airship.Embark(enemyPrefabs);
     }
 
     private void OnDrawGizmosSelected()
