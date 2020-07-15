@@ -57,16 +57,18 @@ public abstract class ResourceStructure : Structure
             // For each possible tile
             for (int i = 0; i < 4; i++)
             {
-                if (attachedTile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)i))
+
+                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToAttached = attachedTile.GetAdjacentTiles();
+                if (adjacentsToAttached.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    if (attachedTile.GetAdjacentTiles()[(TileBehaviour.TileCode)i].GetPlayable())
+                    if (adjacentsToAttached[(TileBehaviour.TileCode)i].GetPlayable())
                     {
                         GameObject newTileHighlight = Instantiate(GetTileHighlight(), transform);
                         tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
-                        Vector3 highlightPos = attachedTile.GetAdjacentTiles()[(TileBehaviour.TileCode)i].transform.position;
+                        Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
                         highlightPos.y = 0.55f;
                         newTileHighlight.transform.position = highlightPos;
-                        Structure adjStructure = attachedTile.GetAdjacentTiles()[(TileBehaviour.TileCode)i].GetAttached();
+                        Structure adjStructure = adjacentsToAttached[(TileBehaviour.TileCode)i].GetAttached();
                         // If there is a structure on the tile...
                         if (adjStructure)
                         {
