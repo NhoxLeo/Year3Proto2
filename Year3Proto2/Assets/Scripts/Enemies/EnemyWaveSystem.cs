@@ -18,6 +18,8 @@ public class EnemyWaveSystem : MonoBehaviour
     private float tokens = 0.0f;
     private float tokenIncrement = 0.0f;
 
+    private int waverCounter = 0;
+
     private MessageBox messageBox;
 
     private void Start()
@@ -45,6 +47,8 @@ public class EnemyWaveSystem : MonoBehaviour
 
                 messageBox.ShowMessage("Invaders incoming!", 3.5f);
                 GameManager.CreateAudioEffect("horn", transform.position);
+
+                waverCounter += 1;
             }
 
             tokens = 0.0f;
