@@ -443,9 +443,7 @@ public class StructureManager : MonoBehaviour
                             selectedStructType != StructureType.environment &&
                             selectedStructType != StructureType.longhaus)
                         {
-                            selectedStructure.Damage(selectedStructure.GetHealth());
-                            DeselectStructure();
-                            structureState = StructManState.selecting;
+                            DestroySelectedBuilding();
                             break;
                         }
                         else
@@ -719,6 +717,13 @@ public class StructureManager : MonoBehaviour
                 gameMan.RepairAll();
             }
         }
+    }
+
+    public void DestroySelectedBuilding()
+    {
+        selectedStructure.Damage(selectedStructure.GetHealth());
+        DeselectStructure();
+        structureState = StructManState.selecting;
     }
 
     public bool BuyBuilding()
