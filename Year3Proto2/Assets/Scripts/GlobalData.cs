@@ -3,6 +3,7 @@
 public class GlobalData
 {
     public static string curScene;
+    public static bool isLoadingIn = false;
     public static bool isPaused;
     public static bool longhausDead = false;
 

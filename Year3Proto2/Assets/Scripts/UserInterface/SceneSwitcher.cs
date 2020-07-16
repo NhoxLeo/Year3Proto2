@@ -14,6 +14,8 @@ public class SceneSwitcher : MonoBehaviour
     private bool isSwitching = false;
     private float fadeTimeCur = 0.0f;
 
+    public LoadingScreen loadingScreen;
+
     public AudioClip clickSound;
     public AudioClip toolSound;
 

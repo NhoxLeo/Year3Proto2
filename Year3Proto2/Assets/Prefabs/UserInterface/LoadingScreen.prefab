@@ -240,8 +240,9 @@ GameObject:
   - component: {fileID: 7260926937287399722}
   - component: {fileID: 8628600879391367292}
   - component: {fileID: 8030651654248235564}
+  - component: {fileID: 5154456889807200312}
   m_Layer: 5
-  m_Name: Image
+  m_Name: LoadingIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -302,6 +303,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &5154456889807200312
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3098794481589817132}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3794817807871716437
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,8 +400,9 @@ GameObject:
   - component: {fileID: 5289336339044120051}
   - component: {fileID: 1969285290699321372}
   - component: {fileID: 5982812819759598970}
+  - component: {fileID: 3274099189816931046}
   m_Layer: 5
-  m_Name: FadePanel
+  m_Name: LoadingScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -467,6 +481,18 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &3274099189816931046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4728183867830485012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027c461d0b7753447b6349d01f649bc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6724920540996218943
 GameObject:
   m_ObjectHideFlags: 0
