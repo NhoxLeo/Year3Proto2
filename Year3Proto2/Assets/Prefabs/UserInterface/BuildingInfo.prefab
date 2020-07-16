@@ -1700,7 +1700,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5443361779459252360}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -1742,6 +1742,7 @@ MonoBehaviour:
   emptySprite: {fileID: 0}
   destroySprite: {fileID: 21300000, guid: a55d6af383dcfea4fa3b1371a9672402, type: 3}
   minimizeSprite: {fileID: 21300000, guid: 1e44595c76f67e746ae1c1c0481b15a5, type: 3}
+  repairTooltip: {fileID: 0}
   doAutoUpdate: 1
   updateInterval: 1.5
 --- !u!1 &5593073932314056941
