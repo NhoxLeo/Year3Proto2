@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class BallistaTower : AttackStructure
 {
@@ -85,6 +86,7 @@ public class BallistaTower : AttackStructure
     public override void OnPlace()
     {
         base.OnPlace();
+        EnableFogMask();
         BallistaTower[] ballistaTowers = FindObjectsOfType<BallistaTower>();
         if (ballistaTowers.Length >= 2)
         {
@@ -137,5 +139,11 @@ public class BallistaTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
+    }
+
+    private void EnableFogMask()
+    {
+        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
+        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 }

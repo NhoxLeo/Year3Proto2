@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 public abstract class AttackStructure : Structure
 {
@@ -106,16 +105,10 @@ public abstract class AttackStructure : Structure
         transform.GetChild(1).GetChild(0).gameObject.SetActive(_active);
     }
 
-    private void EnableFogMask()
-    {
-        transform.GetChild(0).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
-    }
-
     public override void OnSelected()
     {
         base.OnSelected();
         ShowRangeDisplay(true);
-        EnableFogMask();
     }
 
     public override void OnDeselected()

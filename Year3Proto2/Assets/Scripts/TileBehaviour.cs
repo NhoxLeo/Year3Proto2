@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class TileBehaviour : MonoBehaviour
 {
     [SerializeField] [Tooltip("Determines whether or not the player can place structures on the tile.")]
     private bool isPlayable;
     [SerializeField] [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
     private bool isValidSpawnTile;
-    
+    private static GameObject cliffFacePrefab = null;
+    private static Transform cliffFaceParent = null;
+
     public enum TileCode
     { 
         north = 0,
@@ -76,9 +78,49 @@ public class TileBehaviour : MonoBehaviour
         tcBoxCollider.enabled = true;
     }
 
+    private void ClearCliffs()
+    {
+        if (cliffFaceParent)
+        DestroyImmediate(cliffFaceParent);
+        cliffFaceParent = new GameObject("CliffFaces").transform;
+    }
+
     void Awake()
     {
         DetectStructure();
+        GetCliffParent();
+        SpawnCliffFaces();
+    }
+
+    private void SpawnCliffFaces()
+    {
+        //ClearCliffs();
+        GetAdjacentTiles();
+        for (int i = 0; i < 4; i++)
+        {
+            if (!adjacentTiles.ContainsKey((TileCode)i))
+            {
+                Instantiate(GetCliffFace(), transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.Euler(0f, 90f + 90f * i, 0f), cliffFaceParent);
+            }
+        }
+    }
+
+    private static GameObject GetCliffFace()
+    {
+        if (!cliffFacePrefab)
+        {
+            cliffFacePrefab = Resources.Load("IslandEdgeCliff1") as GameObject;
+        }
+        return cliffFacePrefab;
+    }
+
+    private static Transform GetCliffParent()
+    {
+        if (!cliffFaceParent)
+        {
+            cliffFaceParent = GameObject.Find("CliffFaces").transform;
+        }
+        return cliffFaceParent;
     }
 
     public Structure GetAttached()
@@ -98,6 +140,8 @@ public class TileBehaviour : MonoBehaviour
         //Debug.DrawLine(transform.position, transform.position + Vector3.up * 1.6f, Color.red, 20.0f);
         return false;
     }
+
+
 
     public void Attach(Structure _structure)
     {
