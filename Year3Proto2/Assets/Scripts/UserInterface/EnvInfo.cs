@@ -23,7 +23,7 @@ public class EnvInfo : MonoBehaviour
     void Update()
     {
         tool.showTooltip = showInfo;
-
+        /*
         if (Input.GetKeyDown(KeyCode.P))
         {
             ShowInfo("this is a test tooltip");
@@ -33,6 +33,7 @@ public class EnvInfo : MonoBehaviour
         {
             showInfo = !showInfo;
         }
+        */
     }
 
     private void LateUpdate()
@@ -64,6 +65,11 @@ public class EnvInfo : MonoBehaviour
 
     public void ShowInfo(string info)
     {
+        if (!textbox)
+        {
+            //Debug.LogError("textbox implicit bool cast returned false");
+            return;
+        }
         textbox.text = info;
         tool.SetHeight(tool.height);
     }

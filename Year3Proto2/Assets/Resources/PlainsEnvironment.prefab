@@ -50,8 +50,10 @@ MonoBehaviour:
   displayName: 
   icon: {fileID: 0}
   isPlaced: 0
-  sitHeight: 0.535
+  sitHeight: 0.5
   structureName: 
+  fromSaveData: 0
+  saveDataStartFrame: 0
 --- !u!33 &7900202285779034415
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -78,7 +80,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3a226eb635fae0a4db32b922128e7a7c, type: 2}
+  - {fileID: 2100000, guid: 3d4b3e08e70253b4db8e7edc7ef38bc6, type: 2}
   - {fileID: 2100000, guid: 860e9068c474eb14994d3ad57ed6a484, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -110,7 +112,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -4831741224372153022, guid: f50eba806c086e144bd8f77174e6d4a9, type: 3}

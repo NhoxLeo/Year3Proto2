@@ -50,6 +50,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialDone: 0
+  victory: 0
+  repairMessage: 0
+  longhausDead: 0
+  repairAll: 0
 --- !u!114 &2034944319271232491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,11 +66,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d9ff4b7ca63a94ebedd5d4d321a4da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
-  healthBarPrefab: {fileID: 0}
-  isOverUI: 0
+  plainsEnvironmentBounds: {x: 0, y: 0}
+  hillsEnvironmentBounds: {x: 0, y: 0}
+  forestEnvironmentBounds: {x: 0, y: 0}
+  recursivePGrowthChance: 0
+  recursiveHGrowthChance: 0
+  recursiveFGrowthChance: 0
+  editorGenerated: 0
+  useSeed: 0
+  seed: 0
   selectedTileHighlight: {fileID: 4255771629231950415}
   tileHighlight: {fileID: 7067514012913874853}
+  isOverUI: 0
+  canvas: {fileID: 0}
+  healthBarPrefab: {fileID: 0}
 --- !u!82 &4498777283510002559
 AudioSource:
   m_ObjectHideFlags: 0
@@ -79,7 +92,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e6c65cd252a53704884e1c6f422c704a, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.3
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -302,14 +315,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4d32735369515f40a5be28a3fcbbe85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemies:
-  - {fileID: 3370710463950152404, guid: f1737e3674a929b45abf54fa8c30ddeb, type: 3}
+  enemyPrefabs:
+  - {fileID: 9204120433889576525, guid: 7c85a205f5e638b4d8eeace9685d07c6, type: 3}
+  - {fileID: 988293539997631803, guid: 6264ac47d9f223a48a9997c27bb5f11f, type: 3}
+  puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
+    type: 3}
   enemiesPerWave: 4
   newEnemiesPerWave: 2
-  cooldown: 30
-  timeBetweenWaves: 30
-  enemyWave: {fileID: 4343382515965339557, guid: dc9bc59ea579df647bc3eecabd096749,
-    type: 3}
+  cooldown: 50
+  timeBetweenWaves: 50
 --- !u!1001 &1934217215400905385
 PrefabInstance:
   m_ObjectHideFlags: 0

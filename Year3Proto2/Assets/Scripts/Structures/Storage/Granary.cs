@@ -4,25 +4,18 @@ using UnityEngine;
 
 public class Granary : StorageStructure
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override void Awake()
     {
-        StorageStart();
+        base.Awake();
         resourceType = ResourceType.food;
         storage = 500;
-        structureName = "Granary";
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Granary];
         maxHealth = 200f;
         health = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void SetFoodAllocationGlobal(int _allocation)
     {
-        StructureUpdate();
-    }
-
-    public override void OnPlace()
-    {
-        FindObjectOfType<GameManager>().CalculateStorageMaximum();
+        Debug.LogError("Food Allocation should not be called for " + structureName);
     }
 }

@@ -205,7 +205,11 @@ MonoBehaviour:
   moveEast: 100
   moveSouth: 115
   moveWest: 97
+  mouseEdgeMove: 0
+  mouseXBuffer: 64
+  mouseYBuffer: 64
   sensitivity: 3
+  lerpSpeed: 10
   xAxisMax: 6
   xAxisMin: -14
   zAxisMax: 6

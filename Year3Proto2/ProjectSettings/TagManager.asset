@@ -19,9 +19,9 @@ TagManager:
   - Ground
   - TileCollider
   - Enemy
-  - 
-  - 
-  - 
+  - EnemyStructureCollider
+  - FogMask
+  - Fog
   - 
   - 
   - 

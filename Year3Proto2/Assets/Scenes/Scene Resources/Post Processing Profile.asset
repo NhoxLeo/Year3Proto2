@@ -22,7 +22,7 @@ MonoBehaviour:
     m_Value: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.045
+    m_Value: 0.04
     min: 0
     max: 1
   m_MaxSamples:
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   quality:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 1
   rayTracing:
     m_OverrideState: 0
     m_Value: 0
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.3
+    m_Value: 0.35
   contrast:
     m_OverrideState: 1
     m_Value: 10
@@ -187,7 +187,7 @@ MonoBehaviour:
     max: 180
   saturation:
     m_OverrideState: 1
-    m_Value: 4
+    m_Value: 5
     min: -100
     max: 100
 --- !u!114 &11400000
@@ -372,10 +372,10 @@ MonoBehaviour:
   m_Name: MotionBlur
   m_EditorClassIdentifier: 
   active: 1
-  m_AdvancedMode: 0
+  m_AdvancedMode: 1
   quality:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 3
   intensity:
     m_OverrideState: 1
     m_Value: 0
@@ -400,7 +400,10 @@ MonoBehaviour:
     m_Value: 1
     min: 0
     max: 20
+  cameraMotionBlur:
+    m_OverrideState: 1
+    m_Value: 0
   m_SampleCount:
-    m_OverrideState: 0
-    m_Value: 8
+    m_OverrideState: 1
+    m_Value: 2
     min: 2

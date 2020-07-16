@@ -7,6 +7,14 @@ using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
+    private float updateInterval = 0.667f;
+    private float updateTimer;
+
+    HorizontalLayoutGroup hLayoutGroup;
+    private CanvasGroup canvas;
+    public bool doShowHUD = true;
+    private bool hudShown;
+
     public Color gainColour;
     public Color lossColour;
     public Color fullColour;
@@ -16,89 +24,233 @@ public class HUDManager : MonoBehaviour
     private TMP_Text woodText;
     private TMP_Text metalText;
 
+    private float foodDeltaTimer;
+    private Tooltip foodDeltaTip;
+    private TMP_Text foodDeltaText;
+
+    private float woodDeltaTimer;
+    private Tooltip woodDeltaTip;
+    private TMP_Text woodDeltaText;
+
+    private float metalDeltaTimer;
+    private Tooltip metalDeltaTip;
+    private TMP_Text metalDeltaText;
+
     private EnemySpawner spawner;
-    private TMP_Text waveText;
+    private TMP_Text victoryProgress;
 
     void Start()
     {
+        hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
+        canvas = GetComponent<CanvasGroup>();
+
         game = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
         spawner = FindObjectOfType<EnemySpawner>();
 
-        foodText = transform.Find("ResourceBar/FoodText").GetComponent<TMP_Text>();
-        woodText = transform.Find("ResourceBar/WoodText").GetComponent<TMP_Text>();
-        metalText = transform.Find("ResourceBar/MetalText").GetComponent<TMP_Text>();
-        waveText = transform.Find("InfoBar/Waves").GetComponent<TMP_Text>();
+        foodText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText").GetComponent<TMP_Text>();
+        woodText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText").GetComponent<TMP_Text>();
+        metalText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText").GetComponent<TMP_Text>();
+        victoryProgress = transform.Find("ResourceBar/VictoryProgress/ProgressText").GetComponent<TMP_Text>();
+
+        foodDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText/FoodIcon/FoodDelta").GetComponent<Tooltip>();
+        foodDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText/FoodIcon/FoodDelta/FoodDeltaText").GetComponent<TMP_Text>();
+
+        woodDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText/WoodIcon/WoodDelta").GetComponent<Tooltip>();
+        woodDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText/WoodIcon/WoodDelta/WoodDeltaText").GetComponent<TMP_Text>();
+
+        metalDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
+        metalDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
+
+        GetVictoryInfo();
     }
 
     void LateUpdate()
     {
-        // Reesources
-
-        float foodVel = game.GetFoodVelocity(1);
-        string foodSign = (Mathf.Sign(foodVel) == 1) ? "+" : "";
-        float foodVelDP = Mathf.Round(foodVel * 10f) * .1f;
-        foodText.text = game.playerData.GetResource(ResourceType.food).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.food).ToString() + " (" + foodSign + foodVelDP.ToString() + "/s)";
-        if (Mathf.Sign(foodVel) == 1)
+        if (doShowHUD && !hudShown)
         {
-            foodText.color = gainColour;
+            ShowHUD();
+            hudShown = true;
+        }
+
+        if (!doShowHUD && hudShown)
+        {
+            HideHUD();
+            hudShown = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Backslash))
+        {
+            doShowHUD = !doShowHUD;
+        }
+
+        updateTimer -= Time.unscaledDeltaTime;
+        if (updateTimer <= 0)
+        {
+            RefreshResources();
+            updateTimer = updateInterval;
+        }
+
+
+        // Resource Deltas
+        // Food
+        if (foodDeltaTimer > 0.0f)
+        {
+            foodDeltaTimer -= Time.unscaledDeltaTime;
+            foodDeltaTip.showTooltip = true;
         }
         else
         {
-            foodText.color = lossColour;
+            foodDeltaTip.showTooltip = false;
         }
-        if (game.playerData.ResourceIsFull(ResourceType.food))
+        // Wood
+        if (woodDeltaTimer > 0.0f)
         {
-            foodText.color = fullColour;
-        }
-
-        float woodVel = game.GetWoodVelocity(1);
-        string woodSign = (Mathf.Sign(woodVel) == 1) ? "+" : "";
-        float woodVelDP = Mathf.Round(woodVel * 10f) * .1f;
-        woodText.text = game.playerData.GetResource(ResourceType.wood).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.wood).ToString() + " (" + woodSign + woodVelDP.ToString() + "/s)";
-        if (Mathf.Sign(woodVel) == 1)
-        {
-            woodText.color = gainColour;
+            woodDeltaTimer -= Time.unscaledDeltaTime;
+            woodDeltaTip.showTooltip = true;
         }
         else
         {
-            woodText.color = lossColour;
+            woodDeltaTip.showTooltip = false;
         }
-        if (game.playerData.ResourceIsFull(ResourceType.wood))
+        // Metal
+        if (metalDeltaTimer > 0.0f)
         {
-            woodText.color = fullColour;
-        }
-
-        float metalVel = game.GetMetalVelocity(1);
-        string metalSign = (Mathf.Sign(metalVel) == 1) ? "+" : "";
-        float metalVelDP = Mathf.Round(metalVel * 10f) * .1f;
-        metalText.text = game.playerData.GetResource(ResourceType.metal).ToString() + "/" + game.playerData.GetResourceMax(ResourceType.metal).ToString() + " (" + metalSign + metalVelDP.ToString() + "/s)";
-        if (Mathf.Sign(metalVel) == 1)
-        {
-            metalText.color = gainColour;
+            metalDeltaTimer -= Time.unscaledDeltaTime;
+            metalDeltaTip.showTooltip = true;
         }
         else
         {
-            metalText.color = lossColour;
-        }
-        if (game.playerData.ResourceIsFull(ResourceType.metal))
-        {
-            metalText.color = fullColour;
+            metalDeltaTip.showTooltip = false;
         }
 
 
         // Info Bar
 
         int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
+        if (spawner.GetWaveCurrent() >= 1 && spawner.EnemyCount == 0) { wavesSurvived++; }
         string plural = (wavesSurvived == 1) ? "" : "s";
-        waveText.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
+        victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
 
-    public void SetOverUI(bool isOver)
+    private void GetVictoryInfo()
+    {
+        List<MapScreen.Level> levels = new List<MapScreen.Level>();
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.GetLevelData(ref levels);
+
+        transform.Find("ResourceBar/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryTitle;
+        transform.Find("ResourceBar/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryDescription;
+        transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
+    }
+
+    private void RefreshResources()
+    {
+        Vector3 velocity = game.GetResourceVelocity();
+
+        float foodVel = velocity.z;
+        string foodVelDP = AddSign(Mathf.Round(foodVel * 10f) * .1f);
+        foodText.text = game.playerResources.Get(ResourceType.food).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.food).ToString() + " (" + foodVelDP + "/s)";
+        foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
+        if (game.playerResources.ResourceIsFull(ResourceType.food))
+        {
+            foodText.color = fullColour;
+        }
+
+        float woodVel = velocity.x;
+        string woodVelDP = AddSign(Mathf.Round(woodVel * 10f) * .1f);
+        woodText.text = game.playerResources.Get(ResourceType.wood).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.wood).ToString() + " (" + woodVelDP + "/s)";
+        woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
+        if (game.playerResources.ResourceIsFull(ResourceType.wood))
+        {
+            woodText.color = fullColour;
+        }
+
+        float metalVel = velocity.y;
+        string metalVelDP = AddSign(Mathf.Round(metalVel * 10f) * .1f);
+        metalText.text = game.playerResources.Get(ResourceType.metal).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.metal).ToString() + " (" + metalVelDP + "/s)";
+        metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
+        if (game.playerResources.ResourceIsFull(ResourceType.metal))
+        {
+            metalText.color = fullColour;
+        }
+
+        // Update content size fitters
+        Canvas.ForceUpdateCanvases();
+        HorizontalLayoutGroup hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
+        hLayoutGroup.SetLayoutHorizontal();
+    }
+
+    public void ShowResourceDelta(int _food, int _wood, int _metal)
+    {
+        if (_food != 0)
+        {
+            foodDeltaTimer = 1.5f;
+            foodDeltaText.text = AddSign(_food);
+            foodDeltaText.color = (_food > 0) ? gainColour : lossColour;
+            foodDeltaTip.PulseTip();
+        }
+
+        if (_wood != 0)
+        {
+            woodDeltaTimer = 1.5f;
+            woodDeltaText.text = AddSign(_wood);
+            woodDeltaText.color = (_wood > 0) ? gainColour : lossColour;
+            woodDeltaTip.PulseTip();
+        }
+
+        if (_metal != 0)
+        {
+            metalDeltaTimer = 1.5f;
+            metalDeltaText.text = AddSign(_metal);
+            metalDeltaText.color = (_metal > 0) ? gainColour : lossColour;
+            metalDeltaTip.PulseTip();
+        }
+
+
+        RefreshResources();
+    }
+
+    public void ShowResourceDelta(ResourceBundle _resourceDelta, bool _makeNegative = false)
+    {
+        if (_makeNegative)
+        {
+            ShowResourceDelta(-_resourceDelta.foodCost, -_resourceDelta.woodCost, -_resourceDelta.metalCost);
+        }
+        else
+        {
+            ShowResourceDelta(_resourceDelta.foodCost, _resourceDelta.woodCost, _resourceDelta.metalCost);
+        }
+    }
+
+    public void SetOverUI(bool _isOver)
     {
         if (structMan == null)
             return;
 
-        structMan.SetIsOverUI(isOver);
+        structMan.SetIsOverUI(_isOver);
+    }
+
+    private string AddSign(float _value)
+    {
+        string _signedValue = (_value > 0) ? "+" : "";
+
+        return _signedValue + _value;
+    }
+
+    private void ShowHUD()
+    {
+        canvas.DOKill(true);
+        canvas.DOFade(1.0f, 0.3f).SetEase(Ease.InOutSine);
+        canvas.interactable = true;
+        canvas.blocksRaycasts = true;
+    }
+
+    private void HideHUD()
+    {
+        canvas.DOKill(true);
+        canvas.DOFade(0.0f, 0.3f).SetEase(Ease.InOutSine);
+        canvas.interactable = false;
+        canvas.blocksRaycasts = false;
     }
 }
