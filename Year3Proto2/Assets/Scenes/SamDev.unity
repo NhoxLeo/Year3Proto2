@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.41941005, g: 0.26397532, b: 0.17891087, a: 1}
+  m_IndirectSpecularColor: {r: 0.41997486, g: 0.26433474, b: 0.17772044, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -100151,6 +100151,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2583936287728896004, guid: 0062490a6299c9647892643895518e38,
+        type: 3}
+      propertyPath: RotationBySpeedModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5399324124556269650, guid: 0062490a6299c9647892643895518e38,
         type: 3}
       propertyPath: m_Name
@@ -100210,6 +100215,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8483279851538694752, guid: 0062490a6299c9647892643895518e38,
+        type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0062490a6299c9647892643895518e38, type: 3}
