@@ -664,6 +664,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                         }
                                                         gameMan.OnStructurePlace();
+                                                        enemySpawner.OnStructurePlaced();
                                                         if (structureFromStore)
                                                         {
                                                             panel.UINoneSelected();

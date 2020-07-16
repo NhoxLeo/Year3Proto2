@@ -11,7 +11,7 @@ public class EnemySpawner : MonoBehaviour
 
         public static bool operator ==(PathSignature _lhs, PathSignature _rhs)
         {
-            return _lhs.startTile.transform.position == _rhs.startTile.transform.position && _lhs.validStructureTypes == _rhs.validStructureTypes;
+            return (_lhs.startTile == _rhs.startTile) && (_lhs.validStructureTypes == _rhs.validStructureTypes);
         }
 
         public static bool operator !=(PathSignature _lhs, PathSignature _rhs)
@@ -30,9 +30,12 @@ public class EnemySpawner : MonoBehaviour
     {
         public TileBehaviour tile;
         public TileBehaviour fromTile;
-        public float HCost;
-        public float GCost;
-        public float FCost;
+        public float hCost;
+        public float gCost;
+        public float FCost()
+        {
+            return hCost + gCost;
+        }
     }
 
 
@@ -79,7 +82,6 @@ public class EnemySpawner : MonoBehaviour
             pathSignature.validStructureTypes = _validStructureTypes;
         }
         Path path = FindPathWithSignature(pathSignature);
-        path.pathPoints = new List<Vector3>();
         return path;
     }
 
@@ -141,6 +143,10 @@ public class EnemySpawner : MonoBehaviour
         }
 
         // now that we have all the structures that the enemy can attack, let's find the closest structure.
+        if (validStructures.Count == 0)
+        {
+            return path;
+        }
         Structure closest = validStructures[0];
         float closestDistance = (validStructures[0].transform.position - _signature.startTile.transform.position).magnitude;
         for (int i = 1; i < validStructures.Count; i++)
@@ -158,36 +164,227 @@ public class EnemySpawner : MonoBehaviour
         List<PathfindingTileData> closed = new List<PathfindingTileData>();
         TileBehaviour destination = closest.attachedTile;
         // add the tiles next to the start tile to the open list and calculate their costs
-        for (int i = 0; i < 4; i++)
+        PathfindingTileData startingData = new PathfindingTileData()
         {
-            Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentToStartTile = _signature.startTile.GetAdjacentTiles();
-            if (adjacentToStartTile.ContainsKey((TileBehaviour.TileCode)i))
-            {
-                open.Add(new PathfindingTileData()
-                {
-                    tile = adjacentToStartTile[(TileBehaviour.TileCode)i],
-                    fromTile = _signature.startTile,
-                    HCost = CalculateHCost(_signature.startTile, destination),
-                    GCost = 10f,
-
-                });
-            }
-        }
-
-
+            tile = _signature.startTile,
+            fromTile = _signature.startTile,
+            gCost = 0f,
+            hCost = CalculateHCost(_signature.startTile, destination)
+        };
+        ProcessTile(startingData, open, closed, destination);
         // while a path hasn't been found
         bool pathFound = false;
-        while (!pathFound)
+        while (!pathFound && open.Count > 0)
         {
-
+            if (ProcessTile(GetNextOpenTile(open), open, closed, destination))
+            {
+                // generate a path from the tiles in the closed list
+                // path from the source tile to the destination tile
+                // find the destination tile in the closed list
+                List<Vector3> reversePath = new List<Vector3>();
+                PathfindingTileData currentData = closed[closed.Count - 1];
+                while (currentData.fromTile != currentData.tile)
+                {
+                    reversePath.Add(currentData.tile.transform.position);
+                    currentData = FollowFromTile(closed, currentData.fromTile);
+                }
+                reversePath.Reverse();
+                path.pathPoints = reversePath;
+                path.target = closest;
+                pathFound = true;
+            }
         }
-
 
         if (!calculatedPaths.ContainsKey(_signature))
         {
             calculatedPaths.Add(_signature, path);
         }
         return path;
+    }
+
+    public void OnStructurePlaced()
+    {
+        calculatedPaths.Clear();
+    }
+
+    private static PathfindingTileData GetNextOpenTile(List<PathfindingTileData> _open)
+    {
+        PathfindingTileData next = new PathfindingTileData();
+        if (_open.Count >= 1)
+        {
+            next = _open[0];
+            if (_open.Count == 1)
+            {
+                return next;
+            }
+            // find the open tile with the least FCost
+            // if there are multiple with the same FCost, pick the one with the lowest HCost (the tile closest to the destination)
+            float lowestFCost = next.FCost();
+            float lowestHCost = next.hCost;
+            foreach (PathfindingTileData tileData in _open)
+            {
+                if (tileData.FCost() <= lowestFCost)
+                {
+                    if (tileData.FCost() < lowestFCost)
+                    {
+                        lowestFCost = tileData.FCost();
+                        next = tileData;
+                    }
+                    else if (tileData.hCost < lowestHCost)
+                    {
+                        lowestHCost = tileData.hCost;
+                        next = tileData;
+                    }
+                }
+            }
+        }
+        return next;
+
+    }
+
+    private static bool ProcessTile(PathfindingTileData _tileData, List<PathfindingTileData> _open, List<PathfindingTileData> _closed, TileBehaviour _destination)
+    {
+        // evaluate if the tile is the destination tile
+        if (_tileData.tile == _destination)
+        {
+            // generate pathfinding data and put on the closed list
+            _open.Remove(_tileData);
+            _closed.Add(_tileData);
+            return true;
+        }
+        // if not
+        else
+        {
+            // calculate the costs for each neighbor of the tile and place them on the open list
+            for (int i = 0; i < 8; i++)
+            {
+                // adjacents
+                if (i < 4)
+                {
+                    if (_tileData.tile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)i))
+                    {
+                        TileBehaviour iTile = _tileData.tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
+
+                        if (!TileInClosedList(iTile, _closed))
+                        {
+                            // add tile to open list
+                            // calculate the pathfinding data
+                            PathfindingTileData iTileData = new PathfindingTileData()
+                            {
+                                tile = iTile,
+                                fromTile = _tileData.tile,
+                                hCost = CalculateHCost(iTile, _destination),
+                                gCost = _tileData.gCost + 10f
+                            };
+
+                            // if the tile is not in the closed list
+                            PathfindingTileData oldITileData = new PathfindingTileData();
+                            // if there already is pathfinding data for that tile...
+                            if (TileInOpenList(iTile, _open, ref oldITileData))
+                            {
+                                // compare the GCosts and only replace it if the new GCost is lower (we found a shorter route to that tile)
+                                if (iTileData.gCost < oldITileData.gCost)
+                                {
+                                    // remove the tile from the open list and place the tile on the closed list
+                                    _open.Remove(oldITileData);
+                                    _open.Add(iTileData);
+                                }
+                            }
+                            // if there isn't any pathfinding data for that tile
+                            else
+                            {
+                                // add the tile to the open list
+                                _open.Add(iTileData);
+                            }
+                        }
+                    }
+                }
+                // diagonals
+                else
+                {
+                    if (_tileData.tile.GetDiagonalTiles().ContainsKey(i - 4))
+                    {
+                        TileBehaviour iTile = _tileData.tile.GetDiagonalTiles()[i - 4];
+                        // check that both adjacents for this diagonal are in the open list
+                        // CCW tile = i - 4, CW tile = (i - 3) % 4
+                        bool CCWTile = _tileData.tile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)(i - 4));
+                        bool CWTile = _tileData.tile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)((i - 3) % 4));
+                        // if they are, evaluate the diagonal for the open list
+                        if (CCWTile && CWTile)
+                        {
+                            // add tile to open list
+                            // calculate the pathfinding data
+                            PathfindingTileData iTileData = new PathfindingTileData()
+                            {
+                                tile = iTile,
+                                fromTile = _tileData.tile,
+                                hCost = CalculateHCost(iTile, _destination),
+                                gCost = _tileData.gCost + 14f
+                            };
+                            PathfindingTileData oldITileData = new PathfindingTileData();
+                            // if there already is pathfinding data for that tile...
+                            if (TileInOpenList(iTile, _open, ref oldITileData))
+                            {
+                                // compare the GCosts and only replace it if the new GCost is lower (we found a shorter route to that tile)
+                                if (iTileData.gCost < oldITileData.gCost)
+                                {
+                                    // remove the tile from the open list and place the tile on the closed list
+                                    _open.Remove(oldITileData);
+                                    _open.Add(iTileData);
+                                }
+                            }
+                            // if there isn't any pathfinding data for that tile
+                            else
+                            {
+                                // add the tile to the open list
+                                _open.Add(iTileData);
+                            }
+                        }
+                    }
+                }
+            }
+            _open.Remove(_tileData);
+            _closed.Add(_tileData);
+            return false;
+        }
+    }
+
+    private static bool TileInOpenList(TileBehaviour _tile, List<PathfindingTileData> _open, ref PathfindingTileData _tileData)
+    {
+        foreach (PathfindingTileData tileData in _open)
+        {
+            if (tileData.tile == _tile)
+            {
+                _tileData = tileData;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static bool TileInClosedList(TileBehaviour _tile, List<PathfindingTileData> _closed)
+    {
+        foreach (PathfindingTileData tileData in _closed)
+        {
+            if (tileData.tile == _tile)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static PathfindingTileData FollowFromTile(List<PathfindingTileData> _closed, TileBehaviour _tile)
+    {
+        //find the tiledata in the closed list that corresponds to _tile
+        foreach (PathfindingTileData tileData in _closed)
+        {
+            if (tileData.tile == _tile)
+            {
+                return tileData;
+            }
+        }
+        return new PathfindingTileData();
     }
 
     private static float CalculateHCost(TileBehaviour _tile, TileBehaviour _destination)
@@ -206,33 +403,7 @@ public class EnemySpawner : MonoBehaviour
             return (14 * xDist) + (10 * (zDist - xDist));
         }
     }
-
-    private static Dictionary<int, TileBehaviour> GetDiagonals(TileBehaviour _tile)
-    {
-        // 0 - NE, 1 - SE, 2 - SW, 3 - NW
-        Dictionary<int, TileBehaviour> diagonals = new Dictionary<int, TileBehaviour>();
-        Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacents = _tile.GetAdjacentTiles();
-        Dictionary<TileBehaviour.TileCode, TileBehaviour> northAdjacents = adjacents[TileBehaviour.TileCode.north].GetAdjacentTiles();
-        Dictionary<TileBehaviour.TileCode, TileBehaviour> southAdjacents = adjacents[TileBehaviour.TileCode.south].GetAdjacentTiles();
-        if (northAdjacents.ContainsKey(TileBehaviour.TileCode.east))
-        {
-            diagonals.Add(0, northAdjacents[TileBehaviour.TileCode.east]);
-        }
-        diagonals.Add(1, southAdjacents[TileBehaviour.TileCode.east]);
-        diagonals.Add(2, southAdjacents[TileBehaviour.TileCode.west]);
-        diagonals.Add(3, northAdjacents[TileBehaviour.TileCode.west]);
-        return diagonals;
-    }
-
-
-
-    /*
-    private static float CalculateGCost(TileBehaviour _tile, TileBehaviour _source)
-    {
-
-    }
-    */
-
+    
     public void SetKillCount(int _killCount)
     {
         enemiesKilled = _killCount;
@@ -246,6 +417,7 @@ public class EnemySpawner : MonoBehaviour
         waveValidTiles = new List<TileBehaviour>();
         waveSelectedTiles = new List<TileBehaviour>();
         allTiles.AddRange(FindObjectsOfType<TileBehaviour>());
+        calculatedPaths = new Dictionary<PathSignature, Path>();
         foreach (GameObject enemy in enemyPrefabs)
         {
             enemy.GetComponent<Enemy>().puffEffect = puffEffect;
@@ -353,6 +525,7 @@ public class EnemySpawner : MonoBehaviour
                                 HeavyInvader newInvader = Instantiate(enemyPrefabs[1], enemySpawnPosition, Quaternion.identity).GetComponent<HeavyInvader>();
                                 lastEnemySpawnedPosition = newInvader.transform.position;
                                 newInvader.Randomize();
+                                newInvader.spawner = this;
                                 enemies.Add(newInvader);
                                 enemiesLeftToSpawn -= 4;
                                 j = 3;
@@ -362,6 +535,7 @@ public class EnemySpawner : MonoBehaviour
                                 Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
                                 lastEnemySpawnedPosition = newInvader.transform.position;
                                 newInvader.SetScale(Random.Range(1.5f, 2f));
+                                newInvader.spawner = this;
                                 enemies.Add(newInvader);
                                 enemiesLeftToSpawn--;
                             }
@@ -371,6 +545,7 @@ public class EnemySpawner : MonoBehaviour
                             Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
                             lastEnemySpawnedPosition = newInvader.transform.position;
                             newInvader.SetScale(Random.Range(1.5f, 2f));
+                            newInvader.spawner = this;
                             enemies.Add(newInvader);
                             enemiesLeftToSpawn--;
                         }

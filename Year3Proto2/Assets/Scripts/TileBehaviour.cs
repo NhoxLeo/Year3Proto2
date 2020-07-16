@@ -22,6 +22,7 @@ public class TileBehaviour : MonoBehaviour
     }
 
     private Dictionary<TileCode, TileBehaviour> adjacentTiles;
+    private Dictionary<int, TileBehaviour> diagonalTiles;
 
     private Structure attachedStructure = null;
 
@@ -32,6 +33,46 @@ public class TileBehaviour : MonoBehaviour
             FindAdjacentTiles();
         }
         return adjacentTiles;
+    }
+
+    public Dictionary<int, TileBehaviour> GetDiagonalTiles()
+    {
+        if (diagonalTiles == null)
+        {
+            FindDiagonalTiles();
+        }
+        return diagonalTiles;
+    }
+
+    private void FindDiagonalTiles()
+    {
+        // 0 - NE, 1 - SE, 2 - SW, 3 - NW
+        diagonalTiles = new Dictionary<int, TileBehaviour>();
+        Dictionary<TileCode, TileBehaviour> adjacents = GetAdjacentTiles();
+        if (adjacents.ContainsKey(TileCode.north))
+        {
+            Dictionary<TileCode, TileBehaviour> northAdjacents = adjacents[TileCode.north].GetAdjacentTiles();
+            if (northAdjacents.ContainsKey(TileCode.east))
+            {
+                diagonalTiles.Add(0, northAdjacents[TileCode.east]);
+            }
+            if (northAdjacents.ContainsKey(TileCode.west))
+            {
+                diagonalTiles.Add(3, northAdjacents[TileCode.west]);
+            }
+        }
+        if (adjacents.ContainsKey(TileCode.south))
+        {
+            Dictionary<TileCode, TileBehaviour> southAdjacents = adjacents[TileCode.south].GetAdjacentTiles();
+            if (southAdjacents.ContainsKey(TileCode.east))
+            {
+                diagonalTiles.Add(1, southAdjacents[TileCode.east]);
+            }
+            if (southAdjacents.ContainsKey(TileCode.west))
+            {
+                diagonalTiles.Add(2, southAdjacents[TileCode.west]);
+            }
+        }
     }
 
     private void FindAdjacentTiles()

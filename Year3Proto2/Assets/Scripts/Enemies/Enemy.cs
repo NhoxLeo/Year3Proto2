@@ -37,6 +37,9 @@ public abstract class Enemy : MonoBehaviour
     protected List<StructureType> structureTypes;
     protected bool defending = false;
     protected int observers = 0;
+    protected bool hasPath = false;
+    protected EnemySpawner.Path path;
+    public EnemySpawner spawner;
 
     public void AddObserver()
     {
@@ -113,6 +116,20 @@ public abstract class Enemy : MonoBehaviour
 
     public bool Next()
     {
+        // get a path
+        path = spawner.GetPath(transform.position, structureTypes);
+        bool foundPath = path.pathPoints != new List<Vector3>();
+        if (!foundPath)
+        {
+            // couldn't find a path
+            return false;
+        }
+        hasPath = true;
+
+        target = path.target;
+        enemyState = EnemyState.WALK;
+        return true;
+        /*
         float closestDistanceSqr = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
 
@@ -137,6 +154,7 @@ public abstract class Enemy : MonoBehaviour
             }
         }
         return closestDistanceSqr != Mathf.Infinity;
+        */
     }
 
     private void OnTriggerEnter(Collider other)
@@ -162,6 +180,37 @@ public abstract class Enemy : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, target.transform.position);
         }
+    }
+
+    protected Vector3 GetPathVector()
+    {
+        // Get the vector between this enemy and the target
+        Vector3 toTarget = path.pathPoints[0] - transform.position;
+        toTarget.y = 0f;
+        Vector3 finalMotionVector = toTarget;
+        if (toTarget.magnitude > 1.5f)
+        {
+            bool enemyWasNull = false;
+            foreach (GameObject enemy in enemiesInArea)
+            {
+                if (!enemy)
+                {
+                    enemyWasNull = true;
+                    continue;
+                }
+                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                Vector3 enemyToThis = transform.position - enemy.transform.position;
+                enemyToThis.y = 0f;
+                float inverseMag = 1f / enemyToThis.magnitude;
+                if (inverseMag == Mathf.Infinity) { continue; }
+                finalMotionVector += enemyToThis.normalized * inverseMag * avoidForce;
+            }
+            if (enemyWasNull)
+            {
+                enemiesInArea.RemoveAll(enemy => !enemy);
+            }
+        }
+        return finalMotionVector.normalized * finalSpeed;
     }
 
     protected Vector3 GetMotionVector()
