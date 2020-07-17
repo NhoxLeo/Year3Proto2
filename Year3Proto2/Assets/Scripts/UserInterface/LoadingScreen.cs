@@ -13,7 +13,7 @@ public class LoadingScreen : MonoBehaviour
     void Start()
     {
         loadingIcon = transform.Find("LoadingIcon").gameObject;
-        //loadingIcon.SetActive(GlobalData.isLoadingIn);
+        loadingIcon.SetActive(GlobalData.isLoadingIn);
     }
 
     void Update()

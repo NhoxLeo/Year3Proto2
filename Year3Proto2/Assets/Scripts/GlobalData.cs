@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class GlobalData
 {
@@ -6,6 +9,24 @@ public class GlobalData
     public static bool isLoadingIn = false;
     public static bool isPaused;
     public static bool longhausDead = false;
+
+    public static List<string> loadingHint = new List<string>
+    {
+        "Catapults are efficient at dealing with large groups of enemies",
+        "Ballista Towers are great when dealing with single targets",
+        "Soldiers will target the nearest enemy on the island",
+        "Try placing your production buildings in a checkerboard pattern",
+        "Heavy invaders are slower than standard invaders but have more health",
+        "Standard enemies are a force to be reckoned with in large groups",
+        "A thick fog enshrouds the island, restricting vision and construction",
+        "Press the R key to repair all buildings",
+        "The best way of dealing with enemies is to reduce their health to zero",
+        "You can destroy buildings with the red button next to the repair button",
+        "How do Vikings talk to each other? Using Norse Code!",
+        "Most buildings require food in order to function, never run out!"
+    };
+
+    public static string currentLoadingHint = "This is a test loading hint";
 
     public static string NumberToWords(int number)
     {

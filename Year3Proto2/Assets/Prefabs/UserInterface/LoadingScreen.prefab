@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 1397184342893249973}
   - component: {fileID: 4814461083965615}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: HintText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -247,7 +247,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7260926937287399722
 RectTransform:
   m_ObjectHideFlags: 0
@@ -400,7 +400,6 @@ GameObject:
   - component: {fileID: 5289336339044120051}
   - component: {fileID: 1969285290699321372}
   - component: {fileID: 5982812819759598970}
-  - component: {fileID: 3274099189816931046}
   m_Layer: 5
   m_Name: LoadingScreen
   m_TagString: Untagged
@@ -478,21 +477,9 @@ CanvasGroup:
   m_GameObject: {fileID: 4728183867830485012}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &3274099189816931046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4728183867830485012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 027c461d0b7753447b6349d01f649bc0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6724920540996218943
 GameObject:
   m_ObjectHideFlags: 0
