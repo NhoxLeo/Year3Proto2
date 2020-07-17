@@ -11,7 +11,28 @@ public class EnemySpawner : MonoBehaviour
 
         public static bool operator ==(PathSignature _lhs, PathSignature _rhs)
         {
-            return (_lhs.startTile == _rhs.startTile) && (_lhs.validStructureTypes == _rhs.validStructureTypes);
+            // if the signatures are both empty
+            if (_lhs.validStructureTypes == null && _rhs.validStructureTypes == null)
+            {
+                return true;
+            }
+            // if the signatures are both well defined
+            else if (_lhs.validStructureTypes != null && _rhs.validStructureTypes != null)
+            {
+                foreach (StructureType type in _lhs.validStructureTypes)
+                {
+                    if (!_rhs.validStructureTypes.Contains(type))
+                    {
+                        return false;
+                    }
+                }
+                return _lhs.startTile == _rhs.startTile;
+            }
+            // if one of them is defined and the other is empty
+            else
+            {
+                return false;
+            }
         }
 
         public static bool operator !=(PathSignature _lhs, PathSignature _rhs)
@@ -91,7 +112,14 @@ public class EnemySpawner : MonoBehaviour
         {
             return calculatedPaths[_signature];
         }
-        else if (_signature == new PathSignature())
+        foreach (PathSignature signature in calculatedPaths.Keys)
+        {
+            if (signature == _signature)
+            {
+                return calculatedPaths[signature];
+            }
+        }
+        if (_signature == new PathSignature())
         {
             return new Path();
         }
@@ -104,15 +132,15 @@ public class EnemySpawner : MonoBehaviour
         Path path = new Path();
         path.pathPoints = new List<Vector3>();
 
+        float startTime = Time.realtimeSinceStartup;
+
         // FIRST VERSION
-        // Find the closest target, path find to it
+        // Find the closest target, path find to it | DONE
         // SECOND VERSION
         // Find the closest target, path find to it,
         // Test 4 points along the path to see if there are closer targets at each point - Path testing
         // Test paths when a new structure is placed
         // if the test fails (there's a closer structure) find a new path to that structure
-
-        // A*
 
         // starting from _signature.startTile, find the closest valid structure
         List<Structure> validStructures = new List<Structure>();
@@ -199,6 +227,10 @@ public class EnemySpawner : MonoBehaviour
         {
             calculatedPaths.Add(_signature, path);
         }
+
+        float finishTime = Time.realtimeSinceStartup;
+        Debug.Log("Pathfinding complete, took " + (finishTime - startTime).ToString() + " seconds");
+
         return path;
     }
 
