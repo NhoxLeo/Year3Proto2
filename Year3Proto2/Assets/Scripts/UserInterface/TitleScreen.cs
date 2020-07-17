@@ -93,7 +93,7 @@ public class TitleScreen : MonoBehaviour
         }
         else
         {
-            FindObjectOfType<SceneSwitcher>().SceneSwitch("SamDev");
+            FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
         }
     }
 }

@@ -92,7 +92,6 @@ public class BuildingInfo : MonoBehaviour
             headingText.text = newHeading;
         }
 
-        Debug.Log(targetBuilding);
         //SetPosition();
 
         if (!showPanel && showDestroyConfirm)
