@@ -284,7 +284,7 @@ public class SuperManager : MonoBehaviour
     {
         currentLevel = _level;
         if (_level != saveData.currentMatch.levelID) { ClearCurrentMatch(); }
-        FindObjectOfType<SceneSwitcher>().SceneSwitch("SamDev");
+        FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
     }
 
     // populates _levelData with the levels
