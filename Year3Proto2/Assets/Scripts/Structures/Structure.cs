@@ -25,6 +25,7 @@ public abstract class Structure : MonoBehaviour
     public string structureName;
     static readonly public int foodAllocationMax = 5;
     static readonly public int foodAllocationMin = 1;
+    protected int ID;
     protected int foodAllocation = 3;
     protected float health;
     protected Healthbar healthBar;
@@ -39,6 +40,16 @@ public abstract class Structure : MonoBehaviour
     public bool fromSaveData = false;
     public bool saveDataStartFrame = false;
     private GameObject destructionEffect;
+
+    public void SetID(int _ID)
+    {
+        ID = _ID;
+    }
+
+    public int GetID()
+    {
+        return ID;
+    }
 
     public int GetFoodAllocation()
     {

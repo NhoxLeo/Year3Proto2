@@ -77,23 +77,51 @@ public class Invader : Enemy
                         {
                             if (!Next()) { target = null; }
                         }
+                        // if the distance from the enemy to the target is greater than 1 unit (one tile), the enemy should follow a path to the target. If they don't have one, they should request a path.
+                        // if the distance is less than 1 unit, go ahead as normal
+                        float distanceToTarget = (transform.position - target.transform.position).magnitude;
 
-                        // get the motion vector for this frame
-                        Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
-                        //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
-                        LookAtPosition(newPosition);
-                        transform.position = newPosition;
-
-                        // if we are close enough to the target, attack the target
-                        if ((target.transform.position - transform.position).magnitude <= (scale * 0.04f) + 0.5f)
+                        if (distanceToTarget > 1f)
                         {
-                            animator.SetBool("Attack", true);
-                            LookAtPosition(target.transform.position);
-                            enemyState = EnemyState.ACTION;
-                            needToMoveAway = (target.transform.position - transform.position).magnitude < (scale * 0.04f) + 0.45f;
-                            if (needToMoveAway) { animator.SetBool("Attack", false); }
+                            // do we have a path?  If we don't have a path, get one.
+                            if (!hasPath)
+                            {
+                                path = spawner.GetPath(transform.position, structureTypes);
+                            }
+                            // follow the path
+                            // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
+                            Vector3 nextPathPoint = path.pathPoints[0];
+                            nextPathPoint.y = transform.position.y;
+                            float distanceToNextPathPoint = (transform.position - nextPathPoint).magnitude;
+                            if (distanceToNextPathPoint < 0.25f)
+                            {
+                                // delete the first element in the path
+                                path.pathPoints.RemoveAt(0);
+                            }
+                            Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                            LookAtPosition(newPosition);
+                            transform.position = newPosition;
                         }
+                        else
+                        {
+                            hasPath = false;
 
+                            // get the motion vector for this frame
+                            Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
+                            //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
+                            LookAtPosition(newPosition);
+                            transform.position = newPosition;
+
+                            // if we are close enough to the target, attack the target
+                            if ((target.transform.position - transform.position).magnitude <= (scale * 0.04f) + 0.5f)
+                            {
+                                animator.SetBool("Attack", true);
+                                LookAtPosition(target.transform.position);
+                                enemyState = EnemyState.ACTION;
+                                needToMoveAway = (target.transform.position - transform.position).magnitude < (scale * 0.04f) + 0.45f;
+                                if (needToMoveAway) { animator.SetBool("Attack", false); }
+                            }
+                        }
                     }
                     else
                     {
@@ -137,7 +165,19 @@ public class Invader : Enemy
     {
         if (defending)
         {
+            bool defend = true;
             if (defenseTarget)
+            { 
+                if (defenseTarget.returnHome || defenseTarget.health <= 0)
+                {
+                    defend = false;
+                }
+            }
+            else
+            {
+                defend = false;
+            }
+            if (defend)
             {
                 if (defenseTarget.health > 0)
                 {
@@ -145,26 +185,12 @@ public class Invader : Enemy
                     action = true;
                 }
             }
-            else
-            {
-                defending = false;
-                animator.SetBool("Attack", false);
-                action = false;
-                enemyState = EnemyState.IDLE;
-            }
+            else { ForgetSoldier(); }
         }
         else
         {
-            if (target.GetHealth() > 0)
-            {
-                action = true;
-            }
-            else
-            {
-                animator.SetBool("Attack", false);
-                action = false;
-                enemyState = EnemyState.IDLE;
-            }
+            if (target.GetHealth() > 0) { action = true; }
+            else { ForgetSoldier(); }
         }
         
     }
@@ -179,8 +205,7 @@ public class Invader : Enemy
                 {
                     if (defenseTarget.Damage(damage))
                     {
-                        defenseTarget = null;
-                        defending = false;
+                        ForgetSoldier();
                     }
                 }
             }
