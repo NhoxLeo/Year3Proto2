@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CatapultTower : AttackStructure
 {
@@ -28,6 +29,7 @@ public class CatapultTower : AttackStructure
         base.Start();
         SetFirerate();
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
         attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 8 : 16, 0);
         if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
         {
@@ -95,6 +97,7 @@ public class CatapultTower : AttackStructure
     public override void OnPlace()
     {
         base.OnPlace();
+        EnableFogMask();
         CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
         if (catapultTowers.Length >= 2)
         {
@@ -134,5 +137,11 @@ public class CatapultTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
+    }
+
+    private void EnableFogMask()
+    {
+        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
+        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 }
