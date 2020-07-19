@@ -546,7 +546,7 @@ public class StructureManager : MonoBehaviour
                                         if (tile.GetPlayable())
                                         {
                                             bool canPlaceHere = false;
-                                            bool hitFogMask = Physics.Raycast(tile.transform.position + Vector3.up * 5f, Vector3.down, out RaycastHit fogMaskHit, Mathf.Infinity, LayerMask.GetMask("FogMask"));
+                                            bool hitFogMask = Physics.Raycast(tile.transform.position + Vector3.up * 10f, Vector3.down, out RaycastHit fogMaskHit, Mathf.Infinity, LayerMask.GetMask("FogMask"));
                                             // If the tile we hit has an attached object...
                                             Structure attached = tile.GetAttached();
                                             StructureType newStructureType = structure.GetStructureType();
