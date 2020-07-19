@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Prefabrication")]
     private List<Enemy> enemies = new List<Enemy>();
     public GameObject[] enemyPrefabs;
     public GameObject puffEffect;
@@ -16,7 +15,6 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    [Header("Variables")]
     public int enemiesPerWave = 8;
     public int newEnemiesPerWave = 4;
     public float cooldown = 30.0f;
