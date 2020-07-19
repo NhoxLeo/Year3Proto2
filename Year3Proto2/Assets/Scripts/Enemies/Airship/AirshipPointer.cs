@@ -33,25 +33,25 @@ public class AirshipPointer : MonoBehaviour
         // Object is behind camera
         if (zOffScreen) screenPosition *= -1.0f;
 
-        //Checking if the indicator is off screen.
+        // Checking if the indicator is off screen.
         if (xOffScreen || yOffScreen || zOffScreen)
         {
-            //Indicator Angle
+            // Indicator Angle
             Vector3 direction = (screenPosition - center).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x);
 
-            //Indicator Screen Position
+            // Indicator Screen Position
             float width = Mathf.Abs(center.x / Mathf.Cos(angle));
             float height = Mathf.Abs(center.y / Mathf.Cos(angle + (Mathf.PI * 0.5f)));
             float minimum = Mathf.Min(width + (xOffset * 2.0f), height + yOffset);
 
-            //Updating Indicator
+            // Updating Indicator
             indicator.localPosition = minimum * direction;
             indicator.localEulerAngles = new Vector3(0.0f, 0.0f, angle * Mathf.Rad2Deg);
         }
         else
         {
-            //Indicator World Position
+            // Indicator World Position
             if(indicator.localEulerAngles.z != 270.0f) indicator.localEulerAngles = new Vector3(0.0f, 0.0f, 270.0f);
             indicator.position = screenPosition;
         }

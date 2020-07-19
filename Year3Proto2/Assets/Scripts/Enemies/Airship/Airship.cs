@@ -7,9 +7,7 @@ public class Airship : MonoBehaviour
 {
     [Header("Pointer")]
     [SerializeField] private Transform pointerPrefab;
-    [SerializeField] private Transform pointerTarget;
     private Transform pointer;
-    private GameObject pointerParent;
 
     [Header("Spawn Location")]
     [SerializeField] private float spawnPointOffset = 1.2f;
@@ -20,7 +18,7 @@ public class Airship : MonoBehaviour
     private Transform target;
     private float distance = float.MaxValue;
 
-    private List<Transform> enemies;
+    private Transform[] transforms;
     private float count = 0.0f;
 
     private void Update() 
@@ -38,15 +36,14 @@ public class Airship : MonoBehaviour
 
                 Vector3 direction = position - transform.position;
 
-
                 // Update Airship Values
                 transform.rotation = Quaternion.LookRotation(direction.normalized);
                 transform.position = position;
-            }
+            } 
         }
     }
     
-    public void Embark(List<Transform> enemies)
+    public void Embark(Transform[] transforms, Transform pointerParent)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
@@ -55,14 +52,16 @@ public class Airship : MonoBehaviour
             tileBehaviour.SetApproached(true);
 
             initialLocation = transform.position;
-            controlPoint = transform.position + (target.position - transform.position) / 2 + Vector3.forward * 20.0f;
-            
-            // Instantiate Pointer
-            if (pointerPrefab && pointerParent) pointer = Instantiate(pointerPrefab, pointerParent.transform);
-            AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
-            if (airshipPointer) airshipPointer.SetTarget(pointerTarget);
 
-            this.enemies = enemies;
+            // TODO: Determine Vector3.forward or Vector3.backward
+            controlPoint = transform.position + (target.position - transform.position) / 2 + Vector3.forward * 20.0f;
+
+            // Instantiate and Setup pointer.
+            if (pointerPrefab) pointer = Instantiate(pointerPrefab, pointerParent.transform);
+            AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
+            if (airshipPointer) airshipPointer.SetTarget(transform);
+
+            this.transforms = transforms;
             return;
         }
 
@@ -73,15 +72,15 @@ public class Airship : MonoBehaviour
     IEnumerator Disembark()
     {
         // Generate spawnpoints based on enemy count.
-        List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, enemies.Count);
+        List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, transforms.Length);
 
         float time = 0.0f;
 
         // Iterate through all the enemy prefabs.
-        for (int i = 0; i < enemies.Count; i++)
+        for (int i = 0; i < transforms.Length; i++)
         {
             time += 1.0f;
-            Transform enemyPrefab = enemies[i];
+            Transform enemyPrefab = transforms[i];
             Vector3 enemySpawnPoint = spawnPoints[i];
 
             // Check if spawnpoint is available
@@ -139,12 +138,10 @@ public class Airship : MonoBehaviour
         Gizmos.DrawSphere(controlPoint, 0.2f);
         Gizmos.DrawSphere(target.position, 0.2f);
 
-        Gizmos.color = Color.red;
-        Vector3 oneTwo = Vector3.Lerp(initialLocation, controlPoint, count);
-        Vector3 twoThree = Vector3.Lerp(controlPoint, target.position, count);
-
-        Gizmos.DrawLine(transform.position, oneTwo);
-        Gizmos.DrawLine(transform.position, twoThree);
+        if (target && transforms != null) {
+            List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, transforms.Length);
+            foreach (Vector3 spawnPoint in spawnPoints) Gizmos.DrawSphere(spawnPoint, 0.2f);
+        }
     }
 
     public bool HasTarget()
