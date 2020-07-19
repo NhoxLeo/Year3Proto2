@@ -14,6 +14,7 @@ public class AirshipPointer : MonoBehaviour
 
     private void Start()
     {
+        // Data Assignment
         center = new Vector3(Screen.width, Screen.height, 0.0f) / 2.0f;
         indicator = GetComponent<RectTransform>();
         indicator.localScale = Vector3.one * scale;
@@ -40,13 +41,11 @@ public class AirshipPointer : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x);
 
             //Indicator Screen Position
-
             float width = Mathf.Abs(center.x / Mathf.Cos(angle));
             float height = Mathf.Abs(center.y / Mathf.Cos(angle + (Mathf.PI * 0.5f)));
             float minimum = Mathf.Min(width + (xOffset * 2.0f), height + yOffset);
 
             //Updating Indicator
-
             indicator.localPosition = minimum * direction;
             indicator.localEulerAngles = new Vector3(0.0f, 0.0f, angle * Mathf.Rad2Deg);
         }

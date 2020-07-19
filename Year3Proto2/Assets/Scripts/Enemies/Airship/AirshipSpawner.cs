@@ -14,6 +14,7 @@ public class AirshipSpawner : MonoBehaviour
 
     private void Start()
     {
+        // Find all tilebehaviours in scene and calculate furthest distance tile from center/longhaus
         TileBehaviour[] tileBehaviours = FindObjectsOfType<TileBehaviour>();
         for(int i = 0; i < tileBehaviours.Length; i++)
         {

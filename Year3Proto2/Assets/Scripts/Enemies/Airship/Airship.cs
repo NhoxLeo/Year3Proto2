@@ -5,11 +5,6 @@ using UnityEngine;
 
 public class Airship : MonoBehaviour
 {
-    [Header("Attributes")]
-    [SerializeField] private float maxSpeed = 1.0f;
-    [SerializeField] private float steeringForce = 0.1f;
-    [SerializeField] private float time = 2.0f;
-
     [Header("Pointer")]
     [SerializeField] private Transform pointerPrefab;
     [SerializeField] private Transform pointerTarget;
@@ -18,16 +13,14 @@ public class Airship : MonoBehaviour
 
     [Header("Spawn Location")]
     [SerializeField] private float spawnPointOffset = 1.2f;
-    [SerializeField] private int spawnPointColumns = 3;
     [SerializeField] private int capacity = 9;
+    private Vector3 initialLocation;
+    private Vector3 controlPoint = Vector3.zero;
 
     private Transform target;
-    private Vector3 initialLocation;
     private float distance = float.MaxValue;
 
     private List<Transform> enemies;
-
-    private Vector3 controlPoint = Vector3.zero;
     private float count = 0.0f;
 
     private void Update() 
@@ -45,6 +38,8 @@ public class Airship : MonoBehaviour
 
                 Vector3 direction = position - transform.position;
 
+
+                // Update Airship Values
                 transform.rotation = Quaternion.LookRotation(direction.normalized);
                 transform.position = position;
             }
@@ -54,13 +49,15 @@ public class Airship : MonoBehaviour
     public void Embark(List<Transform> enemies)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
+        // Check if target is a tile.
         if (tileBehaviour)
         {
             tileBehaviour.SetApproached(true);
 
             initialLocation = transform.position;
             controlPoint = transform.position + (target.position - transform.position) / 2 + Vector3.forward * 20.0f;
-
+            
+            // Instantiate Pointer
             if (pointerPrefab && pointerParent) pointer = Instantiate(pointerPrefab, pointerParent.transform);
             AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
             if (airshipPointer) airshipPointer.SetTarget(pointerTarget);
@@ -75,18 +72,22 @@ public class Airship : MonoBehaviour
 
     IEnumerator Disembark()
     {
+        // Generate spawnpoints based on enemy count.
         List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, enemies.Count);
 
         float time = 0.0f;
 
+        // Iterate through all the enemy prefabs.
         for (int i = 0; i < enemies.Count; i++)
         {
             time += 1.0f;
             Transform enemyPrefab = enemies[i];
             Vector3 enemySpawnPoint = spawnPoints[i];
 
+            // Check if spawnpoint is available
             if (enemySpawnPoint != null)
             {
+                // Instantiate enemy prefabs
                 Transform enemy = Instantiate(enemyPrefab, null);
                 enemy.position = transform.position;
                 enemy.DOJump(enemySpawnPoint, 0.2f, 1, 1.0f);
@@ -112,17 +113,20 @@ public class Airship : MonoBehaviour
 
         Vector3 halfScale = _transform.localScale / 2.0f;
 
+        // Generate coordinate offsets.
         float xOffset = halfScale.x - spawnPointOffset;
         float zOffset = halfScale.z - spawnPointOffset;
 
         for (int i = 0; i < amount; i++)
         {
+            // Create position based on offset and index.
             Vector3 position = new Vector3(
-                _transform.position.x + (i % (Mathf.Sqrt(capacity) / 2.0f * xOffset)) - (xOffset / 2.0f),
-                _transform.position.y + halfScale.y,
-                _transform.position.z + (i / (Mathf.Sqrt(capacity) / 2.0f * zOffset)) - (zOffset / 2.0f)
+                _transform.localPosition.x + (i % (Mathf.Sqrt(capacity) / 2.0f * xOffset)) - (xOffset / 2.0f),
+                _transform.localPosition.y + halfScale.y,
+                _transform.localPosition.z + (i / (Mathf.Sqrt(capacity) / 2.0f * zOffset)) - (zOffset / 2.0f)
             );
 
+            // Add position to Vector list.
             vectors.Add(position);
         }
         return vectors;
