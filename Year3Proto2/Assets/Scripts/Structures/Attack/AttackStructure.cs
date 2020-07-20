@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -103,6 +104,11 @@ public abstract class AttackStructure : Structure
     {
         transform.GetChild(0).GetChild(0).gameObject.SetActive(_active);
         transform.GetChild(1).GetChild(0).gameObject.SetActive(_active);
+    }
+
+    private void EnableFogMask()
+    {
+        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 
     public override void OnSelected()
