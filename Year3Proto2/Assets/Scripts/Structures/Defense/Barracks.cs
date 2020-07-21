@@ -7,7 +7,6 @@ public class Barracks : DefenseStructure
 {
     private GameObject soldierPrefab;
     private GameObject puffEffect;
-    private int barracksID;
     private int maxSoldiers = 3;
     [HideInInspector]
     public List<Soldier> soldiers;
@@ -22,11 +21,6 @@ public class Barracks : DefenseStructure
     public void SetTimeTrained(float _timeTrained)
     {
         timeTrained = _timeTrained;
-    }
-
-    public int GetBarracksID()
-    {
-        return barracksID;
     }
 
     public float GetTroopCapacity()

@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Soldier : MonoBehaviour
 {
+    public struct SoldierPath
+    {
+        public List<Vector3> pathPoints;
+        public Enemy target;
+    }
+
     private Enemy target = null;
     private Animator animator;
     [HideInInspector]
@@ -27,6 +33,98 @@ public class Soldier : MonoBehaviour
     private float searchDelay = 0.3f;
     private float avoidance = 0.05f;
     private List<Soldier> nearbySoldiers = new List<Soldier>();
+    public bool hasPath = false;
+    Soldier followTarget = null;
+    protected SoldierPath path;
+
+    public static SoldierPath GetPath(Vector3 _startPoint, ref bool _enemyFound)
+    {
+        TileBehaviour startTile = null;
+        if (Physics.Raycast(_startPoint + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            startTile = hit.transform.GetComponent<TileBehaviour>();
+        }
+        SoldierPath path = new SoldierPath();
+
+
+        // get the closest observed enemy to the _startPoint
+        _enemyFound = false;
+
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
+        if (enemies.Length > 0)
+        {
+            float distance = Mathf.Infinity;
+            foreach (Enemy enemy in enemies)
+            {
+                if (enemy.IsBeingObserved())
+                {
+                    _enemyFound = true;
+                    float thisDistance = (enemy.transform.position - _startPoint).magnitude;
+                    if (thisDistance < distance)
+                    {
+                        distance = thisDistance;
+                        path.target = enemy;
+                    }
+                }
+            }
+        }
+
+        if (_enemyFound)
+        {
+
+            float startTime = Time.realtimeSinceStartup;
+
+            // find a path to the enemy
+
+            // we have our destination and our source, now use A* to find the path
+            // generate initial open and closed lists
+            List<PathfindingTileData> open = new List<PathfindingTileData>();
+            List<PathfindingTileData> closed = new List<PathfindingTileData>();
+            TileBehaviour destination = null;
+            if (Physics.Raycast(path.target.transform.position + Vector3.up, Vector3.down, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
+            {
+                destination = hitGround.transform.GetComponent<TileBehaviour>();
+            }
+            // add the tiles next to the start tile to the open list and calculate their costs
+            PathfindingTileData startingData = new PathfindingTileData()
+            {
+                tile = startTile,
+                fromTile = startTile,
+                gCost = 0f,
+                hCost = EnemySpawner.CalculateHCost(startTile, destination)
+            };
+
+            EnemySpawner.ProcessTile(startingData, open, closed, destination);
+
+            // while a path hasn't been found
+            bool pathFound = false;
+            int lapCount = 0;
+            while (!pathFound && open.Count > 0 && lapCount < 100)
+            {
+                lapCount++;
+                if (EnemySpawner.ProcessTile(EnemySpawner.GetNextOpenTile(open), open, closed, destination))
+                {
+                    // generate a path from the tiles in the closed list
+                    // path from the source tile to the destination tile
+                    // find the destination tile in the closed list
+                    List<Vector3> reversePath = new List<Vector3>();
+                    PathfindingTileData currentData = closed[closed.Count - 1];
+                    while (currentData.fromTile != currentData.tile)
+                    {
+                        reversePath.Add(currentData.tile.transform.position);
+                        currentData = EnemySpawner.FollowFromTile(closed, currentData.fromTile);
+                    }
+                    reversePath.Reverse();
+                    path.pathPoints = reversePath;
+                    pathFound = true;
+                }
+            }
+
+            float finishTime = Time.realtimeSinceStartup;
+            Debug.Log("Soldier Pathfinding complete, took " + (finishTime - startTime).ToString() + " seconds");
+        }
+        return path;
+    }
 
     private void LookAtPosition(Vector3 _position)
     {
@@ -176,23 +274,11 @@ public class Soldier : MonoBehaviour
 
     private void FindEnemy()
     {
-        Enemy[] enemies = FindObjectsOfType<Enemy>();
-        if (enemies.Length > 0)
+        bool enemyFound = false;
+        SoldierPath newPath = GetPath(transform.position, ref enemyFound);
+        if (enemyFound)
         {
-            float distance = Mathf.Infinity;
-            foreach (Enemy enemy in enemies)
-            {
-                if (enemy.IsBeingObserved())
-                {
-                    float thisDistance = (enemy.transform.position - transform.position).magnitude;
-                    if (thisDistance < distance)
-                    {
-                        distance = thisDistance;
-                        target = enemy;
-                        state = 1;
-                    }
-                }
-            }
+            path = newPath;
         }
     }
 
@@ -202,6 +288,17 @@ public class Soldier : MonoBehaviour
         if (searchTimer >= searchDelay)
         {
             searchTimer = 0f;
+            // try to find a soldier around who has a path
+            foreach (Soldier soldier in FindObjectsOfType<Soldier>())
+            {
+                if ((soldier.transform.position - transform.position).magnitude < 1.5f)
+                {
+                    if (soldier.hasPath)
+                    {
+                        followTarget = soldier;
+                    }
+                }
+            }
             FindEnemy();
         }
     }
