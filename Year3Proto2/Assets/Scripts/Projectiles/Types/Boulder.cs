@@ -39,7 +39,7 @@ public class Boulder : Projectile
         Vector3 velocityY = Vector3.up * Mathf.Sqrt(-2.0f * Physics.gravity.y * height);
         Vector3 velocityXZ = target.GetComponent<Enemy>().GetBody().velocity + displacementXZ / time;
 
-        return (velocityXZ + velocityY * -Mathf.Sign(Physics.gravity.y));
+        return velocityXZ + velocityY * -Mathf.Sign(Physics.gravity.y);
     }
 
     private void OnDrawGizmos()

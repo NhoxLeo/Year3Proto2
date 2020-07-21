@@ -600,11 +600,11 @@ public class GameManager : MonoBehaviour
             case SuperManager.k_iSlaughterIII:
                 return enemySpawner.GetKillCount() > 2000;
             case SuperManager.k_iSurvive:
-                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
+                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
             case SuperManager.k_iSurviveII:
-                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
+                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
             case SuperManager.k_iSurviveIII:
-                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
+                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
             default:
                 break;
         }
