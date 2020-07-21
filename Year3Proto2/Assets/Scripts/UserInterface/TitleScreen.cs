@@ -34,7 +34,7 @@ public class TitleScreen : MonoBehaviour
         buttonRes = transform.Find("ButtonResearch").gameObject;
         buttonRes.transform.localScale = new Vector3(0, 0, 0);
 
-        buttonCred = transform.Find("ButtonCredits").gameObject;
+        buttonCred = transform.Find("ButtonOptions").gameObject;
         buttonCred.transform.localScale = new Vector3(0, 0, 0);
 
         buttonExit = transform.Find("ButtonExit").gameObject;
