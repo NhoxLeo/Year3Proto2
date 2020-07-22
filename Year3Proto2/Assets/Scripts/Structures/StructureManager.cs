@@ -202,6 +202,8 @@ public class StructureManager : MonoBehaviour
     public Canvas canvas;
     [HideInInspector]
     public GameObject healthBarPrefab;
+    [HideInInspector]
+    public GameObject villagerWidgetPrefab;
 
     private SuperManager superMan;
     private HUDManager HUDman;
@@ -274,6 +276,7 @@ public class StructureManager : MonoBehaviour
         HUDman = FindObjectOfType<HUDManager>();
         superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
+        villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         GlobalData.longhausDead = false;
     }

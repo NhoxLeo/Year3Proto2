@@ -128,6 +128,8 @@ public abstract class ResourceStructure : Structure
         base.Start();
         structureType = StructureType.resource;
         tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
+        VillagerAllocation villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
+        villagerAllocation.SetTarget(this);
     }
 
     private GameObject GetTileHighlight()
