@@ -12,8 +12,11 @@ public class HUDManager : MonoBehaviour
 
     HorizontalLayoutGroup hLayoutGroup;
     private CanvasGroup canvas;
+    private CanvasGroup villAllocCanvas;
+    private TMP_Text buildButtonText;
     public bool doShowHUD = true;
     private bool hudShown;
+    private bool buildMode = true;
 
     public Color gainColour;
     public Color lossColour;
@@ -41,6 +44,10 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
+        villAllocCanvas = transform.Find("VillagerAllocataionWidgets").GetComponent<CanvasGroup>();
+        villAllocCanvas.alpha = 0.0f;
+        buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
+        buildButtonText.text = "BUILDING";
         hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
         canvas = GetComponent<CanvasGroup>();
 
@@ -253,4 +260,23 @@ public class HUDManager : MonoBehaviour
         canvas.interactable = false;
         canvas.blocksRaycasts = false;
     }
+
+    public void ToggleHUDMode()
+    {
+        buildMode = !buildMode;
+
+        if (buildMode)
+        {
+            FindObjectOfType<BuildPanel>().showPanel = true;
+            villAllocCanvas.DOFade(0.0f, 0.3f);
+            buildButtonText.text = "BUILDING";
+        }
+        else
+        {
+            FindObjectOfType<BuildPanel>().showPanel = false;
+            villAllocCanvas.DOFade(1.0f, 0.3f);
+            buildButtonText.text = "VILLAGERS";
+        }
+    }
+
 }
