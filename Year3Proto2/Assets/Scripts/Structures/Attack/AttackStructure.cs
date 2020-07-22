@@ -7,8 +7,6 @@ public abstract class AttackStructure : Structure
 {
     protected List<GameObject> enemies;
     protected GameObject target = null;
-    public float consumptionTime = 2f;
-    protected float remainingTime = 2f;
     protected GameObject puffPrefab;
     protected ResourceBundle attackCost;
 
@@ -77,38 +75,13 @@ public abstract class AttackStructure : Structure
                     Attack(target);
                 }
             }
-
-            // Food consumption
-            remainingTime -= Time.deltaTime;
-            if (remainingTime <= 0f)
-            {
-                remainingTime = consumptionTime;
-                if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
-                {
-                    gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
-                }
-            }
         }
-    }
-
-    public override Vector3 GetResourceDelta()
-    {
-        Vector3 resourceDelta = base.GetResourceDelta();
-
-        resourceDelta -= new Vector3(0f, 0f, foodAllocation / consumptionTime);
-
-        return resourceDelta;
     }
 
     public void ShowRangeDisplay(bool _active)
     {
         transform.GetChild(0).GetChild(0).gameObject.SetActive(_active);
         transform.GetChild(1).GetChild(0).gameObject.SetActive(_active);
-    }
-
-    private void EnableFogMask()
-    {
-        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 
     public override void OnSelected()

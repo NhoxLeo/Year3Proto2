@@ -7,7 +7,7 @@ public abstract class ResourceStructure : Structure
 {
     public float productionTime = 3f;
     public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
-    protected int batchSize = 1;
+    protected int batchSize = 2;
     protected float remainingTime = 3f;
     protected ResourceType resourceType;
     protected int tileBonus = 0;
@@ -22,7 +22,7 @@ public abstract class ResourceStructure : Structure
 
     public virtual int GetProductionVolume()
     {
-        return tileBonus * batchSize * foodAllocation;
+        return tileBonus * batchSize * allocatedVillagers;
     }
 
     public ResourceType GetResourceType()
@@ -149,18 +149,7 @@ public abstract class ResourceStructure : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                if (structureName == "Farm")
-                {
-                    gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
-                }
-                else
-                {
-                    if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
-                    {
-                        gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
-                        gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
-                    }
-                }
+                gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * allocatedVillagers, resourceType));
             }
         }
     }
@@ -169,22 +158,17 @@ public abstract class ResourceStructure : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
-        if (structureName == "Farm")
+        switch (resourceType)
         {
-            resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * foodAllocation / productionTime);
-        }
-        else
-        {
-            switch (resourceType)
-            {
-                case ResourceType.metal:
-                    resourceDelta += new Vector3(0f, tileBonus * batchSize * foodAllocation / productionTime, 0f);
-                    break;
-                case ResourceType.wood:
-                    resourceDelta += new Vector3(tileBonus * batchSize * foodAllocation / productionTime, 0f, 0f);
-                    break;
-            }
-            resourceDelta -= new Vector3(0f, 0f, foodAllocation / productionTime);
+            case ResourceType.food:
+                resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * allocatedVillagers / productionTime);
+                break;
+            case ResourceType.metal:
+                resourceDelta += new Vector3(0f, tileBonus * batchSize * allocatedVillagers / productionTime, 0f);
+                break;
+            case ResourceType.wood:
+                resourceDelta += new Vector3(tileBonus * batchSize * allocatedVillagers / productionTime, 0f, 0f);
+                break;
         }
 
         return resourceDelta;

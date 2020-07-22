@@ -36,7 +36,7 @@ public class Barracks : DefenseStructure
 
     private void UpdateCapacity()
     {
-        maxSoldiers = foodAllocation;
+        maxSoldiers = allocatedVillagers;
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
         {
@@ -73,6 +73,18 @@ public class Barracks : DefenseStructure
         }
     }
 
+    public override void AllocateVillager()
+    {
+        base.AllocateVillager();
+        UpdateCapacity();
+    }
+
+    public override void DeallocateVillager()
+    {
+        base.DeallocateVillager();
+        UpdateCapacity();
+    }
+
     public override void OnPlace()
     {
         base.OnPlace();
@@ -99,15 +111,15 @@ public class Barracks : DefenseStructure
         soldiers = new List<Soldier>();
         soldierPrefab = Resources.Load("Soldier") as GameObject;
         maxHealth = 200f;
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksFortification))
+        if (superMan.GetResearchComplete(SuperManager.BarracksFortification))
         {
             maxHealth *= 1.5f;
         }
         health = maxHealth;
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSuper))
+        if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
         {
             trainTime = 10f;
-            float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth) ? 1.5f : 1.0f);
+            float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
         }
         puffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
@@ -136,11 +148,11 @@ public class Barracks : DefenseStructure
         newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
         newSoldier.puffEffect = puffEffect;
 
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierDamage))
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
         {
             newSoldier.damage *= 1.3f;
         }
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth))
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
         {
             newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
             newSoldier.maxHealth *= 1.5f;
@@ -150,7 +162,7 @@ public class Barracks : DefenseStructure
         {
             newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierSpeed))
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
         {
             newSoldier.movementSpeed *= 1.3f;
         }
@@ -172,11 +184,11 @@ public class Barracks : DefenseStructure
         newSoldier.health = _saveData.health;
         newSoldier.returnHome = _saveData.returnHome;
 
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierDamage))
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
         {
             newSoldier.damage *= 1.3f;
         }
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierHealth))
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
         {
             newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
             newSoldier.maxHealth *= 1.5f;
@@ -185,7 +197,7 @@ public class Barracks : DefenseStructure
         {
             newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
-        if (superMan.GetResearchComplete(SuperManager.k_iBarracksSoldierSpeed))
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
         {
             newSoldier.movementSpeed *= 1.3f;
         }
