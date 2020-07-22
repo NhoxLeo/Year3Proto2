@@ -8,13 +8,14 @@ using TMPro;
 
 public class BuildPanel : MonoBehaviour
 {
-    public bool showPanel;
+    public bool showPanel = true;
+    private bool panelShown = true;
     [SerializeField]
     public Color cannotAfford;
     public Sprite lockedBuilding;
 
     private CanvasGroup canvas;
-    private RectTransform rTrans;
+    private float yPos;
 
     private StructureManager structMan;
 
@@ -62,8 +63,8 @@ public class BuildPanel : MonoBehaviour
 
     void Start()
     {
+        yPos = transform.localPosition.y;
         canvas = GetComponent<CanvasGroup>();
-        rTrans = GetComponent<RectTransform>();
         structMan = FindObjectOfType<StructureManager>();
         superMan = SuperManager.GetInstance();
         //rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
@@ -134,6 +135,18 @@ public class BuildPanel : MonoBehaviour
         {
             tooltipTimer = 0.0f;
         }
+
+        if (showPanel && !panelShown)
+        {
+            ShowPanel();
+            panelShown = true;
+        }
+
+        if (!showPanel && panelShown)
+        {
+            HidePanel();
+            panelShown = false;
+        }
     }
 
     public TooltipInfo GetToolInfo()
@@ -143,39 +156,25 @@ public class BuildPanel : MonoBehaviour
 
     public void TogglePanel()
     {
-        if (!showPanel)
-        {
-            ShowPanel();
-        }
-        else
-        {
-            HidePanel();
-        }
+        showPanel = !showPanel;
     }
 
     public void ShowPanel()
     {
         transform.DOKill(true);
-        transform.DOPunchScale(new Vector3(0.05f, 0.05f, 0.0f), 0.275f, 1, 0.5f);
 
-        canvas.DOKill(true);
-        canvas.DOFade(1.0f, 0.2f);
-        canvas.interactable = true;
-        canvas.blocksRaycasts = true;
-        rTrans.DOSizeDelta(new Vector2(1136.0f, 212.0f), 0.4f).SetEase(Ease.OutQuint);
+        transform.DOLocalMoveY(yPos, 0.4f).SetEase(Ease.OutBack);
 
-        showPanel = true;
+        //showPanel = true;
     }
 
     public void HidePanel()
     {
-        canvas.DOKill(true);
-        canvas.DOFade(0.0f, 0.2f);
-        canvas.interactable = false;
-        canvas.blocksRaycasts = false;
-        rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.4f).SetEase(Ease.OutQuint);
+        transform.DOKill(true);
 
-        showPanel = false;
+        transform.DOLocalMoveY(yPos - 158.0f, 0.4f).SetEase(Ease.InBack);
+
+        //showPanel = false;
     }
 
     private void GetInfo()
