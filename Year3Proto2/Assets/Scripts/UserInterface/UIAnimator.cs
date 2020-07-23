@@ -5,8 +5,8 @@ using DG.Tweening;
 
 public class UIAnimator : MonoBehaviour
 {
-    public bool interactable;
-    public bool showElement;
+    public bool interactable = true;
+    public bool showElement = true;
     bool elementShown;
 
     private CanvasGroup canvas;
@@ -43,15 +43,15 @@ public class UIAnimator : MonoBehaviour
 
     void Start()
     {
+
         rTransform = GetComponent<RectTransform>();
         width = rTransform.rect.width;
         height = rTransform.rect.height;
-        rTransform.DOSizeDelta(new Vector2(64.0f, height), 0.0f);
+        //rTransform.DOSizeDelta(new Vector2(64.0f, height), 0.0f);
 
         canvas = GetComponent<CanvasGroup>();
-        canvas.alpha = 0.0f;
-        canvas.interactable = false;
-        canvas.blocksRaycasts = false;
+        canvas.interactable = interactable;
+        canvas.blocksRaycasts = interactable;
 
         if (showElement)
         {
@@ -103,9 +103,9 @@ public class UIAnimator : MonoBehaviour
             case EntranceAnimation.Window:
 
                 entranceSequence = DOTween.Sequence();
-                entranceSequence.Insert(0.0f, transform.DOScale(1.0f, 0.3f));
-                entranceSequence.Insert(0.0f, transform.DOScale(1.0f, 0.3f));
- 
+                entranceSequence.Insert(0.0f, transform.DOScale(1.0f, 0.4f)).SetEase(Ease.OutBack);
+                entranceSequence.Insert(0.0f, canvas.DOFade(1.0f, 0.3f)).SetEase(Ease.OutQuint);
+
                 pulseSeq.Play();
                 break;
             case EntranceAnimation.PopUp:
@@ -125,8 +125,9 @@ public class UIAnimator : MonoBehaviour
         {
             case EntranceAnimation.Window:
 
-                entranceSequence = DOTween.Sequence()
-                    .Insert(0.0f, transform.DOScale(0.8f, 0.3f));
+                entranceSequence = DOTween.Sequence();
+                entranceSequence.Insert(0.0f, transform.DOScale(0.8f, 0.3f)).SetEase(Ease.OutQuint);
+                entranceSequence.Insert(0.0f, canvas.DOFade(0.0f, 0.3f)).SetEase(Ease.OutQuint);
 
                 pulseSeq.Play();
                 break;
