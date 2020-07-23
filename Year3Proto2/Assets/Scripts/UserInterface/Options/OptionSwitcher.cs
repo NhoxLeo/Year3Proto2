@@ -5,15 +5,13 @@ using TMPro;
 public class OptionSwitcher : OptionObject
 {
     [SerializeField] private TMP_Text valueName;
-    private Resolution[] values;
+    private int[] values = new int[] { 1, 2};
 
     private int index;
 
     private void Start()
     {
-        values = Screen.resolutions;
         valueName.text = values[0].ToString();
-
     }
     
 
@@ -41,5 +39,10 @@ public class OptionSwitcher : OptionObject
             index -= 1;
         }
         valueName.text = values[index].ToString();
+    }
+
+    public int[] GetValues()
+    {
+        return values;
     }
 }

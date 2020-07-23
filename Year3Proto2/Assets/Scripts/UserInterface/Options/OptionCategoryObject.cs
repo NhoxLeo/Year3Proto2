@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class OptionCategoryObject : MonoBehaviour
 {
     [SerializeField] private Transform panel;
+    [SerializeField] private Transform tabIndicator;
 
     public void OnClick()
     {
@@ -16,13 +18,14 @@ public class OptionCategoryObject : MonoBehaviour
             if(transform)
             {
                 OptionCategoryObject categoryObject = transform.GetComponent<OptionCategoryObject>();
-                categoryObject.GetPanel().gameObject.SetActive(false);
+                categoryObject.GetPanel().GetComponent<UIAnimator>().showElement = false;
             }
         }
 
         // Animation do tween.
         // 
-        panel.gameObject.SetActive(true);
+        panel.GetComponent<UIAnimator>().showElement = true;
+        tabIndicator.DOLocalMoveX(transform.localPosition.x, 0.2f).SetEase(Ease.OutBack);
     }
 
     public Transform GetPanel()
