@@ -23,7 +23,9 @@ public class GlobalData
         "The best way of dealing with enemies is to reduce their health to zero",
         "You can destroy buildings with the red button next to the repair button",
         "How do Vikings talk to each other? Using Norse Code!",
-        "Most buildings require food in order to function, never run out!"
+        "Production buildings and defensive structures need Villagers to run them",
+        "Unallocated Villagers still consume food",
+        "Buildings of a type will cost more to build the more there are"
     };
 
     public static string currentLoadingHint = "This is a test loading hint";
