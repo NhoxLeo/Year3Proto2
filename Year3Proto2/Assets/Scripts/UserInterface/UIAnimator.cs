@@ -53,7 +53,7 @@ public class UIAnimator : MonoBehaviour
         canvas.interactable = interactable;
         canvas.blocksRaycasts = interactable;
 
-        if (showElement)
+        if (!showElement)
         {
             EntranceInitialize();
         }
@@ -83,6 +83,8 @@ public class UIAnimator : MonoBehaviour
             case EntranceAnimation.Window:
                 transform.DOScale(0.8f, 0.0f);
                 canvas.alpha = 0.0f;
+                canvas.interactable = false;
+                canvas.blocksRaycasts = false;
                 break;
             case EntranceAnimation.PopUp:
                 break;
@@ -107,6 +109,9 @@ public class UIAnimator : MonoBehaviour
                 entranceSequence.Insert(0.0f, canvas.DOFade(1.0f, 0.3f)).SetEase(Ease.OutQuint);
 
                 pulseSeq.Play();
+
+                canvas.interactable = interactable;
+                canvas.blocksRaycasts = interactable;
                 break;
             case EntranceAnimation.PopUp:
                 break;
@@ -130,6 +135,9 @@ public class UIAnimator : MonoBehaviour
                 entranceSequence.Insert(0.0f, canvas.DOFade(0.0f, 0.3f)).SetEase(Ease.OutQuint);
 
                 pulseSeq.Play();
+
+                canvas.interactable = false;
+                canvas.blocksRaycasts = false;
                 break;
             case EntranceAnimation.PopUp:
                 break;
