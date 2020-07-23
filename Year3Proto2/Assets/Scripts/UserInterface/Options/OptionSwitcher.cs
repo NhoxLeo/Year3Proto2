@@ -1,18 +1,45 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
-public class OptionSwitcher : MonoBehaviour
+public class OptionSwitcher : OptionObject
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private TMP_Text valueName;
+    private Resolution[] values;
+
+    private int index;
+
+    private void Start()
     {
-        
+        values = Screen.resolutions;
+        valueName.text = values[0].ToString();
+
+    }
+    
+
+    public void Next()
+    {
+        if (index >= (values.Length - 1))
+        {
+            index = 0;
+        }
+        else
+        {
+            index += 1;
+        }
+        valueName.text = values[index].ToString();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Previous()
     {
-        
+        if (index <= 0)
+        {
+            index = values.Length - 1;
+        }
+        else
+        {
+            index -= 1;
+        }
+        valueName.text = values[index].ToString();
     }
 }
