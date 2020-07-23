@@ -23,6 +23,7 @@ public class HUDManager : MonoBehaviour
     public Color fullColour;
     private GameManager game;
     private StructureManager structMan;
+    private TMP_Text villagerText;
     private TMP_Text foodText;
     private TMP_Text woodText;
     private TMP_Text metalText;
@@ -55,6 +56,7 @@ public class HUDManager : MonoBehaviour
         structMan = FindObjectOfType<StructureManager>();
         spawner = FindObjectOfType<EnemySpawner>();
 
+        villagerText = transform.Find("ResourceBar/ResourceCards/ResourceCardVillager/VillagerText").GetComponent<TMP_Text>();
         foodText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText").GetComponent<TMP_Text>();
         woodText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText").GetComponent<TMP_Text>();
         metalText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText").GetComponent<TMP_Text>();
@@ -153,6 +155,8 @@ public class HUDManager : MonoBehaviour
 
     private void RefreshResources()
     {
+        villagerText.text = "10/10";
+
         Vector3 velocity = game.GetResourceVelocity();
 
         float foodVel = velocity.z;

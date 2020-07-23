@@ -29,11 +29,12 @@ public class BuildingInfo : MonoBehaviour
     private TMP_Text foodValueText;             // Text showing current food allocation
     private TMP_Text globalFoodText;            // "Affects all Buildings"
 
-    public EnvInfo repairTooltip;              // Tooltip that appears over repair and destroy buttons
+    public EnvInfo repairTooltip;               // Tooltip that appears over repair and destroy buttons
     private Button repairButton;                // Button for repairing buildings
     private Button destroyButton;               // Button to destroy buildings
     private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
     private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
+    private Tooltip trainVillagerButton;     // Button to train a new villager for the Longhaus
 
     public bool doAutoUpdate;                   // Whether to automatically update info panel
     public float updateInterval = 0.25f;        // Time between info panel updates
@@ -54,7 +55,7 @@ public class BuildingInfo : MonoBehaviour
         foodComponent = transform.Find("PanelMask/Allocation").gameObject;
         foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
 
-        repairButton = transform.Find("ActionButtons/RepairButton").GetComponent<Button>();        destroyButton = transform.Find("ActionButtons/DestroyButton").GetComponent<Button>();        destroyButtonConfirm = transform.Find("DestroyConfirmButton").GetComponent<Tooltip>();        globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
+        repairButton = transform.Find("ActionButtons/RepairButton").GetComponent<Button>();        destroyButton = transform.Find("ActionButtons/DestroyButton").GetComponent<Button>();        destroyButtonConfirm = transform.Find("DestroyConfirmButton").GetComponent<Tooltip>();        trainVillagerButton = transform.Find("TrainVillagerButton").GetComponent<Tooltip>();        globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
         statInfoText.text = "";
         updateTimer = updateInterval;
     }
@@ -105,7 +106,7 @@ public class BuildingInfo : MonoBehaviour
     public void SetInfo()
     {
         repairButton.gameObject.SetActive(true);
-        repairButton.interactable = false;        destroyButton.gameObject.SetActive(false);
+        repairButton.interactable = false;        destroyButton.gameObject.SetActive(false);        trainVillagerButton.showTooltip = false;
         if (targetBuilding == null)
         {
             return;
@@ -222,6 +223,7 @@ public class BuildingInfo : MonoBehaviour
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Your home base";
                 statValueText.text = "Protect me!";                statInfoText.text = "";
+                trainVillagerButton.showTooltip = true;
                 repairButton.interactable = haus.CanBeRepaired();
                 break;
             case "Forest Environment":
@@ -352,6 +354,11 @@ public class BuildingInfo : MonoBehaviour
         destroyButtonConfirm.showTooltip = showDestroyConfirm;
 
         //repairTooltip.SetVisibility(!showDestroyConfirm);
+    }
+
+    public void TrainVillager()
+    {
+
     }
 
     public void SetVisibility(bool visible)
