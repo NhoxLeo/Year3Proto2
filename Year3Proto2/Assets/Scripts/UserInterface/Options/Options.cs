@@ -2,87 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-struct OptionData
-{
-    // Display
-    bool enemyIndicators;
-    bool environmentTooltips;
-    bool fullscreenMode;
-    bool vSync;
-    Vector2 resolutionData;
-
-    // Graphics
-    int quality;
-    int textureQuality;
-    int antiAliasing;
-    int shadowQuality;
-    bool ambientOcclusion;
-
-    // Audio
-    float masterVolume;
-    float musicVolume;
-    float soundEffectsVolume;
-    float ambientVolume;
-    bool waveStartHorn;
-
-    // Controls
-    bool mouseEdgeCameraControl;
-    float cameraZoomSensitivity;
-    float cameraMovementSensitivity;
-};
+using TMPro;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class Options : MonoBehaviour
 {
-    [Header("Categories")]
-    [SerializeField] private Transform categoryPrefab;
-    [SerializeField] private Transform categoryParent;
-    [SerializeField] private OptionCategory[] categories;
-    private List<OptionCategoryObject> categoryObjects;
+    string filePath = Application.persistentDataPath + "/options.dat";
 
-    [Header("Buttons")]
-    [SerializeField] private Transform buttonParent;
-    [SerializeField] private Transform buttonPrefab;
-
-    private void Start()
+    public void Save()
     {
-        categoryObjects = new List<OptionCategoryObject>();
+        OptionObject[] optionObjects = FindObjectsOfType<OptionObject>();
 
-        for (int i = 0; i < categories.Length; i++)
+        for (int i = 0; i < optionObjects.Length; i++)
         {
-            // Get element based on index
-            OptionCategory optionCategory = categories[i];
+            Transform transform = optionObjects[i].transform;
 
-            // Instansiate Button
-            Transform categoryButton = Instantiate(buttonParent, buttonParent);
-            Button button = categoryButton.GetComponent<Button>();
-            button.image.sprite = optionCategory.icon;
+            string key = transform.name.Replace(" ", "_");
+            string value = null;
 
-            // Instantiate Category
-            Transform categoryObject = Instantiate(categoryPrefab, categoryParent);
-            OptionCategoryObject optionCategoryObject = categoryObject.GetComponent<OptionCategoryObject>();
+            OptionSwitcher optionSwitcher = transform.GetComponent<OptionSwitcher>();
+            if (optionSwitcher) value = optionSwitcher.GetValues().ToString();
 
-            categoryObjects.Add(optionCategoryObject);
+            OptionCheckBox optionCheckBox = transform.GetComponent<OptionCheckBox>();
+            if (optionCheckBox) value = optionCheckBox.IsTicked().ToString();
+
+            OptionSlider optionSlider = transform.GetComponent<OptionSlider>();
+            if (optionSlider) value = optionSlider.GetValue().ToString();
+
+            PlayerPrefs.SetString(key.ToUpper(), value);
+            Debug.Log(key + " = " + value);
         }
     }
 
-    public void Select(int index) 
-    {
-        // If current index is not active
-        if (!categoryObjects[index].gameObject.activeSelf)
-        {
-            for (int i = 0; i < categoryObjects.Count; i++)
-            {
-                categoryObjects[i].gameObject.SetActive((index == i) ? true : false);
-            }
-        }
-    }
-
-    public void Deserialize()
-    {
-
-    }
-
-    public void Serialize()
+    public void Load()
     {
 
     }
