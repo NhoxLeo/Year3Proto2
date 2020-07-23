@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.29801992, g: 0.16554248, b: 0.16228712, a: 1}
+  m_IndirectSpecularColor: {r: 0.29488644, g: 0.16781998, b: 0.16908848, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1095,7 +1095,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8887787931358464638}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8887787931358464639}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
@@ -9960,6 +9960,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 373e85635be8a2d408d7150e6fc91a65, type: 3}
+--- !u!1 &8887787931358464639 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8887787932000282782, guid: 373e85635be8a2d408d7150e6fc91a65,
+    type: 3}
+  m_PrefabInstance: {fileID: 8887787931358464638}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8887787931358464640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8887787931358464639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c7e683fd06e2642bcc0608d7368715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  categoryPrefab: {fileID: 0}
+  categoryParent: {fileID: 0}
+  categories:
+  - name: Display
+    icon: {fileID: 21300000, guid: 35be06346daa15f499fedceca0782734, type: 3}
+    optionElements:
+    - displayName: Enemy Indicators
+      optionType: 0
+    - displayName: Environment Tooltips
+      optionType: 0
+    - displayName: Resolution
+      optionType: 2
+    - displayName: FullScreen Mode
+      optionType: 0
+    - displayName: V-Sync
+      optionType: 0
+  - name: 
+    icon: {fileID: 0}
+    optionElements: []
+  - name: 
+    icon: {fileID: 0}
+    optionElements: []
+  buttonParent: {fileID: 0}
+  buttonPrefab: {fileID: 0}
 --- !u!4 &8963128448019848263
 Transform:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+[Serializable]
 struct OptionData
 {
     // Display
@@ -78,13 +80,13 @@ public class Options : MonoBehaviour
         }
     }
 
-    public void Deserialize()
+    public void Deserialize()    
     {
 
     }
 
     public void Serialize()
     {
-
+        // Save data to disk and in game.
     }
 }
