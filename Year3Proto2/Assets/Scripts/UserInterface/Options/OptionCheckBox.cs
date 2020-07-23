@@ -10,7 +10,6 @@ public class OptionCheckBox : OptionObject
     public void SetTicked()
     {
         ticked = ticked ? false : true;
-        Debug.Log(ticked);
     }
 
     public bool IsTicked()
