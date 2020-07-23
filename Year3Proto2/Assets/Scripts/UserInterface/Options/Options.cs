@@ -60,7 +60,6 @@ public class Options : MonoBehaviour
             // Instantiate Category
             Transform categoryObject = Instantiate(categoryPrefab, categoryParent);
             OptionCategoryObject optionCategoryObject = categoryObject.GetComponent<OptionCategoryObject>();
-            optionCategoryObject.SetButton(button);
 
             categoryObjects.Add(optionCategoryObject);
         }

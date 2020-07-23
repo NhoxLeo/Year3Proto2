@@ -5,9 +5,16 @@ using UnityEngine.UI;
 
 public class OptionCheckBox : OptionObject
 {
+    private bool ticked = true;
 
-    private void Start()
+    public void SetTicked()
     {
-        optionType = OptionType.CheckBox;
+        ticked = ticked ? false : true;
+        Debug.Log(ticked);
+    }
+
+    public bool IsTicked()
+    {
+        return ticked;
     }
 }

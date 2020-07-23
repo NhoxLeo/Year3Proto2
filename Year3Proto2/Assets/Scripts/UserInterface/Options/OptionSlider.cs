@@ -1,18 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
-public class NewBehaviourScript : MonoBehaviour
+public class OptionSlider : OptionObject
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Slider slider;
+    private float value;
+
+    private void Start()
     {
-        
+        slider.onValueChanged.AddListener(value=> this.value = value); 
     }
 
-    // Update is called once per frame
-    void Update()
+    public float GetValue()
     {
-        
+        return value;
     }
 }

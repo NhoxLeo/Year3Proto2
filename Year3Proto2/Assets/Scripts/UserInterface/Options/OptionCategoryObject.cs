@@ -5,15 +5,28 @@ using UnityEngine.UI;
 
 public class OptionCategoryObject : MonoBehaviour
 {
-    private Button button;
+    [SerializeField] private Transform panel;
 
-    public void SetButton(Button _button)
+    public void OnClick()
     {
-        button = _button;
+        Transform parent = transform.parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform transform = parent.GetChild(i);
+            if(transform)
+            {
+                OptionCategoryObject categoryObject = transform.GetComponent<OptionCategoryObject>();
+                categoryObject.GetPanel().gameObject.SetActive(false);
+            }
+        }
+
+        // Animation do tween.
+        // 
+        panel.gameObject.SetActive(true);
     }
 
-    public Button GetButton()
+    public Transform GetPanel()
     {
-        return button;
+        return panel;
     }
 }
