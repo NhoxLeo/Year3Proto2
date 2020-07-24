@@ -93,8 +93,8 @@ public struct ProceduralGenerationParameters
 public class StructureManager : MonoBehaviour
 {
     // constants
-    public static string kPathSaveData;
-    public static string kPathPGP;
+    public static string PathSaveData;
+    public static string PathPGP;
 
     // PRE-DEFINED
     private StructManState structureState = StructManState.selecting;
@@ -106,6 +106,12 @@ public class StructureManager : MonoBehaviour
     private TileBehaviour structureOldTile = null;
     private float hoveroverTime = 0f;
     private int nextStructureID = 0;
+    private bool buildMode = true;
+
+    public void SetBuildMode(bool _buildMode)
+    {
+        buildMode = _buildMode;
+    }
 
     public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -196,6 +202,8 @@ public class StructureManager : MonoBehaviour
     public Canvas canvas;
     [HideInInspector]
     public GameObject healthBarPrefab;
+    [HideInInspector]
+    public GameObject villagerWidgetPrefab;
 
     private SuperManager superMan;
     private HUDManager HUDman;
@@ -206,6 +214,12 @@ public class StructureManager : MonoBehaviour
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private MessageBox messageBox;
+
+    public bool IsThisStructureSelected(Structure _structure)
+    {
+        return selectedStructure == _structure;
+    }
+
 
     private void DefineDictionaries()
     {
@@ -249,8 +263,8 @@ public class StructureManager : MonoBehaviour
 
     private void Awake()
     {
-        kPathSaveData = GetSaveDataPath();
-        kPathPGP = GetPGPPath();
+        PathSaveData = GetSaveDataPath();
+        PathPGP = GetPGPPath();
         DefineDictionaries();
         panel = FindObjectOfType<BuildPanel>();
         gameMan = FindObjectOfType<GameManager>();
@@ -262,6 +276,7 @@ public class StructureManager : MonoBehaviour
         HUDman = FindObjectOfType<HUDManager>();
         superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
+        villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         GlobalData.longhausDead = false;
     }
@@ -273,12 +288,12 @@ public class StructureManager : MonoBehaviour
 
     public static string GetSaveDataPath()
     {
-        return kPathSaveData ?? (kPathSaveData = Application.persistentDataPath + "/saveData.dat");
+        return PathSaveData ?? (PathSaveData = Application.persistentDataPath + "/saveData.dat");
     }
 
     public static string GetPGPPath()
     {
-        return kPathPGP ?? (kPathPGP = Application.persistentDataPath + "/PGP.dat");
+        return PathPGP ?? (PathPGP = Application.persistentDataPath + "/PGP.dat");
     }
 
     public static Structure FindStructureAtPosition(Vector3 _position)
@@ -327,7 +342,7 @@ public class StructureManager : MonoBehaviour
         // if we found the file...
         if (System.IO.File.Exists(GetPGPPath()))
         {
-            System.IO.FileStream file = System.IO.File.Open(kPathPGP, System.IO.FileMode.Open);
+            System.IO.FileStream file = System.IO.File.Open(PathPGP, System.IO.FileMode.Open);
             ProceduralGenerationParameters PGP = (ProceduralGenerationParameters)bf.Deserialize(file);
             hillsEnvironmentBounds = PGP.hillsParameters;
             recursiveHGrowthChance = PGP.hillsParameters.z;
@@ -342,7 +357,7 @@ public class StructureManager : MonoBehaviour
         else
         {
             // if we can't access the file, we'll make one with default parameters
-            System.IO.FileStream file = System.IO.File.Create(kPathPGP);
+            System.IO.FileStream file = System.IO.File.Create(PathPGP);
             // File does not exist, load defaults and save
             ProceduralGenerationParameters PGP = GetPGPHardPreset(0);
             hillsEnvironmentBounds = PGP.hillsParameters;
@@ -546,14 +561,14 @@ public class StructureManager : MonoBehaviour
                                         if (tile.GetPlayable())
                                         {
                                             bool canPlaceHere = false;
-                                            bool hitFogMask = Physics.Raycast(tile.transform.position + Vector3.up * 5f, Vector3.down, out RaycastHit fogMaskHit, Mathf.Infinity, LayerMask.GetMask("FogMask"));
+                                            //bool hitFogMask = Physics.Raycast(tile.transform.position + Vector3.up * 10f, Vector3.down, out RaycastHit fogMaskHit, Mathf.Infinity, LayerMask.GetMask("FogMask"));
                                             // If the tile we hit has an attached object...
                                             Structure attached = tile.GetAttached();
                                             StructureType newStructureType = structure.GetStructureType();
                                             if (attached)
                                             {
-                                                if (hitFogMask)
-                                                {
+                                                //if (hitFogMask)
+                                                //{
                                                     StructureType attachedStructureType = attached.GetStructureType();
                                                     Vector3 hitPos = hit.point;
                                                     hitPos.y = structure.sitHeight;
@@ -574,9 +589,10 @@ public class StructureManager : MonoBehaviour
                                                             canPlaceHere = true;
                                                         }
                                                     }
-                                                }
+                                                //}
                                             }
-                                            else { canPlaceHere = hitFogMask; }
+                                            //else { canPlaceHere = hitFogMask; }
+                                            else { canPlaceHere = true; }
                                             // if the structure can be placed here...
                                             if (canPlaceHere)
                                             {
@@ -662,6 +678,7 @@ public class StructureManager : MonoBehaviour
                                                             Destroy(attached.gameObject);
                                                         }
                                                         gameMan.OnStructurePlace();
+                                                        enemySpawner.OnStructurePlaced();
                                                         if (structureFromStore)
                                                         {
                                                             panel.UINoneSelected();
@@ -721,7 +738,13 @@ public class StructureManager : MonoBehaviour
 
     public void DestroySelectedBuilding()
     {
-        selectedStructure.Damage(selectedStructure.GetHealth());
+        selectedStructure.DeallocateAll();
+        float health = selectedStructure.GetHealth();
+        float maxHealth = selectedStructure.GetMaxHealth();
+        selectedStructure.Damage(health);
+        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structureCosts[selectedStructure.GetStructureName()]);
+        gameMan.playerResources.AddResourceBundle(compensation);
+        FindObjectOfType<HUDManager>().ShowResourceDelta(compensation, false);
         DeselectStructure();
         structureState = StructManState.selecting;
     }
@@ -762,7 +785,7 @@ public class StructureManager : MonoBehaviour
 
     private Vector3 CalculateStructureCost(string _structureName)
     {
-        float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.k_iSnoballPrices) ? 2f : 4f;
+        float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
         Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
         structureCosts[_structureName] = new ResourceBundle(newCost);
         return newCost;
@@ -947,16 +970,20 @@ public class StructureManager : MonoBehaviour
             // now try the tiles around it
             for (int i = 0; i < 4; i++)
             {
-                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
                 if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
+                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = tile.GetAdjacentTiles();
+                if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    PGInstatiateEnvironment("Forest Environment", tileI);
+                    TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
+                    if (PGPlayableTiles.Contains(tileI))
+                    {
+                        PGInstatiateEnvironment("Forest Environment", tileI);
 
-                    // update forestPlaced
-                    forestPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (forestPlaced == forestTotal) { break; }
+                        // update forestPlaced
+                        forestPlaced++;
+                        PGPlayableTiles.Remove(tileI);
+                        if (forestPlaced == forestTotal) { break; }
+                    }
                 }
             }
         }
@@ -978,16 +1005,20 @@ public class StructureManager : MonoBehaviour
             // now try the tiles around it
             for (int i = 0; i < 4; i++)
             {
-                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
                 if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
+                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = tile.GetAdjacentTiles();
+                if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    PGInstatiateEnvironment("Hills Environment", tileI);
+                    TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
+                    if (PGPlayableTiles.Contains(tileI))
+                    {
+                        PGInstatiateEnvironment("Hills Environment", tileI);
 
-                    // update hillsPlaced
-                    hillsPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (hillsPlaced == hillsTotal) { break; }
+                        // update hillsPlaced
+                        hillsPlaced++;
+                        PGPlayableTiles.Remove(tileI);
+                        if (hillsPlaced == hillsTotal) { break; }
+                    }
                 }
             }
         }
@@ -1009,16 +1040,20 @@ public class StructureManager : MonoBehaviour
             // now try the tiles around it
             for (int i = 0; i < 4; i++)
             {
-                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
                 if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
+                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = tile.GetAdjacentTiles();
+                if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
                 {
-                    PGInstatiateEnvironment("Plains Environment", tileI);
+                    TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
+                    if (PGPlayableTiles.Contains(tileI))
+                    {
+                        PGInstatiateEnvironment("Plains Environment", tileI);
 
-                    // update plainsPlaced
-                    plainsPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (plainsPlaced == plainsTotal) { break; }
+                        // update plainsPlaced
+                        plainsPlaced++;
+                        PGPlayableTiles.Remove(tileI);
+                        if (plainsPlaced == plainsTotal) { break; }
+                    }
                 }
             }
         }
@@ -1052,12 +1087,17 @@ public class StructureManager : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             if (_placed == _max) { break; }
-            TileBehaviour tileI = _tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
-            if (PGPlayableTiles.Contains(tileI))
+
+            Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = _tile.GetAdjacentTiles();
+            if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
             {
-                if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
+                TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
+                if (PGPlayableTiles.Contains(tileI))
                 {
-                    PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance);
+                    if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
+                    {
+                        PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance);
+                    }
                 }
             }
         }

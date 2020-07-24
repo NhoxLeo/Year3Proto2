@@ -54,6 +54,7 @@ MonoBehaviour:
   repairMessage: 0
   longhausDead: 0
   repairAll: 0
+  gameAlreadyWon: 0
 --- !u!114 &2034944319271232491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,12 +67,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d9ff4b7ca63a94ebedd5d4d321a4da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plainsEnvironmentBounds: {x: 0, y: 0}
-  hillsEnvironmentBounds: {x: 0, y: 0}
-  forestEnvironmentBounds: {x: 0, y: 0}
-  recursivePGrowthChance: 0
-  recursiveHGrowthChance: 0
-  recursiveFGrowthChance: 0
+  plainsEnvironmentBounds: {x: 85, y: 100}
+  hillsEnvironmentBounds: {x: 55, y: 70}
+  forestEnvironmentBounds: {x: 80, y: 90}
+  recursivePGrowthChance: 0.3
+  recursiveHGrowthChance: 0.25
+  recursiveFGrowthChance: 0.3
   editorGenerated: 0
   useSeed: 0
   seed: 0
@@ -79,7 +80,8 @@ MonoBehaviour:
   tileHighlight: {fileID: 7067514012913874853}
   isOverUI: 0
   canvas: {fileID: 0}
-  healthBarPrefab: {fileID: 0}
+  healthBarPrefab: {fileID: 3792998656608216644, guid: 21434597174a3114398c4b8d02c1a600,
+    type: 3}
 --- !u!82 &4498777283510002559
 AudioSource:
   m_ObjectHideFlags: 0
@@ -288,7 +290,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1837815026644702574
 Transform:
   m_ObjectHideFlags: 0

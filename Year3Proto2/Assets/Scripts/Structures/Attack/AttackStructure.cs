@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,8 +7,6 @@ public abstract class AttackStructure : Structure
 {
     protected List<GameObject> enemies;
     protected GameObject target = null;
-    public float consumptionTime = 2f;
-    protected float remainingTime = 2f;
     protected GameObject puffPrefab;
     protected ResourceBundle attackCost;
 
@@ -38,6 +37,8 @@ public abstract class AttackStructure : Structure
         puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
         structureType = StructureType.attack;
         enemies = new List<GameObject>();
+        VillagerAllocation villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
+        villagerAllocation.SetTarget(this);
         DetectEnemies();
     }
 
@@ -76,27 +77,7 @@ public abstract class AttackStructure : Structure
                     Attack(target);
                 }
             }
-
-            // Food consumption
-            remainingTime -= Time.deltaTime;
-            if (remainingTime <= 0f)
-            {
-                remainingTime = consumptionTime;
-                if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
-                {
-                    gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
-                }
-            }
         }
-    }
-
-    public override Vector3 GetResourceDelta()
-    {
-        Vector3 resourceDelta = base.GetResourceDelta();
-
-        resourceDelta -= new Vector3(0f, 0f, foodAllocation / consumptionTime);
-
-        return resourceDelta;
     }
 
     public void ShowRangeDisplay(bool _active)
