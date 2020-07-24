@@ -153,9 +153,12 @@ public class HUDManager : MonoBehaviour
         transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
     }
 
-    private void RefreshResources()
+    public void RefreshResources()
     {
-        villagerText.text = "10/10";
+        // available out of total
+        string availableVillagers = Longhaus.GetAvailable().ToString("0");
+        string villagers = Longhaus.GetVillagers().ToString("0");
+        villagerText.text = availableVillagers + "/" + villagers;
 
         Vector3 velocity = game.GetResourceVelocity();
 

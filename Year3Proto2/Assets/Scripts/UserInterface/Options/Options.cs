@@ -8,7 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class Options : MonoBehaviour
 {
-    string filePath = Application.persistentDataPath + "/options.dat";
+    //string filePath = Application.persistentDataPath + "/options.dat";
 
     public void Save()
     {

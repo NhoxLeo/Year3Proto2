@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class BallistaTower : AttackStructure
 {
-    public const int k_CostArrowBase = 6;
+    public const int CostArrowBase = 6;
     public GameObject arrow;
     public GameObject ballista;
     public static bool arrowPierce;
@@ -21,20 +21,20 @@ public class BallistaTower : AttackStructure
         maxHealth = 350f;
         health = maxHealth;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Ballista];
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.k_iBallistaFortification)) { health = maxHealth *= 1.5f; }
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
     }
 
     protected override void Start()
     {
         base.Start();
         SetFirerate();
-        if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.k_iBallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
-        bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.k_iBallistaEfficiency);
-        int woodCost = efficiencyUpgrade ? (k_CostArrowBase / 2) : k_CostArrowBase;
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
+        bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.BallistaEfficiency);
+        int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
         attackCost = new ResourceBundle(woodCost, 0, 0);
-        arrowPierce = superMan.GetResearchComplete(SuperManager.k_iBallistaSuper);
-        if (superMan.GetResearchComplete(SuperManager.k_iBallistaPower))
+        arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
+        if (superMan.GetResearchComplete(SuperManager.BallistaPower))
         {
             arrowDamage *= 1.3f;
         }
@@ -55,6 +55,18 @@ public class BallistaTower : AttackStructure
             ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * 2.5f);
 
         }
+    }
+
+    public override void AllocateVillager()
+    {
+        base.AllocateVillager();
+        SetFirerate();
+    }
+
+    public override void DeallocateVillager()
+    {
+        base.DeallocateVillager();
+        SetFirerate();
     }
 
     public override void Attack(GameObject target)
@@ -110,8 +122,11 @@ public class BallistaTower : AttackStructure
 
     void SetFirerate()
     {
-        switch (foodAllocation)
+        switch (allocatedVillagers)
         {
+            case 0:
+                fireRate = 0f;
+                break;
             case 1:
                 fireRate = 0.5f;
                 break;

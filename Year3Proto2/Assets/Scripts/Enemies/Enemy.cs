@@ -62,7 +62,7 @@ public abstract class Enemy : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
-        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.k_iSwiftFootwork) ? 1.4f : 1.0f;
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
     }
 

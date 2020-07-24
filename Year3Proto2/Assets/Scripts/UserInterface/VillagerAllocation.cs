@@ -23,6 +23,11 @@ public class VillagerAllocation : MonoBehaviour
     private void LateUpdate()
     {
         SetPosition();
+        if (!target)
+        {
+            //gets rid of phantom widgets
+            Destroy(gameObject);
+        }
     }
 
     private void SetPosition()
@@ -45,10 +50,11 @@ public class VillagerAllocation : MonoBehaviour
         if (target == null)
             return;
 
-        if (amount > 0) { target.IncreaseFoodAllocation(); }
-        else { target.DecreaseFoodAllocation(); }
+        if (amount > 0) { target.AllocateVillager(); }
+        else { target.DeallocateVillager(); }
 
         SetInfo();
+        FindObjectOfType<HUDManager>().RefreshResources();
     }
 
     public void SetInfo()
@@ -56,7 +62,7 @@ public class VillagerAllocation : MonoBehaviour
         if (target == null)
             return;
 
-        villagerText.text = target.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+        villagerText.text = target.GetAllocated().ToString("0") + "/" + target.GetVillagerCapacity().ToString("0");
     }
 
     private void OnEnable()
