@@ -20,7 +20,7 @@ public class Longhaus : Structure
     private static int availableVillagers = 0;
     private static int starveTicks = 0;
     [SerializeField]
-    private int villagerHungerModifier = 3;
+    private int villagerHungerModifier = 2;
 
     public static void AddStarveTicks(int _ticks)
     {
