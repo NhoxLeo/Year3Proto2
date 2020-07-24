@@ -41,7 +41,8 @@ public struct PlayerResources
                 if (rFood > rFoodMax) { rFood = rFoodMax; }
                 if (rFood < 0)
                 {
-                    //lose condition
+                    Longhaus.AddStarveTicks(-rFood);
+                    rFood = 0;
                 }
                 break;
         }
@@ -80,11 +81,18 @@ public struct PlayerResources
         }
     }
 
-    public void DeductResource(ResourceBundle _bundle)
+    public void DeductResourceBundle(ResourceBundle _bundle)
     {
         rWood -= _bundle.woodCost;
         rMetal -= _bundle.metalCost;
         rFood -= _bundle.foodCost;
+    }
+
+    public void AddResourceBundle(ResourceBundle _bundle)
+    {
+        rWood += _bundle.woodCost;
+        rMetal += _bundle.metalCost;
+        rFood += _bundle.foodCost;
     }
 
     public int Get(ResourceType _type)
@@ -502,14 +510,14 @@ public class GameManager : MonoBehaviour
             {
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
                 {
-                    if (!superMan.GetResearchComplete(SuperManager.k_iCatapult))
+                    if (!superMan.GetResearchComplete(SuperManager.Catapult))
                     {
                         continue;
                     }
                 }
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Barracks)
                 {
-                    if (!superMan.GetResearchComplete(SuperManager.k_iBarracks))
+                    if (!superMan.GetResearchComplete(SuperManager.Barracks))
                     {
                         continue;
                     }
@@ -587,24 +595,24 @@ public class GameManager : MonoBehaviour
         int winCondition = superMan.GetCurrentWinCondition();
         switch (winCondition)
         {
-            case SuperManager.k_iAccumulate:
+            case SuperManager.Accumulate:
                 return playerResources.Get(ResourceType.metal) >= 1500 && playerResources.Get(ResourceType.food) >= 1500 && playerResources.Get(ResourceType.wood) >= 1500;
-            case SuperManager.k_iAccumulateII:
+            case SuperManager.AccumulateII:
                 return playerResources.Get(ResourceType.metal) >= 2500 && playerResources.Get(ResourceType.food) >= 2500 && playerResources.Get(ResourceType.wood) >= 2500;
-            case SuperManager.k_iAccumulateIII:
+            case SuperManager.AccumulateIII:
                 return playerResources.Get(ResourceType.metal) >= 7500 && playerResources.Get(ResourceType.food) >= 7500 && playerResources.Get(ResourceType.wood) >= 7500;
-            case SuperManager.k_iSlaughter:
+            case SuperManager.Slaughter:
                 return enemySpawner.GetKillCount() > 300;
-            case SuperManager.k_iSlaughterII:
+            case SuperManager.SlaughterII:
                 return enemySpawner.GetKillCount() > 800;
-            case SuperManager.k_iSlaughterIII:
+            case SuperManager.SlaughterIII:
                 return enemySpawner.GetKillCount() > 2000;
-            case SuperManager.k_iSurvive:
-                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
-            case SuperManager.k_iSurviveII:
-                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
-            case SuperManager.k_iSurviveIII:
-                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
+            case SuperManager.Survive:
+                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
+            case SuperManager.SurviveII:
+                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
+            case SuperManager.SurviveIII:
+                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
             default:
                 break;
         }

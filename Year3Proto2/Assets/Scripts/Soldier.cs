@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Soldier : MonoBehaviour
 {
+    public struct SoldierPath
+    {
+        public List<Vector3> pathPoints;
+        public Enemy target;
+    }
+
     private Enemy target = null;
     private Animator animator;
     [HideInInspector]
@@ -27,6 +33,98 @@ public class Soldier : MonoBehaviour
     private float searchDelay = 0.3f;
     private float avoidance = 0.05f;
     private List<Soldier> nearbySoldiers = new List<Soldier>();
+    public bool hasPath = false;
+    Soldier followTarget = null;
+    protected SoldierPath path;
+
+    public static SoldierPath GetPath(Vector3 _startPoint, ref bool _enemyFound)
+    {
+        TileBehaviour startTile = null;
+        if (Physics.Raycast(_startPoint + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            startTile = hit.transform.GetComponent<TileBehaviour>();
+        }
+        SoldierPath path = new SoldierPath();
+
+
+        // get the closest observed enemy to the _startPoint
+        _enemyFound = false;
+
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
+        if (enemies.Length > 0)
+        {
+            float distance = Mathf.Infinity;
+            foreach (Enemy enemy in enemies)
+            {
+                if (enemy.IsBeingObserved())
+                {
+                    _enemyFound = true;
+                    float thisDistance = (enemy.transform.position - _startPoint).magnitude;
+                    if (thisDistance < distance)
+                    {
+                        distance = thisDistance;
+                        path.target = enemy;
+                    }
+                }
+            }
+        }
+
+        if (_enemyFound)
+        {
+
+            float startTime = Time.realtimeSinceStartup;
+
+            // find a path to the enemy
+
+            // we have our destination and our source, now use A* to find the path
+            // generate initial open and closed lists
+            List<PathfindingTileData> open = new List<PathfindingTileData>();
+            List<PathfindingTileData> closed = new List<PathfindingTileData>();
+            TileBehaviour destination = null;
+            if (Physics.Raycast(path.target.transform.position + Vector3.up, Vector3.down, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
+            {
+                destination = hitGround.transform.GetComponent<TileBehaviour>();
+            }
+            // add the tiles next to the start tile to the open list and calculate their costs
+            PathfindingTileData startingData = new PathfindingTileData()
+            {
+                tile = startTile,
+                fromTile = startTile,
+                gCost = 0f,
+                hCost = EnemySpawner.CalculateHCost(startTile, destination)
+            };
+
+            EnemySpawner.ProcessTile(startingData, open, closed, destination);
+
+            // while a path hasn't been found
+            bool pathFound = false;
+            int lapCount = 0;
+            while (!pathFound && open.Count > 0 && lapCount < 100)
+            {
+                lapCount++;
+                if (EnemySpawner.ProcessTile(EnemySpawner.GetNextOpenTile(open), open, closed, destination))
+                {
+                    // generate a path from the tiles in the closed list
+                    // path from the source tile to the destination tile
+                    // find the destination tile in the closed list
+                    List<Vector3> reversePath = new List<Vector3>();
+                    PathfindingTileData currentData = closed[closed.Count - 1];
+                    while (currentData.fromTile != currentData.tile)
+                    {
+                        reversePath.Add(currentData.tile.transform.position);
+                        currentData = EnemySpawner.FollowFromTile(closed, currentData.fromTile);
+                    }
+                    reversePath.Reverse();
+                    path.pathPoints = reversePath;
+                    pathFound = true;
+                }
+            }
+
+            float finishTime = Time.realtimeSinceStartup;
+            Debug.Log("Soldier Pathfinding complete, took " + (finishTime - startTime).ToString() + " seconds");
+        }
+        return path;
+    }
 
     private void LookAtPosition(Vector3 _position)
     {
@@ -105,17 +203,59 @@ public class Soldier : MonoBehaviour
                 if (!target)
                 {
                     state = 0;
-                    FindEnemy();
+                    Idle();
                 }
                 else
                 {
-                    LookAtPosition(target.transform.position);
-                    transform.position += GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime;
-                    Vector3 toTarget = target.transform.position - transform.position;
-                    toTarget.y = 0f;
-                    if (toTarget.magnitude < 0.2f)
+                    float distanceFromTarget = (target.transform.position - transform.position).magnitude;
+                    // if you are further than 1.0f from target
+                    if (distanceFromTarget > 1.0f)
                     {
-                        state = 2;
+                        //      if you have a path, follow the path, otherwise follow the follow target
+                        if (hasPath)
+                        {
+                            // follow the path
+                            // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
+                            Vector3 nextPathPoint = path.pathPoints[0];
+                            nextPathPoint.y = transform.position.y;
+                            float distanceToNextPathPoint = (transform.position - nextPathPoint).magnitude;
+                            if (distanceToNextPathPoint < 0.25f)
+                            {
+                                // delete the first element in the path
+                                path.pathPoints.RemoveAt(0);
+                                if (path.pathPoints.Count < 1)
+                                {
+                                    FindEnemy();
+                                }
+                            }
+                            Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                            LookAtPosition(newPosition);
+                            transform.position = newPosition;
+                        }
+                        else
+                        {
+                            Vector3 toFollowTarget = target.transform.position - transform.position;
+                            toFollowTarget.y = 0f;
+                            if (toFollowTarget.magnitude > 0.2f)
+                            {
+                                LookAtPosition(followTarget.transform.position);
+                                transform.position += GetMotionToFollowTarget() * Time.fixedDeltaTime;
+                            }
+                        }
+                    }
+                    // else go straight to target
+                    else
+                    {
+                        LookAtPosition(target.transform.position);
+                        transform.position += GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime;
+                        Vector3 toTarget = target.transform.position - transform.position;
+                        toTarget.y = 0f;
+                        if (toTarget.magnitude < 0.2f)
+                        {
+                            state = 2;
+                            hasPath = false;
+                            followTarget = null;
+                        }
                     }
                 }
                 break;
@@ -129,7 +269,7 @@ public class Soldier : MonoBehaviour
                 if (!target)
                 {
                     state = 0;
-                    FindEnemy();
+                    Idle();
                 }
                 break;
             case 3:
@@ -176,23 +316,12 @@ public class Soldier : MonoBehaviour
 
     private void FindEnemy()
     {
-        Enemy[] enemies = FindObjectsOfType<Enemy>();
-        if (enemies.Length > 0)
+        bool enemyFound = false;
+        SoldierPath newPath = GetPath(transform.position, ref enemyFound);
+        if (enemyFound)
         {
-            float distance = Mathf.Infinity;
-            foreach (Enemy enemy in enemies)
-            {
-                if (enemy.IsBeingObserved())
-                {
-                    float thisDistance = (enemy.transform.position - transform.position).magnitude;
-                    if (thisDistance < distance)
-                    {
-                        distance = thisDistance;
-                        target = enemy;
-                        state = 1;
-                    }
-                }
-            }
+            path = newPath;
+            hasPath = true;
         }
     }
 
@@ -202,7 +331,43 @@ public class Soldier : MonoBehaviour
         if (searchTimer >= searchDelay)
         {
             searchTimer = 0f;
-            FindEnemy();
+
+            bool enemyFound = false;
+            Enemy[] enemies = FindObjectsOfType<Enemy>();
+            if (enemies.Length > 0)
+            {
+                foreach (Enemy enemy in enemies)
+                {
+                    if (enemy.IsBeingObserved())
+                    {
+                        enemyFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (enemyFound)
+            {
+                state = 1;
+                // try to find a soldier around who has a path
+                foreach (Soldier soldier in FindObjectsOfType<Soldier>())
+                {
+                    if ((soldier.transform.position - transform.position).magnitude < 1.5f)
+                    {
+                        if (soldier.hasPath)
+                        {
+                            followTarget = soldier;
+                            target = soldier.path.target;
+                            break;
+                        }
+                    }
+                }
+                if (followTarget == null)
+                {
+                    FindEnemy();
+                }
+            }
+
         }
     }
 
@@ -261,6 +426,34 @@ public class Soldier : MonoBehaviour
         }
         return finalMotionVector.normalized * movementSpeed;
     }
+
+    protected Vector3 GetMotionToFollowTarget()
+    {
+        // Get the vector between this enemy and the target
+        Vector3 toTarget = followTarget.transform.position - transform.position;
+        toTarget.y = 0f;
+        Vector3 finalMotionVector = toTarget;
+        if (toTarget.magnitude > 1.5f)
+        {
+            finalMotionVector += GetAvoidanceForce();
+        }
+        return finalMotionVector.normalized * movementSpeed;
+    }
+
+
+    protected Vector3 GetPathVector()
+    {
+        // Get the vector between this enemy and the target
+        Vector3 toTarget = path.pathPoints[0] - transform.position;
+        toTarget.y = 0f;
+        Vector3 finalMotionVector = toTarget;
+        if (toTarget.magnitude > 1.5f)
+        {
+             finalMotionVector += GetAvoidanceOnly();
+        }
+        return finalMotionVector.normalized * movementSpeed;
+    }
+
 
     protected Vector3 GetAvoidanceForce()
     {

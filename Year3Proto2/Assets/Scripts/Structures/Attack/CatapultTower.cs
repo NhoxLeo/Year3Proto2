@@ -19,7 +19,7 @@ public class CatapultTower : AttackStructure
     {
         base.Awake();
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.k_iCatapultFortification)) { health = maxHealth *= 1.5f; }
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification)) { health = maxHealth *= 1.5f; }
         maxHealth = 450f;
         health = maxHealth;
     }
@@ -28,14 +28,14 @@ public class CatapultTower : AttackStructure
     {
         base.Start();
         SetFirerate();
-        if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.k_iCatapultRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.k_iCatapultEfficiency) ? 8 : 16, 0);
-        if (superMan.GetResearchComplete(SuperManager.k_iCatapultPower))
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 8 : 16, 0);
+        if (superMan.GetResearchComplete(SuperManager.CatapultPower))
         {
             boulderDamage *= 1.3f;
         }
-        if (superMan.GetResearchComplete(SuperManager.k_iCatapultSuper)) { boulderExplosionRadius *= 1.5f; }
+        if (superMan.GetResearchComplete(SuperManager.CatapultSuper)) { boulderExplosionRadius *= 1.5f; }
     }
 
     protected override void Update()
@@ -52,6 +52,18 @@ public class CatapultTower : AttackStructure
             Quaternion rotation = Quaternion.LookRotation(difference);
             catapult.transform.rotation = Quaternion.Slerp(catapult.transform.rotation, rotation * Quaternion.AngleAxis(90, Vector3.up), Time.deltaTime * 2.5f);
         }
+    }
+
+    public override void AllocateVillager()
+    {
+        base.AllocateVillager();
+        SetFirerate();
+    }
+
+    public override void DeallocateVillager()
+    {
+        base.DeallocateVillager();
+        SetFirerate();
     }
 
     public override void Attack(GameObject target)
@@ -108,8 +120,11 @@ public class CatapultTower : AttackStructure
 
     void SetFirerate()
     {
-        switch (foodAllocation)
+        switch (allocatedVillagers)
         {
+            case 0:
+                fireRate = 0f;
+                break;
             case 1:
                 fireRate = 0.25f;
                 break;
