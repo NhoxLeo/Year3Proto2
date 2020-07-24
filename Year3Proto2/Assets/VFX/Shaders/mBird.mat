@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mBird
-  m_Shader: {fileID: -6465566751694194690, guid: d5bb91ba2e5fc0f489b5efbd38f45f89,
+  m_Shader: {fileID: -6465566751694194690, guid: ca58b749b1670f840942d7f65537eb5e,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -111,9 +111,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_1EFB1587: 2
+    - Vector1_1EFB1587: 0.4
     - Vector1_1FD2A048: 2
-    - Vector1_1FF4EC26: 3
+    - Vector1_1FF4EC26: 0.02
     - Vector1_CB59F8BE: 8
     - _AORemapMax: 1
     - _AORemapMin: 0
