@@ -81,11 +81,18 @@ public struct PlayerResources
         }
     }
 
-    public void DeductResource(ResourceBundle _bundle)
+    public void DeductResourceBundle(ResourceBundle _bundle)
     {
         rWood -= _bundle.woodCost;
         rMetal -= _bundle.metalCost;
         rFood -= _bundle.foodCost;
+    }
+
+    public void AddResourceBundle(ResourceBundle _bundle)
+    {
+        rWood += _bundle.woodCost;
+        rMetal += _bundle.metalCost;
+        rFood += _bundle.foodCost;
     }
 
     public int Get(ResourceType _type)

@@ -739,8 +739,12 @@ public class StructureManager : MonoBehaviour
     public void DestroySelectedBuilding()
     {
         selectedStructure.DeallocateAll();
-        selectedStructure.Damage(selectedStructure.GetHealth());
-
+        float health = selectedStructure.GetHealth();
+        float maxHealth = selectedStructure.GetMaxHealth();
+        selectedStructure.Damage(health);
+        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structureCosts[selectedStructure.GetStructureName()]);
+        gameMan.playerResources.AddResourceBundle(compensation);
+        FindObjectOfType<HUDManager>().ShowResourceDelta(compensation, false);
         DeselectStructure();
         structureState = StructManState.selecting;
     }

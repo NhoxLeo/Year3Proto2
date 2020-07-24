@@ -363,7 +363,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void TrainVillager()
     {
-
+        Longhaus.TrainVillager();
     }
 
     public void SetVisibility(bool visible)

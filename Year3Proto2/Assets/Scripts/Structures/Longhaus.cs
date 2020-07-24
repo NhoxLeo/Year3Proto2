@@ -45,7 +45,6 @@ public class Longhaus : Structure
         }
     }
 
-
     public static int GetVillagers()
     {
         return villagers;
@@ -134,11 +133,18 @@ public class Longhaus : Structure
 
         if (Input.GetKeyDown(KeyCode.N) && structMan.IsThisStructureSelected(this))
         {
-            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(0, 0, 100)))
-            {
-                villagers++;
-                availableVillagers++;
-            }
+            TrainVillager();
+        }
+    }
+
+    public static void TrainVillager()
+    {
+        ResourceBundle cost = new ResourceBundle(0, 0, 100);
+        if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
+        {
+            villagers++;
+            availableVillagers++;
+            FindObjectOfType<HUDManager>().ShowResourceDelta(cost, true);
         }
     }
 

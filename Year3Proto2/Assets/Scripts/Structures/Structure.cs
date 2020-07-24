@@ -245,7 +245,7 @@ public abstract class Structure : MonoBehaviour
         {
             GameManager.IncrementRepairCount();
             if (!_mass) { HUDMan.ShowResourceDelta(repairCost, true); }
-            gameMan.playerResources.DeductResource(repairCost);
+            gameMan.playerResources.DeductResourceBundle(repairCost);
             health = maxHealth;
             return true;
         }

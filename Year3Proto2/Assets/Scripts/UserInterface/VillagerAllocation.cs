@@ -23,6 +23,11 @@ public class VillagerAllocation : MonoBehaviour
     private void LateUpdate()
     {
         SetPosition();
+        if (!target)
+        {
+            //gets rid of phantom widgets
+            Destroy(gameObject);
+        }
     }
 
     private void SetPosition()
@@ -49,6 +54,7 @@ public class VillagerAllocation : MonoBehaviour
         else { target.DeallocateVillager(); }
 
         SetInfo();
+        FindObjectOfType<HUDManager>().RefreshResources();
     }
 
     public void SetInfo()
