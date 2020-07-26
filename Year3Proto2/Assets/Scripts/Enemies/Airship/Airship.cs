@@ -1,7 +1,17 @@
-﻿using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : Airship.cs
+// Description  : Airsips carry enemy troops
+// Author       : Tjeu Vreeburg
+// Mail         : tjeu.vreeburg@gmail.com
 
 public class Airship : MonoBehaviour
 {
@@ -21,6 +31,12 @@ public class Airship : MonoBehaviour
     private Transform[] transforms;
     private float count = 0.0f;
 
+    /**************************************
+    * Name of the Function: Update
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void Update() 
     {
         if(target)
@@ -42,7 +58,13 @@ public class Airship : MonoBehaviour
             } 
         }
     }
-    
+
+    /**************************************
+    * Name of the Function: Embark
+    * @Author: Tjeu Vreeburg
+    * @Parameter: Transform Array, Transform
+    * @Return: void
+    ***************************************/
     public void Embark(Transform[] transforms, Transform pointerParent)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
@@ -57,7 +79,7 @@ public class Airship : MonoBehaviour
             controlPoint = transform.position + (target.position - transform.position) / 2 + Vector3.forward * 20.0f;
 
             // Instantiate and Setup pointer.
-            if (pointerPrefab) pointer = Instantiate(pointerPrefab, pointerParent.transform);
+            if (pointerPrefab) pointer = Instantiate(pointerPrefab, pointerParent);
             AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
             if (airshipPointer) airshipPointer.SetTarget(transform);
 
@@ -68,61 +90,40 @@ public class Airship : MonoBehaviour
         Destroy(this);
     }
 
-
-    IEnumerator Disembark()
-    {
-        // Generate spawnpoints based on enemy count.
-        List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, transforms.Length);
-
-        float time = 0.0f;
-
-        // Iterate through all the enemy prefabs.
-        for (int i = 0; i < transforms.Length; i++)
-        {
-            time += 1.0f;
-            Transform enemyPrefab = transforms[i];
-            Vector3 enemySpawnPoint = spawnPoints[i];
-
-            // Check if spawnpoint is available
-            if (enemySpawnPoint != null)
-            {
-                // Instantiate enemy prefabs
-                Transform enemy = Instantiate(enemyPrefab, null);
-                enemy.position = transform.position;
-                enemy.DOJump(enemySpawnPoint, 0.2f, 1, 1.0f);
-            }
-        }
-
-        yield return new WaitForSeconds(time);
-
-        Depart();
-
-        yield return 0;
-    }
-
     private void Depart()
     {
         //Make airship return to original location.
         target = null;
     }
 
+    /**************************************
+    * Name of the Function: GenerateSpawnPoints
+    * @Author: Tjeu Vreeburg
+    * @Parameter: Transform, Integer
+    * @Return: Vector3 List
+    ***************************************/
     private List<Vector3> GenerateSpawnPoints(Transform _transform, int amount)
     {
         List<Vector3> vectors = new List<Vector3>();
 
-        Vector3 halfScale = _transform.localScale / 2.0f;
+        Vector3 halfScale = target.localScale / 2.0f;
 
-        // Generate coordinate offsets.
         float xOffset = halfScale.x - spawnPointOffset;
         float zOffset = halfScale.z - spawnPointOffset;
 
+        int columns = (int)Mathf.Sqrt(capacity);
+
         for (int i = 0; i < amount; i++)
         {
+            float xPosition = i % columns / 2.0f * xOffset;
+            float yPosition = halfScale.y;
+            float zPosition = i / columns / 2.0f * zOffset;
+
             // Create position based on offset and index.
             Vector3 position = new Vector3(
-                _transform.localPosition.x + (i % (Mathf.Sqrt(capacity) / 2.0f * xOffset)) - (xOffset / 2.0f),
-                _transform.localPosition.y + halfScale.y,
-                _transform.localPosition.z + (i / (Mathf.Sqrt(capacity) / 2.0f * zOffset)) - (zOffset / 2.0f)
+                target.localPosition.x + xPosition - (xOffset / 2.0f),
+                target.localPosition.y + yPosition,
+                target.localPosition.z + zPosition - (zOffset / 2.0f)
             );
 
             // Add position to Vector list.
@@ -131,6 +132,12 @@ public class Airship : MonoBehaviour
         return vectors;
     }
 
+    /**************************************
+    * Name of the Function: OnDrawGizmosSelected
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
@@ -144,6 +151,12 @@ public class Airship : MonoBehaviour
         }
     }
 
+    /**************************************
+    * Name of the Function: HasTarget
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: boolean
+    ***************************************/
     public bool HasTarget()
     {
         List<TileBehaviour> list = new List<TileBehaviour>(FindObjectsOfType<TileBehaviour>());
