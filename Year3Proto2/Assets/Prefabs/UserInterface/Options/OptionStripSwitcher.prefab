@@ -232,6 +232,19 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7530026498012540596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7036791308501045853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 390f76a80059f144dbab94a11a0652d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  valueName: {fileID: 7048484334813609466}
 --- !u!1 &5534750564687069823
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,6 +365,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5742052318273070999}
         m_MethodName: ButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7530026498012540596}
+        m_MethodName: Previous
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -494,6 +518,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7229380726144098301}
         m_MethodName: ButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7530026498012540596}
+        m_MethodName: Next
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -647,6 +682,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8d98737b7de1544fb3df17fa638db55, type: 3}
+--- !u!1 &7036791308501045853 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2797416985590909013, guid: b8d98737b7de1544fb3df17fa638db55,
+    type: 3}
+  m_PrefabInstance: {fileID: 5149267510470154760}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &4676872845570321818 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
