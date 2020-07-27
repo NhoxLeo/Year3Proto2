@@ -2,6 +2,20 @@
 using System.Linq;
 using System.Collections.Generic;
 
+//
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : EnemyWaveSystem.cs
+// Description  : Dedicates waves of enemies to airships.
+// Author       : Tjeu Vreeburg 
+// Mail         : tjeu.vreeburg@gmail.com
+//
+
 public class EnemyWaveSystem : MonoBehaviour
 {
     [Header("Properties")]
@@ -21,15 +35,26 @@ public class EnemyWaveSystem : MonoBehaviour
     private float tokens = 0.0f;
     private float tokenIncrement = 0.0f;
 
-    private int waverCounter = 0;
-
     private MessageBox messageBox;
 
+
+    /**************************************
+    * Name of the Function: Start
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void Start()
     {
         messageBox = FindObjectOfType<MessageBox>();
     }
 
+    /**************************************
+    * Name of the Function: Update
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void Update()
     {
         time -= Time.deltaTime;
@@ -54,8 +79,6 @@ public class EnemyWaveSystem : MonoBehaviour
 
                 messageBox.ShowMessage("Invaders incoming!", 3.5f);
                 GameManager.CreateAudioEffect("horn", transform.position);
-
-                waverCounter += 1;
             }
 
             tokens = 0.0f;
@@ -64,6 +87,12 @@ public class EnemyWaveSystem : MonoBehaviour
         tokens += tokenIncrement * Time.deltaTime;
     }
 
+    /**************************************
+    * Name of the Function: DedicateAirships
+    * @Author: Tjeu Vreeburg
+    * @Parameter: Transform Array
+    * @Return: List of Transform Arrays
+    ***************************************/
     private List<Transform[]> DedicateAirships(Transform[] enemies)
     {
         List<Transform[]> enemiesInAirships = new List<Transform[]>();
@@ -85,6 +114,12 @@ public class EnemyWaveSystem : MonoBehaviour
         return enemiesInAirships;
     }
 
+    /**************************************
+    * Name of the Function: DedicateEnemies
+    * @Author: Tjeu Vreeburg
+    * @Parameter: Integer
+    * @Return: Transform Array
+    ***************************************/
     private Transform[] DedicateEnemies(int enemiesLeft)
     {
         Transform[] enemies = new Transform[enemiesLeft];
@@ -106,6 +141,12 @@ public class EnemyWaveSystem : MonoBehaviour
         return enemies;
     }
 
+    /**************************************
+    * Name of the Function: GetWeightage
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: float
+    ***************************************/
     private float GetWeightage()
     {
         SuperManager superManager = SuperManager.GetInstance();

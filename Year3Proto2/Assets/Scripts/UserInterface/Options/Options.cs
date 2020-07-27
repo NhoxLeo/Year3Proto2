@@ -1,42 +1,95 @@
-﻿using System.Collections;
+﻿using Boo.Lang;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+
+struct OptionSwitcherData
+{
+    public int index;
+    public string[] values;
+    public OptionSwitcherData(int _index, string[] _values)
+    {
+        index = _index;
+        values = _values;
+    }
+}
+
 
 public class Options : MonoBehaviour
 {
-    //string filePath = Application.persistentDataPath + "/options.dat";
+    // TODO: delegates, control values, saving...
 
-    public void Save()
+    [SerializeField] private Transform[] optionObjects;
+
+    private Dictionary<string, OptionSwitcherData> switchers;
+    private Dictionary<string, float> sliders;
+    private Dictionary<string, bool> checkBoxes;
+
+    private void Start()
     {
-        OptionObject[] optionObjects = FindObjectsOfType<OptionObject>();
+        switchers = new Dictionary<string, OptionSwitcherData>
+        {
+            { "RESOLUTION", new OptionSwitcherData(0, Screen.resolutions.Select(o => o.ToString()).ToArray()) },
+            { "QUALITY", new OptionSwitcherData(0, QualitySettings.names) },
+            { "TEXTURE_QUALITY", new OptionSwitcherData(0, QualitySettings.names) },
+            { "SHADOW_QUALITY", new OptionSwitcherData(0, QualitySettings.names) },
+            { "ANTI_ALIASING", new OptionSwitcherData(0, QualitySettings.names) }
+        };
 
+        sliders = new Dictionary<string, float>
+        {
+            { "MASTER_VOLUME", 0.5f },
+            { "MUSIC_VOLUME", 0.5f },
+            { "AMBIENT_VOLUME", 0.5f },
+            { "SOUND_EFFECTS_VOLUME", 0.5f },
+        };
+
+        checkBoxes = new Dictionary<string, bool>
+        {
+            { "FULL_SCREEN_MODE", true },
+            { "V_SYNC", true },
+            { "ENEMY_INDICATORS", true},
+            { "ENVIRONMENT_TOOLTIPS", true },
+            { "AMBIENT_OCCLUSION", true },
+            { "WAVE_HORN_START", true }
+        };
+    }
+
+    public void LoadData()
+    {
         for (int i = 0; i < optionObjects.Length; i++)
         {
-            Transform transform = optionObjects[i].transform;
+            Transform optionObject = optionObjects[i];
 
-            string key = transform.name.Replace(" ", "_");
-            string value = null;
+            OptionSwitcher optionSwitcher = optionObject.GetComponent<OptionSwitcher>();
+            if (optionSwitcher)
+            {
+                if (switchers.TryGetValue(optionSwitcher.GetKey(), out OptionSwitcherData data))
+                {
+                    optionSwitcher.SetValues(data.values);
+                    optionSwitcher.Deserialise(data.index);
+                }
+            }
 
-            OptionSwitcher optionSwitcher = transform.GetComponent<OptionSwitcher>();
-            if (optionSwitcher) value = optionSwitcher.GetValues().ToString();
+            OptionSlider optionSlider = optionObject.GetComponent<OptionSlider>();
+            if (optionSlider)
+            {
+                if (sliders.TryGetValue(optionSlider.GetKey(), out float data)) optionSlider.Deserialise(data);
+            }
 
-            OptionCheckBox optionCheckBox = transform.GetComponent<OptionCheckBox>();
-            if (optionCheckBox) value = optionCheckBox.IsTicked().ToString();
-
-            OptionSlider optionSlider = transform.GetComponent<OptionSlider>();
-            if (optionSlider) value = optionSlider.GetValue().ToString();
-
-            PlayerPrefs.SetString(key.ToUpper(), value);
-            Debug.Log(key + " = " + value);
+            OptionCheckBox optionCheckBox = optionObject.GetComponent<OptionCheckBox>();
+            if (optionCheckBox)
+            {
+                if (checkBoxes.TryGetValue(optionCheckBox.GetKey(), out bool data)) optionCheckBox.Deserialise(data);
+            }
         }
     }
 
-    public void Load()
+    public void SaveData()
     {
-
+        // TODO:
+        // callbacks
+        // storing data
     }
 }
