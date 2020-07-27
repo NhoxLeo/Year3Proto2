@@ -72,10 +72,10 @@ public class EnemyWaveSystem : MonoBehaviour
             if (dedicatedEnemies.Length > 0)
             {
                 //Dedicate enemies to airships
-                List<Transform[]> dedicatedAirships = DedicateAirships(dedicatedEnemies);
+                List<List<Transform>> dedicatedAirships = DedicateAirships(dedicatedEnemies);
                 Debug.Log("Dedicated Airships: " + dedicatedAirships.Count);
 
-                foreach (Transform[] transforms in dedicatedAirships) airshipSpawner.Spawn(transforms);
+                foreach (List<Transform> transforms in dedicatedAirships) airshipSpawner.Spawn(transforms);
 
                 messageBox.ShowMessage("Invaders incoming!", 3.5f);
                 GameManager.CreateAudioEffect("horn", transform.position);
@@ -93,24 +93,26 @@ public class EnemyWaveSystem : MonoBehaviour
     * @Parameter: Transform Array
     * @Return: List of Transform Arrays
     ***************************************/
-    private List<Transform[]> DedicateAirships(Transform[] enemies)
+    private List<List<Transform>> DedicateAirships(Transform[] enemies)
     {
-        List<Transform[]> enemiesInAirships = new List<Transform[]>();
-        Transform[] currentBatch = new Transform[enemiesPerAirship];
-
-        if (enemies.Length > enemiesPerAirship)
+        List<List<Transform>> enemiesInAirships = new List<List<Transform>>();
+        List<Transform> currentBatch = new List<Transform>();
+        if(enemies.Length < enemiesPerAirship)
         {
-            for (int i = 0; i > enemies.Length; i++)
+            for (int i = 0; i > enemies.Length; i++) currentBatch.Add(enemies[i]);
+            enemiesInAirships.Add(currentBatch);
+            return enemiesInAirships;
+        }
+
+        for (int i = 0; i > enemies.Length; i++)
+        {
+            currentBatch.Add(enemies[i]);
+            if ((i % enemiesPerAirship) == 0)
             {
-                currentBatch[i] = enemies[i];
-                if ((i % enemiesPerAirship) == 0)
-                {
-                    enemiesInAirships.Add(currentBatch);
-                    currentBatch = new Transform[enemiesPerAirship];
-                }
+                enemiesInAirships.Add(currentBatch);
+                currentBatch.Clear();
             }
         }
-        if (enemiesInAirships.Count <= 0) enemiesInAirships.Add(currentBatch);
         return enemiesInAirships;
     }
 

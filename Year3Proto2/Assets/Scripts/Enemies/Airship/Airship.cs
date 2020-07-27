@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using System.Collections;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -13,6 +15,14 @@ using UnityEngine;
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
+public enum AirshipState
+{
+    Idle,
+    Move,
+    Deploy,
+    Depart
+}
+
 public class Airship : MonoBehaviour
 {
     [Header("Pointer")]
@@ -25,11 +35,15 @@ public class Airship : MonoBehaviour
     private Vector3 initialLocation;
     private Vector3 controlPoint = Vector3.zero;
 
+    [Header("Attributes")]
+    [SerializeField] private float speed = 2.4f;
+    [SerializeField] private List<Transform> transforms;
+
     private Transform target;
     private float distance = float.MaxValue;
-
-    private Transform[] transforms;
     private float count = 0.0f;
+
+    private AirshipState airshipState;
 
     /**************************************
     * Name of the Function: Update
@@ -41,22 +55,68 @@ public class Airship : MonoBehaviour
     {
         if(target)
         {
-            if(count < 1.0f)
+            switch(airshipState)
             {
-                count += 0.02f * Time.deltaTime;
-                Vector3 oneTwo = Vector3.Lerp(initialLocation, controlPoint, count);
-                Vector3 twoThree = Vector3.Lerp(controlPoint, target.position, count);
+                case AirshipState.Depart:
+                    Vector3 difference = initialLocation - transform.position;
+                    if (difference.sqrMagnitude < 1.0f)
+                    {
+                        Destroy(gameObject);
+                        return;
+                    }
 
-                Vector3 position = Vector3.Lerp(oneTwo, twoThree, count);
-                position.y = 0.0f;
+                    transform.position = difference.normalized * speed;
+                    break;
+                case AirshipState.Move:
+                    if (count < 1.0f)
+                    {
+                        // Redo movement bezier. 
 
-                Vector3 direction = position - transform.position;
+                        count += 0.02f * Time.deltaTime;
+                        Vector3 oneTwo = Vector3.Lerp(initialLocation, controlPoint, count);
+                        Vector3 twoThree = Vector3.Lerp(controlPoint, target.position, count);
 
-                // Update Airship Values
-                transform.rotation = Quaternion.LookRotation(direction.normalized);
-                transform.position = position;
-            } 
+                        Vector3 position = Vector3.Lerp(oneTwo, twoThree, count);
+                        position.y = 0.0f;
+
+                        Vector3 direction = position - transform.position;
+
+                        // Update Airship Values
+                        transform.rotation = Quaternion.LookRotation(direction.normalized);
+                        transform.position = position;
+                    } 
+                    else
+                    {
+                        airshipState = AirshipState.Idle;
+                        StartCoroutine(Deploy(1.0f));
+                    }
+                    break;
+            }
         }
+    }
+
+    /**************************************
+    * Name of the Function: Deploy
+    * @Author: Tjeu Vreeburg
+    * @Parameter: Float
+    * @Return: IEnumerator
+    ***************************************/
+    
+    private IEnumerator Deploy(float seconds)
+    {
+        WaitForSeconds wait = new WaitForSeconds(seconds);
+        List<Vector3> spawnPoints = GenerateSpawnPoints();
+        for (int i = 0; i < transforms.Count; i++)
+        {
+            Debug.Log("Airship Deploying " + i);
+            Transform instantiatedTransform = Instantiate(transforms[i]);
+            instantiatedTransform.DOLocalJump(spawnPoints[i], 0.1f, 1, seconds);
+            yield return wait;
+        }
+
+        airshipState = AirshipState.Depart;
+        target = null;
+        yield return null;
     }
 
     /**************************************
@@ -65,7 +125,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform Array, Transform
     * @Return: void
     ***************************************/
-    public void Embark(Transform[] transforms, Transform pointerParent)
+    public void Embark(List<Transform> transforms, Transform pointerParent)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
@@ -84,16 +144,12 @@ public class Airship : MonoBehaviour
             if (airshipPointer) airshipPointer.SetTarget(transform);
 
             this.transforms = transforms;
+            airshipState = AirshipState.Move;
+
             return;
         }
 
         Destroy(this);
-    }
-
-    private void Depart()
-    {
-        //Make airship return to original location.
-        target = null;
     }
 
     /**************************************
@@ -102,7 +158,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform, Integer
     * @Return: Vector3 List
     ***************************************/
-    private List<Vector3> GenerateSpawnPoints(Transform _transform, int amount)
+    private List<Vector3> GenerateSpawnPoints()
     {
         List<Vector3> vectors = new List<Vector3>();
 
@@ -113,7 +169,7 @@ public class Airship : MonoBehaviour
 
         int columns = (int)Mathf.Sqrt(capacity);
 
-        for (int i = 0; i < amount; i++)
+        for (int i = 0; i < transforms.Count; i++)
         {
             float xPosition = i % columns / 2.0f * xOffset;
             float yPosition = halfScale.y;
@@ -146,7 +202,7 @@ public class Airship : MonoBehaviour
         Gizmos.DrawSphere(target.position, 0.2f);
 
         if (target && transforms != null) {
-            List<Vector3> spawnPoints = GenerateSpawnPoints(target.transform, transforms.Length);
+            List<Vector3> spawnPoints = GenerateSpawnPoints();
             foreach (Vector3 spawnPoint in spawnPoints) Gizmos.DrawSphere(spawnPoint, 0.2f);
         }
     }

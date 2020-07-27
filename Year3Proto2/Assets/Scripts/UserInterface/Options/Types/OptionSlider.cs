@@ -3,12 +3,16 @@ using UnityEngine.UI;
 
 public class OptionSlider : OptionObject, OptionData<float>
 {
-    [SerializeField] private Slider slider;
     private float data;
 
     public void Deserialise(float _data)
     {
         data = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetFloat(key) : _data;
+    }
+
+    public void UpdateValue(Slider slider)
+    {
+        data = slider.value;
     }
 
     public float GetData()
@@ -24,10 +28,5 @@ public class OptionSlider : OptionObject, OptionData<float>
     public void SetData(float _data)
     {
         data = _data;
-    }
-
-    private void Start()
-    {
-        slider.onValueChanged.AddListener(value => data = value); 
     }
 }
