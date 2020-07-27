@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -44,9 +45,9 @@ public class AirshipSpawner : MonoBehaviour
     * @Parameter: Transform Array
     * @Return: void
     ***************************************/
-    public void Spawn(Transform[] transforms)
+    public void Spawn(List<Transform> transforms)
     {
-        Debug.Log("Spawning " + transforms.Length + " Enemies");
+        Debug.Log("Spawning " + transforms.Count + " Enemies");
 
         float angle = Random.Range(0.0f, 360.0f);
         Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance)

@@ -37,11 +37,10 @@ public class Airship : MonoBehaviour
 
     [Header("Attributes")]
     [SerializeField] private float speed = 2.4f;
+    [SerializeField] private List<Transform> transforms;
 
     private Transform target;
     private float distance = float.MaxValue;
-
-    [SerializeField] private Transform[] transforms;
     private float count = 0.0f;
 
     private AirshipState airshipState;
@@ -107,7 +106,7 @@ public class Airship : MonoBehaviour
     {
         WaitForSeconds wait = new WaitForSeconds(seconds);
         List<Vector3> spawnPoints = GenerateSpawnPoints();
-        for (int i = 0; i < transforms.Length; i++)
+        for (int i = 0; i < transforms.Count; i++)
         {
             Debug.Log("Airship Deploying " + i);
             Transform instantiatedTransform = Instantiate(transforms[i]);
@@ -126,7 +125,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform Array, Transform
     * @Return: void
     ***************************************/
-    public void Embark(Transform[] transforms, Transform pointerParent)
+    public void Embark(List<Transform> transforms, Transform pointerParent)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
@@ -170,7 +169,7 @@ public class Airship : MonoBehaviour
 
         int columns = (int)Mathf.Sqrt(capacity);
 
-        for (int i = 0; i < transforms.Length; i++)
+        for (int i = 0; i < transforms.Count; i++)
         {
             float xPosition = i % columns / 2.0f * xOffset;
             float yPosition = halfScale.y;
