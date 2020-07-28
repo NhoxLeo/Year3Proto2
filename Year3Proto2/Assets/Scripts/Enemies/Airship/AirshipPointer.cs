@@ -1,6 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : AirshipSpawner.cs
+// Description  : Spawns enemy airships
+// Author       : Tjeu Vreeburg
+// Mail         : tjeu.vreeburg@gmail.com
 
 public class AirshipPointer : MonoBehaviour
 {
@@ -12,6 +22,12 @@ public class AirshipPointer : MonoBehaviour
     private Transform target;
     private Vector3 center;
 
+    /**************************************
+    * Name of the Function: Start
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void Start()
     {
         // Data Assignment
@@ -21,6 +37,12 @@ public class AirshipPointer : MonoBehaviour
         transform.SetParent(FindObjectOfType<Canvas>().transform);
     }
 
+    /**************************************
+    * Name of the Function: Update
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void Update()
     {
         //Converting world co-ordinates to screen.
@@ -57,6 +79,12 @@ public class AirshipPointer : MonoBehaviour
         }
     }
 
+    /**************************************
+    * Name of the Function: SetTarget
+    * @Author: Tjeu Vreeburg
+    * @Parameter: Transform
+    * @Return: void
+    ***************************************/
     public void SetTarget(Transform target)
     {
         this.target = target;

@@ -129,16 +129,16 @@ public class CatapultTower : AttackStructure
                 fireRate = 0.25f;
                 break;
             case 2:
-                fireRate = 1f / 3.5f;
-                break;
-            case 3:
                 fireRate = 1f / 3f;
                 break;
+            case 3:
+                fireRate = 0.5f;
+                break;
             case 4:
-                fireRate = 1f / 2.5f;
+                fireRate = 1f / 1.5f;
                 break;
             case 5:
-                fireRate = 0.5f;
+                fireRate = 1.0f;
                 break;
         }
         fireDelay = 1 / fireRate;

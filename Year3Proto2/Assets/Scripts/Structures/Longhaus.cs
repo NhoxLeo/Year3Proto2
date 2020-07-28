@@ -22,6 +22,16 @@ public class Longhaus : Structure
     [SerializeField]
     private int villagerHungerModifier = 2;
 
+    public static int GetStarveTicks()
+    {
+        return starveTicks;
+    }
+
+    public static void SetStarveTicks(int _ticks)
+    {
+        starveTicks = _ticks;
+    }
+
     public static void AddStarveTicks(int _ticks)
     {
         starveTicks += _ticks;
@@ -48,6 +58,11 @@ public class Longhaus : Structure
     public static int GetVillagers()
     {
         return villagers;
+    }
+
+    public static void SetAvailable(int _available)
+    {
+        availableVillagers = _available;
     }
 
     public static void SetVillagers(int _villagers)
