@@ -689,6 +689,7 @@ public class StructureManager : MonoBehaviour
                                                             towerPlaced = true;
                                                         }
                                                         SelectStructure(structure);
+                                                        structure.AllocateVillager();
                                                         structureState = StructManState.selected;
                                                     }
                                                 }
