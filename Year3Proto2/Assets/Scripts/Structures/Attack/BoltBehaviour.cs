@@ -11,6 +11,7 @@ public class BoltBehaviour : MonoBehaviour
     public bool pierce;
     private Vector3 endPosition;
     private bool endPositionReached = false;
+    private bool damageDealt = false;
 
     private void Start()
     {
@@ -43,18 +44,23 @@ public class BoltBehaviour : MonoBehaviour
     {
         if (!endPositionReached)
         {
-            if (other.gameObject.layer == LayerMask.NameToLayer("EnemyStructureCollider"))
+            if (!damageDealt || pierce)
             {
-                Enemy enemy = other.GetComponentInParent<Enemy>();
-                if (enemy)
+                if (other.gameObject.layer == LayerMask.NameToLayer("EnemyStructureCollider"))
                 {
-                    enemy.Damage(damage);
-                    if (!pierce)
+                    Enemy enemy = other.GetComponentInParent<Enemy>();
+                    if (enemy)
                     {
-                        Destroy(gameObject);
+                        enemy.Damage(damage);
+                        damageDealt = true;
+                        if (!pierce)
+                        {
+                            Destroy(gameObject);
+                        }
                     }
                 }
             }
+            
         }
     }
 }

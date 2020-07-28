@@ -151,7 +151,7 @@ public class SuperManager : MonoBehaviour
         public float health;
         public StructureType type;
         public SaveVector3 position;
-        public int foodAllocation;
+        public int villagers;
         public bool wasPlacedOn;
         public float timeTrained;
     }
@@ -178,6 +178,8 @@ public class SuperManager : MonoBehaviour
         public bool repairMessage;
         public bool repairAll;
         public int nextStructureID;
+        public int villagers;
+        public int availableVillagers;
     }
 
     [Serializable]
@@ -499,6 +501,8 @@ public class SuperManager : MonoBehaviour
         currentLevel = _matchData.levelID;
         enemySpawner.SetKillCount(_matchData.enemiesKilled);
         gameMan.gameAlreadyWon = _matchData.matchWon;
+        Longhaus.SetVillagers(_matchData.villagers);
+        Longhaus.SetAvailable(_matchData.availableVillagers);
         // not so easy stuff...
 
         // structures
@@ -587,7 +591,9 @@ public class SuperManager : MonoBehaviour
             enemiesKilled = enemySpawner.GetKillCount(),
             spawnerCooldown = enemySpawner.cooldown,
             matchWon = gameMan.WinConditionIsMet() || gameMan.gameAlreadyWon,
-            nextStructureID = structMan.GetNextStructureID()
+            nextStructureID = structMan.GetNextStructureID(),
+            villagers = Longhaus.GetVillagers(),
+            availableVillagers = Longhaus.GetAvailable()
         };
 
         // not so easy stuff...
@@ -653,7 +659,7 @@ public class SuperManager : MonoBehaviour
                     structure = structure.GetStructureName(),
                     type = structure.GetStructureType(),
                     position = new SaveVector3(structure.transform.position),
-                    foodAllocation = structure.GetFoodAllocation(),
+                    villagers = structure.GetAllocated(),
                     health = structure.GetHealth(),
                     ID = structure.GetID()
                 };

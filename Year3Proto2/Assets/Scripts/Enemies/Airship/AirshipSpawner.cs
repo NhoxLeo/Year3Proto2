@@ -1,6 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : AirshipSpawner.cs
+// Description  : Spawns enemy airships
+// Author       : Tjeu Vreeburg
+// Mail         : tjeu.vreeburg@gmail.com
 
 public class AirshipSpawner : MonoBehaviour
 {
@@ -10,6 +21,12 @@ public class AirshipSpawner : MonoBehaviour
 
     private float distance = 0.0f;
 
+    /**************************************
+    * Name of the Function: Start
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void Start()
     {
         // Find all tilebehaviours in scene and calculate furthest distance tile from center/longhaus
@@ -20,11 +37,17 @@ public class AirshipSpawner : MonoBehaviour
             if (distance > this.distance) this.distance = distance;
         }
         distance = Mathf.Sqrt(distance) + radiusOffset;
-    } 
-    
-    public void Spawn(Transform[] transforms)
+    }
+
+    /**************************************
+    * Name of the Function: Spawn
+    * @Author: Tjeu Vreeburg
+    * @Parameter: Transform Array
+    * @Return: void
+    ***************************************/
+    public void Spawn(List<Transform> transforms)
     {
-        Debug.Log("Spawning " + transforms.Length + " Enemies");
+        Debug.Log("Spawning " + transforms.Count + " Enemies");
 
         float angle = Random.Range(0.0f, 360.0f);
         Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance)
@@ -38,6 +61,12 @@ public class AirshipSpawner : MonoBehaviour
         if (airship.HasTarget()) airship.Embark(transforms, pointerParent);
     }
 
+    /**************************************
+    * Name of the Function: OnDrawGizmosSelected
+    * @Author: Tjeu Vreeburg
+    * @Parameter: n/a
+    * @Return: void
+    ***************************************/
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;

@@ -11,9 +11,9 @@ using UnityEditor.AnimatedValues;
 
 public enum StructManState
 {
-    selecting,
-    selected,
-    moving
+    Selecting,
+    Selected,
+    Moving
 };
 
 [Serializable]
@@ -97,7 +97,7 @@ public class StructureManager : MonoBehaviour
     public static string PathPGP;
 
     // PRE-DEFINED
-    private StructManState structureState = StructManState.selecting;
+    private StructManState structureState = StructManState.Selecting;
     private bool towerPlaced = false;
     private bool structureFromStore = false;
     private Structure hoveroverStructure = null;
@@ -125,8 +125,6 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Mine" },
         { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
     };
-
-
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
@@ -219,8 +217,7 @@ public class StructureManager : MonoBehaviour
     {
         return selectedStructure == _structure;
     }
-
-
+    
     private void DefineDictionaries()
     {
         structureDict = new Dictionary<string, StructureDefinition>
@@ -386,7 +383,7 @@ public class StructureManager : MonoBehaviour
                 if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
                 switch (structureState)
                 {
-                    case StructManState.selecting:
+                    case StructManState.Selecting:
                         if (!Input.GetMouseButton(1))
                         {
                             if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
@@ -407,7 +404,7 @@ public class StructureManager : MonoBehaviour
                                         if (Input.GetMouseButtonDown(0))
                                         {
                                             SelectStructure(hitStructure);
-                                            structureState = StructManState.selected;
+                                            structureState = StructManState.Selected;
                                         }
                                     }
                                     else
@@ -445,11 +442,11 @@ public class StructureManager : MonoBehaviour
                             hoveroverTime = 0f;
                         }
                         break;
-                    case StructManState.selected:
+                    case StructManState.Selected:
                         if (!selectedStructure)
                         {
                             DeselectStructure();
-                            structureState = StructManState.selecting;
+                            structureState = StructManState.Selecting;
                             break;
                         }
 
@@ -533,7 +530,7 @@ public class StructureManager : MonoBehaviour
                                     else
                                     {
                                         DeselectStructure();
-                                        structureState = StructManState.selecting;
+                                        structureState = StructManState.Selecting;
                                         break;
                                     }
                                 }
@@ -546,7 +543,7 @@ public class StructureManager : MonoBehaviour
                             }
                         }
                         break;
-                    case StructManState.moving:
+                    case StructManState.Moving:
                         if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
                         if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
                         {
@@ -561,35 +558,31 @@ public class StructureManager : MonoBehaviour
                                         if (tile.GetPlayable())
                                         {
                                             bool canPlaceHere = false;
-                                            //bool hitFogMask = Physics.Raycast(tile.transform.position + Vector3.up * 10f, Vector3.down, out RaycastHit fogMaskHit, Mathf.Infinity, LayerMask.GetMask("FogMask"));
                                             // If the tile we hit has an attached object...
                                             Structure attached = tile.GetAttached();
                                             StructureType newStructureType = structure.GetStructureType();
                                             if (attached)
-                                            {
-                                                //if (hitFogMask)
-                                                //{
-                                                    StructureType attachedStructureType = attached.GetStructureType();
-                                                    Vector3 hitPos = hit.point;
-                                                    hitPos.y = structure.sitHeight;
-                                                    structure.transform.position = hitPos;
+                                            { 
+                                                StructureType attachedStructureType = attached.GetStructureType();
+                                                Vector3 hitPos = hit.point;
+                                                hitPos.y = structure.sitHeight;
+                                                structure.transform.position = hitPos;
 
-                                                    SetStructureColour(Color.red);
+                                                SetStructureColour(Color.red);
 
-                                                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                                    if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+                                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                                                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
 
-                                                    if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                                    else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                                    else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                                    else if (attachedStructureType == StructureType.environment)
+                                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
+                                                else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
+                                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
+                                                else if (attachedStructureType == StructureType.environment)
+                                                {
+                                                    if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
                                                     {
-                                                        if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
-                                                        {
-                                                            canPlaceHere = true;
-                                                        }
+                                                        canPlaceHere = true;
                                                     }
-                                                //}
+                                                }
                                             }
                                             //else { canPlaceHere = hitFogMask; }
                                             else { canPlaceHere = true; }
@@ -693,7 +686,8 @@ public class StructureManager : MonoBehaviour
                                                             towerPlaced = true;
                                                         }
                                                         SelectStructure(structure);
-                                                        structureState = StructManState.selected;
+                                                        structure.AllocateVillager();
+                                                        structureState = StructManState.Selected;
                                                     }
                                                 }
                                             }
@@ -710,12 +704,12 @@ public class StructureManager : MonoBehaviour
                             if (structureFromStore)
                             {
                                 DeselectStructure();
-                                structureState = StructManState.selecting;
+                                structureState = StructManState.Selecting;
                             }
                             else
                             {
                                 SelectStructure(structure);
-                                structureState = StructManState.selected;
+                                structureState = StructManState.Selected;
                             }
                             messageBox.HideMessage();
                         }
@@ -746,7 +740,7 @@ public class StructureManager : MonoBehaviour
         gameMan.playerResources.AddResourceBundle(compensation);
         FindObjectOfType<HUDManager>().ShowResourceDelta(compensation, false);
         DeselectStructure();
-        structureState = StructManState.selecting;
+        structureState = StructManState.Selecting;
     }
 
     public bool BuyBuilding()
@@ -806,7 +800,7 @@ public class StructureManager : MonoBehaviour
     {
         if (structure)
         {
-            if (structureState == StructManState.moving)
+            if (structureState == StructManState.Moving)
             {
                 if (structureFromStore)
                 {
@@ -821,7 +815,7 @@ public class StructureManager : MonoBehaviour
                     structureOldTile.Attach(structure);
                     structureOldTile = null;
                 }
-                structureState = StructManState.selected;
+                structureState = StructManState.Selected;
             }
         }
     }
@@ -845,7 +839,7 @@ public class StructureManager : MonoBehaviour
 
     public bool SetBuilding(string _building)
     {
-        if (structureState != StructManState.moving)
+        if (structureState != StructManState.Moving)
         {
             DeselectStructure();
             structureFromStore = true;
@@ -853,7 +847,7 @@ public class StructureManager : MonoBehaviour
             structureInstance.transform.position = Vector3.down * 10f;
             structure = structureInstance.GetComponent<Structure>();
             // Put the manager back into moving mode.
-            structureState = StructManState.moving;
+            structureState = StructManState.Moving;
             if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
             selectedStructure = null;
             buildingInfo.showPanel = false;
@@ -1124,7 +1118,7 @@ public class StructureManager : MonoBehaviour
 
     private void HideBuilding()
     {
-        if (structure && structureState == StructManState.moving)
+        if (structure && structureState == StructManState.Moving)
         {
             structure.transform.position = Vector3.down * 10f;
         }
@@ -1221,7 +1215,7 @@ public class StructureManager : MonoBehaviour
             Debug.LogError("No tile at _saveData.position, failed to load.");
             return;
         }
-        newStructure.SetFoodAllocation(_saveData.foodAllocation);
+        newStructure.SetAllocated(_saveData.villagers);
         ResourceStructure resourceStructComp = newStructure.gameObject.GetComponent<ResourceStructure>();
         if (resourceStructComp)
         {

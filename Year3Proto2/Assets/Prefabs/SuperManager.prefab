@@ -43,8 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8eb648273f3bde42883087f56122851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saveData:
-    researchPoints: 0
-  researchDefinitions: []
-  levels: []
   currentLevel: 0
+  startMaxed: 0

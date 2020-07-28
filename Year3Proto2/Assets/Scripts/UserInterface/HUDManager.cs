@@ -274,16 +274,44 @@ public class HUDManager : MonoBehaviour
 
         if (buildMode)
         {
-            FindObjectOfType<BuildPanel>().showPanel = true;
             villAllocCanvas.DOFade(0.0f, 0.3f);
+            SetAllVillagerWidgets(false);
+            FindObjectOfType<BuildPanel>().showPanel = true;
             buildButtonText.text = "BUILDING";
         }
         else
         {
-            FindObjectOfType<BuildPanel>().showPanel = false;
+            SetAllVillagerWidgets(true);
             villAllocCanvas.DOFade(1.0f, 0.3f);
+            FindObjectOfType<BuildPanel>().showPanel = false;
             buildButtonText.text = "VILLAGERS";
         }
     }
 
+    public void ShowOneVillagerWidget(VillagerAllocation _widget)
+    {
+        if (buildMode)
+        {
+            SetAllVillagerWidgets(false);
+            _widget.gameObject.SetActive(true);
+            villAllocCanvas.DOFade(1.0f, 0.1f);
+        }
+    }
+
+    public void HideAllVillagerWidgets()
+    {
+        if (buildMode)
+        {
+            villAllocCanvas.DOFade(0.0f, 0.1f);
+        }
+    }
+
+    private void SetAllVillagerWidgets(bool _enabled)
+    {
+        VillagerAllocation[] widgets = Resources.FindObjectsOfTypeAll<VillagerAllocation>();
+        foreach (VillagerAllocation widget in widgets)
+        {
+            widget.gameObject.SetActive(_enabled);
+        }
+    }
 }

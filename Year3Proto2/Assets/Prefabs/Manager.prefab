@@ -82,6 +82,7 @@ MonoBehaviour:
   canvas: {fileID: 0}
   healthBarPrefab: {fileID: 3792998656608216644, guid: 21434597174a3114398c4b8d02c1a600,
     type: 3}
+  villagerWidgetPrefab: {fileID: 0}
 --- !u!82 &4498777283510002559
 AudioSource:
   m_ObjectHideFlags: 0
@@ -324,8 +325,8 @@ MonoBehaviour:
     type: 3}
   enemiesPerWave: 4
   newEnemiesPerWave: 2
-  cooldown: 50
-  timeBetweenWaves: 50
+  cooldown: 90
+  timeBetweenWaves: 60
 --- !u!1001 &1934217215400905385
 PrefabInstance:
   m_ObjectHideFlags: 0

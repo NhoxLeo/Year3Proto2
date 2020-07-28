@@ -131,16 +131,16 @@ public class BallistaTower : AttackStructure
                 fireRate = 0.5f;
                 break;
             case 2:
-                fireRate = 2f / 3f;
-                break;
-            case 3:
                 fireRate = 1f;
                 break;
-            case 4:
+            case 3:
                 fireRate = 1.5f;
                 break;
-            case 5:
+            case 4:
                 fireRate = 2f;
+                break;
+            case 5:
+                fireRate = 2.5f;
                 break;
         }
         fireDelay = 1 / fireRate;
