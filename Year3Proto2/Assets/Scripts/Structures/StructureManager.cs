@@ -16,6 +16,14 @@ public enum StructManState
     Moving
 };
 
+public enum Priority
+{
+    Food,
+    Wood,
+    Metal,
+    Defensive
+}
+
 [Serializable]
 public struct ResourceBundle
 {
@@ -212,6 +220,7 @@ public class StructureManager : MonoBehaviour
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private MessageBox messageBox;
+    private List<Structure> allocationStructures = null;
 
     public bool IsThisStructureSelected(Structure _structure)
     {
@@ -1258,6 +1267,301 @@ public class StructureManager : MonoBehaviour
         return pgp;
     }
 
+    public void SetPriority(Priority priority)
+    {
+        if (allocationStructures == null)
+        {
+            allocationStructures = new List<Structure>();
+        }
+        else
+        {
+            allocationStructures.Clear();
+        }
+        allocationStructures.AddRange(FindObjectsOfType<ResourceStructure>());
+        allocationStructures.AddRange(FindObjectsOfType<AttackStructure>());
+        allocationStructures.AddRange(FindObjectsOfType<DefenseStructure>());
+        DeallocateAll();
+        // goes through all structures and dynamically allocates all the villagers it can based on
+        // available structures
+        // villagers
+
+        // defense
+        // put all villagers into defensive structures evenly
+        // if there are leftovers, put them into food production to get to even point
+        // then evenly distribute between resource structures
+
+        // all production
+        // put enough villagers into food production until holding even
+        // then evenly distribute between resource structures
+        // then into defensive
+
+        // food
+        // fill up all available food production, then distribute into metal / wood, then into defensive
+        // then other resources
+        // then defensive
+
+        // wood
+        // fill up till even on food
+        // fill up all remaining into wood
+        // distribute rest into other resources
+        // then defensive
+
+        // metal
+        // fill up till even on food
+        // fill up all remaining into metal
+        // distribute rest into other resources
+        // then defensive
+    }
+
+    private void DeallocateAll()
+    {
+        foreach (Structure structure in FindObjectsOfType<ResourceStructure>())
+        {
+            structure.DeallocateAll();
+        }
+        foreach (Structure structure in FindObjectsOfType<DefenseStructure>())
+        {
+            structure.DeallocateAll();
+        }
+        foreach (Structure structure in FindObjectsOfType<AttackStructure>())
+        {
+            structure.DeallocateAll();
+        }
+    }
+
+    private void AAProduceMinimumFood()
+    {
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+        // get the necessary amount of food for holding even
+        float foodConsumptionPerSec = Longhaus.GetFoodConsumptionPerSec();
+        List<Farm> farms = new List<Farm>();
+        foreach (Structure structure in allocationStructures)
+        {
+            Farm farmComponent = structure.GetComponent<Farm>();
+            if (farmComponent)
+            {
+                farms.Add(farmComponent);
+            }
+        }
+        farms.Sort((IComparer<Farm>)new SortTileBonusDescendingHelper<Farm>());
+        float foodProductionPerSec = 0f;
+        foreach(Farm farm in farms)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                farm.AllocateVillager();
+                villagersRemaining--;
+                foodProductionPerSec += farm.GetResourcePerVillPerSec();
+                if (foodProductionPerSec >= foodConsumptionPerSec || villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (foodProductionPerSec >= foodConsumptionPerSec || villagersRemaining == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    private void AAFillResourceType(ResourceType _resource)
+    {
+        // fill up the relevant structures until out of villagers or out of structures
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+        List<ResourceStructure> resStructures = new List<ResourceStructure>();
+        switch (_resource)
+        {
+            case ResourceType.wood:
+                foreach (Structure structure in allocationStructures)
+                {
+                    LumberMill lumberComponent = structure.GetComponent<LumberMill>();
+                    if (lumberComponent)
+                    {
+                        resStructures.Add(lumberComponent);
+                    }
+                }
+                break;
+            case ResourceType.metal:
+                foreach (Structure structure in allocationStructures)
+                {
+                    Mine mineComponent = structure.GetComponent<Mine>();
+                    if (mineComponent)
+                    {
+                        resStructures.Add(mineComponent);
+                    }
+                }
+                break;
+            case ResourceType.food:
+                foreach (Structure structure in allocationStructures)
+                {
+                    Farm farmComponent = structure.GetComponent<Farm>();
+                    if (farmComponent)
+                    {
+                        resStructures.Add(farmComponent);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        resStructures.Sort((IComparer<ResourceStructure>)new SortTileBonusDescendingHelper<ResourceStructure>());
+        foreach (ResourceStructure resStructure in resStructures)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                resStructure.AllocateVillager();
+                villagersRemaining--;
+                if (villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (villagersRemaining == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    private void AADistributeProtection()
+    {
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+        // allocate as fairly as possible between defensive structures untill either we are out of villagers, or out of structures
+        List<AttackStructure> attackStructures = new List<AttackStructure>();
+        foreach (Structure structure in allocationStructures)
+        {
+            AttackStructure attackStructure = structure.GetComponent<AttackStructure>();
+            if (attackStructure)
+            {
+                attackStructures.Add(attackStructure);
+            }
+        }
+        List<DefenseStructure> defenseStructures = new List<DefenseStructure>();
+        foreach (Structure structure in allocationStructures)
+        {
+            DefenseStructure defenseStructure = structure.GetComponent<DefenseStructure>();
+            if (defenseStructure)
+            {
+                defenseStructures.Add(defenseStructure);
+            }
+        }
+        // for each structure, allocate one villager, repeat untill villagers are empty or all structures are full
+        for (int i = 0; i < 3; i++)
+        {
+            foreach (AttackStructure attack in attackStructures)
+            {
+                attack.AllocateVillager();
+                villagersRemaining--;
+                if (villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (villagersRemaining == 0)
+            {
+                break;
+            }
+            foreach (DefenseStructure defense in defenseStructures)
+            {
+                defense.AllocateVillager();
+                villagersRemaining--;
+                if (villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (villagersRemaining == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    private void AADistributeResources()
+    {
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+        List<LumberMill> lumberMills = new List<LumberMill>();
+        List<Mine> mines = new List<Mine>();
+        List<Farm> farms = new List<Farm>();
+        foreach (Structure structure in allocationStructures)
+        {
+            LumberMill lumberComponent = structure.GetComponent<LumberMill>();
+            if (lumberComponent)
+            {
+                lumberMills.Add(lumberComponent);
+            }
+        }
+        foreach (Structure structure in allocationStructures)
+        {
+            Mine mineComponent = structure.GetComponent<Mine>();
+            if (mineComponent)
+            {
+                mines.Add(mineComponent);
+            }
+        }
+        foreach (Structure structure in allocationStructures)
+        {
+            Farm farmComponent = structure.GetComponent<Farm>();
+            if (farmComponent)
+            {
+                farms.Add(farmComponent);
+            }
+        }
+        lumberMills.Sort((IComparer<LumberMill>)new SortTileBonusDescendingHelper<LumberMill>());
+        mines.Sort((IComparer<Mine>)new SortTileBonusDescendingHelper<Mine>());
+        farms.Sort((IComparer<Farm>)new SortTileBonusDescendingHelper<Farm>());
+        int lumberCap = lumberMills.Count * 3;
+        int mineCap = mines.Count * 3;
+        int farmCap = farms.Count * 3;
+        // allocate into food once, then
+        if (farms.Count > 0)
+        {
+            farms[0].AllocateVillager();
+            farmCap--;
+        }
+        ResourceType highest = ResourceType.food;
+        while (villagersRemaining > 0 && (lumberCap > 0 || mineCap > 0 || farmCap > 0))
+        {
+            while (villagersRemaining > 0 && lumberCap > 0 && highest != ResourceType.wood)
+            {
+                //if (AAAlocateIntoNext())
+            }
+        }
+
+        // allocate into wood until => food or wood cannot take any more
+        // allocate into metal until => wood
+        // allocate into food until => metal
+        // until out of villagers or structures
+    }
+
+    private bool AAAlocateIntoNext(List<Structure> _structures)
+    {
+        for (int i = 0; i < _structures.Count; i++)
+        {
+            if (_structures[i].GetAllocated() < 3)
+            {
+                _structures[i].AllocateVillager();
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 #if UNITY_EDITOR

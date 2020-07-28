@@ -3,6 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
+public class SortTileBonusDescendingHelper<T> : IComparer
+{
+    int IComparer.Compare(object a, object b)
+    {
+        ResourceStructure structureA = (ResourceStructure)a;
+        ResourceStructure structureB = (ResourceStructure)b;
+        if (structureA.GetTileBonus() < structureB.GetTileBonus())
+            return 1;
+        if (structureA.GetTileBonus() > structureB.GetTileBonus())
+            return -1;
+        else
+            return 0;
+    }
+}
+
 public abstract class ResourceStructure : Structure
 {
     public float productionTime = 3f;
@@ -12,7 +27,6 @@ public abstract class ResourceStructure : Structure
     protected ResourceType resourceType;
     protected int tileBonus = 0;
     private GameObject tileHighlight;
-
 
     private void EnableFogMask()
     {
@@ -176,5 +190,10 @@ public abstract class ResourceStructure : Structure
         }
 
         return resourceDelta;
+    }
+
+    public float GetResourcePerVillPerSec()
+    {
+        return batchSize * tileBonus / productionTime;
     }
 }
