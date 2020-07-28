@@ -11,6 +11,18 @@ public enum EnemyState
     ACTION
 }
 
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : Enemy.cs
+// Description  : Base class for enemies.
+// Author       : Tjeu Vreeburg, Samuel Fortune
+// Mail         : tjeu.vreeburg@gmail.com
+
 public abstract class Enemy : MonoBehaviour
 {
     [HideInInspector]
