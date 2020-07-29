@@ -100,7 +100,7 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
-  productionTime: 3
+  productionTime: 2
   wasPlacedOnHills: 0
 --- !u!33 &8605508258123150373
 MeshFilter:

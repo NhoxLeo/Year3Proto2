@@ -167,7 +167,6 @@ public class Longhaus : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
-        // wood metal food
         resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime - (villagers * villagerHungerModifier / productionTime));
 
         return resourceDelta;
