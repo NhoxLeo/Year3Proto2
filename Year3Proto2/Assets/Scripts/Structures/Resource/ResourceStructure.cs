@@ -44,10 +44,10 @@ public abstract class ResourceStructure : Structure
         return new SortTileBonusDescendingHelper();
     }
 
-    public float productionTime = 3f;
+    public float productionTime = 2f;
     public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
     protected int batchSize = 1;
-    protected float remainingTime = 3f;
+    protected float remainingTime = 2f;
     protected ResourceType resourceType;
     protected int tileBonus = 0;
     private GameObject tileHighlight;
