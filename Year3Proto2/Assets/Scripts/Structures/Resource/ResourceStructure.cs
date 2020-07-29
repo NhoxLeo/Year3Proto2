@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class SortTileBonusDescendingHelper<T> : IComparer
+public class SortTileBonusDescendingHelper : IComparer
 {
     int IComparer.Compare(object a, object b)
     {
@@ -20,6 +20,30 @@ public class SortTileBonusDescendingHelper<T> : IComparer
 
 public abstract class ResourceStructure : Structure
 {
+    public class SortTileBonusDescendingHelper : IComparer<ResourceStructure>
+    {
+        public int Compare(ResourceStructure _structureA, ResourceStructure _structureB)
+        {
+            if (_structureA.GetTileBonus() < _structureB.GetTileBonus())
+            {
+                return 1;
+            }
+            if (_structureA.GetTileBonus() > _structureB.GetTileBonus())
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    public static IComparer<ResourceStructure> SortTileBonusDescending()
+    {
+        return new SortTileBonusDescendingHelper();
+    }
+
     public float productionTime = 3f;
     public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
     protected int batchSize = 1;
@@ -90,10 +114,10 @@ public abstract class ResourceStructure : Structure
                             string adjStructType = "Forest Environment";
                             switch (resourceType)
                             {
-                                case ResourceType.metal:
+                                case ResourceType.Metal:
                                     adjStructType = "Hills Environment";
                                     break;
-                                case ResourceType.food:
+                                case ResourceType.Food:
                                     adjStructType = "Plains Environment";
                                     break;
                                 default:
@@ -178,13 +202,13 @@ public abstract class ResourceStructure : Structure
 
         switch (resourceType)
         {
-            case ResourceType.food:
+            case ResourceType.Food:
                 resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * allocatedVillagers / productionTime);
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 resourceDelta += new Vector3(0f, tileBonus * batchSize * allocatedVillagers / productionTime, 0f);
                 break;
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 resourceDelta += new Vector3(tileBonus * batchSize * allocatedVillagers / productionTime, 0f, 0f);
                 break;
         }

@@ -138,10 +138,10 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                gameMan.AddBatch(new ResourceBatch(3, ResourceType.metal));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.wood));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.food));
-                gameMan.AddBatch(new ResourceBatch(villagers * -villagerHungerModifier, ResourceType.food));
+                gameMan.AddBatch(new ResourceBatch(3, ResourceType.Metal));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Wood));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Food));
+                gameMan.AddBatch(new ResourceBatch(villagers * -villagerHungerModifier, ResourceType.Food));
             }
 
         }
