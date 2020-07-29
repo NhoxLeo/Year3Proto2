@@ -9,7 +9,7 @@ public class VillagerAllocation : MonoBehaviour
     public Structure target;
     private TMP_Text villagerText;
 
-    void Start()
+    void Awake()
     {
         villagerText = transform.Find("VillagerBox/VillagerValue").GetComponent<TMP_Text>();
         SetInfo();

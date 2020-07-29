@@ -11,9 +11,9 @@ public enum StructureType
 
 public enum ResourceType
 {
-    wood,
-    metal,
-    food
+    Wood,
+    Metal,
+    Food
 }
 public abstract class Structure : MonoBehaviour
 {
