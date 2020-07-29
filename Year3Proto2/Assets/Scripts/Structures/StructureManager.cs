@@ -1,4 +1,18 @@
-﻿using System.Collections;
+﻿//
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2018 Media Design School.
+//
+// File Name        : StructureManager.cs
+// Description      : Manager object that handles structures and structure related events.
+// Author           : Samuel Fortune
+// Mail             : Samuel.For7933@mediadesign.school.nz
+//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -115,12 +129,6 @@ public class StructureManager : MonoBehaviour
     private TileBehaviour structureOldTile = null;
     private float hoveroverTime = 0f;
     private int nextStructureID = 0;
-    private bool buildMode = true;
-
-    public void SetBuildMode(bool _buildMode)
-    {
-        buildMode = _buildMode;
-    }
 
     public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -170,6 +178,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, 0 },
         { BuildPanel.Buildings.MetalStorage, 0 }
     };
+    private List<Structure> playerStructures = new List<Structure>();
 
     // Defined in window
     [HideInInspector]
@@ -703,7 +712,6 @@ public class StructureManager : MonoBehaviour
                                             }
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -1543,6 +1551,12 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    //
+    // Date           : 29/07/2020
+    // Author         : Sam
+    // Input          : no parameters
+    // Description    : Part of the Automatic Allocation System. Distributes villagers to resource structures fairly until either there are no more available villagers or all available structures are full.
+    //
     private void AADistributeResources()
     {
         int villagersRemaining = Longhaus.GetAvailable();
@@ -1622,32 +1636,37 @@ public class StructureManager : MonoBehaviour
             mineCap += 3 - mine.GetAllocated();
         }
 
-        float foodProductionAdded = 0.0f;
-        float woodProductionAdded = 0.0f;
-        float metalProductionAdded = 0.0f;
+        Vector3 velocity = gameMan.GetResourceVelocity();
 
-        // allocate into food once, then
-        if (farms.Count > 0)
+        float foodProduction = velocity.z;
+        float woodProduction = velocity.x;
+        float metalProduction = velocity.y;
+
+        ResourceType highest = ResourceType.Metal;
+        if (foodProduction >= woodProduction && foodProduction >= metalProduction)
         {
-            farms[0].AllocateVillager();
-            farmCap--;
+            highest = ResourceType.Food;
         }
-        ResourceType highest = ResourceType.Food;
+        else if (woodProduction >= foodProduction && woodProduction >= metalProduction)
+        {
+            highest = ResourceType.Wood;
+        }
+
 
         while (villagersRemaining > 0 && (lumberCap > 0 || mineCap > 0 || farmCap > 0))
         {
             while (villagersRemaining > 0 && farmCap > 0 && (highest != ResourceType.Food || (lumberCap == 0 && mineCap == 0)))
             {
                 float resourceAdded = AAAlocateIntoNext(farmStructures);
-                foodProductionAdded += resourceAdded;
+                foodProduction += resourceAdded;
                 if (resourceAdded > 0.0f)
                 {
                     farmCap--;
                     villagersRemaining--;
                 }
 
-                float highestProduction = woodProductionAdded > metalProductionAdded ? woodProductionAdded : metalProductionAdded;
-                if (foodProductionAdded > highestProduction)
+                float highestProduction = woodProduction > metalProduction ? woodProduction : metalProduction;
+                if (foodProduction > highestProduction)
                 {
                     highest = ResourceType.Food;
                 }
@@ -1655,15 +1674,15 @@ public class StructureManager : MonoBehaviour
             while (villagersRemaining > 0 && lumberCap > 0 && (highest != ResourceType.Wood || (farmCap == 0 && mineCap == 0)))
             {
                 float resourceAdded = AAAlocateIntoNext(lumberMillStructures);
-                woodProductionAdded += resourceAdded;
+                woodProduction += resourceAdded;
                 if (resourceAdded > 0.0f)
                 {
                     lumberCap--;
                     villagersRemaining--;
                 }
 
-                float highestProduction = foodProductionAdded > metalProductionAdded ? foodProductionAdded : metalProductionAdded;
-                if (woodProductionAdded > highestProduction)
+                float highestProduction = foodProduction > metalProduction ? foodProduction : metalProduction;
+                if (woodProduction > highestProduction)
                 {
                     highest = ResourceType.Wood;
                 }
@@ -1671,15 +1690,15 @@ public class StructureManager : MonoBehaviour
             while (villagersRemaining > 0 && mineCap > 0 && (highest != ResourceType.Metal || (farmCap == 0 && lumberCap == 0)))
             {
                 float resourceAdded = AAAlocateIntoNext(mineStructures);
-                metalProductionAdded += resourceAdded;
+                metalProduction += resourceAdded;
                 if (resourceAdded > 0.0f)
                 {
                     mineCap--;
                     villagersRemaining--;
                 }
 
-                float highestProduction = foodProductionAdded > woodProductionAdded ? foodProductionAdded : woodProductionAdded;
-                if (metalProductionAdded > highestProduction)
+                float highestProduction = foodProduction > woodProduction ? foodProduction : woodProduction;
+                if (metalProduction > highestProduction)
                 {
                     highest = ResourceType.Metal;
                 }
@@ -1687,6 +1706,12 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    //
+    // Date           : 29/07/2020
+    // Author         : Sam
+    // Input          : List<Structure> _structures, the list of structures to allocate into sequentially
+    // Description    : Part of the Automatic Allocation System. Allocates a single villager to the first structure in _structures that has space for it.
+    //
     private float AAAlocateIntoNext(List<Structure> _structures)
     {
         for (int i = 0; i < _structures.Count; i++)
