@@ -9,7 +9,7 @@ public class Mine : ResourceStructure
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.metal;
+        resourceType = ResourceType.Metal;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Mine];
         health = maxHealth;
     }

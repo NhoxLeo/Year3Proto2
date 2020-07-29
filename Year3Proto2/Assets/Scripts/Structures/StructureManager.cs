@@ -16,6 +16,15 @@ public enum StructManState
     Moving
 };
 
+public enum Priority
+{
+    BalancedProduction,
+    Food,
+    Wood,
+    Metal,
+    Defensive
+}
+
 [Serializable]
 public struct ResourceBundle
 {
@@ -212,6 +221,7 @@ public class StructureManager : MonoBehaviour
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private MessageBox messageBox;
+    private List<Structure> allocationStructures = null;
 
     public bool IsThisStructureSelected(Structure _structure)
     {
@@ -655,15 +665,15 @@ public class StructureManager : MonoBehaviour
                                                                 switch (structure.GetStructureName())
                                                                 {
                                                                     case "Lumber Mill":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.wood));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.Wood));
                                                                         structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
                                                                         break;
                                                                     case "Farm":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.food));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.Food));
                                                                         structure.GetComponent<Farm>().wasPlacedOnPlains = true;
                                                                         break;
                                                                     case "Mine":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.metal));
+                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.Metal));
                                                                         structure.GetComponent<Mine>().wasPlacedOnHills = true;
                                                                         break;
                                                                 }
@@ -1258,6 +1268,441 @@ public class StructureManager : MonoBehaviour
         return pgp;
     }
 
+    public void SetPriority(Priority priority)
+    {
+        if (allocationStructures == null)
+        {
+            allocationStructures = new List<Structure>();
+        }
+        else
+        {
+            allocationStructures.Clear();
+        }
+        allocationStructures.AddRange(FindObjectsOfType<ResourceStructure>());
+        allocationStructures.AddRange(FindObjectsOfType<AttackStructure>());
+        allocationStructures.AddRange(FindObjectsOfType<DefenseStructure>());
+        DeallocateAll();
+
+        switch (priority)
+        {
+            case Priority.BalancedProduction:
+                // first even out with food
+                AAProduceMinimumFood();
+
+                // then distribute to all resources fairly
+                AADistributeResources();
+
+                // then distribute to defenses
+                AADistributeProtection();
+
+                break;
+            case Priority.Food:
+                // first put all into food
+                AAFillResourceType(ResourceType.Food);
+
+                // then distribute to all resources fairly
+                AADistributeResources();
+
+                // then distribute to defenses
+                AADistributeProtection();
+
+                break;
+            case Priority.Wood:
+                // first even out with food
+                AAProduceMinimumFood();
+
+                // then put all into wood
+                AAFillResourceType(ResourceType.Wood);
+
+                // then distribute to all resources fairly
+                AADistributeResources();
+
+                // then distribute to defenses
+                AADistributeProtection();
+                break;
+            case Priority.Metal:
+                // first even out with food
+                AAProduceMinimumFood();
+
+                // then put all into wood
+                AAFillResourceType(ResourceType.Metal);
+
+                // then distribute to all resources fairly
+                AADistributeResources();
+
+                // then distribute to defenses
+                AADistributeProtection();
+                break;
+            case Priority.Defensive:
+                // then distribute to defenses
+                AADistributeProtection();
+
+                // first even out with food
+                AAProduceMinimumFood();
+
+                // then distribute to all resources fairly
+                AADistributeResources();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void DeallocateAll()
+    {
+        foreach (Structure structure in FindObjectsOfType<ResourceStructure>())
+        {
+            structure.DeallocateAll();
+        }
+        foreach (Structure structure in FindObjectsOfType<DefenseStructure>())
+        {
+            structure.DeallocateAll();
+        }
+        foreach (Structure structure in FindObjectsOfType<AttackStructure>())
+        {
+            structure.DeallocateAll();
+        }
+    }
+
+    private void AAProduceMinimumFood()
+    {
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+        // get the necessary amount of food for holding even
+        float foodConsumptionPerSec = Longhaus.GetFoodConsumptionPerSec();
+        List<Farm> farms = new List<Farm>();
+        foreach (Structure structure in allocationStructures)
+        {
+            Farm farmComponent = structure.GetComponent<Farm>();
+            if (farmComponent)
+            {
+                farms.Add(farmComponent);
+            }
+        }
+        if (farms.Count > 0)
+        {
+            farms.Sort(ResourceStructure.SortTileBonusDescending());
+        }
+        else
+        {
+            return;
+        }
+        float foodProductionPerSec = 0f;
+        foreach(Farm farm in farms)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                farm.AllocateVillager();
+                villagersRemaining--;
+                foodProductionPerSec += farm.GetResourcePerVillPerSec();
+                if (foodProductionPerSec >= foodConsumptionPerSec || villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (foodProductionPerSec >= foodConsumptionPerSec || villagersRemaining == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    private void AAFillResourceType(ResourceType _resource)
+    {
+        // fill up the relevant structures until out of villagers or out of structures
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+        List<ResourceStructure> resStructures = new List<ResourceStructure>();
+        switch (_resource)
+        {
+            case ResourceType.Wood:
+                foreach (Structure structure in allocationStructures)
+                {
+                    LumberMill lumberComponent = structure.GetComponent<LumberMill>();
+                    if (lumberComponent)
+                    {
+                        resStructures.Add(lumberComponent);
+                    }
+                }
+                break;
+            case ResourceType.Metal:
+                foreach (Structure structure in allocationStructures)
+                {
+                    Mine mineComponent = structure.GetComponent<Mine>();
+                    if (mineComponent)
+                    {
+                        resStructures.Add(mineComponent);
+                    }
+                }
+                break;
+            case ResourceType.Food:
+                foreach (Structure structure in allocationStructures)
+                {
+                    Farm farmComponent = structure.GetComponent<Farm>();
+                    if (farmComponent)
+                    {
+                        resStructures.Add(farmComponent);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        if (resStructures.Count > 0)
+        {
+            
+            resStructures.Sort(ResourceStructure.SortTileBonusDescending());
+        }
+        else
+        {
+            return;
+        }
+        foreach (ResourceStructure resStructure in resStructures)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                resStructure.AllocateVillager();
+                villagersRemaining--;
+                if (villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (villagersRemaining == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    private void AADistributeProtection()
+    {
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+        // allocate as fairly as possible between defensive structures untill either we are out of villagers, or out of structures
+        List<AttackStructure> attackStructures = new List<AttackStructure>();
+        foreach (Structure structure in allocationStructures)
+        {
+            AttackStructure attackStructure = structure.GetComponent<AttackStructure>();
+            if (attackStructure)
+            {
+                attackStructures.Add(attackStructure);
+            }
+        }
+        List<DefenseStructure> defenseStructures = new List<DefenseStructure>();
+        foreach (Structure structure in allocationStructures)
+        {
+            DefenseStructure defenseStructure = structure.GetComponent<DefenseStructure>();
+            if (defenseStructure)
+            {
+                defenseStructures.Add(defenseStructure);
+            }
+        }
+        if (defenseStructures.Count == 0 && attackStructures.Count == 0)
+        { 
+            return;
+        }
+        // for each structure, allocate one villager, repeat untill villagers are empty or all structures are full
+        for (int i = 0; i < 3; i++)
+        {
+            foreach (AttackStructure attack in attackStructures)
+            {
+                attack.AllocateVillager();
+                villagersRemaining--;
+                if (villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (villagersRemaining == 0)
+            {
+                break;
+            }
+            foreach (DefenseStructure defense in defenseStructures)
+            {
+                defense.AllocateVillager();
+                villagersRemaining--;
+                if (villagersRemaining == 0)
+                {
+                    break;
+                }
+            }
+            if (villagersRemaining == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    private void AADistributeResources()
+    {
+        int villagersRemaining = Longhaus.GetAvailable();
+        if (villagersRemaining == 0)
+        {
+            return;
+        }
+
+        List<Farm> farms = new List<Farm>();
+        List<LumberMill> lumberMills = new List<LumberMill>();
+        List<Mine> mines = new List<Mine>();
+
+        foreach (Structure structure in allocationStructures)
+        {
+            Farm farmComponent = structure.GetComponent<Farm>();
+            if (farmComponent)
+            {
+                farms.Add(farmComponent);
+            }
+        }
+        foreach (Structure structure in allocationStructures)
+        {
+            LumberMill lumberComponent = structure.GetComponent<LumberMill>();
+            if (lumberComponent)
+            {
+                lumberMills.Add(lumberComponent);
+            }
+        }
+        foreach (Structure structure in allocationStructures)
+        {
+            Mine mineComponent = structure.GetComponent<Mine>();
+            if (mineComponent)
+            {
+                mines.Add(mineComponent);
+            }
+        }
+
+        if (farms.Count > 0)
+        {
+            farms.Sort(ResourceStructure.SortTileBonusDescending());
+        }
+        if (lumberMills.Count > 0)
+        {
+            lumberMills.Sort(ResourceStructure.SortTileBonusDescending());
+        }
+        if (mines.Count > 0)
+        {
+            mines.Sort(ResourceStructure.SortTileBonusDescending());
+        }
+        else if (farms.Count == 0 && lumberMills.Count == 0)
+        {
+            return;
+        }
+
+        List<Structure> farmStructures = new List<Structure>();
+        List<Structure> lumberMillStructures = new List<Structure>();
+        List<Structure> mineStructures = new List<Structure>();
+
+        farmStructures.AddRange(farms);
+        lumberMillStructures.AddRange(lumberMills);
+        mineStructures.AddRange(mines);
+
+        int farmCap = 0;
+        int lumberCap = 0;
+        int mineCap = 0;
+
+        foreach (Farm farm in farms)
+        {
+            farmCap += 3 - farm.GetAllocated();
+        }
+        foreach (LumberMill lumberMill in lumberMills)
+        {
+            lumberCap += 3 - lumberMill.GetAllocated();
+        }
+        foreach (Mine mine in mines)
+        {
+            mineCap += 3 - mine.GetAllocated();
+        }
+
+        float foodProductionAdded = 0.0f;
+        float woodProductionAdded = 0.0f;
+        float metalProductionAdded = 0.0f;
+
+        // allocate into food once, then
+        if (farms.Count > 0)
+        {
+            farms[0].AllocateVillager();
+            farmCap--;
+        }
+        ResourceType highest = ResourceType.Food;
+
+        while (villagersRemaining > 0 && (lumberCap > 0 || mineCap > 0 || farmCap > 0))
+        {
+            while (villagersRemaining > 0 && farmCap > 0 && (highest != ResourceType.Food || (lumberCap == 0 && mineCap == 0)))
+            {
+                float resourceAdded = AAAlocateIntoNext(farmStructures);
+                foodProductionAdded += resourceAdded;
+                if (resourceAdded > 0.0f)
+                {
+                    farmCap--;
+                    villagersRemaining--;
+                }
+
+                float highestProduction = woodProductionAdded > metalProductionAdded ? woodProductionAdded : metalProductionAdded;
+                if (foodProductionAdded > highestProduction)
+                {
+                    highest = ResourceType.Food;
+                }
+            }
+            while (villagersRemaining > 0 && lumberCap > 0 && (highest != ResourceType.Wood || (farmCap == 0 && mineCap == 0)))
+            {
+                float resourceAdded = AAAlocateIntoNext(lumberMillStructures);
+                woodProductionAdded += resourceAdded;
+                if (resourceAdded > 0.0f)
+                {
+                    lumberCap--;
+                    villagersRemaining--;
+                }
+
+                float highestProduction = foodProductionAdded > metalProductionAdded ? foodProductionAdded : metalProductionAdded;
+                if (woodProductionAdded > highestProduction)
+                {
+                    highest = ResourceType.Wood;
+                }
+            }
+            while (villagersRemaining > 0 && mineCap > 0 && (highest != ResourceType.Metal || (farmCap == 0 && lumberCap == 0)))
+            {
+                float resourceAdded = AAAlocateIntoNext(mineStructures);
+                metalProductionAdded += resourceAdded;
+                if (resourceAdded > 0.0f)
+                {
+                    mineCap--;
+                    villagersRemaining--;
+                }
+
+                float highestProduction = foodProductionAdded > woodProductionAdded ? foodProductionAdded : woodProductionAdded;
+                if (metalProductionAdded > highestProduction)
+                {
+                    highest = ResourceType.Metal;
+                }
+            }
+        }
+    }
+
+    private float AAAlocateIntoNext(List<Structure> _structures)
+    {
+        for (int i = 0; i < _structures.Count; i++)
+        {
+            if (_structures[i].GetAllocated() < 3)
+            {
+                _structures[i].AllocateVillager();
+                ResourceStructure iAsResStruct = _structures[i].GetComponent<ResourceStructure>();
+                if (iAsResStruct)
+                {
+                    return iAsResStruct.GetResourcePerVillPerSec();
+                }
+            }
+        }
+        return 0.0f;
+    }
 }
 
 #if UNITY_EDITOR
