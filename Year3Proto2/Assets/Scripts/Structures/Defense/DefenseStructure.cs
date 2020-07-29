@@ -4,37 +4,23 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
-    public float consumptionTime = 2f;
-    protected float remainingTime = 2f;
-
     protected override void Start()
     {
         base.Start();
         structureType = StructureType.defense;
+        VillagerAllocation villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
+        villagerAllocation.SetTarget(this);
     }
 
-    protected override void Update()
+    public override void OnSelected()
     {
-        base.Update();
-
-        // Food consumption
-        remainingTime -= Time.deltaTime;
-        if (remainingTime <= 0f)
-        {
-            remainingTime = consumptionTime;
-            if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
-            {
-                gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
-            }
-        }
+        base.OnSelected();
+        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
     }
 
-    public override Vector3 GetResourceDelta()
+    public override void OnDeselected()
     {
-        Vector3 resourceDelta = base.GetResourceDelta();
-
-        resourceDelta -= new Vector3(0f, 0f, foodAllocation / consumptionTime);
-
-        return resourceDelta;
+        base.OnDeselected();
+        FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
     }
 }

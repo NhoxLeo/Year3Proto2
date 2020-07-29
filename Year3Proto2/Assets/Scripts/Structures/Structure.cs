@@ -11,9 +11,9 @@ public enum StructureType
 
 public enum ResourceType
 {
-    wood,
-    metal,
-    food
+    Wood,
+    Metal,
+    Food
 }
 public abstract class Structure : MonoBehaviour
 {
@@ -34,12 +34,54 @@ public abstract class Structure : MonoBehaviour
     protected float timeSinceLastHit = Mathf.Infinity;
     protected GameManager gameMan;
     protected SuperManager superMan;
-    StructureManager structMan;
+    protected StructureManager structMan;
     protected BuildingInfo buildingInfo;
     protected HUDManager HUDMan;
     public bool fromSaveData = false;
     public bool saveDataStartFrame = false;
     private GameObject destructionEffect;
+    protected int allocatedVillagers = 0;
+    protected int villagerCapacity = 3;
+    protected VillagerAllocation villagerWidget = null;
+
+    public int GetAllocated()
+    {
+        return allocatedVillagers;
+    }
+
+    public int GetVillagerCapacity()
+    {
+        return villagerCapacity;
+    }
+
+    public void SetAllocated(int _allocated)
+    {
+        allocatedVillagers = _allocated;
+    }
+
+    public virtual void AllocateVillager()
+    {
+        if (Longhaus.VillagerAvailable() && allocatedVillagers < villagerCapacity)
+        {
+            allocatedVillagers++;
+            Longhaus.OnVillagerAllocated();
+        }
+    }
+
+    public virtual void DeallocateVillager()
+    {
+        if (allocatedVillagers > 0)
+        {
+            allocatedVillagers--;
+            Longhaus.OnVillagerDeallocated();
+        }
+    }
+
+    public virtual void DeallocateAll()
+    {
+        Longhaus.ReturnVillagers(allocatedVillagers);
+        allocatedVillagers = 0;
+    }
 
     public void SetID(int _ID)
     {
@@ -103,6 +145,7 @@ public abstract class Structure : MonoBehaviour
 
         if (health <= 0f)
         {
+            Longhaus.RemoveVillagers(allocatedVillagers);
             GameObject destroyedVFX = Instantiate(destructionEffect);
             destroyedVFX.transform.position = transform.position;
         }
@@ -203,7 +246,7 @@ public abstract class Structure : MonoBehaviour
         {
             GameManager.IncrementRepairCount();
             if (!_mass) { HUDMan.ShowResourceDelta(repairCost, true); }
-            gameMan.playerResources.DeductResource(repairCost);
+            gameMan.playerResources.DeductResourceBundle(repairCost);
             health = maxHealth;
             return true;
         }
@@ -243,7 +286,7 @@ public abstract class Structure : MonoBehaviour
         healthBar.fillAmount = 1.0f;
         healthBarInst.SetActive(false);
         // health is set in awake, so this is called after and will affect all structures
-        if (superMan.CurrentLevelHasModifier(SuperManager.k_iPoorTimber)) { health = maxHealth *= 0.5f; }
+        if (superMan.CurrentLevelHasModifier(SuperManager.PoorTimber)) { health = maxHealth *= 0.5f; }
     }
 
     protected virtual void Update()

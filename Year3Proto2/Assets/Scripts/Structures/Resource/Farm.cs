@@ -10,13 +10,13 @@ public class Farm : ResourceStructure
     protected override void Start()
     {
         base.Start();
-        if (superMan.CurrentLevelHasModifier(SuperManager.k_iDryFields)) { batchSize = Mathf.CeilToInt(batchSize / 2f); }
+        if (superMan.CurrentLevelHasModifier(SuperManager.DryFields)) { batchSize = Mathf.CeilToInt(batchSize / 2f); }
     }
 
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.food;
+        resourceType = ResourceType.Food;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Farm];
         health = maxHealth;
     }

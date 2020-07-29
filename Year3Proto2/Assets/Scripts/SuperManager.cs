@@ -9,44 +9,44 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     // CONSTANTS
-    public const int k_iNoRequirement = -1;
+    public const int NoRequirement = -1;
 
     // Modifiers
-    public const int k_iSnoballPrices = 0;
-    public const int k_iSwiftFootwork = 1;
-    public const int k_iDryFields = 2;
-    public const int k_iPoorTimber = 3;
+    public const int SnoballPrices = 0;
+    public const int SwiftFootwork = 1;
+    public const int DryFields = 2;
+    public const int PoorTimber = 3;
 
     // Win Conditions
-    public const int k_iAccumulate = 0;
-    public const int k_iAccumulateII = 1;
-    public const int k_iAccumulateIII = 2;
-    public const int k_iSlaughter = 3;
-    public const int k_iSlaughterII = 4;
-    public const int k_iSlaughterIII = 5;
-    public const int k_iSurvive = 6;
-    public const int k_iSurviveII = 7;
-    public const int k_iSurviveIII = 8;
+    public const int Accumulate = 0;
+    public const int AccumulateII = 1;
+    public const int AccumulateIII = 2;
+    public const int Slaughter = 3;
+    public const int SlaughterII = 4;
+    public const int SlaughterIII = 5;
+    public const int Survive = 6;
+    public const int SurviveII = 7;
+    public const int SurviveIII = 8;
 
     // Research Elements
-    public const int k_iBallista = 0;
-    public const int k_iBallistaRange = 1;
-    public const int k_iBallistaPower = 2;
-    public const int k_iBallistaFortification = 3;
-    public const int k_iBallistaEfficiency = 4;
-    public const int k_iBallistaSuper = 5;
-    public const int k_iCatapult = 6;
-    public const int k_iCatapultRange = 7;
-    public const int k_iCatapultPower = 8;
-    public const int k_iCatapultFortification = 9;
-    public const int k_iCatapultEfficiency = 10;
-    public const int k_iCatapultSuper = 11;
-    public const int k_iBarracks = 12;
-    public const int k_iBarracksSoldierDamage = 13;
-    public const int k_iBarracksSoldierHealth = 14;
-    public const int k_iBarracksSoldierSpeed = 15;
-    public const int k_iBarracksFortification = 16;
-    public const int k_iBarracksSuper = 17;
+    public const int Ballista = 0;
+    public const int BallistaRange = 1;
+    public const int BallistaPower = 2;
+    public const int BallistaFortification = 3;
+    public const int BallistaEfficiency = 4;
+    public const int BallistaSuper = 5;
+    public const int Catapult = 6;
+    public const int CatapultRange = 7;
+    public const int CatapultPower = 8;
+    public const int CatapultFortification = 9;
+    public const int CatapultEfficiency = 10;
+    public const int CatapultSuper = 11;
+    public const int Barracks = 12;
+    public const int BarracksSoldierDamage = 13;
+    public const int BarracksSoldierHealth = 14;
+    public const int BarracksSoldierSpeed = 15;
+    public const int BarracksFortification = 16;
+    public const int BarracksSuper = 17;
 
     [Serializable]
     public struct SaveQuaternion
@@ -151,7 +151,7 @@ public class SuperManager : MonoBehaviour
         public float health;
         public StructureType type;
         public SaveVector3 position;
-        public int foodAllocation;
+        public int villagers;
         public bool wasPlacedOn;
         public float timeTrained;
     }
@@ -178,6 +178,8 @@ public class SuperManager : MonoBehaviour
         public bool repairMessage;
         public bool repairAll;
         public int nextStructureID;
+        public int villagers;
+        public int availableVillagers;
     }
 
     [Serializable]
@@ -284,7 +286,7 @@ public class SuperManager : MonoBehaviour
     {
         currentLevel = _level;
         if (_level != saveData.currentMatch.levelID) { ClearCurrentMatch(); }
-        FindObjectOfType<SceneSwitcher>().SceneSwitch("SamDev");
+        FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
     }
 
     // populates _levelData with the levels
@@ -353,55 +355,55 @@ public class SuperManager : MonoBehaviour
         researchDefinitions = new List<ResearchElementDefinition>()
         {
             // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
-            new ResearchElementDefinition(k_iBallista, k_iNoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
-            new ResearchElementDefinition(k_iBallistaRange, k_iBallista, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(k_iBallistaPower, k_iBallista, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(k_iBallistaFortification, k_iBallista, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(k_iBallistaEfficiency, k_iBallista, "Efficiency", "Bolt cost reduced by 50%.", 200),
-            new ResearchElementDefinition(k_iBallistaSuper, k_iBallista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
+            new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
+            new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),
+            new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
+            new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
+            new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
+            new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
 
-            new ResearchElementDefinition(k_iCatapult, k_iNoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
-            new ResearchElementDefinition(k_iCatapultRange, k_iCatapult, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(k_iCatapultPower, k_iCatapult, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(k_iCatapultFortification, k_iCatapult, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(k_iCatapultEfficiency, k_iCatapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
-            new ResearchElementDefinition(k_iCatapultSuper, k_iCatapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
+            new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
+            new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
+            new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
+            new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
+            new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
+            new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
 
-            new ResearchElementDefinition(k_iBarracks, k_iNoRequirement, "Barracks", "The Barracks spawns enemy soldiers, which automatically chase down enemies.", 300),
-            new ResearchElementDefinition(k_iBarracksSoldierDamage, k_iBarracks, "Soldier Damage", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(k_iBarracksSoldierHealth, k_iBarracks, "Soldier Health", "Health increased by 50%.", 200),
-            new ResearchElementDefinition(k_iBarracksSoldierSpeed, k_iBarracks, "Soldier Speed", "Speed increased by 30%.", 200),
-            new ResearchElementDefinition(k_iBarracksFortification, k_iBarracks, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(k_iBarracksSuper, k_iBarracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
+            new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns enemy soldiers, which automatically chase down enemies.", 300),
+            new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
+            new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
+            new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
+            new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
+            new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
         };
         levelDefinitions = new List<LevelDefinition>()
         {
             // ID, ID requirement, Win Condition, Modifiers, Base Reward
-            new LevelDefinition(0, k_iNoRequirement, k_iAccumulate, new List<int>(), 500),
-            new LevelDefinition(1, 0, k_iSurvive, new List<int>(){ k_iSnoballPrices, k_iSwiftFootwork }, 750),
-            new LevelDefinition(2, 1, k_iSurviveII, new List<int>(){ k_iDryFields, k_iPoorTimber }, 1000),
-            new LevelDefinition(3, 2, k_iAccumulateIII, new List<int>(){ k_iSnoballPrices, k_iDryFields, k_iPoorTimber }, 1500)
+            new LevelDefinition(0, NoRequirement, Accumulate, new List<int>(), 500),
+            new LevelDefinition(1, 0, Survive, new List<int>(){ SnoballPrices, SwiftFootwork }, 750),
+            new LevelDefinition(2, 1, SurviveII, new List<int>(){ DryFields, PoorTimber }, 1000),
+            new LevelDefinition(3, 2, AccumulateIII, new List<int>(){ SnoballPrices, DryFields, PoorTimber }, 1500)
         };
         modDefinitions = new List<ModifierDefinition>()
         { 
             // ID, Name, Description, Coefficient
-            new ModifierDefinition(k_iSnoballPrices, "Snowball Prices", "Structure price acceleration hits twice as hard.", 0.5f),
-            new ModifierDefinition(k_iSwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
-            new ModifierDefinition(k_iDryFields, "Dry Fields", "Food production is halved.", 0.35f),
-            new ModifierDefinition(k_iPoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
+            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure price acceleration hits twice as hard.", 0.5f),
+            new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
+            new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
+            new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
         };
         winConditionDefinitions = new List<WinConditionDefinition>()
         { 
             // ID, Name, Description
-            new WinConditionDefinition(k_iAccumulate, "Accumulate", "Gather 1500 of each resource."),
-            new WinConditionDefinition(k_iAccumulateII, "Accumulate II", "Gather 2500 of each resource."),
-            new WinConditionDefinition(k_iAccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
-            new WinConditionDefinition(k_iSlaughter, "Slaughter", "Kill 300 Enemies."),
-            new WinConditionDefinition(k_iSlaughterII, "Slaughter II", "Kill 800 Enemies."),
-            new WinConditionDefinition(k_iSlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
-            new WinConditionDefinition(k_iSurvive, "Survive", "Defend against 25 waves."),
-            new WinConditionDefinition(k_iSurviveII, "Survive II", "Defend against 50 waves."),
-            new WinConditionDefinition(k_iSurviveIII, "Survive III", "Defend against 100 waves."),
+            new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
+            new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
+            new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
+            new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
+            new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
+            new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
+            new WinConditionDefinition(Survive, "Survive", "Defend against 25 waves."),
+            new WinConditionDefinition(SurviveII, "Survive II", "Defend against 50 waves."),
+            new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 100 waves."),
         };
 
     }
@@ -440,9 +442,9 @@ public class SuperManager : MonoBehaviour
             {
                 if(gameMan)
                 {
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.food));
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.wood));
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.metal));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
                 }
             }
         }
@@ -499,6 +501,8 @@ public class SuperManager : MonoBehaviour
         currentLevel = _matchData.levelID;
         enemySpawner.SetKillCount(_matchData.enemiesKilled);
         gameMan.gameAlreadyWon = _matchData.matchWon;
+        Longhaus.SetVillagers(_matchData.villagers);
+        Longhaus.SetAvailable(_matchData.availableVillagers);
         // not so easy stuff...
 
         // structures
@@ -587,7 +591,9 @@ public class SuperManager : MonoBehaviour
             enemiesKilled = enemySpawner.GetKillCount(),
             spawnerCooldown = enemySpawner.cooldown,
             matchWon = gameMan.WinConditionIsMet() || gameMan.gameAlreadyWon,
-            nextStructureID = structMan.GetNextStructureID()
+            nextStructureID = structMan.GetNextStructureID(),
+            villagers = Longhaus.GetVillagers(),
+            availableVillagers = Longhaus.GetAvailable()
         };
 
         // not so easy stuff...
@@ -653,7 +659,7 @@ public class SuperManager : MonoBehaviour
                     structure = structure.GetStructureName(),
                     type = structure.GetStructureType(),
                     position = new SaveVector3(structure.transform.position),
-                    foodAllocation = structure.GetFoodAllocation(),
+                    villagers = structure.GetAllocated(),
                     health = structure.GetHealth(),
                     ID = structure.GetID()
                 };

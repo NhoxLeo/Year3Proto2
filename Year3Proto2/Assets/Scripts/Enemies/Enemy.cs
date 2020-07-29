@@ -11,6 +11,18 @@ public enum EnemyState
     ACTION
 }
 
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : Enemy.cs
+// Description  : Base class for enemies.
+// Author       : Tjeu Vreeburg, Samuel Fortune
+// Mail         : tjeu.vreeburg@gmail.com
+
 public abstract class Enemy : MonoBehaviour
 {
     [HideInInspector]
@@ -38,7 +50,7 @@ public abstract class Enemy : MonoBehaviour
     protected bool defending = false;
     protected int observers = 0;
     protected bool hasPath = false;
-    protected EnemySpawner.Path path;
+    protected EnemySpawner.EnemyPath path;
     public EnemySpawner spawner;
 
     public void AddObserver()
@@ -62,7 +74,7 @@ public abstract class Enemy : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
-        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.k_iSwiftFootwork) ? 1.4f : 1.0f;
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
     }
 
@@ -119,7 +131,8 @@ public abstract class Enemy : MonoBehaviour
         // get a path
         path = spawner.GetPath(transform.position, structureTypes);
         bool foundPath = path.pathPoints != new List<Vector3>();
-        if (!foundPath)
+        bool targetFound = path.target != null;
+        if (!foundPath && !targetFound)
         {
             // couldn't find a path
             return false;

@@ -6,13 +6,17 @@ using UnityEngine;
 //[ExecuteInEditMode]
 public class TileBehaviour : MonoBehaviour
 {
-    [SerializeField] [Tooltip("Determines whether or not the player can place structures on the tile.")]
-    private bool isPlayable;
-    [SerializeField] [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
-    private bool isValidSpawnTile;
-    private static GameObject cliffFacePrefab = null;
-    private static Transform cliffFaceParent = null;
-
+    [SerializeField] 
+    [Tooltip("Determines whether or not the player can place structures on the tile.")]
+    private bool isPlayable;
+
+    [SerializeField] 
+    [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
+    private bool isValidSpawnTile;
+    private static GameObject cliffFacePrefab = null;
+    private static Transform cliffFaceParent = null;
+    //Determines whether or not it is being approached by an airship.")]
+    private bool isApproached;
     public enum TileCode
     { 
         north = 0,
@@ -47,30 +51,64 @@ public class TileBehaviour : MonoBehaviour
     private void FindDiagonalTiles()
     {
         // 0 - NE, 1 - SE, 2 - SW, 3 - NW
-        diagonalTiles = new Dictionary<int, TileBehaviour>();
-        Dictionary<TileCode, TileBehaviour> adjacents = GetAdjacentTiles();
+        diagonalTiles = new Dictionary<int, TileBehaviour>();
+        Dictionary<TileCode, TileBehaviour> adjacents = GetAdjacentTiles();
         if (adjacents.ContainsKey(TileCode.north))
         {
-            Dictionary<TileCode, TileBehaviour> northAdjacents = adjacents[TileCode.north].GetAdjacentTiles();
+            Dictionary<TileCode, TileBehaviour> northAdjacents = adjacents[TileCode.north].GetAdjacentTiles();
             if (northAdjacents.ContainsKey(TileCode.east))
             {
                 diagonalTiles.Add(0, northAdjacents[TileCode.east]);
-            }
+            }
             if (northAdjacents.ContainsKey(TileCode.west))
             {
                 diagonalTiles.Add(3, northAdjacents[TileCode.west]);
             }
-        }
+        }
         if (adjacents.ContainsKey(TileCode.south))
         {
-            Dictionary<TileCode, TileBehaviour> southAdjacents = adjacents[TileCode.south].GetAdjacentTiles();
+            Dictionary<TileCode, TileBehaviour> southAdjacents = adjacents[TileCode.south].GetAdjacentTiles();
             if (southAdjacents.ContainsKey(TileCode.east))
             {
                 diagonalTiles.Add(1, southAdjacents[TileCode.east]);
-            }
+            }
             if (southAdjacents.ContainsKey(TileCode.west))
             {
                 diagonalTiles.Add(2, southAdjacents[TileCode.west]);
+            }
+        }        if (adjacents.ContainsKey(TileCode.east))
+        {
+            Dictionary<TileCode, TileBehaviour> eastAdjacents = adjacents[TileCode.east].GetAdjacentTiles();
+            if (eastAdjacents.ContainsKey(TileCode.north))
+            {
+                if (!diagonalTiles.ContainsKey(0))
+                {
+                    diagonalTiles.Add(0, eastAdjacents[TileCode.north]);
+                }
+            }
+            if (eastAdjacents.ContainsKey(TileCode.south))
+            {
+                if (!diagonalTiles.ContainsKey(1))
+                {
+                    diagonalTiles.Add(1, eastAdjacents[TileCode.south]);
+                }
+            }
+        }        if (adjacents.ContainsKey(TileCode.west))
+        {
+            Dictionary<TileCode, TileBehaviour> westAdjacents = adjacents[TileCode.west].GetAdjacentTiles();
+            if (westAdjacents.ContainsKey(TileCode.north))
+            {
+                if (!diagonalTiles.ContainsKey(3))
+                {
+                    diagonalTiles.Add(3, westAdjacents[TileCode.north]);
+                }
+            }
+            if (westAdjacents.ContainsKey(TileCode.south))
+            {
+                if (!diagonalTiles.ContainsKey(2))
+                {
+                    diagonalTiles.Add(2, westAdjacents[TileCode.south]);
+                }
             }
         }
     }
@@ -80,35 +118,30 @@ public class TileBehaviour : MonoBehaviour
         if (adjacentTiles != null)
         {
             return;
-        }
-
-        adjacentTiles = new Dictionary<TileCode, TileBehaviour>();
-
+        }
+        adjacentTiles = new Dictionary<TileCode, TileBehaviour>();
         // Get the child
-        GameObject tileCollider = transform.Find("TileCollider").gameObject;
-
+        GameObject tileCollider = transform.Find("TileCollider").gameObject;
         // Turn off the collider
         BoxCollider tcBoxCollider = tileCollider.GetComponent<BoxCollider>();
-        tcBoxCollider.enabled = false;
-
+        tcBoxCollider.enabled = false;
         // Cast 4 rays to get adjacent tiles, store them
-        int tcLayer = 1 << LayerMask.NameToLayer("TileCollider");
-
+        int tcLayer = 1 << LayerMask.NameToLayer("TileCollider");
         // North
         if (Physics.Raycast(tileCollider.transform.position, Vector3.forward, out RaycastHit hit, .8f, tcLayer))
         {
             adjacentTiles.Add(TileCode.north, hit.collider.GetComponentInParent<TileBehaviour>());
-        }
+        }
         // East
         if (Physics.Raycast(tileCollider.transform.position, Vector3.right, out hit, .8f, tcLayer))
         {
             adjacentTiles.Add(TileCode.east, hit.collider.GetComponentInParent<TileBehaviour>());
-        }
+        }
         // South
         if (Physics.Raycast(tileCollider.transform.position, Vector3.back, out hit, .8f, tcLayer))
         {
             adjacentTiles.Add(TileCode.south, hit.collider.GetComponentInParent<TileBehaviour>());
-        }
+        }
         // West
         if (Physics.Raycast(tileCollider.transform.position, Vector3.left, out hit, .8f, tcLayer))
         {
@@ -117,13 +150,6 @@ public class TileBehaviour : MonoBehaviour
 
         // Turn on the collider
         tcBoxCollider.enabled = true;
-    }
-
-    private void ClearCliffs()
-    {
-        if (cliffFaceParent)
-        DestroyImmediate(cliffFaceParent);
-        cliffFaceParent = new GameObject("CliffFaces").transform;
     }
 
     void Awake()
@@ -135,7 +161,6 @@ public class TileBehaviour : MonoBehaviour
 
     private void SpawnCliffFaces()
     {
-        //ClearCliffs();
         GetAdjacentTiles();
         for (int i = 0; i < 4; i++)
         {
@@ -174,15 +199,16 @@ public class TileBehaviour : MonoBehaviour
         int structLayer = 1 << LayerMask.NameToLayer("Structure");
         if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hit, 1.6f, structLayer))
         {
-            //Debug.DrawLine(transform.position, transform.position + Vector3.up * 1.6f, Color.green, 20.0f);
             Attach(hit.transform.GetComponent<Structure>());
             return true;
         }
-        //Debug.DrawLine(transform.position, transform.position + Vector3.up * 1.6f, Color.red, 20.0f);
         return false;
     }
 
-
+    public void SetApproached(bool _isApproached)
+    {
+        isApproached = _isApproached;
+    }
 
     public void Attach(Structure _structure)
     {
@@ -208,10 +234,14 @@ public class TileBehaviour : MonoBehaviour
     public bool GetPlayable()
     {
         return isPlayable;
-    }
-
+    }
     public bool GetSpawnTile()
     {
         return isValidSpawnTile;
+    }
+
+    public bool GetApproached()
+    {
+        return isApproached;
     }
 }

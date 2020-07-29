@@ -3,16 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
+public class SortTileBonusDescendingHelper : IComparer
+{
+    int IComparer.Compare(object a, object b)
+    {
+        ResourceStructure structureA = (ResourceStructure)a;
+        ResourceStructure structureB = (ResourceStructure)b;
+        if (structureA.GetTileBonus() < structureB.GetTileBonus())
+            return 1;
+        if (structureA.GetTileBonus() > structureB.GetTileBonus())
+            return -1;
+        else
+            return 0;
+    }
+}
+
 public abstract class ResourceStructure : Structure
 {
-    public float productionTime = 3f;
+    public class SortTileBonusDescendingHelper : IComparer<ResourceStructure>
+    {
+        public int Compare(ResourceStructure _structureA, ResourceStructure _structureB)
+        {
+            if (_structureA.GetTileBonus() < _structureB.GetTileBonus())
+            {
+                return 1;
+            }
+            if (_structureA.GetTileBonus() > _structureB.GetTileBonus())
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    public static IComparer<ResourceStructure> SortTileBonusDescending()
+    {
+        return new SortTileBonusDescendingHelper();
+    }
+
+    public float productionTime = 2f;
     public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
     protected int batchSize = 1;
-    protected float remainingTime = 3f;
+    protected float remainingTime = 2f;
     protected ResourceType resourceType;
     protected int tileBonus = 0;
     private GameObject tileHighlight;
-
 
     private void EnableFogMask()
     {
@@ -22,7 +60,7 @@ public abstract class ResourceStructure : Structure
 
     public virtual int GetProductionVolume()
     {
-        return tileBonus * batchSize * foodAllocation;
+        return tileBonus * batchSize * allocatedVillagers;
     }
 
     public ResourceType GetResourceType()
@@ -43,6 +81,7 @@ public abstract class ResourceStructure : Structure
                 }
             }
         }
+        FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
     }
 
     public override void OnPlace()
@@ -75,10 +114,10 @@ public abstract class ResourceStructure : Structure
                             string adjStructType = "Forest Environment";
                             switch (resourceType)
                             {
-                                case ResourceType.metal:
+                                case ResourceType.Metal:
                                     adjStructType = "Hills Environment";
                                     break;
-                                case ResourceType.food:
+                                case ResourceType.Food:
                                     adjStructType = "Plains Environment";
                                     break;
                                 default:
@@ -116,6 +155,7 @@ public abstract class ResourceStructure : Structure
                 tileHighlights[(TileBehaviour.TileCode)i].SetActive(true);
             }
         }
+        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
     }
 
     public int GetTileBonus()
@@ -128,6 +168,8 @@ public abstract class ResourceStructure : Structure
         base.Start();
         structureType = StructureType.resource;
         tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
+        villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
+        villagerWidget.SetTarget(this);
     }
 
     private GameObject GetTileHighlight()
@@ -149,18 +191,7 @@ public abstract class ResourceStructure : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                if (structureName == "Farm")
-                {
-                    gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
-                }
-                else
-                {
-                    if (gameMan.playerResources.CanAfford(new ResourceBundle(0, 0, foodAllocation)))
-                    {
-                        gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * foodAllocation, resourceType));
-                        gameMan.AddBatch(new ResourceBatch(-foodAllocation, ResourceType.food));
-                    }
-                }
+                gameMan.AddBatch(new ResourceBatch(tileBonus * batchSize * allocatedVillagers, resourceType));
             }
         }
     }
@@ -169,24 +200,24 @@ public abstract class ResourceStructure : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
-        if (structureName == "Farm")
+        switch (resourceType)
         {
-            resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * foodAllocation / productionTime);
-        }
-        else
-        {
-            switch (resourceType)
-            {
-                case ResourceType.metal:
-                    resourceDelta += new Vector3(0f, tileBonus * batchSize * foodAllocation / productionTime, 0f);
-                    break;
-                case ResourceType.wood:
-                    resourceDelta += new Vector3(tileBonus * batchSize * foodAllocation / productionTime, 0f, 0f);
-                    break;
-            }
-            resourceDelta -= new Vector3(0f, 0f, foodAllocation / productionTime);
+            case ResourceType.Food:
+                resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * allocatedVillagers / productionTime);
+                break;
+            case ResourceType.Metal:
+                resourceDelta += new Vector3(0f, tileBonus * batchSize * allocatedVillagers / productionTime, 0f);
+                break;
+            case ResourceType.Wood:
+                resourceDelta += new Vector3(tileBonus * batchSize * allocatedVillagers / productionTime, 0f, 0f);
+                break;
         }
 
         return resourceDelta;
+    }
+
+    public float GetResourcePerVillPerSec()
+    {
+        return batchSize * tileBonus / productionTime;
     }
 }

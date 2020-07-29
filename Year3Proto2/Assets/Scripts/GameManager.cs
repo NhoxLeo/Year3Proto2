@@ -28,20 +28,21 @@ public struct PlayerResources
     {
         switch (_batch.type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 rWood += _batch.amount;
                 if (rWood > rWoodMax) { rWood = rWoodMax; }
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 rMetal += _batch.amount;
                 if (rMetal > rMetalMax) { rMetal = rMetalMax; }
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 rFood += _batch.amount;
                 if (rFood > rFoodMax) { rFood = rFoodMax; }
                 if (rFood < 0)
                 {
-                    //lose condition
+                    Longhaus.AddStarveTicks(-rFood);
+                    rFood = 0;
                 }
                 break;
         }
@@ -68,23 +69,30 @@ public struct PlayerResources
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 rWood -= _deduction;
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 rMetal -= _deduction;
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 rFood -= _deduction;
                 break;
         }
     }
 
-    public void DeductResource(ResourceBundle _bundle)
+    public void DeductResourceBundle(ResourceBundle _bundle)
     {
         rWood -= _bundle.woodCost;
         rMetal -= _bundle.metalCost;
         rFood -= _bundle.foodCost;
+    }
+
+    public void AddResourceBundle(ResourceBundle _bundle)
+    {
+        rWood += _bundle.woodCost;
+        rMetal += _bundle.metalCost;
+        rFood += _bundle.foodCost;
     }
 
     public int Get(ResourceType _type)
@@ -92,13 +100,13 @@ public struct PlayerResources
         int value = 0;
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 value = rWood;
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 value = rMetal;
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 value = rFood;
                 break;
         }
@@ -109,11 +117,11 @@ public struct PlayerResources
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 return rWoodMax;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 return rMetalMax;
-            case ResourceType.food:
+            case ResourceType.Food:
                 return rFoodMax;
             default:
                 break;
@@ -125,11 +133,11 @@ public struct PlayerResources
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 return (rWood == rWoodMax);
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 return (rMetal == rMetalMax);
-            case ResourceType.food:
+            case ResourceType.Food:
                 return (rFood == rFoodMax);
             default:
                 break;
@@ -140,13 +148,13 @@ public struct PlayerResources
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 rWoodMax = _newMax;
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 rMetalMax = _newMax;
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 rFoodMax = _newMax;
                 break;
         }
@@ -216,7 +224,7 @@ public class GameManager : MonoBehaviour
             int runningTotal = 0;
             foreach (ResourceBatch batch in recentBatches)
             {
-                if (batch.type == ResourceType.food)
+                if (batch.type == ResourceType.Food)
                 {
                     runningTotal += batch.amount;
                 }
@@ -232,7 +240,7 @@ public class GameManager : MonoBehaviour
             int runningTotal = 0;
             foreach (ResourceBatch batch in recentBatches)
             {
-                if (batch.type == ResourceType.metal)
+                if (batch.type == ResourceType.Metal)
                 {
                     runningTotal += batch.amount;
                 }
@@ -248,7 +256,7 @@ public class GameManager : MonoBehaviour
             int runningTotal = 0;
             foreach (ResourceBatch batch in recentBatches)
             {
-                if (batch.type == ResourceType.wood)
+                if (batch.type == ResourceType.Wood)
                 {
                     runningTotal += batch.amount;
                 }
@@ -297,24 +305,26 @@ public class GameManager : MonoBehaviour
             {
                 switch (storageStructure.GetResourceType())
                 {
-                    case ResourceType.wood:
+                    case ResourceType.Wood:
                         newWoodMax += storageStructure.storage;
                         break;
-                    case ResourceType.metal:
+                    case ResourceType.Metal:
                         newMetalMax += storageStructure.storage;
                         break;
-                    case ResourceType.food:
+                    case ResourceType.Food:
                         newFoodMax += storageStructure.storage;
                         break;
                 }
             }
         }
 
-        playerResources.SetMaximum(ResourceType.wood, newWoodMax);
-        playerResources.SetMaximum(ResourceType.metal, newMetalMax);
-        playerResources.SetMaximum(ResourceType.food, newFoodMax);
+        playerResources.SetMaximum(ResourceType.Wood, newWoodMax);
+        playerResources.SetMaximum(ResourceType.Metal, newMetalMax);
+        playerResources.SetMaximum(ResourceType.Food, newFoodMax);
     }
 
+
+    // wood metal food
     public Vector3 GetResourceVelocity()
     {
         Vector3 resourceVelocity = Vector3.zero;
@@ -502,14 +512,14 @@ public class GameManager : MonoBehaviour
             {
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
                 {
-                    if (!superMan.GetResearchComplete(SuperManager.k_iCatapult))
+                    if (!superMan.GetResearchComplete(SuperManager.Catapult))
                     {
                         continue;
                     }
                 }
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Barracks)
                 {
-                    if (!superMan.GetResearchComplete(SuperManager.k_iBarracks))
+                    if (!superMan.GetResearchComplete(SuperManager.Barracks))
                     {
                         continue;
                     }
@@ -587,24 +597,24 @@ public class GameManager : MonoBehaviour
         int winCondition = superMan.GetCurrentWinCondition();
         switch (winCondition)
         {
-            case SuperManager.k_iAccumulate:
-                return playerResources.Get(ResourceType.metal) >= 1500 && playerResources.Get(ResourceType.food) >= 1500 && playerResources.Get(ResourceType.wood) >= 1500;
-            case SuperManager.k_iAccumulateII:
-                return playerResources.Get(ResourceType.metal) >= 2500 && playerResources.Get(ResourceType.food) >= 2500 && playerResources.Get(ResourceType.wood) >= 2500;
-            case SuperManager.k_iAccumulateIII:
-                return playerResources.Get(ResourceType.metal) >= 7500 && playerResources.Get(ResourceType.food) >= 7500 && playerResources.Get(ResourceType.wood) >= 7500;
-            case SuperManager.k_iSlaughter:
+            case SuperManager.Accumulate:
+                return playerResources.Get(ResourceType.Metal) >= 1500 && playerResources.Get(ResourceType.Food) >= 1500 && playerResources.Get(ResourceType.Wood) >= 1500;
+            case SuperManager.AccumulateII:
+                return playerResources.Get(ResourceType.Metal) >= 2500 && playerResources.Get(ResourceType.Food) >= 2500 && playerResources.Get(ResourceType.Wood) >= 2500;
+            case SuperManager.AccumulateIII:
+                return playerResources.Get(ResourceType.Metal) >= 7500 && playerResources.Get(ResourceType.Food) >= 7500 && playerResources.Get(ResourceType.Wood) >= 7500;
+            case SuperManager.Slaughter:
                 return enemySpawner.GetKillCount() > 300;
-            case SuperManager.k_iSlaughterII:
+            case SuperManager.SlaughterII:
                 return enemySpawner.GetKillCount() > 800;
-            case SuperManager.k_iSlaughterIII:
+            case SuperManager.SlaughterIII:
                 return enemySpawner.GetKillCount() > 2000;
-            case SuperManager.k_iSurvive:
-                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
-            case SuperManager.k_iSurviveII:
-                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
-            case SuperManager.k_iSurviveIII:
-                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
+            case SuperManager.Survive:
+                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
+            case SuperManager.SurviveII:
+                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
+            case SuperManager.SurviveIII:
+                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
             default:
                 break;
         }

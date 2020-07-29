@@ -12,14 +12,18 @@ public class HUDManager : MonoBehaviour
 
     HorizontalLayoutGroup hLayoutGroup;
     private CanvasGroup canvas;
+    private CanvasGroup villAllocCanvas;
+    private TMP_Text buildButtonText;
     public bool doShowHUD = true;
     private bool hudShown;
+    private bool buildMode = true;
 
     public Color gainColour;
     public Color lossColour;
     public Color fullColour;
     private GameManager game;
     private StructureManager structMan;
+    private TMP_Text villagerText;
     private TMP_Text foodText;
     private TMP_Text woodText;
     private TMP_Text metalText;
@@ -41,6 +45,10 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
+        villAllocCanvas = transform.Find("VillagerAllocataionWidgets").GetComponent<CanvasGroup>();
+        villAllocCanvas.alpha = 0.0f;
+        buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
+        buildButtonText.text = "BUILDING";
         hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
         canvas = GetComponent<CanvasGroup>();
 
@@ -48,6 +56,7 @@ public class HUDManager : MonoBehaviour
         structMan = FindObjectOfType<StructureManager>();
         spawner = FindObjectOfType<EnemySpawner>();
 
+        villagerText = transform.Find("ResourceBar/ResourceCards/ResourceCardVillager/VillagerText").GetComponent<TMP_Text>();
         foodText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText").GetComponent<TMP_Text>();
         woodText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText").GetComponent<TMP_Text>();
         metalText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText").GetComponent<TMP_Text>();
@@ -128,7 +137,7 @@ public class HUDManager : MonoBehaviour
         // Info Bar
 
         int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
-        if (spawner.GetWaveCurrent() >= 1 && spawner.EnemyCount == 0) { wavesSurvived++; }
+        if (spawner.GetWaveCurrent() >= 1 && spawner.enemyCount == 0) { wavesSurvived++; }
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
@@ -144,33 +153,38 @@ public class HUDManager : MonoBehaviour
         transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
     }
 
-    private void RefreshResources()
+    public void RefreshResources()
     {
+        // available out of total
+        string availableVillagers = Longhaus.GetAvailable().ToString("0");
+        string villagers = Longhaus.GetVillagers().ToString("0");
+        villagerText.text = availableVillagers + "/" + villagers;
+
         Vector3 velocity = game.GetResourceVelocity();
 
         float foodVel = velocity.z;
         string foodVelDP = AddSign(Mathf.Round(foodVel * 10f) * .1f);
-        foodText.text = game.playerResources.Get(ResourceType.food).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.food).ToString() + " (" + foodVelDP + "/s)";
+        foodText.text = game.playerResources.Get(ResourceType.Food).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + "/s)";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
-        if (game.playerResources.ResourceIsFull(ResourceType.food))
+        if (game.playerResources.ResourceIsFull(ResourceType.Food))
         {
             foodText.color = fullColour;
         }
 
         float woodVel = velocity.x;
         string woodVelDP = AddSign(Mathf.Round(woodVel * 10f) * .1f);
-        woodText.text = game.playerResources.Get(ResourceType.wood).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.wood).ToString() + " (" + woodVelDP + "/s)";
+        woodText.text = game.playerResources.Get(ResourceType.Wood).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + "/s)";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
-        if (game.playerResources.ResourceIsFull(ResourceType.wood))
+        if (game.playerResources.ResourceIsFull(ResourceType.Wood))
         {
             woodText.color = fullColour;
         }
 
         float metalVel = velocity.y;
         string metalVelDP = AddSign(Mathf.Round(metalVel * 10f) * .1f);
-        metalText.text = game.playerResources.Get(ResourceType.metal).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.metal).ToString() + " (" + metalVelDP + "/s)";
+        metalText.text = game.playerResources.Get(ResourceType.Metal).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + "/s)";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
-        if (game.playerResources.ResourceIsFull(ResourceType.metal))
+        if (game.playerResources.ResourceIsFull(ResourceType.Metal))
         {
             metalText.color = fullColour;
         }
@@ -252,5 +266,52 @@ public class HUDManager : MonoBehaviour
         canvas.DOFade(0.0f, 0.3f).SetEase(Ease.InOutSine);
         canvas.interactable = false;
         canvas.blocksRaycasts = false;
+    }
+
+    public void ToggleHUDMode()
+    {
+        buildMode = !buildMode;
+
+        if (buildMode)
+        {
+            villAllocCanvas.DOFade(0.0f, 0.3f);
+            SetAllVillagerWidgets(false);
+            FindObjectOfType<BuildPanel>().showPanel = true;
+            buildButtonText.text = "BUILDING";
+        }
+        else
+        {
+            SetAllVillagerWidgets(true);
+            villAllocCanvas.DOFade(1.0f, 0.3f);
+            FindObjectOfType<BuildPanel>().showPanel = false;
+            buildButtonText.text = "VILLAGERS";
+        }
+    }
+
+    public void ShowOneVillagerWidget(VillagerAllocation _widget)
+    {
+        if (buildMode)
+        {
+            SetAllVillagerWidgets(false);
+            _widget.gameObject.SetActive(true);
+            villAllocCanvas.DOFade(1.0f, 0.1f);
+        }
+    }
+
+    public void HideAllVillagerWidgets()
+    {
+        if (buildMode)
+        {
+            villAllocCanvas.DOFade(0.0f, 0.1f);
+        }
+    }
+
+    private void SetAllVillagerWidgets(bool _enabled)
+    {
+        VillagerAllocation[] widgets = Resources.FindObjectsOfTypeAll<VillagerAllocation>();
+        foreach (VillagerAllocation widget in widgets)
+        {
+            widget.gameObject.SetActive(_enabled);
+        }
     }
 }

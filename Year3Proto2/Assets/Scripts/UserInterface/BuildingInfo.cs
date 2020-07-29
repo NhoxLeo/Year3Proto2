@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class BuildingInfo : MonoBehaviour
 {
@@ -17,6 +17,8 @@ public class BuildingInfo : MonoBehaviour
     public Sprite woodSprite;
     public Sprite metalSprite;
     public Sprite emptySprite;
+    public Sprite destroySprite;
+    public Sprite minimizeSprite;
 
     private TMP_Text headingText;               // Text showing name of building
     private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
@@ -26,13 +28,19 @@ public class BuildingInfo : MonoBehaviour
     private GameObject foodComponent;           // Section for food allocation
     private TMP_Text foodValueText;             // Text showing current food allocation
     private TMP_Text globalFoodText;            // "Affects all Buildings"
+
+    public EnvInfo repairTooltip;               // Tooltip that appears over repair and destroy buttons
     private Button repairButton;                // Button for repairing buildings
+    private Button destroyButton;               // Button to destroy buildings
+    private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
+    private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
+    private Tooltip trainVillagerButton;     // Button to train a new villager for the Longhaus
 
     public bool doAutoUpdate;                   // Whether to automatically update info panel
     public float updateInterval = 0.25f;        // Time between info panel updates
     private float updateTimer;
 
-    void Start()
+    private void Start()
     {
         rTrans = GetComponent<RectTransform>();
         tool = GetComponent<Tooltip>();
@@ -45,12 +53,13 @@ public class BuildingInfo : MonoBehaviour
         statIcon = transform.Find("PanelMask/Stat/StatIcon").GetComponent<Image>();
 
         foodComponent = transform.Find("PanelMask/Allocation").gameObject;
-        foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
-        repairButton = transform.Find("RepairButton").GetComponent<Button>();        globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
+        foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
+
+        repairButton = transform.Find("ActionButtons/RepairButton").GetComponent<Button>();        destroyButton = transform.Find("ActionButtons/DestroyButton").GetComponent<Button>();        destroyButtonConfirm = transform.Find("DestroyConfirmButton").GetComponent<Tooltip>();        trainVillagerButton = transform.Find("TrainVillagerButton").GetComponent<Tooltip>();        globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
         statInfoText.text = "";
         updateTimer = updateInterval;
     }
-    void LateUpdate()
+    private void LateUpdate()
     {
         tool.showTooltip = showPanel;
 
@@ -85,11 +94,19 @@ public class BuildingInfo : MonoBehaviour
         }
 
         //SetPosition();
+
+        if (!showPanel && showDestroyConfirm)
+        {
+            showDestroyConfirm = false;
+            destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+            destroyButtonConfirm.showTooltip = showDestroyConfirm;
+        }
     }
 
     public void SetInfo()
     {
-        repairButton.interactable = false;
+        repairButton.gameObject.SetActive(true);
+        repairButton.interactable = false;        destroyButton.gameObject.SetActive(false);        trainVillagerButton.showTooltip = false;
         if (targetBuilding == null)
         {
             return;
@@ -98,14 +115,16 @@ public class BuildingInfo : MonoBehaviour
         {
             case "Ballista Tower":
                 foodComponent.SetActive(true);
-                BallistaTower archer = targetBuilding.GetComponent<BallistaTower>();
+                BallistaTower ballista = targetBuilding.GetComponent<BallistaTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = archer.fireRate.ToString("F");
+                statValueText.text = ballista.fireRate.ToString("F");
                 statInfoText.text = "per second";
-                foodValueText.text = archer.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                //foodValueText.text = ballista.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                foodValueText.text = ballista.GetAllocated().ToString("0") + "/" + ballista.GetVillagerCapacity().ToString("0");
 
-                repairButton.interactable = archer.CanBeRepaired();
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = ballista.CanBeRepaired();
                 break;
             case "Catapult Tower":
                 foodComponent.SetActive(true);
@@ -114,8 +133,10 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = catapult.fireRate.ToString("F");
                 statInfoText.text = "per second";
-                foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                //foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                foodValueText.text = catapult.GetAllocated().ToString("0") + "/" + catapult.GetVillagerCapacity().ToString("0");
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = catapult.CanBeRepaired();
                 break;
             case "Barracks":
@@ -125,19 +146,23 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Troop Capacity";
                 statValueText.text = barracks.GetTroopCapacity().ToString("0");
                 statInfoText.text = "units";
-                foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                //foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                foodValueText.text = barracks.GetAllocated().ToString("0") + "/" + barracks.GetVillagerCapacity().ToString("0");
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = barracks.CanBeRepaired();
                 break;
 
             case "Farm":
-                foodComponent.SetActive(false);
+                foodComponent.SetActive(true);
                 Farm farm = targetBuilding.GetComponent<Farm>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Production Rate";
                 statValueText.text = farm.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + farm.productionTime.ToString("0") + "s";
+                foodValueText.text = farm.GetAllocated().ToString("0") + "/" + farm.GetVillagerCapacity().ToString("0");
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = farm.CanBeRepaired();
                 break;
             case "Granary":
@@ -146,7 +171,9 @@ public class BuildingInfo : MonoBehaviour
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = granary.storage.ToString();
-                statInfoText.text = "";
+                statInfoText.text = "";
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = granary.CanBeRepaired();
                 break;
             case "Lumber Mill":
@@ -156,7 +183,10 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
-                foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                //foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                foodValueText.text = mill.GetAllocated().ToString("0") + "/" + mill.GetVillagerCapacity().ToString("0");
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mill.CanBeRepaired();
                 break;
             case "Lumber Pile":
@@ -165,7 +195,9 @@ public class BuildingInfo : MonoBehaviour
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = pile.storage.ToString();
-                statInfoText.text = "";
+                statInfoText.text = "";
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = pile.CanBeRepaired();
                 break;
             case "Mine":
@@ -175,7 +207,9 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mine.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mine.productionTime.ToString("0") + "s";
-                foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+                foodValueText.text = mine.GetAllocated().ToString("0") + "/" + mine.GetVillagerCapacity().ToString("0");
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mine.CanBeRepaired();
                 break;
             case "Metal Storage":
@@ -186,6 +220,7 @@ public class BuildingInfo : MonoBehaviour
                 statValueText.text = metStore.storage.ToString();
                 statInfoText.text = "";
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = metStore.CanBeRepaired();
                 break;
             case "Longhaus":                foodComponent.SetActive(false);
@@ -193,6 +228,7 @@ public class BuildingInfo : MonoBehaviour
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Your home base";
                 statValueText.text = "Protect me!";                statInfoText.text = "";
+                trainVillagerButton.showTooltip = true;
                 repairButton.interactable = haus.CanBeRepaired();
                 break;
             case "Forest Environment":
@@ -201,6 +237,8 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Lumber Mills";
                 statInfoText.text = "";
+
+                repairButton.gameObject.SetActive(false);
                 break;
             case "Hills Environment":
                 foodComponent.SetActive(false);
@@ -208,6 +246,8 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Mines";
                 statInfoText.text = "";
+
+                repairButton.gameObject.SetActive(false);
                 break;
             case "Plains Environment":
                 foodComponent.SetActive(false);
@@ -215,6 +255,8 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Farms";
                 statInfoText.text = "";
+
+                repairButton.gameObject.SetActive(false);
                 break;
             default:
                 foodComponent.SetActive(false);
@@ -275,6 +317,10 @@ public class BuildingInfo : MonoBehaviour
             tool.PulseTip();
         }
 
+        showDestroyConfirm = false;
+        destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+        destroyButtonConfirm.showTooltip = showDestroyConfirm;
+
         SetInfo();
     }
 
@@ -284,8 +330,8 @@ public class BuildingInfo : MonoBehaviour
             return;
 
         Structure structure = targetBuilding.GetComponent<Structure>();
-        if (amount > 0) { structure.IncreaseFoodAllocation(); }
-        else { structure.DecreaseFoodAllocation(); }
+        if (amount > 0) { structure.AllocateVillager(); }
+        else { structure.DeallocateVillager(); }
 
         SetInfo();
     }
@@ -300,10 +346,28 @@ public class BuildingInfo : MonoBehaviour
         targetStructure.Repair();
         SetInfo();
     }
-   
+
+    public void DestroyBuilding()
+    {
+        FindObjectOfType<StructureManager>().DestroySelectedBuilding();
+    }
+
+    public void ToggleDestroyConfirm()
+    {
+        showDestroyConfirm = !showDestroyConfirm;
+        destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+        destroyButtonConfirm.showTooltip = showDestroyConfirm;
+
+        //repairTooltip.SetVisibility(!showDestroyConfirm);
+    }
+
+    public void TrainVillager()
+    {
+        Longhaus.TrainVillager();
+    }
+
     public void SetVisibility(bool visible)
     {
         showPanel = visible;
     }
-
 }
