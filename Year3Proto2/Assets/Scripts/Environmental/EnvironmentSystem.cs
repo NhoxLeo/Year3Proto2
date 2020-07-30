@@ -2,28 +2,36 @@
 
 public class EnvironmentSystem : MonoBehaviour
 {
-    [SerializeField] private Transform[] environmentEvents;
+    [SerializeField] private Transform[] ambientEvents;
+    [SerializeField] private Transform[] weatherEvents;
 
-    private EnvironmentEvent currentEvent;
+    private EnvironmentEvent ambientEvent;
+    private EnvironmentEvent weatherEvent;
 
-    private void Start()
-    {
-        InvokeNewEvent();
-    }
 
     private void Update()
-    { 
-        if (currentEvent.IsCompleted()) InvokeNewEvent();
+    {
+
+        if (weatherEvent.IsCompleted()) InvokeEvent(weatherEvents[Random.Range(0, weatherEvents.Length)]);
+        if (ambientEvent.IsCompleted()) InvokeEvent(ambientEvents[Random.Range(0, ambientEvents.Length)]);
     }
 
-    private void InvokeNewEvent()
+    private void InvokeEvent(Transform _transform)
     {
-        Transform randomEvent = Instantiate(environmentEvents[Random.Range(0, environmentEvents.Length)], Vector3.zero, Quaternion.identity, transform);
-        EnvironmentEvent environmentEvent = randomEvent.GetComponent<EnvironmentEvent>();
-        if (environmentEvent)
+        Transform transform = Instantiate(_transform, Vector3.zero, Quaternion.identity, this.transform);
+
+        EnvironmentWeatherEvent environmentWeatherEvent = transform.GetComponent<EnvironmentWeatherEvent>();
+        if(environmentWeatherEvent)
         {
-            currentEvent = environmentEvent;
-            currentEvent.Invoke();
+            environmentWeatherEvent.Invoke();
+            weatherEvent = environmentWeatherEvent;
+        }
+
+        EnvironmentAmbientEvent environmentAmbientEvent = transform.GetComponent<EnvironmentAmbientEvent>();
+        if (environmentAmbientEvent)
+        {
+            environmentAmbientEvent.Invoke();
+            ambientEvent = environmentAmbientEvent;
         }
     }
 }

@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BirdsEvent : EnvironmentEvent
+public class BirdsEvent : EnvironmentAmbientEvent
 {
     [Header("Attributes")]
     [SerializeField] private int points = 10;
-    [SerializeField] private Transform birdsPrefab;
-    private Transform birds;
 
     [Header("Positions")]
     [SerializeField] private Vector3 originPoint;
@@ -19,13 +17,13 @@ public class BirdsEvent : EnvironmentEvent
 
     private void Update()
     {
-        if(birds && !completed)
+        if(ambient && !completed)
         {
             Vector3 heading = (destination - origin);
             Quaternion rotation = Quaternion.LookRotation(heading.normalized);
-            if (rotation != birds.rotation) birds.rotation = rotation;
+            if (rotation != ambient.rotation) ambient.rotation = rotation;
 
-            birds.position += heading.normalized * Time.deltaTime;
+            ambient.position += heading.normalized * Time.deltaTime;
             if (heading.sqrMagnitude < 0.5f * 0.05) completed = true;
         }
     }
@@ -58,7 +56,7 @@ public class BirdsEvent : EnvironmentEvent
         destination = result ? RandomFromArray(destinations) : RandomFromArray(origins);
         origin = result ? RandomFromArray(origins) : RandomFromArray(destinations);
 
-        birds = Instantiate(birdsPrefab, origin, Quaternion.identity, transform);
+        ambient = Instantiate(ambientPrefab, origin, Quaternion.identity, transform);
     }
 
     private Vector3 RandomFromArray(Vector3[] _array)
