@@ -10,9 +10,14 @@ public class EnvironmentSystem : MonoBehaviour
 
     // Todo Reference to the post processing volume
 
+    private void Start()
+    {
+        InvokeEvent(weatherEvents[0]);
+        InvokeEvent(ambientEvents[0]);
+    }
+
     private void Update()
     {
-
         if (weatherEvent.IsCompleted()) InvokeEvent(weatherEvents[Random.Range(0, weatherEvents.Length)]);
         if (ambientEvent.IsCompleted()) InvokeEvent(ambientEvents[Random.Range(0, ambientEvents.Length)]);
     }
