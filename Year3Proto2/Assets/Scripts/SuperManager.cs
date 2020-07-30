@@ -442,9 +442,9 @@ public class SuperManager : MonoBehaviour
             {
                 if(gameMan)
                 {
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.food));
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.wood));
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.metal));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
+                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
                 }
             }
         }

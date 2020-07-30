@@ -15,7 +15,7 @@ public class LumberMill : ResourceStructure
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.wood;
+        resourceType = ResourceType.Wood;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberMill];
         health = maxHealth;
     }

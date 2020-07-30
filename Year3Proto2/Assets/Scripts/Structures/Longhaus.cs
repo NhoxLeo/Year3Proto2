@@ -13,14 +13,14 @@ public class Longhaus : Structure
     [SerializeField]
     static public int metalStorage = 500;
 
-    public float productionTime = 3f;
+    public static float productionTime = 3f;
     protected float remainingTime = 3f;
 
     private static int villagers = 0;
     private static int availableVillagers = 0;
     private static int starveTicks = 0;
     [SerializeField]
-    private int villagerHungerModifier = 2;
+    private static int villagerHungerModifier = 2;
 
     public static int GetStarveTicks()
     {
@@ -138,10 +138,10 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                gameMan.AddBatch(new ResourceBatch(3, ResourceType.metal));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.wood));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.food));
-                gameMan.AddBatch(new ResourceBatch(villagers * -villagerHungerModifier, ResourceType.food));
+                gameMan.AddBatch(new ResourceBatch(3, ResourceType.Metal));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Wood));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Food));
+                gameMan.AddBatch(new ResourceBatch(villagers * -villagerHungerModifier, ResourceType.Food));
             }
 
         }
@@ -167,6 +167,7 @@ public class Longhaus : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
+        // wood metal food
         resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime - (villagers * villagerHungerModifier / productionTime));
 
         return resourceDelta;
@@ -175,5 +176,10 @@ public class Longhaus : Structure
     public override void SetFoodAllocationGlobal(int _allocation)
     {
         Debug.LogError("Food Allocation should not be called for " + structureName);
+    }
+
+    public static float GetFoodConsumptionPerSec()
+    {
+        return (villagers * villagerHungerModifier) / productionTime;
     }
 }
