@@ -6,6 +6,8 @@ public class BirdsEvent : EnvironmentEvent
 {
     [Header("Attributes")]
     [SerializeField] private int points = 10;
+    [SerializeField] private Transform birdsPrefab;
+    private Transform birds;
 
     [Header("Positions")]
     [SerializeField] private Vector3 originPoint;
@@ -17,15 +19,15 @@ public class BirdsEvent : EnvironmentEvent
 
     private void Update()
     {
-        if((destination != null && origin != null) || !completed)
+        if(birds && !completed)
         {
             Vector3 heading = (destination - origin);
             Quaternion rotation = Quaternion.LookRotation(heading.normalized);
-            if (rotation != transform.rotation) transform.rotation = rotation;
+            if (rotation != birds.rotation) birds.rotation = rotation;
 
-            transform.position += heading.normalized * Time.deltaTime;
+            birds.position += heading.normalized * Time.deltaTime;
             if (heading.sqrMagnitude < 0.5f * 0.05) completed = true;
-        } 
+        }
     }
 
     public void Populate(ref Vector3[] _vectors, bool _inverse, Vector3 _offset)
@@ -55,6 +57,8 @@ public class BirdsEvent : EnvironmentEvent
 
         destination = result ? RandomFromArray(destinations) : RandomFromArray(origins);
         origin = result ? RandomFromArray(origins) : RandomFromArray(destinations);
+
+        birds = Instantiate(birdsPrefab, origin, Quaternion.identity, transform);
     }
 
     private Vector3 RandomFromArray(Vector3[] _array)

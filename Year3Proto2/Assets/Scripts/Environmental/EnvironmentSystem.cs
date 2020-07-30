@@ -12,8 +12,7 @@ public class EnvironmentSystem : MonoBehaviour
     }
 
     private void Update()
-    {
-        if (!currentEvent) return;
+    { 
         if (currentEvent.IsCompleted()) InvokeNewEvent();
     }
 
