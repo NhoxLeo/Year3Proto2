@@ -323,6 +323,8 @@ public class GameManager : MonoBehaviour
         playerResources.SetMaximum(ResourceType.Food, newFoodMax);
     }
 
+
+    // wood metal food
     public Vector3 GetResourceVelocity()
     {
         Vector3 resourceVelocity = Vector3.zero;
