@@ -25,10 +25,10 @@ public class HeavyInvader : Enemy
 
         structureTypes = new List<StructureType>()
         {
-            StructureType.attack,
-            StructureType.storage,
-            StructureType.longhaus,
-            StructureType.defense
+            StructureType.Attack,
+            StructureType.Storage,
+            StructureType.Longhaus,
+            StructureType.Defense
         };
     }
 

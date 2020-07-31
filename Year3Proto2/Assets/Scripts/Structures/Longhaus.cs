@@ -121,7 +121,7 @@ public class Longhaus : Structure
     protected override void Awake()
     {
         base.Awake();
-        structureType = StructureType.longhaus;
+        structureType = StructureType.Longhaus;
         structureName = "Longhaus";
         maxHealth = 400f;
         health = maxHealth;
