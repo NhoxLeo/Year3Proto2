@@ -146,13 +146,22 @@ public class SuperManager : MonoBehaviour
     [Serializable]
     public struct StructureSaveData
     {
+        // all structures
         public string structure;
         public int ID;
         public float health;
         public StructureType type;
         public SaveVector3 position;
         public int villagers;
+
+        // resource structures
         public bool wasPlacedOn;
+
+        // environment structures
+        public bool exploited;
+        public int exploiterID;
+
+        // defense structures
         public float timeTrained;
     }
 
@@ -511,7 +520,7 @@ public class SuperManager : MonoBehaviour
         foreach (StructureSaveData saveData in _matchData.structures)
         {
             // check if the structure is environment
-            if (saveData.type == StructureType.environment)
+            if (saveData.type == StructureType.Environment)
             {
                 structMan.LoadBuilding(saveData);
             }
@@ -520,7 +529,7 @@ public class SuperManager : MonoBehaviour
         foreach (StructureSaveData saveData in _matchData.structures)
         {
             // check if the structure isn't environment
-            if (saveData.type != StructureType.environment)
+            if (saveData.type != StructureType.Environment)
             {
                 structMan.LoadBuilding(saveData);
             }
@@ -663,10 +672,31 @@ public class SuperManager : MonoBehaviour
                     health = structure.GetHealth(),
                     ID = structure.GetID()
                 };
-                if (structure.IsStructure("Farm")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains; }
-                if (structure.IsStructure("Mine")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills; }
-                if (structure.IsStructure("Lumber Mill")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest; }
-                if (structure.IsStructure("Barracks")) { saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained(); }
+                if (saveData.type == StructureType.Environment)
+                {
+                    EnvironmentStructure envStructure = structure.gameObject.GetComponent<EnvironmentStructure>();
+                    if (envStructure.GetExploited())
+                    {
+                        saveData.exploited = true;
+                        saveData.exploiterID = envStructure.GetExploiterID();
+                    }
+                }
+                if (structure.IsStructure("Farm"))
+                {
+                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains;
+                }
+                if (structure.IsStructure("Mine"))
+                {
+                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills;
+                }
+                if (structure.IsStructure("Lumber Mill"))
+                {
+                    saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest;
+                }
+                if (structure.IsStructure("Barracks"))
+                {
+                    saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained();
+                }
                 save.structures.Add(saveData);
             }
         }
