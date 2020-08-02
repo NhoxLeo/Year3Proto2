@@ -7,7 +7,7 @@ public class Granary : StorageStructure
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.food;
+        resourceType = ResourceType.Food;
         storage = 500;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Granary];
         maxHealth = 200f;

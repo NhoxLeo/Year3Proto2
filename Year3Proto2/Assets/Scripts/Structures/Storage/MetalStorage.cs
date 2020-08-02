@@ -7,7 +7,7 @@ public class MetalStorage : StorageStructure
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.metal;
+        resourceType = ResourceType.Metal;
         storage = 500;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.MetalStorage];
         maxHealth = 200f;

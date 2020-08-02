@@ -69,6 +69,18 @@ public class BallistaTower : AttackStructure
         SetFirerate();
     }
 
+    public override void DeallocateAll()
+    {
+        base.DeallocateAll();
+        SetFirerate();
+    }
+
+    public override void SetAllocated(int _allocated)
+    {
+        base.SetAllocated(_allocated);
+        SetFirerate();
+    }
+
     public override void Attack(GameObject target)
     {
         fireCooldown += Time.deltaTime;

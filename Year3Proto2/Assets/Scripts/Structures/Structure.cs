@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
 public enum StructureType
 {
-    resource,
-    environment,
-    storage,
-    attack,
-    defense,
-    longhaus
+    Resource,
+    Environment,
+    Storage,
+    Attack,
+    Defense,
+    Longhaus
 };
 
 public enum ResourceType
 {
-    wood,
-    metal,
-    food
+    Wood,
+    Metal,
+    Food
 }
 public abstract class Structure : MonoBehaviour
 {
@@ -54,7 +54,7 @@ public abstract class Structure : MonoBehaviour
         return villagerCapacity;
     }
 
-    public void SetAllocated(int _allocated)
+    public virtual void SetAllocated(int _allocated)
     {
         allocatedVillagers = _allocated;
     }
@@ -137,7 +137,7 @@ public abstract class Structure : MonoBehaviour
         
         GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
 
-        if (structureType == StructureType.attack)
+        if (structureType == StructureType.Attack)
         {
             AttackStructure attackStructure = GetComponent<AttackStructure>();
             if (attackStructure.GetEnemies().Count == 0) attackStructure.DetectEnemies();
@@ -194,7 +194,7 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void OnSelected()
     {
-        if (structureType != StructureType.environment)
+        if (structureType != StructureType.Environment)
         {
             healthBar.gameObject.SetActive(true);
         }
@@ -204,7 +204,7 @@ public abstract class Structure : MonoBehaviour
     {
         if (healthBar)
         {
-            if (structureType != StructureType.environment)
+            if (structureType != StructureType.Environment)
             {
                 healthBar.gameObject.SetActive(false);
             }
@@ -234,7 +234,7 @@ public abstract class Structure : MonoBehaviour
 
     public bool Repair(bool _mass = false)
     {
-        if (structureType == StructureType.environment)
+        if (structureType == StructureType.Environment)
         {
             return true;
         }
@@ -302,10 +302,11 @@ public abstract class Structure : MonoBehaviour
             timeSinceLastHit += Time.deltaTime;
             if (health <= 0.0f)
             {
-                if (GetStructureType() == StructureType.longhaus) { gameMan.longhausDead = true; GlobalData.longhausDead = true; }
+                if (GetStructureType() == StructureType.Longhaus) { gameMan.longhausDead = true; GlobalData.longhausDead = true; }
+                OnDestroyed();
+                attachedTile.Detach();
                 GameManager.CreateAudioEffect("buildingDestroy", transform.position);
                 structMan.DecreaseStructureCost(structureName);
-                attachedTile.Detach();
                 Destroy(gameObject);
             }
             else
@@ -317,7 +318,6 @@ public abstract class Structure : MonoBehaviour
 
     private void OnDestroy()
     {
-        OnDestroyed();
         if (healthBar) { Destroy(healthBar.gameObject); }
         if (attachedTile) { attachedTile.Detach(); }
     }

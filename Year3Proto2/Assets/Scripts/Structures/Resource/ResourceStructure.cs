@@ -3,16 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
+public class SortTileBonusDescendingHelper : IComparer
+{
+    int IComparer.Compare(object a, object b)
+    {
+        ResourceStructure structureA = (ResourceStructure)a;
+        ResourceStructure structureB = (ResourceStructure)b;
+        if (structureA.GetTileBonus() < structureB.GetTileBonus())
+            return 1;
+        if (structureA.GetTileBonus() > structureB.GetTileBonus())
+            return -1;
+        else
+            return 0;
+    }
+}
+
 public abstract class ResourceStructure : Structure
 {
-    public float productionTime = 3f;
-    public Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
+    public class SortTileBonusDescendingHelper : IComparer<ResourceStructure>
+    {
+        public int Compare(ResourceStructure _structureA, ResourceStructure _structureB)
+        {
+            if (_structureA.GetTileBonus() < _structureB.GetTileBonus())
+            {
+                return 1;
+            }
+            if (_structureA.GetTileBonus() > _structureB.GetTileBonus())
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    public static IComparer<ResourceStructure> SortTileBonusDescending()
+    {
+        return new SortTileBonusDescendingHelper();
+    }
+
+    public float productionTime = 2f;
+    protected Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
+    protected Dictionary<TileBehaviour.TileCode, GameObject> fences;
     protected int batchSize = 1;
-    protected float remainingTime = 3f;
+    protected float remainingTime = 2f;
     protected ResourceType resourceType;
     protected int tileBonus = 0;
-    private GameObject tileHighlight;
-
+    protected static GameObject TileHighlight = null;
+    protected static GameObject Fencing = null;
 
     private void EnableFogMask()
     {
@@ -49,16 +89,32 @@ public abstract class ResourceStructure : Structure
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
+        //EnableFogMask();
         tileBonus = 1;
         OnDeselected();
-        if (tileHighlights != null) { tileHighlights.Clear(); }
+        if (tileHighlights != null)
+        {
+            tileHighlights.Clear();
+        }
+
+        string adjStructType = "Forest Environment";
+        switch (resourceType)
+        {
+            case ResourceType.Metal:
+                adjStructType = "Hills Environment";
+                break;
+            case ResourceType.Food:
+                adjStructType = "Plains Environment";
+                break;
+            default:
+                break;
+        }
+
         if (attachedTile)
         {
             // For each possible tile
             for (int i = 0; i < 4; i++)
             {
-
                 Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToAttached = attachedTile.GetAdjacentTiles();
                 if (adjacentsToAttached.ContainsKey((TileBehaviour.TileCode)i))
                 {
@@ -73,35 +129,49 @@ public abstract class ResourceStructure : Structure
                         // If there is a structure on the tile...
                         if (adjStructure)
                         {
-                            string adjStructType = "Forest Environment";
-                            switch (resourceType)
-                            {
-                                case ResourceType.metal:
-                                    adjStructType = "Hills Environment";
-                                    break;
-                                case ResourceType.food:
-                                    adjStructType = "Plains Environment";
-                                    break;
-                                default:
-                                    break;
-                            }
-
                             if (adjStructure.IsStructure(adjStructType))
                             {
-                                newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                                tileBonus++;
+                                EnvironmentStructure envStructure = adjStructure.GetComponent<EnvironmentStructure>();
+                                if (!envStructure.GetExploited())
+                                {
+                                    envStructure.SetExploited(true);
+                                    envStructure.SetExploiterID(ID);
+                                    newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                    tileBonus++;
+                                    fences[(TileBehaviour.TileCode)i].SetActive(true);
+                                }
+                                else
+                                {
+                                    if (envStructure.GetExploiterID() == ID)
+                                    {
+                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                        tileBonus++;
+                                        fences[(TileBehaviour.TileCode)i].SetActive(true);
+                                    }
+                                    else
+                                    {
+                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                                        fences[(TileBehaviour.TileCode)i].SetActive(false);
+                                    }
+                                }
                             }
                             else
                             {
                                 newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                                fences[(TileBehaviour.TileCode)i].SetActive(false);
                             }
                         }
                         else
                         {
                             newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                            fences[(TileBehaviour.TileCode)i].SetActive(false);
                         }
                         newTileHighlight.SetActive(false);
                     }
+                }
+                else
+                {
+                    fences[(TileBehaviour.TileCode)i].SetActive(false);
                 }
             }
         }
@@ -120,6 +190,42 @@ public abstract class ResourceStructure : Structure
         FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
     }
 
+    protected override void OnDestroyed()
+    {
+        base.OnDestroyed();
+        // For each possible tile
+        for (int i = 0; i < 4; i++)
+        {
+            if (attachedTile)
+            {
+                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToAttached = attachedTile.GetAdjacentTiles();
+                if (adjacentsToAttached.ContainsKey((TileBehaviour.TileCode)i))
+                {
+                    if (adjacentsToAttached[(TileBehaviour.TileCode)i].GetPlayable())
+                    {
+                        Structure adjStructure = adjacentsToAttached[(TileBehaviour.TileCode)i].GetAttached();
+                        // If there is a structure on the tile...
+                        if (adjStructure)
+                        {
+                            EnvironmentStructure envStructure = adjStructure.GetComponent<EnvironmentStructure>();
+                            if (envStructure)
+                            {
+                                if (envStructure.GetExploited())
+                                {
+                                    if (envStructure.GetExploiterID() == ID)
+                                    {
+                                        envStructure.SetExploited(false);
+                                        envStructure.SetExploiterID(-1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public int GetTileBonus()
     {
         return tileBonus;
@@ -128,19 +234,35 @@ public abstract class ResourceStructure : Structure
     protected override void Start()
     {
         base.Start();
-        structureType = StructureType.resource;
+        structureType = StructureType.Resource;
         tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
+        fences = new Dictionary<TileBehaviour.TileCode, GameObject>
+        {
+            { TileBehaviour.TileCode.north, transform.GetChild(0).gameObject },
+            { TileBehaviour.TileCode.east, transform.GetChild(1).gameObject },
+            { TileBehaviour.TileCode.south, transform.GetChild(2).gameObject },
+            { TileBehaviour.TileCode.west, transform.GetChild(3).gameObject }
+        };
         villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
         villagerWidget.SetTarget(this);
     }
 
     private GameObject GetTileHighlight()
     {
-        if (tileHighlight == null)
+        if (!TileHighlight)
         {
-            tileHighlight = Resources.Load("TileHighlight") as GameObject;
+            TileHighlight = Resources.Load("TileHighlight") as GameObject;
         }
-        return tileHighlight;
+        return TileHighlight;
+    }
+
+    private GameObject GetFencing()
+    {
+        if (!Fencing)
+        {
+            Fencing = Resources.Load("Fencing") as GameObject;
+        }
+        return Fencing;
     }
 
     protected override void Update()
@@ -164,17 +286,22 @@ public abstract class ResourceStructure : Structure
 
         switch (resourceType)
         {
-            case ResourceType.food:
+            case ResourceType.Food:
                 resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * allocatedVillagers / productionTime);
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 resourceDelta += new Vector3(0f, tileBonus * batchSize * allocatedVillagers / productionTime, 0f);
                 break;
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 resourceDelta += new Vector3(tileBonus * batchSize * allocatedVillagers / productionTime, 0f, 0f);
                 break;
         }
 
         return resourceDelta;
+    }
+
+    public float GetResourcePerVillPerSec()
+    {
+        return batchSize * tileBonus / productionTime;
     }
 }
