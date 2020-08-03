@@ -106,6 +106,13 @@ public class Airship : MonoBehaviour
 
             Transform instantiatedTransform = Instantiate(transforms[i], transform.position, Quaternion.identity, transform.parent);
             instantiatedTransform.DOLocalJump(spawnPoints[i], 0.5f, 1, seconds);
+            Enemy enemy = instantiatedTransform.GetComponent<Enemy>();
+            if(enemy)
+            {
+                Debug.Log("We have an enemy.");
+                enemy.spawner = FindObjectOfType<EnemySpawner>();
+            }
+
             yield return wait;
 
         }
