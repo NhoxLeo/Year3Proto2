@@ -267,7 +267,7 @@ public class BuildingInfo : MonoBehaviour
                 break;
         }
 
-        tool.SetHeight(foodComponent.activeSelf ? 308.0f : 182.0f);
+        tool.SetHeight(foodComponent.activeSelf ? 270.0f : 182.0f);
     }
 
     private void SetPosition()
