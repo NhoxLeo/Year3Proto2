@@ -16,7 +16,7 @@ public class Farm : ResourceStructure
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.food;
+        resourceType = ResourceType.Food;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Farm];
         health = maxHealth;
     }

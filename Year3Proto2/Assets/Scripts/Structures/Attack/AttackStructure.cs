@@ -35,10 +35,10 @@ public abstract class AttackStructure : Structure
     {
         base.Start();
         puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
-        structureType = StructureType.attack;
+        structureType = StructureType.Attack;
         enemies = new List<GameObject>();
-        VillagerAllocation villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
-        villagerAllocation.SetTarget(this);
+        villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
+        villagerWidget.SetTarget(this);
         DetectEnemies();
     }
 
@@ -90,11 +90,13 @@ public abstract class AttackStructure : Structure
     {
         base.OnSelected();
         ShowRangeDisplay(true);
+        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
     }
 
     public override void OnDeselected()
     {
         base.OnDeselected();
         ShowRangeDisplay(false);
+        FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
     }
 }

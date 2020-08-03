@@ -12,15 +12,48 @@ public abstract class EnvironmentStructure : Structure
     }
 
     protected EnvironmentType environmentType;
+    protected ResourceStructure gatherer = null;
+    protected bool exploited = false;
+    protected int exploiterID = -1;
 
     protected override void Start()
     {
         base.Start();
-        structureType = StructureType.environment;
+        structureType = StructureType.Environment;
+    }
+
+    public ResourceStructure GetGatherer()
+    {
+        return gatherer;
+    }
+
+    public void SetGatherer(ResourceStructure _gatherer)
+    {
+        gatherer = _gatherer;
     }
 
     public EnvironmentType GetEnvironmentType()
     {
         return environmentType;
+    }
+
+    public void SetExploited(bool _exploited)
+    {
+        exploited = _exploited;
+    }
+
+    public bool GetExploited()
+    {
+        return exploited;
+    }
+
+    public void SetExploiterID(int _ID)
+    {
+        exploiterID = _ID;
+    }
+
+    public int GetExploiterID()
+    {
+        return exploiterID;
     }
 }
