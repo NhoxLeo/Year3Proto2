@@ -27,7 +27,7 @@ public class BuildingInfo : MonoBehaviour
     private Image statIcon;                     // Icon shown next to stat value
     private GameObject foodComponent;           // Section for food allocation
     private TMP_Text foodValueText;             // Text showing current food allocation
-    private TMP_Text globalFoodText;            // "Affects all Buildings"
+    //private TMP_Text globalFoodText;            // "Affects all Buildings"
 
     public EnvInfo repairTooltip;               // Tooltip that appears over repair and destroy buttons
     private Button repairButton;                // Button for repairing buildings
@@ -55,7 +55,7 @@ public class BuildingInfo : MonoBehaviour
         foodComponent = transform.Find("PanelMask/Allocation").gameObject;
         foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
 
-        repairButton = transform.Find("ActionButtons/RepairButton").GetComponent<Button>();        destroyButton = transform.Find("ActionButtons/DestroyButton").GetComponent<Button>();        destroyButtonConfirm = transform.Find("DestroyConfirmButton").GetComponent<Tooltip>();        trainVillagerButton = transform.Find("TrainVillagerButton").GetComponent<Tooltip>();        globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
+        repairButton = transform.Find("ActionButtons/RepairButton").GetComponent<Button>();        destroyButton = transform.Find("ActionButtons/DestroyButton").GetComponent<Button>();        destroyButtonConfirm = transform.Find("DestroyConfirmButton").GetComponent<Tooltip>();        trainVillagerButton = transform.Find("TrainVillagerButton").GetComponent<Tooltip>();        //globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
         statInfoText.text = "";
         updateTimer = updateInterval;
     }
@@ -67,8 +67,8 @@ public class BuildingInfo : MonoBehaviour
         {
             headingText.text = buildingName;
 
-            if (buildingName == "Barracks") { globalFoodText.text = "Affects all " + buildingName; }
-            else { globalFoodText.text = "Affects all " + buildingName + "s"; }
+            //if (buildingName == "Barracks") { globalFoodText.text = "Affects all " + buildingName; }
+            //else { globalFoodText.text = "Affects all " + buildingName + "s"; }
 
             // Auto update info
             if (showPanel && doAutoUpdate)
