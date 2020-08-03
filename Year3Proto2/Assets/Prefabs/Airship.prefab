@@ -44,12 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcc2d829efa52124d93744e4eb2f563d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 0.4
-  steeringForce: 0.1
-  time: 2
   pointerPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
     type: 3}
-  pointerTarget: {fileID: 2686044637948432197}
+  spawnPointOffset: 1.2
+  capacity: 9
+  speed: 0.2
+  distanceOffset: 0.75
+  transforms: []
 --- !u!1001 &6934430254083335263
 PrefabInstance:
   m_ObjectHideFlags: 0

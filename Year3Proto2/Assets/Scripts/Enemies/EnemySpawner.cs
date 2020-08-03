@@ -19,7 +19,8 @@ public class EnemySpawner : MonoBehaviour
     public struct EnemyPathSignature
     {
         public TileBehaviour startTile;
-        public List<StructureType> validStructureTypes;
+        public List<StructureType> validStructureTypes;
+
         public static bool operator ==(EnemyPathSignature _lhs, EnemyPathSignature _rhs)
         {
             // if the signatures are both empty
@@ -44,7 +45,8 @@ public class EnemySpawner : MonoBehaviour
             {
                 return false;
             }
-        }
+        }
+
         public static bool operator !=(EnemyPathSignature _lhs, EnemyPathSignature _rhs)
         {
             return !(_lhs == _rhs);
@@ -119,7 +121,9 @@ public class EnemySpawner : MonoBehaviour
             return new EnemyPath();
         }
         else
-        {            return GenerateNewPath(_signature);        }
+        {
+            return GenerateNewPath(_signature);
+        }
     }
 
     private EnemyPath GenerateNewPath(EnemyPathSignature _signature)
@@ -127,14 +131,16 @@ public class EnemySpawner : MonoBehaviour
         EnemyPath path = new EnemyPath();
         path.pathPoints = new List<Vector3>();
 
-        float startTime = Time.realtimeSinceStartup;
+        float startTime = Time.realtimeSinceStartup;
+
         // FIRST VERSION
         // Find the closest target, path find to it | DONE
         // SECOND VERSION
         // Find the closest target, path find to it,
         // Test 4 points along the path to see if there are closer targets at each point - Path testing
         // Test paths when a new structure is placed
-        // if the test fails (there's a closer structure) find a new path to that structure
+        // if the test fails (there's a closer structure) find a new path to that structure
+
         // starting from _signature.startTile, find the closest valid structure
         List<Structure> validStructures = new List<Structure>();
         for (int i = 0; i < _signature.validStructureTypes.Count; i++)
@@ -159,16 +165,20 @@ public class EnemySpawner : MonoBehaviour
                     break;
                 default:
                     break;
-            }
+            }
+
             validStructures.AddRange(structures);
-        }
+        }
+
         // now that we have all the structures that the enemy can attack, let's find the closest structure.
         if (validStructures.Count == 0)
         {
             return path;
-        }
+        }
+
         Structure closest = validStructures[0];
-        float closestDistance = (validStructures[0].transform.position - _signature.startTile.transform.position).magnitude;
+        float closestDistance = (validStructures[0].transform.position - _signature.startTile.transform.position).magnitude;
+
         for (int i = 1; i < validStructures.Count; i++)
         {
             float distance = (validStructures[i].transform.position - _signature.startTile.transform.position).magnitude;
@@ -177,7 +187,8 @@ public class EnemySpawner : MonoBehaviour
                 closest = validStructures[i];
                 closestDistance = distance;
             }
-        }
+        }
+
         // we have our destination and our source, now use A* to find the path
         // generate initial open and closed lists
         List<PathfindingTileData> open = new List<PathfindingTileData>();
@@ -190,7 +201,8 @@ public class EnemySpawner : MonoBehaviour
             fromTile = _signature.startTile,
             gCost = 0f,
             hCost = CalculateHCost(_signature.startTile, destination)
-        };
+        };
+
         ProcessTile(startingData, open, closed, destination);
 
         // while a path hasn't been found
@@ -216,11 +228,13 @@ public class EnemySpawner : MonoBehaviour
                 path.target = closest;
                 pathFound = true;
             }
-        }
+        }
+
         if (!calculatedPaths.ContainsKey(_signature))
         {
             calculatedPaths.Add(_signature, path);
-        }
+        }
+
         float finishTime = Time.realtimeSinceStartup;
         Debug.Log("Pathfinding complete, took " + (finishTime - startTime).ToString() + " seconds");
         return path;
@@ -286,7 +300,8 @@ public class EnemySpawner : MonoBehaviour
                 {
                     if (_tileData.tile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)i))
                     {
-                        TileBehaviour iTile = _tileData.tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
+                        TileBehaviour iTile = _tileData.tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
+
                         if (!TileInClosedList(iTile, _closed))
                         {
                             // add tile to open list
@@ -434,9 +449,12 @@ public class EnemySpawner : MonoBehaviour
     private void Start()
     {
         messageBox = FindObjectOfType<MessageBox>();
-        allTiles = new List<TileBehaviour>();
-        availableTiles = new List<TileBehaviour>();
-        waveValidTiles = new List<TileBehaviour>();
+        allTiles = new List<TileBehaviour>();
+
+        availableTiles = new List<TileBehaviour>();
+
+        waveValidTiles = new List<TileBehaviour>();
+
         waveSelectedTiles = new List<TileBehaviour>();
         allTiles.AddRange(FindObjectsOfType<TileBehaviour>());
         calculatedPaths = new Dictionary<EnemyPathSignature, EnemyPath>();
@@ -476,7 +494,8 @@ public class EnemySpawner : MonoBehaviour
                 {
                     messageBox.ShowMessage("Invaders incoming!", 3.5f);
                 }
-                cooldown = timeBetweenWaves;
+                cooldown = timeBetweenWaves;
+
                 enemiesPerWave = Mathf.Clamp(enemiesPerWave, 0, 300);
                 int enemiesLeftToSpawn = enemiesPerWave;
                 // SPAWN ENEMY WAVE
@@ -490,8 +509,10 @@ public class EnemySpawner : MonoBehaviour
                 TileBehaviour startTile = GetRandomSpawnTile();
                 waveSelectedTiles.Clear();
                 waveSelectedTiles.Add(startTile);
-                int tilesSelected = 1;
-                // then grow from that point until enough tiles are selected...
+                int tilesSelected = 1;
+
+                // then grow from that point until enough tiles are selected...
+
                 while (tilesSelected < tilesRequired)
                 {
                     Debug.Log("Tiles selected: " + tilesSelected);
@@ -586,7 +607,8 @@ public class EnemySpawner : MonoBehaviour
                     }
                 }
                 // The start tile plays the spawn effect
-                GameManager.CreateAudioEffect("horn", lastEnemySpawnedPosition);
+                GameManager.CreateAudioEffect("horn", lastEnemySpawnedPosition);
+
                 // Next wave is bigger
                 enemiesPerWave += newEnemiesPerWave;
             }
@@ -601,18 +623,21 @@ public class EnemySpawner : MonoBehaviour
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetScale(_saveData.scale);
         enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
-        enemy.SetState(_saveData.enemyData.state);
+        enemy.SetState(_saveData.enemyData.state);
+
         enemies.Add(enemy);
     }
 
     public void LoadHeavyInvader(SuperManager.HeavyInvaderSaveData _saveData)
     {
-        HeavyInvader enemy = Instantiate(enemyPrefabs[1]).GetComponent<HeavyInvader>();
+        HeavyInvader enemy = Instantiate(enemyPrefabs[1]).GetComponent<HeavyInvader>();
+
         enemy.transform.position = _saveData.enemyData.position;
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetEquipment(_saveData.equipment);
         enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
-        enemy.SetState(_saveData.enemyData.state);
+        enemy.SetState(_saveData.enemyData.state);
+
         enemies.Add(enemy);
     }
 
