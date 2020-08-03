@@ -1801,6 +1801,21 @@ PrefabInstance:
       propertyPath: m_textInfo.materialCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7629057144457876464, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 7629057144457876464, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 7629057144457876464, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.97
+      objectReference: {fileID: 0}
     - target: {fileID: 8148467928566345293, guid: 865716adac792ae48be58378569ba4da,
         type: 3}
       propertyPath: m_AnchorMin.y
