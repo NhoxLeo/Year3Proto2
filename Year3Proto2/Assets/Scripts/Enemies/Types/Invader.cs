@@ -12,11 +12,11 @@ public class Invader : Enemy
 
         structureTypes = new List<StructureType>()
         {
-            StructureType.attack,
-            StructureType.resource,
-            StructureType.storage,
-            StructureType.longhaus,
-            StructureType.defense
+            StructureType.Attack,
+            StructureType.Resource,
+            StructureType.Storage,
+            StructureType.Longhaus,
+            StructureType.Defense
         };
     }
 

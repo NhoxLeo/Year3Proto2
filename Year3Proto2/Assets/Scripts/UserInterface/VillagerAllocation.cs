@@ -68,7 +68,6 @@ public class VillagerAllocation : MonoBehaviour
     private void OnEnable()
     {
         SetInfo();
-        Debug.Log("dsaads");
     }
 
 }

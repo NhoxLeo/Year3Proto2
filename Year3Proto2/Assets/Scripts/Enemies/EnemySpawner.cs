@@ -142,19 +142,19 @@ public class EnemySpawner : MonoBehaviour
             Structure[] structures = { };
             switch (_signature.validStructureTypes[i])
             {
-                case StructureType.attack:
+                case StructureType.Attack:
                     structures = FindObjectsOfType<AttackStructure>();
                     break;
-                case StructureType.defense:
+                case StructureType.Defense:
                     structures = FindObjectsOfType<DefenseStructure>();
                     break;
-                case StructureType.longhaus:
+                case StructureType.Longhaus:
                     structures = FindObjectsOfType<Longhaus>();
                     break;
-                case StructureType.storage:
+                case StructureType.Storage:
                     structures = FindObjectsOfType<StorageStructure>();
                     break;
-                case StructureType.resource:
+                case StructureType.Resource:
                     structures = FindObjectsOfType<ResourceStructure>();
                     break;
                 default:
@@ -601,7 +601,8 @@ public class EnemySpawner : MonoBehaviour
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetScale(_saveData.scale);
         enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
-        enemy.SetState(_saveData.enemyData.state);
+        enemy.SetState(_saveData.enemyData.state);
+        enemy.spawner = this;
         enemies.Add(enemy);
     }
 
@@ -612,7 +613,8 @@ public class EnemySpawner : MonoBehaviour
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetEquipment(_saveData.equipment);
         enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
-        enemy.SetState(_saveData.enemyData.state);
+        enemy.SetState(_saveData.enemyData.state);
+        enemy.spawner = this;
         enemies.Add(enemy);
     }
 
