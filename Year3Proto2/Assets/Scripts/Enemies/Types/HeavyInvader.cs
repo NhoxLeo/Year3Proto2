@@ -18,10 +18,8 @@ public class HeavyInvader : Enemy
 {
     private bool[] equipment = new bool[4];
 
-    private void Start()
+    private void Awake()
     {
-        EnemyStart();
-        UpdateEquipment();
 
         structureTypes = new List<StructureType>()
         {
@@ -30,6 +28,12 @@ public class HeavyInvader : Enemy
             StructureType.Longhaus,
             StructureType.Defense
         };
+    }
+
+    private void Start()
+    {
+        EnemyStart();
+        UpdateEquipment();
     }
 
     protected override void LookAtPosition(Vector3 _position)

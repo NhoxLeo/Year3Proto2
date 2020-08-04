@@ -37,13 +37,14 @@ public class Airship : MonoBehaviour
 
     [Header("Attributes")]
     [SerializeField] private float speed = 2.4f;
-    [SerializeField] private List<Transform> transforms;
+    [SerializeField] private float distanceOffset = 0.75f;
+    [SerializeField] private Transform[] transforms;
 
     private Transform target;
     private float distance = float.MaxValue;
-    private float count = 0.0f;
 
     private AirshipState airshipState;
+    private EnemySpawner enemySpawner;
 
     /**************************************
     * Name of the Function: Update
@@ -51,44 +52,38 @@ public class Airship : MonoBehaviour
     * @Parameter: n/a
     * @Return: void
     ***************************************/
-    private void Update() 
+    private void Update()
     {
-        if(target)
+        if (target)
         {
-            switch(airshipState)
+            Vector3 heading;
+            Vector3 direction;
+
+            switch (airshipState)
             {
                 case AirshipState.Depart:
-                    Vector3 difference = initialLocation - transform.position;
-                    if (difference.sqrMagnitude < 1.0f)
-                    {
-                        Destroy(gameObject);
-                        return;
-                    }
+                    heading = initialLocation - transform.position;
+                    direction = heading.normalized;
 
-                    transform.position = difference.normalized * speed;
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), speed * Time.deltaTime * 2.0f);
+                    transform.position += heading * Time.deltaTime * speed / 4.0f;
+
+                    if (heading.sqrMagnitude < distanceOffset * 4.0f) Destroy(gameObject);
+
                     break;
                 case AirshipState.Move:
-                    if (count < 1.0f)
+                    heading = target.position - transform.position;
+                    direction = heading.normalized;
+
+                    // Update Airship Values
+                    transform.rotation = Quaternion.LookRotation(direction);
+                    transform.position += heading * Time.deltaTime * speed;
+
+                    if (heading.sqrMagnitude < Mathf.Pow(distanceOffset, 2))
                     {
-                        // Redo movement bezier. 
-
-                        count += 0.02f * Time.deltaTime;
-                        Vector3 oneTwo = Vector3.Lerp(initialLocation, controlPoint, count);
-                        Vector3 twoThree = Vector3.Lerp(controlPoint, target.position, count);
-
-                        Vector3 position = Vector3.Lerp(oneTwo, twoThree, count);
-                        position.y = 0.0f;
-
-                        Vector3 direction = position - transform.position;
-
-                        // Update Airship Values
-                        transform.rotation = Quaternion.LookRotation(direction.normalized);
-                        transform.position = position;
-                    } 
-                    else
-                    {
-                        airshipState = AirshipState.Idle;
-                        StartCoroutine(Deploy(1.0f));
+                        airshipState = AirshipState.Deploy;
+                        Destroy(pointer.gameObject);
+                        StartCoroutine(Deploy(1.5f));
                     }
                     break;
             }
@@ -106,16 +101,35 @@ public class Airship : MonoBehaviour
     {
         WaitForSeconds wait = new WaitForSeconds(seconds);
         List<Vector3> spawnPoints = GenerateSpawnPoints();
-        for (int i = 0; i < transforms.Count; i++)
+        for (int i = 0; i < transforms.Length; i++)
         {
-            Debug.Log("Airship Deploying " + i);
-            Transform instantiatedTransform = Instantiate(transforms[i]);
-            instantiatedTransform.DOLocalJump(spawnPoints[i], 0.1f, 1, seconds);
+            if (transforms[i] == null) break;
+
+            Transform instantiatedTransform = Instantiate(transforms[i], transform.position, Quaternion.identity);
+            instantiatedTransform.position = spawnPoints[i];
+
+            Invader invader = instantiatedTransform.GetComponent<Invader>();
+            if(invader)
+            {
+                invader.SetScale(Random.Range(1.5f, 2f));
+                invader.spawner = enemySpawner;
+            }
+
+            HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
+            if (heavyInvader)
+            {
+                heavyInvader.Randomize();
+                heavyInvader.spawner = enemySpawner;
+            }
+
             yield return wait;
+
         }
 
+        yield return wait;
+
+
         airshipState = AirshipState.Depart;
-        target = null;
         yield return null;
     }
 
@@ -125,18 +139,14 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform Array, Transform
     * @Return: void
     ***************************************/
-    public void Embark(List<Transform> transforms, Transform pointerParent)
+    public void Embark(Transform[] transforms, Transform pointerParent)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
         if (tileBehaviour)
         {
             tileBehaviour.SetApproached(true);
-
             initialLocation = transform.position;
-
-            // TODO: Determine Vector3.forward or Vector3.backward
-            controlPoint = transform.position + (target.position - transform.position) / 2 + Vector3.forward * 20.0f;
 
             // Instantiate and Setup pointer.
             if (pointerPrefab) pointer = Instantiate(pointerPrefab, pointerParent);
@@ -145,11 +155,10 @@ public class Airship : MonoBehaviour
 
             this.transforms = transforms;
             airshipState = AirshipState.Move;
-
             return;
         }
 
-        Destroy(this);
+        Destroy(gameObject);
     }
 
     /**************************************
@@ -169,7 +178,7 @@ public class Airship : MonoBehaviour
 
         int columns = (int)Mathf.Sqrt(capacity);
 
-        for (int i = 0; i < transforms.Count; i++)
+        for (int i = 0; i < transforms.Length; i++)
         {
             float xPosition = i % columns / 2.0f * xOffset;
             float yPosition = halfScale.y;
@@ -229,5 +238,10 @@ public class Airship : MonoBehaviour
         });
 
         return target;
+    }
+
+    public void SetSpawner(EnemySpawner _enemySpawner)
+    {
+        enemySpawner = _enemySpawner;
     }
 }
