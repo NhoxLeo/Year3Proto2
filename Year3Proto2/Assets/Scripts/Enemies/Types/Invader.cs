@@ -6,10 +6,8 @@ public class Invader : Enemy
 {
     public float scale = 0.0f;
 
-    private void Start()
+    private void Awake()
     {
-        EnemyStart();
-
         structureTypes = new List<StructureType>()
         {
             StructureType.Attack,
@@ -18,6 +16,11 @@ public class Invader : Enemy
             StructureType.Longhaus,
             StructureType.Defense
         };
+    }
+
+    private void Start()
+    {
+        EnemyStart();
     }
 
     private void FixedUpdate()
@@ -87,6 +90,10 @@ public class Invader : Enemy
                             if (!hasPath)
                             {
                                 path = spawner.GetPath(transform.position, structureTypes);
+                                if(path.target)
+                                {
+                                    hasPath = true;
+                                }
                             }
                             // follow the path
                             // move towards the first element in the path, if you get within 0.25 units, delete the element from the path

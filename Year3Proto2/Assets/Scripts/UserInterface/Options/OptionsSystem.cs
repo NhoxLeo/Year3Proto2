@@ -9,7 +9,7 @@ using UnityEngine;
 //
 // (c) 2020 Media Design School.
 //
-// File Name    : Options.cs
+// File Name    : OptionsSystem.cs
 // Description  : Manager class for options.
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
@@ -58,7 +58,7 @@ struct OptionCheckboxData
 }
 
 
-public class Options : MonoBehaviour
+public class OptionsSystem : MonoBehaviour
 {
     // TODO: delegates, control values, saving...
 
@@ -244,6 +244,7 @@ public class Options : MonoBehaviour
     {
         for (int i = 0; i < optionObjects.Length; i++)
         {
+
             Transform optionObject = optionObjects[i];
 
             OptionSwitcher optionSwitcher = optionObject.GetComponent<OptionSwitcher>();
