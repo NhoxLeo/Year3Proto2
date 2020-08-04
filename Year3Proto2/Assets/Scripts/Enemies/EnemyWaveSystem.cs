@@ -19,6 +19,7 @@ using System.Collections.Generic;
 public class EnemyWaveSystem : MonoBehaviour
 {
     [Header("Properties")]
+    [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private float weightageScalar = 0.2f;
     [SerializeField] private float tokensScalar = 0.05f;
     [SerializeField] private float time = 0.0f;
@@ -76,7 +77,12 @@ public class EnemyWaveSystem : MonoBehaviour
         Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
-        if (airship.HasTarget()) airship.Embark(transforms, pointerParent);
+        if (airship) {
+            airship.SetSpawner(enemySpawner);
+            if (airship.HasTarget()) {
+                airship.Embark(transforms, pointerParent);
+            }
+        }
     }
 
     /**************************************
@@ -93,7 +99,7 @@ public class EnemyWaveSystem : MonoBehaviour
             tokenIncrement += tokensScalar;
             time = Random.Range(timeVariance.x, timeVariance.y);
 
-            float enemiesToSpawn = tokens + GetWeightage();
+            float enemiesToSpawn = tokens/*+ GetWeightage()*/;
             enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
             if (enemiesToSpawn < minEnemies) enemiesToSpawn = minEnemies;
 
@@ -140,17 +146,15 @@ public class EnemyWaveSystem : MonoBehaviour
             return enemiesInAirships;
         }
 
-        int enemiesAvailable = enemies.Length;
         // When there are more enemies to dedicate per airship.
-        for (int i = 0; i < enemiesAvailable; i++)
+        for (int i = 0; i < enemies.Length; i++)
         {
-            currentBatch[i] = enemies[i];
             if ((i % enemiesPerAirship) == 0)
             {
                 enemiesInAirships.Add(currentBatch);
                 currentBatch = new Transform[enemiesPerAirship];
             }
-            enemiesAvailable -= 1;
+            currentBatch[i % enemiesPerAirship] = enemies[i];
         }
         return enemiesInAirships;
     }
@@ -171,16 +175,16 @@ public class EnemyWaveSystem : MonoBehaviour
             if (random < 0.20f)
             {
                 enemies[i] = enemyPrefabs[1];
-                enemiesLeft -= 1;
             }
             else
             {
                 enemies[i] = enemyPrefabs[0];
-                enemiesLeft -= 1;
             }
         }
         return enemies;
     }
+
+
 
     /**************************************
     * Name of the Function: GetWeightage
@@ -190,14 +194,16 @@ public class EnemyWaveSystem : MonoBehaviour
     ***************************************/
     private float GetWeightage()
     {
+
+
         SuperManager superManager = SuperManager.GetInstance();
         if (superManager)
         {
             // Data is serialized correctly
             if (superManager.CheckData())
             {
-                int researchCompleted = superManager.GetResearch().ToList().RemoveAll(entry => !entry.Value); // 5 out of 20
-                int currentStructures = FindObjectsOfType<ResourceStructure>().Length; //10
+                int researchCompleted = superManager.GetResearch().ToList().RemoveAll(entry => !entry.Value);
+                int currentStructures = FindObjectsOfType<ResourceStructure>().Length;
                 return researchCompleted + currentStructures * weightageScalar;
             }
         }

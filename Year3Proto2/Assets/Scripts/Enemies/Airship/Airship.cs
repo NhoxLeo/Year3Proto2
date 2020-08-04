@@ -44,6 +44,7 @@ public class Airship : MonoBehaviour
     private float distance = float.MaxValue;
 
     private AirshipState airshipState;
+    private EnemySpawner enemySpawner;
 
     /**************************************
     * Name of the Function: Update
@@ -104,13 +105,21 @@ public class Airship : MonoBehaviour
         {
             if (transforms[i] == null) break;
 
-            Transform instantiatedTransform = Instantiate(transforms[i], transform.position, Quaternion.identity, transform.parent);
-            instantiatedTransform.DOLocalJump(spawnPoints[i], 0.5f, 1, seconds);
-            Enemy enemy = instantiatedTransform.GetComponent<Enemy>();
-            if(enemy)
+            Transform instantiatedTransform = Instantiate(transforms[i], transform.position, Quaternion.identity);
+            instantiatedTransform.position = spawnPoints[i];
+
+            Invader invader = instantiatedTransform.GetComponent<Invader>();
+            if(invader)
             {
-                Debug.Log("We have an enemy.");
-                enemy.spawner = FindObjectOfType<EnemySpawner>();
+                invader.SetScale(Random.Range(1.5f, 2f));
+                invader.spawner = enemySpawner;
+            }
+
+            HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
+            if (heavyInvader)
+            {
+                heavyInvader.Randomize();
+                heavyInvader.spawner = enemySpawner;
             }
 
             yield return wait;
@@ -118,6 +127,7 @@ public class Airship : MonoBehaviour
         }
 
         yield return wait;
+
 
         airshipState = AirshipState.Depart;
         yield return null;
@@ -228,5 +238,10 @@ public class Airship : MonoBehaviour
         });
 
         return target;
+    }
+
+    public void SetSpawner(EnemySpawner _enemySpawner)
+    {
+        enemySpawner = _enemySpawner;
     }
 }
