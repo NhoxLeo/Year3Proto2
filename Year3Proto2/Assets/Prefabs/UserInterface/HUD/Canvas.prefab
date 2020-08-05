@@ -2080,7 +2080,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.6}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -6646,7 +6646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   victoryColour: {r: 0.75, g: 0.5112245, b: 0.030000016, a: 0.5019608}
-  defeatColour: {r: 0, g: 0, b: 0, a: 0.5019608}
+  defeatColour: {r: 0, g: 0, b: 0, a: 0.7490196}
 --- !u!1 &6278679895109036558
 GameObject:
   m_ObjectHideFlags: 0
@@ -8558,7 +8558,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3745757213977141429}
-  - {fileID: 600443226636769072}
+  - {fileID: 6321819888759543138}
   - {fileID: 2640882017143391595}
   - {fileID: 6077846840317155063}
   - {fileID: 2176033115338780482}
@@ -15497,7 +15497,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 626060686499462130, guid: 2020d210b0e19d54196077da1255126f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2020d210b0e19d54196077da1255126f, type: 3}
---- !u!224 &600443226636769072 stripped
+--- !u!224 &6321819888759543138 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6912654201860014718, guid: 2020d210b0e19d54196077da1255126f,
     type: 3}
@@ -16119,7 +16119,7 @@ PrefabInstance:
     - target: {fileID: 3039436910514982646, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3039436910514982646, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
@@ -16134,7 +16134,7 @@ PrefabInstance:
     - target: {fileID: 3039436910514982646, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: ShowPanel
+      value: SetPanelVisibility
       objectReference: {fileID: 0}
     - target: {fileID: 3039436910514982646, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
@@ -16200,6 +16200,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3039436910514982646, guid: d11c437b49aba88418ba3d9ddf7b0c76,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_BoolArgument
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3459768427857358741, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
@@ -16274,7 +16279,7 @@ PrefabInstance:
     - target: {fileID: 3972272915126759740, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3972272915126759740, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
@@ -16289,12 +16294,17 @@ PrefabInstance:
     - target: {fileID: 3972272915126759740, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: ShowPanel
+      value: SetPanelVisibility
       objectReference: {fileID: 0}
     - target: {fileID: 3972272915126759740, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3972272915126759740, guid: d11c437b49aba88418ba3d9ddf7b0c76,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_BoolArgument
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4466835763111513186, guid: d11c437b49aba88418ba3d9ddf7b0c76,
         type: 3}
