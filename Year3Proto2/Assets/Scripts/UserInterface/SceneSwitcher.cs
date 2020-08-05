@@ -56,7 +56,11 @@ public class SceneSwitcher : MonoBehaviour
         loadingHint = loadingScreen.transform.Find("HintText").GetComponent<TMP_Text>();
         loadingHint.text = GlobalData.currentLoadingHint;
         loadingScreen.SetActive(GlobalData.isLoadingIn);
-        if (loadingScreen.activeSelf) { Invoke("EndLoad", loadTime); }
+        if (loadingScreen.activeSelf) 
+        { 
+            Invoke("EndLoad", loadTime);
+            loadingScreen.GetComponent<UIAnimator>().SetVisibility(true);
+        }
     }
 
     void Update()
@@ -153,9 +157,9 @@ public class SceneSwitcher : MonoBehaviour
         {
             loadingCanvas.alpha = 0.0f;
             loadingScreen.SetActive(GlobalData.isLoadingIn);
-            loadingCanvas.DOFade(1.0f, 0.45f).SetEase(Ease.InOutSine);
-            loadingCanvas.interactable = true;
-            loadingCanvas.blocksRaycasts = true;
+            loadingScreen.GetComponent<UIAnimator>().SetVisibility(true);
+            //loadingCanvas.interactable = true;
+            //loadingCanvas.blocksRaycasts = true;
             loadingIcon.SetActive(false);
             isSwitching = true;
             fadeTimeCur = 0.5f;
@@ -177,9 +181,10 @@ public class SceneSwitcher : MonoBehaviour
         isFading = true;
         isSwitching = false;
         fadeTimeCur = fadeTime;
-        loadingCanvas.DOFade(0.0f, 0.45f).SetEase(Ease.InOutSine);
-        loadingCanvas.interactable = false;
-        loadingCanvas.blocksRaycasts = false;
+        loadingScreen.GetComponent<UIAnimator>().SetVisibility(false);
+        //loadingCanvas.DOFade(0.0f, 0.45f).SetEase(Ease.InOutSine);
+        //loadingCanvas.interactable = false;
+        //loadingCanvas.blocksRaycasts = false;
         GlobalData.isLoadingIn = false;
     }
 

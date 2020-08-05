@@ -262,18 +262,14 @@ public class HUDManager : MonoBehaviour
 
     private void ShowHUD()
     {
-        canvas.DOKill(true);
-        canvas.DOFade(1.0f, 0.3f).SetEase(Ease.InOutSine);
-        canvas.interactable = true;
-        canvas.blocksRaycasts = true;
+        UIAnimator animator = GetComponent<UIAnimator>();
+        animator.SetVisibility(true);
     }
 
     private void HideHUD()
     {
-        canvas.DOKill(true);
-        canvas.DOFade(0.0f, 0.3f).SetEase(Ease.InOutSine);
-        canvas.interactable = false;
-        canvas.blocksRaycasts = false;
+        UIAnimator animator = GetComponent<UIAnimator>();
+        animator.SetVisibility(false);
     }
 
     public void HideHelpScreen()

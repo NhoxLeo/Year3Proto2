@@ -21,6 +21,7 @@ public class UIAnimator : MonoBehaviour
     public enum EntranceAnimation
     {
         Window,
+        Window2,
         PopUp,
         PopDown
     }
@@ -81,12 +82,18 @@ public class UIAnimator : MonoBehaviour
         showElement = _visible;
     }
 
-    private void EntranceInitialize()
+    public void EntranceInitialize()
     {
         switch (entrance)
         {
             case EntranceAnimation.Window:
                 transform.DOScale(0.8f, 0.0f);
+                canvas.alpha = 0.0f;
+                canvas.interactable = false;
+                canvas.blocksRaycasts = false;
+                break;
+            case EntranceAnimation.Window2:
+                transform.DOScale(1.2f, 0.0f);
                 canvas.alpha = 0.0f;
                 canvas.interactable = false;
                 canvas.blocksRaycasts = false;
@@ -118,6 +125,17 @@ public class UIAnimator : MonoBehaviour
                 canvas.interactable = interactable;
                 canvas.blocksRaycasts = interactable;
                 break;
+            case EntranceAnimation.Window2:
+
+                entranceSequence = DOTween.Sequence();
+                entranceSequence.Insert(0.0f, transform.DOScale(1.0f, 0.4f)).SetEase(Ease.OutBack);
+                entranceSequence.Insert(0.0f, canvas.DOFade(1.0f, 0.3f)).SetEase(Ease.OutQuad);
+
+                pulseSeq.Play();
+
+                canvas.interactable = interactable;
+                canvas.blocksRaycasts = interactable;
+                break;
             case EntranceAnimation.PopUp:
                 break;
             case EntranceAnimation.PopDown:
@@ -138,6 +156,17 @@ public class UIAnimator : MonoBehaviour
                 entranceSequence = DOTween.Sequence();
                 entranceSequence.Insert(0.0f, transform.DOScale(0.8f, 0.3f)).SetEase(Ease.OutQuint);
                 entranceSequence.Insert(0.0f, canvas.DOFade(0.0f, 0.3f)).SetEase(Ease.OutQuint);
+
+                pulseSeq.Play();
+
+                canvas.interactable = false;
+                canvas.blocksRaycasts = false;
+                break;
+            case EntranceAnimation.Window2:
+
+                entranceSequence = DOTween.Sequence();
+                entranceSequence.Insert(0.0f, transform.DOScale(1.2f, 0.3f)).SetEase(Ease.OutQuint);
+                entranceSequence.Insert(0.0f, canvas.DOFade(0.0f, 0.3f)).SetEase(Ease.OutQuad);
 
                 pulseSeq.Play();
 
