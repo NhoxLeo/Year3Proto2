@@ -279,6 +279,12 @@ public class HUDManager : MonoBehaviour
     public void HideHelpScreen()
     {
         GlobalData.showTutorial = false;
+        Invoke("DisableHelpScreen", 2.0f);
+    }
+
+    private void DisableHelpScreen()
+    {
+        helpScreen.SetActive(false);
     }
 
     public void ToggleHUDMode()
