@@ -42,6 +42,8 @@ public class ResearchScreen : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1.0f;
+
         superMan = SuperManager.GetInstance();
         RPCounter = transform.Find("RPCounter").GetComponent<TMP_Text>();
         cardPanel = transform.Find("BuildingCards");
