@@ -88,7 +88,7 @@ public class Barracks : DefenseStructure
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
+        //EnableFogMask();
         Barracks[] barracks = FindObjectsOfType<Barracks>();
         if (barracks.Length >= 2)
         {

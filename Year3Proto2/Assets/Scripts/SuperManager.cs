@@ -396,7 +396,7 @@ public class SuperManager : MonoBehaviour
         modDefinitions = new List<ModifierDefinition>()
         { 
             // ID, Name, Description, Coefficient
-            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure price acceleration hits twice as hard.", 0.5f),
+            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
             new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
             new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
             new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),

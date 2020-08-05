@@ -245,6 +245,11 @@ public class EnemySpawner : MonoBehaviour
         calculatedPaths.Clear();
     }
 
+    public void RecordNewEnemy(Enemy _enemy)
+    {
+        enemies.Add(_enemy);
+    }
+
     public static PathfindingTileData GetNextOpenTile(List<PathfindingTileData> _open)
     {
         PathfindingTileData next = new PathfindingTileData();
@@ -589,7 +594,7 @@ public class EnemySpawner : MonoBehaviour
                             {
                                 Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
                                 lastEnemySpawnedPosition = newInvader.transform.position;
-                                newInvader.SetScale(Random.Range(1.5f, 2f));
+                                newInvader.SetScale(Random.Range(0.8f, 1.5f));
                                 newInvader.spawner = this;
                                 enemies.Add(newInvader);
                                 enemiesLeftToSpawn--;
@@ -599,7 +604,7 @@ public class EnemySpawner : MonoBehaviour
                         {
                             Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
                             lastEnemySpawnedPosition = newInvader.transform.position;
-                            newInvader.SetScale(Random.Range(1.5f, 2f));
+                            newInvader.SetScale(Random.Range(0.8f, 1.5f));
                             newInvader.spawner = this;
                             enemies.Add(newInvader);
                             enemiesLeftToSpawn--;

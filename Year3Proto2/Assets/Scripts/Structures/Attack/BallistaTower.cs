@@ -5,15 +5,20 @@ using DG.Tweening;
 
 public class BallistaTower : AttackStructure
 {
-    public const int CostArrowBase = 6;
+    public const int CostArrowBase = 4;
     public GameObject arrow;
     public GameObject ballista;
     public static bool arrowPierce;
-    public float arrowDamage = 5f;
+    private float arrowDamage = 10f;
     private float arrowSpeed = 7.5f;
-    public float fireRate = 0f;
+    private float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
+
+    public float GetFirerate()
+    {
+        return fireRate;
+    }
 
     protected override void Awake()
     {
@@ -110,7 +115,7 @@ public class BallistaTower : AttackStructure
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
+        //EnableFogMask();
         BallistaTower[] ballistaTowers = FindObjectsOfType<BallistaTower>();
         if (ballistaTowers.Length >= 2)
         {
@@ -134,6 +139,7 @@ public class BallistaTower : AttackStructure
 
     void SetFirerate()
     {
+        /*
         switch (allocatedVillagers)
         {
             case 0:
@@ -155,7 +161,9 @@ public class BallistaTower : AttackStructure
                 fireRate = 2.5f;
                 break;
         }
-        fireDelay = 1 / fireRate;
+        */
+        fireRate = 1f;
+        fireDelay = 1f / fireRate;
     }
 
     public override Vector3 GetResourceDelta()

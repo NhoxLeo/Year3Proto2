@@ -114,27 +114,27 @@ public class BuildingInfo : MonoBehaviour
         switch (buildingName)
         {
             case "Ballista Tower":
-                foodComponent.SetActive(true);
+                foodComponent.SetActive(false);
                 BallistaTower ballista = targetBuilding.GetComponent<BallistaTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = ballista.fireRate.ToString("F");
+                statValueText.text = ballista.GetFirerate().ToString("F");
                 statInfoText.text = "per second";
                 //foodValueText.text = ballista.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
-                foodValueText.text = ballista.GetAllocated().ToString("0") + "/" + ballista.GetVillagerCapacity().ToString("0");
+                //foodValueText.text = ballista.GetAllocated().ToString("0") + "/" + ballista.GetVillagerCapacity().ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = ballista.CanBeRepaired();
                 break;
             case "Catapult Tower":
-                foodComponent.SetActive(true);
+                foodComponent.SetActive(false);
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = catapult.fireRate.ToString("F");
+                statValueText.text = catapult.GetFirerate().ToString("F");
                 statInfoText.text = "per second";
                 //foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
-                foodValueText.text = catapult.GetAllocated().ToString("0") + "/" + catapult.GetVillagerCapacity().ToString("0");
+                //foodValueText.text = catapult.GetAllocated().ToString("0") + "/" + catapult.GetVillagerCapacity().ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = catapult.CanBeRepaired();

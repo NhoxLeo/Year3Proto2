@@ -111,8 +111,9 @@ public class Airship : MonoBehaviour
             Invader invader = instantiatedTransform.GetComponent<Invader>();
             if(invader)
             {
-                invader.SetScale(Random.Range(1.5f, 2f));
+                invader.SetScale(Random.Range(0.8f, 1.5f));
                 invader.spawner = enemySpawner;
+                enemySpawner.RecordNewEnemy(invader);
             }
 
             HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
@@ -120,7 +121,9 @@ public class Airship : MonoBehaviour
             {
                 heavyInvader.Randomize();
                 heavyInvader.spawner = enemySpawner;
+                enemySpawner.RecordNewEnemy(heavyInvader);
             }
+
 
             yield return wait;
 
