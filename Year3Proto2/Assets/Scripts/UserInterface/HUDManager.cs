@@ -40,6 +40,10 @@ public class HUDManager : MonoBehaviour
     private Tooltip metalDeltaTip;
     private TMP_Text metalDeltaText;
 
+    [SerializeField] private UIAnimator resourceBar;
+    [SerializeField] private GameObject helpScreen;
+    [SerializeField] private BuildPanel buildPanel;
+
     private EnemySpawner spawner;
     private TMP_Text victoryProgress;
 
@@ -72,6 +76,10 @@ public class HUDManager : MonoBehaviour
         metalDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
 
         GetVictoryInfo();
+
+        resourceBar.SetVisibility(!GlobalData.showTutorial);
+        buildPanel.showPanel = !GlobalData.showTutorial;
+        helpScreen.SetActive(GlobalData.showTutorial);
     }
 
     void LateUpdate()
@@ -266,6 +274,17 @@ public class HUDManager : MonoBehaviour
         canvas.DOFade(0.0f, 0.3f).SetEase(Ease.InOutSine);
         canvas.interactable = false;
         canvas.blocksRaycasts = false;
+    }
+
+    public void HideHelpScreen()
+    {
+        GlobalData.showTutorial = false;
+        Invoke("DisableHelpScreen", 2.0f);
+    }
+
+    private void DisableHelpScreen()
+    {
+        helpScreen.SetActive(false);
     }
 
     public void ToggleHUDMode()
