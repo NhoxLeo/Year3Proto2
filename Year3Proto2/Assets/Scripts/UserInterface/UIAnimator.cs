@@ -76,6 +76,11 @@ public class UIAnimator : MonoBehaviour
 
     }
 
+    public void SetVisibility(bool _visible)
+    {
+        showElement = _visible;
+    }
+
     private void EntranceInitialize()
     {
         switch (entrance)
