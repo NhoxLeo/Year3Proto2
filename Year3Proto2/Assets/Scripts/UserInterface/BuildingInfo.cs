@@ -49,24 +49,18 @@ public class BuildingInfo : MonoBehaviour
         rTrans = GetComponent<RectTransform>();
         buildPanel = FindObjectOfType<BuildPanel>();
 
-        //headingTextFloating = transform.Find("ActionPanel/BuildingName/Name").GetComponent<TMP_Text>();
-        //headingText = transform.Find("InfoPanel/Heading").GetComponent<TMP_Text>();
-        //statHeadingText = transform.Find("InfoPanel/Stat/StatHeading").GetComponent<TMP_Text>();
-        //statValueText = transform.Find("InfoPanel/Stat/StatValue").GetComponent<TMP_Text>();
-        //statInfoText = transform.Find("InfoPanel/Stat/StatValue/StatInfo").GetComponent<TMP_Text>();
-        //statIcon = transform.Find("InfoPanel/Stat/StatIcon").GetComponent<Image>();
-
-        //repairButton = transform.Find("ActionPanel/ActionButtons/RepairButton").GetComponent<Button>();        //destroyButton = transform.Find("ActionPanel/ActionButtons/DestroyButton").GetComponent<Button>();        //destroyButtonConfirm = transform.Find("ActionPanel/DestroyConfirmButton").GetComponent<Tooltip>();        //trainVillagerButton = transform.Find("ActionPanel/TrainVillagerButton").GetComponent<Tooltip>();        //globalFoodText = transform.Find("PanelMask/Allocation/ToggleDescription").GetComponent<TMP_Text>();
         statInfoText.text = "";
         updateTimer = updateInterval;
     }
     private void LateUpdate()
     {
-        tool.showTooltip = showPanel;
+        infoPanel.SetVisibility(showPanel);
+        actionPanel.SetVisibility(showPanel);
 
         if (targetBuilding != null)
         {
             headingText.text = buildingName;
+            headingTextFloating.text = buildingName;
 
             //if (buildingName == "Barracks") { globalFoodText.text = "Affects all " + buildingName; }
             //else { globalFoodText.text = "Affects all " + buildingName + "s"; }
@@ -92,9 +86,10 @@ public class BuildingInfo : MonoBehaviour
         {
             string newHeading = headingText.text.Remove(headingText.text.IndexOf(env), env.Length);
             headingText.text = newHeading;
+            headingTextFloating.text = newHeading;
         }
 
-        //SetPosition();
+        SetPosition();
 
         if (!showPanel && showDestroyConfirm)
         {
@@ -248,55 +243,23 @@ public class BuildingInfo : MonoBehaviour
                 statInfoText.text = "Missing target";
                 break;
         }
-
-        tool.SetHeight(182.0f);
     }
 
     private void SetPosition()
     {
         if (targetBuilding == null)
             return;
-        // Position info panel near target building
+        // Position action panel near target building
         Vector3 pos = Camera.main.WorldToScreenPoint(targetBuilding.transform.position);
-        transform.position = pos;
-        // Adjust position of info panel if near edge of bounds
-        float xPivot = -0.25f;
-        float yPivot = 0.5f;
-        if (transform.localPosition.y < -220f)
-        {
-            xPivot = 0.5f;
-            yPivot = -0.3f;
-        }
-        if (transform.localPosition.x > 576.0f)
-        {
-            xPivot = 1.25f;
-        }
-        // Smooth Lerping motion
-        float dt = Time.unscaledDeltaTime;
-        Vector2 pivot = new Vector2(Mathf.Lerp(rTrans.pivot.x, xPivot, dt * 10.0f), Mathf.Lerp(rTrans.pivot.y, yPivot, dt * 10.0f));
-        rTrans.pivot = pivot;
-
-        // Close info panel if out of bounds or covering build panel
-        if (transform.localPosition.x < -930.0f || transform.localPosition.x > 930.0f)
-        {
-            showPanel = false;
-        }
-        if (buildPanel.showPanel && transform.localPosition.y < -420.0f)
-        {
-            showPanel = false;
-        }
-        else if (transform.localPosition.y < -520.0f)
-        {
-            showPanel = false;
-        }
+        actionPanel.transform.position = pos;
     }
 
     public void SetTargetBuilding(GameObject building, string name)
     {
         targetBuilding = building;
-        buildingName = name;        if (tool.showTooltip)
+        buildingName = name;        if (infoPanel.showElement)
         {
-            tool.PulseTip();
+            infoPanel.Pulse();
         }
 
         showDestroyConfirm = false;
