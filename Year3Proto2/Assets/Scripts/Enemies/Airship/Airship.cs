@@ -209,13 +209,13 @@ public class Airship : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawSphere(initialLocation, 0.2f);
-        Gizmos.DrawSphere(controlPoint, 0.2f);
-        Gizmos.DrawSphere(target.position, 0.2f);
+        Gizmos.DrawSphere(initialLocation, 0.1f);
+        Gizmos.DrawSphere(controlPoint, 0.1f);
+        Gizmos.DrawSphere(target.position, 0.1f);
 
         if (target && transforms != null) {
             List<Vector3> spawnPoints = GenerateSpawnPoints();
-            foreach (Vector3 spawnPoint in spawnPoints) Gizmos.DrawSphere(spawnPoint, 0.2f);
+            foreach (Vector3 spawnPoint in spawnPoints) Gizmos.DrawSphere(spawnPoint, 0.1f);
         }
     }
 

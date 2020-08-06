@@ -71,6 +71,7 @@ public class MapScreen : MonoBehaviour
 
         levels = new List<Level>();
         SuperManager.GetInstance().GetLevelData(ref levels);
+        GlobalData.showTutorial = !SuperManager.GetInstance().GetSavedMatch().match;
 
         InitializeLevels();
     }

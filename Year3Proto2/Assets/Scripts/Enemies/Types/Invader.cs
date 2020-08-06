@@ -154,9 +154,9 @@ public class Invader : Enemy
         transform.localScale *= _scale + 0.3f;
         damage = _scale * 2.0f;
         health = _scale * 10f;
-        finalSpeed = 0.4f + 1f / _scale / 10.0f;
-        if (!animator) { animator = GetComponent<Animator>(); }
-        animator.SetFloat("AttackSpeed", 1f / _scale);
+        finalSpeed = 0.4f + 1f / _scale / 10.0f;
+        if (!animator) { animator = GetComponent<Animator>(); }
+        animator.SetFloat("AttackSpeed", 1f / _scale);
     }
 
     public override void OnKill()
