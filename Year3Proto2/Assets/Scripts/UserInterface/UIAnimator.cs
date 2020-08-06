@@ -10,7 +10,7 @@ public class UIAnimator : MonoBehaviour
     bool elementShown;
 
     private CanvasGroup canvas;
-    private RectTransform rTransform;
+    //private RectTransform rTransform;
     public float width;
     public float height;
 
@@ -45,9 +45,9 @@ public class UIAnimator : MonoBehaviour
     void Start()
     {
 
-        rTransform = GetComponent<RectTransform>();
-        width = rTransform.rect.width;
-        height = rTransform.rect.height;
+        //rTransform = GetComponent<RectTransform>();
+        //width = rTransform.rect.width;
+        //height = rTransform.rect.height;
         //rTransform.DOSizeDelta(new Vector2(64.0f, height), 0.0f);
 
         canvas = GetComponent<CanvasGroup>();
@@ -84,6 +84,10 @@ public class UIAnimator : MonoBehaviour
 
     public void EntranceInitialize()
     {
+        canvas = GetComponent<CanvasGroup>();
+        canvas.interactable = interactable;
+        canvas.blocksRaycasts = interactable;
+
         switch (entrance)
         {
             case EntranceAnimation.Window:

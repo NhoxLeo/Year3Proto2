@@ -157,7 +157,9 @@ public class SceneSwitcher : MonoBehaviour
         {
             loadingCanvas.alpha = 0.0f;
             loadingScreen.SetActive(GlobalData.isLoadingIn);
-            loadingScreen.GetComponent<UIAnimator>().SetVisibility(true);
+            UIAnimator loadingAnimator = loadingScreen.GetComponent<UIAnimator>();
+            loadingAnimator.EntranceInitialize();
+            loadingAnimator.SetVisibility(true);
             //loadingCanvas.interactable = true;
             //loadingCanvas.blocksRaycasts = true;
             loadingIcon.SetActive(false);
