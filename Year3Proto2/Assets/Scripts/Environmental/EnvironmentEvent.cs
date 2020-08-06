@@ -13,8 +13,8 @@
 // Mail         : tjeu.vreeburg@gmail.com
 public abstract class EnvironmentEvent : MonoBehaviour
 {
-    private protected float time = 0.0f;
-    private protected bool completed = false;
+    protected float time = 0.0f;
+    protected bool completed = false;
 
     /**************************************
      * Name of the Function: Invoke
@@ -33,5 +33,10 @@ public abstract class EnvironmentEvent : MonoBehaviour
     public bool IsCompleted()
     {
         return completed && time <= 0.0f;
+    }
+    
+    public void SetTime(float _time)
+    {
+        time = _time;
     }
 }

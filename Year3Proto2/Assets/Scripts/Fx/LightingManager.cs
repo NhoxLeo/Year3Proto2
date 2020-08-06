@@ -18,57 +18,55 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Rendering;
 
+public enum Weather
+{
+    DayClear = 0,
+    DayFoggy = 1,
+    DayRainy = 2,
+    DayStormy = 3,
+    Night = 4
+}
+
 public class LightingManager : MonoBehaviour
 {
     [SerializeField] private Volume[] sfVolumes;
-    private Volume currentVolume;
 
     [SerializeField] private Color daylightColor;
     [SerializeField] private Color nightColor;
 
-    public enum Weather
-    {
-        DayClear = 0,
-        DayFoggy = 1,
-        DayRainy = 2,
-        DayStormy = 3,
-        Night = 4
-    }
     [SerializeField] private Weather weatherCurrent;
     [SerializeField] private Weather weatherTarget;
 
+    private static LightingManager instance = null;
 
-    private void Update()
+    private void Awake()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (instance)
         {
-            SetWeather(Weather.DayClear);
-            //DOTween.To(() => sfVolumes[1].weight, x => sfVolumes[1].weight = x, 0.0f, 0.2f);
+            Destroy(gameObject);
+            return;
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SetWeather(Weather.DayFoggy);
-            //DOTween.To(() => sfVolumes[1].weight, x => sfVolumes[1].weight = x, 1.0f, 0.2f);
-        }
+        instance = GetComponent<LightingManager>();
     }
 
-    public void SetWeather(Weather _weatherType)
+    public void SetWeather(Weather _weatherType, EnvironmentWeatherEvent _weatherEvent)
     {
         weatherTarget = _weatherType;
 
         if (weatherCurrent != weatherTarget)
         {
-            // Fade in target weather type
             int volIndexTar = (int)weatherTarget;
             DOTween.To(() => sfVolumes[volIndexTar].weight, y => sfVolumes[volIndexTar].weight = y, 1.0f, 5.0f);
-            //Debug.Log((int)weatherTarget);
 
-            // Fade out current weather type
             int volIndexCur = (int)weatherCurrent;
             DOTween.To(() => sfVolumes[volIndexCur].weight, x => sfVolumes[volIndexCur].weight = x, 0.0f, 5.0f).SetEase(Ease.InQuad);
-            Debug.Log((int)weatherCurrent);
         }
+
         weatherCurrent = weatherTarget;
+    }
+
+    public static LightingManager Instance()
+    {
+        return instance;
     }
 }
