@@ -286,6 +286,8 @@ public class HUDManager : MonoBehaviour
 
         if (buildMode)
         {
+            villAllocCanvas.blocksRaycasts = false;
+            villAllocCanvas.interactable = false;
             villAllocCanvas.DOFade(0.0f, 0.3f);
             SetAllVillagerWidgets(false);
             //FindObjectOfType<BuildPanel>().showPanel = true;
@@ -294,6 +296,8 @@ public class HUDManager : MonoBehaviour
         else
         {
             SetAllVillagerWidgets(true);
+            villAllocCanvas.blocksRaycasts = true;
+            villAllocCanvas.interactable = true;
             villAllocCanvas.DOFade(1.0f, 0.3f);
             //FindObjectOfType<BuildPanel>().showPanel = false;
             buildButtonText.text = "HIDE VILLAGERS";
@@ -306,6 +310,8 @@ public class HUDManager : MonoBehaviour
         {
             SetAllVillagerWidgets(false);
             _widget.gameObject.SetActive(true);
+            villAllocCanvas.blocksRaycasts = true;
+            villAllocCanvas.interactable = true;
             villAllocCanvas.DOFade(1.0f, 0.1f);
         }
     }
@@ -314,6 +320,8 @@ public class HUDManager : MonoBehaviour
     {
         if (buildMode)
         {
+            villAllocCanvas.blocksRaycasts = false;
+            villAllocCanvas.interactable = false;
             villAllocCanvas.DOFade(0.0f, 0.1f);
         }
     }
