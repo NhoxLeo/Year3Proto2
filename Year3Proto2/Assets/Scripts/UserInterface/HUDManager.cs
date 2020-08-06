@@ -1,4 +1,18 @@
-﻿using System.Collections;
+﻿//
+// Bachelor of Creative Technologies
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name        : HUDManager.cs
+// Description      : Manages and updates info on the Heads Up Display
+// Author           : David Morris
+// Mail             : David.Mor7851@mediadesign.school.nz
+//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,15 +21,18 @@ using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
-    private float updateInterval = 0.667f;
+    private float updateInterval = 0.5f;
     private float updateTimer;
 
-    HorizontalLayoutGroup hLayoutGroup;
-    private CanvasGroup canvas;
+    [SerializeField] HorizontalLayoutGroup hLayoutGroup;
+    [SerializeField] HorizontalLayoutGroup foodCard;
+    [SerializeField] HorizontalLayoutGroup woodCard;
+    [SerializeField] HorizontalLayoutGroup metalCard;
+
+    UIAnimator animator;
     private CanvasGroup villAllocCanvas;
     private TMP_Text buildButtonText;
     public bool doShowHUD = true;
-    private bool hudShown;
     private bool buildMode = true;
 
     public Color gainColour;
@@ -40,6 +57,10 @@ public class HUDManager : MonoBehaviour
     private Tooltip metalDeltaTip;
     private TMP_Text metalDeltaText;
 
+    [SerializeField] private UIAnimator resourceBar;
+    [SerializeField] private GameObject helpScreen;
+    [SerializeField] private BuildPanel buildPanel;
+
     private EnemySpawner spawner;
     private TMP_Text victoryProgress;
 
@@ -49,8 +70,7 @@ public class HUDManager : MonoBehaviour
         villAllocCanvas.alpha = 0.0f;
         buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
         buildButtonText.text = "BUILDING";
-        hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
-        canvas = GetComponent<CanvasGroup>();
+        animator = GetComponent<UIAnimator>();
 
         game = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
@@ -71,22 +91,17 @@ public class HUDManager : MonoBehaviour
         metalDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
         metalDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
 
+        RefreshResources();
         GetVictoryInfo();
+
+        resourceBar.SetVisibility(!GlobalData.showTutorial);
+        buildPanel.showPanel = !GlobalData.showTutorial;
+        helpScreen.SetActive(GlobalData.showTutorial);
     }
 
     void LateUpdate()
     {
-        if (doShowHUD && !hudShown)
-        {
-            ShowHUD();
-            hudShown = true;
-        }
-
-        if (!doShowHUD && hudShown)
-        {
-            HideHUD();
-            hudShown = false;
-        }
+        animator.SetVisibility(doShowHUD);
 
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
@@ -191,8 +206,10 @@ public class HUDManager : MonoBehaviour
 
         // Update content size fitters
         Canvas.ForceUpdateCanvases();
-        HorizontalLayoutGroup hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
         hLayoutGroup.SetLayoutHorizontal();
+        foodCard.SetLayoutHorizontal();
+        woodCard.SetLayoutHorizontal();
+        metalCard.SetLayoutHorizontal();
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
@@ -252,20 +269,15 @@ public class HUDManager : MonoBehaviour
         return _signedValue + _value;
     }
 
-    private void ShowHUD()
+    public void HideHelpScreen()
     {
-        canvas.DOKill(true);
-        canvas.DOFade(1.0f, 0.3f).SetEase(Ease.InOutSine);
-        canvas.interactable = true;
-        canvas.blocksRaycasts = true;
+        GlobalData.showTutorial = false;
+        Invoke("DisableHelpScreen", 2.0f);
     }
 
-    private void HideHUD()
+    private void DisableHelpScreen()
     {
-        canvas.DOKill(true);
-        canvas.DOFade(0.0f, 0.3f).SetEase(Ease.InOutSine);
-        canvas.interactable = false;
-        canvas.blocksRaycasts = false;
+        helpScreen.SetActive(false);
     }
 
     public void ToggleHUDMode()

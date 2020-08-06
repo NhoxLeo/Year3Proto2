@@ -1,11 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : BirdsEvent.cs
+// Description  : Inherits ambient event to create nice ambient behaviour in scenes.
+// Author       : Tjeu Vreeburg
+// Mail         : tjeu.vreeburg@gmail.com
 
 public class BirdsEvent : EnvironmentAmbientEvent
 {
     [Header("Attributes")]
     [SerializeField] private int points = 10;
+    [SerializeField] private int height = 2;
 
     [Header("Positions")]
     [SerializeField] private Vector3 originPoint;
@@ -15,19 +27,32 @@ public class BirdsEvent : EnvironmentAmbientEvent
     [SerializeField] private Vector3[] origins;
     private Vector3 destination, origin;
 
+    /**************************************
+     * Name of the Function: Update
+     * @Author: Tjeu Vreeburg
+     * @Parameter: n/a
+     * @Return: void
+     ***************************************/
     private void Update()
     {
         if(ambient && !completed)
         {
-            Vector3 heading = (destination - origin);
+            Vector3 heading = destination - ambient.position;
             Quaternion rotation = Quaternion.LookRotation(heading.normalized);
-            if (rotation != ambient.rotation) ambient.rotation = rotation;
 
+            ambient.rotation = rotation;
             ambient.position += heading.normalized * Time.deltaTime;
-            if (heading.sqrMagnitude < 0.5f * 0.05) completed = true;
+
+            if (heading.sqrMagnitude < 2.0f * 2.0f) completed = true;
         }
     }
 
+    /**************************************
+     * Name of the Function: Populate
+     * @Author: Tjeu Vreeburg
+     * @Parameter: ref Vector3, boolean, Vector3
+     * @Return: void
+     ***************************************/
     public void Populate(ref Vector3[] _vectors, bool _inverse, Vector3 _offset)
     {
         Vector3 offset = _offset;
@@ -40,12 +65,19 @@ public class BirdsEvent : EnvironmentAmbientEvent
         for (int i = 0; i < points; i++)
         {
             vectors[i].x = _inverse ? (offset.x - i) : (offset.x + i);
+            vectors[i].y = height;
             vectors[i].z = (_inverse ? (offset.z + i) : (offset.z - i)) + inversePoint;
         }
 
         _vectors = vectors;
     }
 
+    /**************************************
+     * Name of the Function: Invoke
+     * @Author: Tjeu Vreeburg
+     * @Parameter: n/a
+     * @Return: override void
+     ***************************************/
     public override void Invoke()
     {
         Populate(ref destinations, false, originPoint);
@@ -56,18 +88,20 @@ public class BirdsEvent : EnvironmentAmbientEvent
         destination = result ? RandomFromArray(destinations) : RandomFromArray(origins);
         origin = result ? RandomFromArray(origins) : RandomFromArray(destinations);
 
-        ambient = Instantiate(ambientPrefab, origin, Quaternion.identity, transform);
-    }
+        destinations = null;
+        origins = null;
 
+        ambient = Instantiate(ambientPrefab, origin, Quaternion.identity, transform);
+    } // End of scope will free array from memory.
+
+    /**************************************
+     * Name of the Function: RandomFromArray
+     * @Author: Tjeu Vreeburg
+     * @Parameter: Vector3 Array
+     * @Return: Vector3
+     ***************************************/
     private Vector3 RandomFromArray(Vector3[] _array)
     {
-        return _array[Random.Range(0, _array.Length)];
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.cyan;
-        for(int i = 0; i < destinations.Length; i++) Gizmos.DrawSphere(destinations[i], 0.2f);
-        for(int i = 0; i < origins.Length; i++) Gizmos.DrawSphere(origins[i], 0.2f);
+        return _array[UnityEngine.Random.Range(0, _array.Length)];
     }
 }

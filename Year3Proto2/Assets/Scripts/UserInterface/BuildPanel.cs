@@ -159,7 +159,12 @@ public class BuildPanel : MonoBehaviour
         showPanel = !showPanel;
     }
 
-    public void ShowPanel()
+    public void SetPanelVisibility(bool _visible)
+    {
+        showPanel = _visible;
+    }
+
+    private void ShowPanel()
     {
         transform.DOKill(true);
 
@@ -168,7 +173,7 @@ public class BuildPanel : MonoBehaviour
         //showPanel = true;
     }
 
-    public void HidePanel()
+    private void HidePanel()
     {
         transform.DOKill(true);
 

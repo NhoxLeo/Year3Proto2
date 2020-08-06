@@ -6,6 +6,7 @@ using System;
 [Serializable]
 public enum EnemyState
 {
+    DEPLOY,
     IDLE,
     WALK,
     ACTION
