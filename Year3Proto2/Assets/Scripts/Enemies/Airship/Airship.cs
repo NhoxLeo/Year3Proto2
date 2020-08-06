@@ -68,7 +68,10 @@ public class Airship : MonoBehaviour
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), speed * Time.deltaTime * 2.0f);
                     transform.position += heading * Time.deltaTime * speed / 4.0f;
 
-                    if (heading.sqrMagnitude < distanceOffset * 4.0f) Destroy(gameObject);
+                    if (heading.sqrMagnitude < distanceOffset * 4.0f)
+                    {
+                        Destroy(gameObject);
+                    }
 
                     break;
                 case AirshipState.Move:
