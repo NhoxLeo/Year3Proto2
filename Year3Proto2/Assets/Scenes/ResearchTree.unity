@@ -1077,7 +1077,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadePanel: {fileID: 2014354538}
-  fadeTime: 0.5
+  fadeTime: 0.2
   loadTime: 2
   loadingScreen: {fileID: 689503112}
   clickSound: {fileID: 0}
