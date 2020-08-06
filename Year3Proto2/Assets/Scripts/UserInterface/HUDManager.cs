@@ -1,4 +1,18 @@
-﻿using System.Collections;
+﻿//
+// Bachelor of Creative Technologies
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name        : HUDManager.cs
+// Description      : Manages and updates info on the Heads Up Display
+// Author           : David Morris
+// Mail             : David.Mor7851@mediadesign.school.nz
+//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,15 +21,18 @@ using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
-    private float updateInterval = 0.667f;
+    private float updateInterval = 0.5f;
     private float updateTimer;
 
-    HorizontalLayoutGroup hLayoutGroup;
-    private CanvasGroup canvas;
+    [SerializeField] HorizontalLayoutGroup hLayoutGroup;
+    [SerializeField] HorizontalLayoutGroup foodCard;
+    [SerializeField] HorizontalLayoutGroup woodCard;
+    [SerializeField] HorizontalLayoutGroup metalCard;
+
+    UIAnimator animator;
     private CanvasGroup villAllocCanvas;
     private TMP_Text buildButtonText;
     public bool doShowHUD = true;
-    private bool hudShown;
     private bool buildMode = true;
 
     public Color gainColour;
@@ -53,8 +70,7 @@ public class HUDManager : MonoBehaviour
         villAllocCanvas.alpha = 0.0f;
         buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
         buildButtonText.text = "BUILDING";
-        hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
-        canvas = GetComponent<CanvasGroup>();
+        animator = GetComponent<UIAnimator>();
 
         game = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
@@ -75,6 +91,7 @@ public class HUDManager : MonoBehaviour
         metalDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
         metalDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
 
+        RefreshResources();
         GetVictoryInfo();
 
         resourceBar.SetVisibility(!GlobalData.showTutorial);
@@ -84,17 +101,7 @@ public class HUDManager : MonoBehaviour
 
     void LateUpdate()
     {
-        if (doShowHUD && !hudShown)
-        {
-            ShowHUD();
-            hudShown = true;
-        }
-
-        if (!doShowHUD && hudShown)
-        {
-            HideHUD();
-            hudShown = false;
-        }
+        animator.SetVisibility(doShowHUD);
 
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
@@ -199,8 +206,10 @@ public class HUDManager : MonoBehaviour
 
         // Update content size fitters
         Canvas.ForceUpdateCanvases();
-        HorizontalLayoutGroup hLayoutGroup = transform.Find("ResourceBar/ResourceCards").GetComponent<HorizontalLayoutGroup>();
         hLayoutGroup.SetLayoutHorizontal();
+        foodCard.SetLayoutHorizontal();
+        woodCard.SetLayoutHorizontal();
+        metalCard.SetLayoutHorizontal();
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
@@ -258,18 +267,6 @@ public class HUDManager : MonoBehaviour
         string _signedValue = (_value > 0) ? "+" : "";
 
         return _signedValue + _value;
-    }
-
-    private void ShowHUD()
-    {
-        UIAnimator animator = GetComponent<UIAnimator>();
-        animator.SetVisibility(true);
-    }
-
-    private void HideHUD()
-    {
-        UIAnimator animator = GetComponent<UIAnimator>();
-        animator.SetVisibility(false);
     }
 
     public void HideHelpScreen()
