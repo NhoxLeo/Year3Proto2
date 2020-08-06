@@ -1,4 +1,18 @@
-﻿using System.Collections;
+﻿//
+// Bachelor of Creative Technologies
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name        : UIAnimator.cs
+// Description      : Reusable class that handles Entrance Exit and Pulse UI animations
+// Author           : David Morris
+// Mail             : David.Mor7851@mediadesign.school.nz
+//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -44,7 +58,6 @@ public class UIAnimator : MonoBehaviour
 
     void Start()
     {
-
         //rTransform = GetComponent<RectTransform>();
         //width = rTransform.rect.width;
         //height = rTransform.rect.height;
@@ -186,5 +199,13 @@ public class UIAnimator : MonoBehaviour
         }
     }
 
+    public void Pulse()
+    {
+        pulseSeq.Kill(true);
+        pulseSeq = DOTween.Sequence()
+            .Append(transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f));
+
+        pulseSeq.Play();
+    }
 
 }
