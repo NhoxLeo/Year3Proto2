@@ -9,6 +9,7 @@ public abstract class AttackStructure : Structure
     protected GameObject target = null;
     protected GameObject puffPrefab;
     protected ResourceBundle attackCost;
+    private Transform attackingRange;
 
     public abstract void Attack(GameObject target);
 
@@ -29,6 +30,12 @@ public abstract class AttackStructure : Structure
                 if (!enemies.Contains(enemy.gameObject)) { enemies.Add(enemy.gameObject); }
             }
         }
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        attackingRange = transform.Find("Range");
     }
 
     protected override void Start()
@@ -80,23 +87,21 @@ public abstract class AttackStructure : Structure
         }
     }
 
-    public void ShowRangeDisplay(bool _active)
+    public override void ShowRangeDisplay(bool _active)
     {
-        transform.GetChild(0).GetChild(0).gameObject.SetActive(_active);
-        transform.GetChild(1).GetChild(0).gameObject.SetActive(_active);
+        base.ShowRangeDisplay(_active);
+        attackingRange.GetChild(0).gameObject.SetActive(_active);
     }
 
     public override void OnSelected()
     {
         base.OnSelected();
-        ShowRangeDisplay(true);
         //FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
     }
 
     public override void OnDeselected()
     {
         base.OnDeselected();
-        ShowRangeDisplay(false);
         //FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
     }
 }

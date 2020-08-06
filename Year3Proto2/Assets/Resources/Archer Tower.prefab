@@ -224,11 +224,8 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
-  consumptionTime: 2
   arrow: {fileID: 1147110280109721153, guid: 2d84c91535cfd2747988038d60f7ad23, type: 3}
   ballista: {fileID: 5853393773172578223}
-  arrowDamage: 5
-  fireRate: 0
 --- !u!64 &1413963230254588248
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -36,7 +36,8 @@ public class Barracks : DefenseStructure
 
     private void UpdateCapacity()
     {
-        maxSoldiers = allocatedVillagers;
+        //maxSoldiers = allocatedVillagers;
+        maxSoldiers = 3;
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
         {
