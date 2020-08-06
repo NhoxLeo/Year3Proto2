@@ -95,10 +95,11 @@ public class EnemyWaveSystem : MonoBehaviour
     public void SpawnAirship(Transform[] transforms)
     {
         float angle = Random.Range(0.0f, 360.0f);
-        Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance)
-        {
-            y = 0.0f
-        };
+        //Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance)
+        //{
+        //    y = 0.0f
+        //};
+        Vector3 location = new Vector3(-1f * distance, 0.0f, Mathf.Cos(angle) * distance);
 
         Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
 
@@ -119,10 +120,15 @@ public class EnemyWaveSystem : MonoBehaviour
     ***************************************/
     private void Update()
     {
+        if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            spawning = true;
+            time = 0f;
+        }
         if (spawning)
         {
             time -= Time.deltaTime;
-            if (time <= 0.0f)
+            if (time <= 0f)
             {
                 enemySpawner.SetWaveCurrent(enemySpawner.GetWaveCurrent() + 1);
                 time = Random.Range(timeVariance.x, timeVariance.y);
