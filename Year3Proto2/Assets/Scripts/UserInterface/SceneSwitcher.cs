@@ -164,7 +164,7 @@ public class SceneSwitcher : MonoBehaviour
             //loadingCanvas.blocksRaycasts = true;
             loadingIcon.SetActive(false);
             isSwitching = true;
-            fadeTimeCur = 0.5f;
+            fadeTimeCur = 0.45f;
 
             loadingHint.text = SelectLoadingHint();
         }
