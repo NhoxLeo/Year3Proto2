@@ -20,7 +20,7 @@ public class EnemyWaveSystem : MonoBehaviour
 {
     [Header("Properties")]
     [SerializeField] private EnemySpawner enemySpawner;
-    [SerializeField] private float weightageScalar = 0.01f;
+    [SerializeField] private float weightageScalar = 0.0025f; // 0.25% boost to tokens for each structure/research element
     [SerializeField] private float tokenIncrement = 0.2f; // 5 seconds to earn an Invader, 20 to earn a heavy, at base.
     [SerializeField] private float tokensScalar = 0.00034f; // 0.1f every 5 minutes
     [SerializeField] private float time = 0.0f;
@@ -41,8 +41,8 @@ public class EnemyWaveSystem : MonoBehaviour
 
     private float tokens = 0.0f;
     private MessageBox messageBox;
-    private const int invaderTokenCost = 1;
-    private const int heavyInvaderTokenCost = 4;
+    private const int InvaderTokenCost = 1;
+    private const int HeavyInvaderTokenCost = 4;
 
     /**************************************
     * Name of the Function: Start
@@ -124,6 +124,7 @@ public class EnemyWaveSystem : MonoBehaviour
             time -= Time.deltaTime;
             if (time <= 0.0f)
             {
+                enemySpawner.SetWaveCurrent(enemySpawner.GetWaveCurrent() + 1);
                 time = Random.Range(timeVariance.x, timeVariance.y);
 
                 float enemiesToSpawn = tokens * (1f + GetWeightage());
@@ -199,25 +200,25 @@ public class EnemyWaveSystem : MonoBehaviour
 
         // spend 1 tokens to get an Invader, or (25% chance) try to spend 4 to get a Heavy Invader
         int tokensLeft = _enemiesLeftTokens;
-        while (tokensLeft > invaderTokenCost) // while the system can still afford an Invader
+        while (tokensLeft > InvaderTokenCost) // while the system can still afford an Invader
         {
-            if (tokensLeft >= heavyInvaderTokenCost)
+            if (tokensLeft >= HeavyInvaderTokenCost)
             {
                 if (Random.Range(0.0f, 1.0f) > 0.75f)
                 {
                     enemies.Add(enemyPrefabs[1]);
-                    tokensLeft -= heavyInvaderTokenCost;
+                    tokensLeft -= HeavyInvaderTokenCost;
                 }
                 else
                 {
                     enemies.Add(enemyPrefabs[0]);
-                    tokensLeft -= invaderTokenCost;
+                    tokensLeft -= InvaderTokenCost;
                 }
             }
             else
             {
                 enemies.Add(enemyPrefabs[0]);
-                tokensLeft -= invaderTokenCost;
+                tokensLeft -= InvaderTokenCost;
             }
         }
         return enemies.ToArray();
@@ -250,5 +251,43 @@ public class EnemyWaveSystem : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(Vector3.zero, distance);
+    }
+
+    /**************************************
+    * Name of the Function: LoadSystemFromData
+    * @Author: Samuel Fortune
+    * @Parameter: SuperManager.MatchSaveData _data, the data to load information from
+    * @Return: void
+    * @Description: Certain parameters of the EnemyWaveSystem, token data in particular, need to be loaded and saved.
+    ***************************************/
+    public void LoadSystemFromData(SuperManager.MatchSaveData _data)
+    {
+        spawning = _data.spawning;
+
+        weightageScalar = _data.waveSystemWeightageScalar;
+        tokenIncrement = _data.waveSystemTokenIncrement;
+        tokensScalar = _data.waveSystemTokenScalar;
+        time = _data.waveSystemTime;
+        timeVariance = _data.waveSystemTimeVariance;
+        tokens = _data.waveSystemTokens;
+    }
+
+    /**************************************
+    * Name of the Function: SaveSystemToData
+    * @Author: Samuel Fortune
+    * @Parameter: ref SuperManager.MatchSaveData _data, the data to save information to
+    * @Return: void
+    * @Description: Allows the SuperManager to load the state of the EnemyWaveSystem when it loads a match from file.
+    ***************************************/
+    public void SaveSystemToData(ref SuperManager.MatchSaveData _data)
+    {
+        _data.spawning = spawning;
+
+        _data.waveSystemWeightageScalar = weightageScalar;
+        _data.waveSystemTokenIncrement = tokenIncrement;
+        _data.waveSystemTokenScalar = tokensScalar;
+        _data.waveSystemTime = time;
+        _data.waveSystemTimeVariance = new SuperManager.SaveVector3(timeVariance);
+        _data.waveSystemTokens = tokens;
     }
 }

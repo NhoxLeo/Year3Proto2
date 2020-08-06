@@ -137,8 +137,14 @@ public class Invader : Enemy
                     }
                     break;
                 case EnemyState.IDLE:
-                    if (!Next()) { target = null; }
-                    if (!target) { Destroy(gameObject); }
+                    if (!Next()) 
+                    { 
+                        target = null; 
+                    }
+                    if (!target) 
+                    { 
+                        Destroy(gameObject); 
+                    }
                     break;
             }
         }

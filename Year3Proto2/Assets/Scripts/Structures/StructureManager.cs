@@ -734,7 +734,10 @@ public class StructureManager : MonoBehaviour
                                                             towerPlaced = true;
                                                         }
                                                         SelectStructure(structure);
-                                                        structure.AllocateVillager();
+                                                        if (structure.GetStructureType() == StructureType.Resource)
+                                                        {
+                                                            structure.AllocateVillager();
+                                                        }
                                                         structureState = StructManState.Selected;
                                                     }
                                                 }
