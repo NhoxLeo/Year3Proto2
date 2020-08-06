@@ -58,7 +58,6 @@ public class UIAnimator : MonoBehaviour
 
     void Start()
     {
-
         //rTransform = GetComponent<RectTransform>();
         //width = rTransform.rect.width;
         //height = rTransform.rect.height;
