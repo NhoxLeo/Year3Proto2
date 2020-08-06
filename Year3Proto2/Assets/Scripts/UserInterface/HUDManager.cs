@@ -69,7 +69,7 @@ public class HUDManager : MonoBehaviour
         villAllocCanvas = transform.Find("VillagerAllocataionWidgets").GetComponent<CanvasGroup>();
         villAllocCanvas.alpha = 0.0f;
         buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
-        buildButtonText.text = "BUILDING";
+        buildButtonText.text = "SHOW VILLAGERS";
         animator = GetComponent<UIAnimator>();
 
         game = FindObjectOfType<GameManager>();
@@ -288,15 +288,15 @@ public class HUDManager : MonoBehaviour
         {
             villAllocCanvas.DOFade(0.0f, 0.3f);
             SetAllVillagerWidgets(false);
-            FindObjectOfType<BuildPanel>().showPanel = true;
-            buildButtonText.text = "BUILDING";
+            //FindObjectOfType<BuildPanel>().showPanel = true;
+            buildButtonText.text = "SHOW VILLAGERS";
         }
         else
         {
             SetAllVillagerWidgets(true);
             villAllocCanvas.DOFade(1.0f, 0.3f);
-            FindObjectOfType<BuildPanel>().showPanel = false;
-            buildButtonText.text = "VILLAGERS";
+            //FindObjectOfType<BuildPanel>().showPanel = false;
+            buildButtonText.text = "HIDE VILLAGERS";
         }
     }
 

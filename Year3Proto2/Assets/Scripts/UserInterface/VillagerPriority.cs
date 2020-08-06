@@ -99,7 +99,7 @@ public class VillagerPriority : MonoBehaviour
                 break;
         }
 
-        check.GetComponent<CanvasGroup>().DOFade(0.0f, 2.0f).SetEase(Ease.InQuint);
+        //check.GetComponent<CanvasGroup>().DOFade(0.0f, 2.0f).SetEase(Ease.InQuint);
     }
 
     public void HideCheck()
