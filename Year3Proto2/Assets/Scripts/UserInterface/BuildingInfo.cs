@@ -8,6 +8,7 @@ public class BuildingInfo : MonoBehaviour
     private RectTransform rTrans;
     [SerializeField] private UIAnimator infoPanel;
     [SerializeField] private UIAnimator actionPanel;
+    private Vector3 actionPanelPos;
     private BuildPanel buildPanel;
 
     public GameObject targetBuilding;
@@ -260,6 +261,7 @@ public class BuildingInfo : MonoBehaviour
         buildingName = name;        if (infoPanel.showElement)
         {
             infoPanel.Pulse();
+            actionPanel.Pulse();
         }
 
         showDestroyConfirm = false;
