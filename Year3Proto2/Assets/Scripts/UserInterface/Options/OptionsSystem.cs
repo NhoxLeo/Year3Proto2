@@ -60,14 +60,13 @@ struct OptionCheckboxData
 
 public class OptionsSystem : MonoBehaviour
 {
+    // Get a reference to game manager or super manager. 
     // TODO: delegates, control values, saving...
-
     [SerializeField] private Transform[] optionObjects;
 
     private Dictionary<string, OptionSwitcherData> switchers;
     private Dictionary<string, OptionSliderData> sliders;
     private Dictionary<string, OptionCheckboxData> checkBoxes;
-
 
     /**************************************
     * Name of the Function: Start
@@ -77,6 +76,7 @@ public class OptionsSystem : MonoBehaviour
     ***************************************/
     private void Start()
     {
+        // Setting function calls to keys
         switchers = new Dictionary<string, OptionSwitcherData>
         {
             { "RESOLUTION", new OptionSwitcherData(0, Screen.resolutions.Select(o => o.ToString()).ToArray(), 
@@ -211,7 +211,7 @@ public class OptionsSystem : MonoBehaviour
                 {
                     optionSwitcher.SetValues(data.values);
                     optionSwitcher.Deserialise(data.index);
-                }
+                } // ELSE STATEMENT (default values, error messages)
             }
 
             OptionSlider optionSlider = optionObject.GetComponent<OptionSlider>();
@@ -244,7 +244,6 @@ public class OptionsSystem : MonoBehaviour
     {
         for (int i = 0; i < optionObjects.Length; i++)
         {
-
             Transform optionObject = optionObjects[i];
 
             OptionSwitcher optionSwitcher = optionObject.GetComponent<OptionSwitcher>();
