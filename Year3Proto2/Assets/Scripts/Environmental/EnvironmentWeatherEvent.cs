@@ -15,7 +15,20 @@
 public abstract class EnvironmentWeatherEvent : EnvironmentEvent
 {
     [SerializeField] private Transform weatherPrefab;
-    private Transform weather;
+    [SerializeField] private Weather weather;
+    private Transform weatherObject;
+
+    private void Update()
+    {
+        if (time > 0.0f)
+        {
+            time -= Time.deltaTime;
+        }
+        else
+        {
+            completed = true;
+        }
+    }
 
     /**************************************
      * Name of the Function: Invoke
@@ -25,7 +38,12 @@ public abstract class EnvironmentWeatherEvent : EnvironmentEvent
      ***************************************/
     public override void Invoke()
     {
-        weather = Instantiate(weatherPrefab, Vector3.zero, Quaternion.identity, transform.parent);
+        if(weatherPrefab != null)
+        {
+            weatherObject = Instantiate(weatherPrefab, Vector3.zero, Quaternion.identity, transform.parent);
+        }
+
+        LightingManager.Instance().SetWeather(weather, this);
     }
 
     /**************************************
@@ -36,6 +54,6 @@ public abstract class EnvironmentWeatherEvent : EnvironmentEvent
      ***************************************/
     public Transform GetWeather()
     {
-        return weather;
+        return weatherObject;
     }
 }

@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class DestroyMe : MonoBehaviour
 {
-    [SerializeField]
-    float lifetime = 0f;
+    [SerializeField] private float lifetime = 0f;
 
     public void SetLifetime(float _newLifetime)
     {
@@ -13,7 +12,7 @@ public class DestroyMe : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         lifetime -= Time.deltaTime;
         if (lifetime <= 0f)

@@ -81,7 +81,7 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void OnKill()
     {
-        FindObjectOfType<EnemySpawner>().OnEnemyDeath(this);
+        spawner.OnEnemyDeath(this);
     }
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)

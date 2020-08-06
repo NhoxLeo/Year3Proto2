@@ -20,10 +20,13 @@ public class EnemyWaveSystem : MonoBehaviour
 {
     [Header("Properties")]
     [SerializeField] private EnemySpawner enemySpawner;
-    [SerializeField] private float weightageScalar = 0.2f;
-    [SerializeField] private float tokensScalar = 0.05f;
-    [SerializeField] private float time = 0.0f;
+    [SerializeField] private float weightageScalar = 0.01f; // 1% boost to tokens for each structure/research element
+    [SerializeField] private float tokenIncrement = 0.05f; // 20 seconds to earn an Invader, 80 to earn a heavy, at base.
+    [SerializeField] private float tokensScalar = 0.0001f; // 0.05f every 500 seconds
+    [SerializeField] private float time = 90.0f;
+    [SerializeField] private float tokens = 0.0f;
     [SerializeField] private Vector2 timeVariance = new Vector2(20, 80);
+    [SerializeField] private bool spawning = false;
 
     [Header("Enemies")]
     [SerializeField] private List<Transform> enemyPrefabs;
@@ -37,10 +40,9 @@ public class EnemyWaveSystem : MonoBehaviour
     [SerializeField] private float radiusOffset;
     [SerializeField] private float distance = 0.0f;
 
-    private float tokens = 0.0f;
-    private float tokenIncrement = 0.0f;
     private MessageBox messageBox;
-
+    private const int InvaderTokenCost = 1;
+    private const int HeavyInvaderTokenCost = 4;
 
     /**************************************
     * Name of the Function: Start
@@ -58,6 +60,30 @@ public class EnemyWaveSystem : MonoBehaviour
             if (distance > this.distance) this.distance = distance;
         }
         distance = Mathf.Sqrt(distance) + radiusOffset;
+    }
+
+    /**************************************
+    * Name of the Function: GetSpawning
+    * @Author: Samuel Fortune
+    * @Parameter: n/a
+    * @Return: bool, value of spawning
+    * @Description: Getter method for the spawning member.
+    ***************************************/
+    public bool GetSpawning()
+    {
+        return spawning;
+    }
+
+    /**************************************
+    * Name of the Function: SetSpawning
+    * @Author: Samuel Fortune
+    * @Parameter: bool _spawning, the value to set spawning to.
+    * @Return: void
+    * @Description: Setter method for the spawning member.
+    ***************************************/
+    public void SetSpawning(bool _spawning)
+    {
+        spawning = _spawning;
     }
 
     /**************************************
@@ -93,35 +119,38 @@ public class EnemyWaveSystem : MonoBehaviour
     ***************************************/
     private void Update()
     {
-        time -= Time.deltaTime;
-        if(time <= 0.0f)
+        if (spawning)
         {
-            tokenIncrement += tokensScalar;
-            time = Random.Range(timeVariance.x, timeVariance.y);
-
-            float enemiesToSpawn = tokens/*+ GetWeightage()*/;
-            enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
-            if (enemiesToSpawn < minEnemies) enemiesToSpawn = minEnemies;
-
-            Transform[] dedicatedEnemies = DedicateEnemies((int) enemiesToSpawn);
-
-            if (dedicatedEnemies.Length > 0)
+            time -= Time.deltaTime;
+            if (time <= 0.0f)
             {
-                //Dedicate enemies to airships
-                List<Transform[]> dedicatedAirships = DedicateAirships(dedicatedEnemies);
-                for(int i = 0; i < dedicatedAirships.Count; i++)
+                enemySpawner.SetWaveCurrent(enemySpawner.GetWaveCurrent() + 1);
+                time = Random.Range(timeVariance.x, timeVariance.y);
+
+                float enemiesToSpawn = tokens * (1f + GetWeightage());
+                enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
+
+                Transform[] dedicatedEnemies = DedicateEnemies((int)enemiesToSpawn);
+
+                if (dedicatedEnemies.Length > 0)
                 {
-                    SpawnAirship(dedicatedAirships[i]);
+                    //Dedicate enemies to airships
+                    List<Transform[]> dedicatedAirships = DedicateAirships(dedicatedEnemies);
+                    for (int i = 0; i < dedicatedAirships.Count; i++)
+                    {
+                        SpawnAirship(dedicatedAirships[i]);
+                    }
+
+                    messageBox.ShowMessage("Invaders incoming!", 3.5f);
+                    GameManager.CreateAudioEffect("horn", transform.position);
                 }
 
-                messageBox.ShowMessage("Invaders incoming!", 3.5f);
-                GameManager.CreateAudioEffect("horn", transform.position);
+                tokens = 0.0f;
             }
 
-            tokens = 0.0f;
+            tokenIncrement += tokensScalar * Time.deltaTime;
+            tokens += tokenIncrement * Time.deltaTime;
         }
-
-        tokens += tokenIncrement * Time.deltaTime;
     }
 
     /**************************************
@@ -165,23 +194,34 @@ public class EnemyWaveSystem : MonoBehaviour
     * @Parameter: Integer
     * @Return: Transform Array
     ***************************************/
-    private Transform[] DedicateEnemies(int enemiesLeft)
+    private Transform[] DedicateEnemies(int _enemiesLeftTokens)
     {
-        Transform[] enemies = new Transform[enemiesLeft];
+        List<Transform> enemies = new List<Transform>();
 
-        for (int i = 0; i < enemiesLeft; i++)
+        // spend 1 tokens to get an Invader, or (25% chance) try to spend 4 to get a Heavy Invader
+        int tokensLeft = _enemiesLeftTokens;
+        while (tokensLeft > InvaderTokenCost) // while the system can still afford an Invader
         {
-            float random = Random.Range(0.0f, 1.0f);
-            if (random < 0.20f)
+            if (tokensLeft >= HeavyInvaderTokenCost)
             {
-                enemies[i] = enemyPrefabs[1];
+                if (Random.Range(0.0f, 1.0f) > 0.75f)
+                {
+                    enemies.Add(enemyPrefabs[1]);
+                    tokensLeft -= HeavyInvaderTokenCost;
+                }
+                else
+                {
+                    enemies.Add(enemyPrefabs[0]);
+                    tokensLeft -= InvaderTokenCost;
+                }
             }
             else
             {
-                enemies[i] = enemyPrefabs[0];
+                enemies.Add(enemyPrefabs[0]);
+                tokensLeft -= InvaderTokenCost;
             }
         }
-        return enemies;
+        return enemies.ToArray();
     }
 
 
@@ -194,8 +234,6 @@ public class EnemyWaveSystem : MonoBehaviour
     ***************************************/
     private float GetWeightage()
     {
-
-
         SuperManager superManager = SuperManager.GetInstance();
         if (superManager)
         {
@@ -203,8 +241,8 @@ public class EnemyWaveSystem : MonoBehaviour
             if (superManager.CheckData())
             {
                 int researchCompleted = superManager.GetResearch().ToList().RemoveAll(entry => !entry.Value);
-                int currentStructures = FindObjectsOfType<ResourceStructure>().Length;
-                return researchCompleted + currentStructures * weightageScalar;
+                int currentStructures = FindObjectsOfType<Structure>().Length;
+                return (researchCompleted + currentStructures) * weightageScalar;
             }
         }
         return 0;
@@ -213,5 +251,43 @@ public class EnemyWaveSystem : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(Vector3.zero, distance);
+    }
+
+    /**************************************
+    * Name of the Function: LoadSystemFromData
+    * @Author: Samuel Fortune
+    * @Parameter: SuperManager.MatchSaveData _data, the data to load information from
+    * @Return: void
+    * @Description: Certain parameters of the EnemyWaveSystem, token data in particular, need to be loaded and saved.
+    ***************************************/
+    public void LoadSystemFromData(SuperManager.MatchSaveData _data)
+    {
+        spawning = _data.spawning;
+
+        weightageScalar = _data.waveSystemWeightageScalar;
+        tokenIncrement = _data.waveSystemTokenIncrement;
+        tokensScalar = _data.waveSystemTokenScalar;
+        time = _data.waveSystemTime;
+        timeVariance = _data.waveSystemTimeVariance;
+        tokens = _data.waveSystemTokens;
+    }
+
+    /**************************************
+    * Name of the Function: SaveSystemToData
+    * @Author: Samuel Fortune
+    * @Parameter: ref SuperManager.MatchSaveData _data, the data to save information to
+    * @Return: void
+    * @Description: Allows the SuperManager to load the state of the EnemyWaveSystem when it loads a match from file.
+    ***************************************/
+    public void SaveSystemToData(ref SuperManager.MatchSaveData _data)
+    {
+        _data.spawning = spawning;
+
+        _data.waveSystemWeightageScalar = weightageScalar;
+        _data.waveSystemTokenIncrement = tokenIncrement;
+        _data.waveSystemTokenScalar = tokensScalar;
+        _data.waveSystemTime = time;
+        _data.waveSystemTimeVariance = new SuperManager.SaveVector3(timeVariance);
+        _data.waveSystemTokens = tokens;
     }
 }

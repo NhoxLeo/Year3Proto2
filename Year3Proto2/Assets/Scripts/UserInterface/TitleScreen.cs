@@ -74,7 +74,6 @@ public class TitleScreen : MonoBehaviour
 
         TMP_Text startText = transform.Find("ButtonStart/Text").GetComponent<TMP_Text>();
         startText.text = SuperManager.GetInstance().GetSavedMatch().match ? "CONTINUE" : "NEW GAME";
-        GlobalData.showTutorial = !SuperManager.GetInstance().GetSavedMatch().match;
         Debug.Log(SuperManager.GetInstance().currentLevel);
     }
 

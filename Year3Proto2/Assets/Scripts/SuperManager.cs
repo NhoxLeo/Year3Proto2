@@ -77,6 +77,13 @@ public class SuperManager : MonoBehaviour
         public float y;
         public float z;
 
+        public SaveVector3(Vector2 _vec)
+        {
+            x = _vec.x;
+            y = _vec.y;
+            z = 0f;
+        }
+
         public SaveVector3(Vector3 _vec)
         {
             x = _vec.x;
@@ -127,7 +134,6 @@ public class SuperManager : MonoBehaviour
         public int state;
         public bool returnHome;
     }
-
 
     [Serializable]
     public struct InvaderSaveData
@@ -180,8 +186,17 @@ public class SuperManager : MonoBehaviour
         public List<SoldierSaveData> soldiers;
         public int enemyWaveSize;
         public int enemiesKilled;
+
         public float spawnerCooldown;
         public bool spawning;
+
+        public float waveSystemWeightageScalar;
+        public float waveSystemTokenIncrement;
+        public float waveSystemTokenScalar;
+        public float waveSystemTime;
+        public SaveVector3 waveSystemTimeVariance;
+        public float waveSystemTokens;
+
         public int wave;
         public bool tutorialDone;
         public bool repairMessage;
@@ -198,6 +213,7 @@ public class SuperManager : MonoBehaviour
         public Dictionary<int, bool> levelCompletion;
         public int researchPoints;
         public MatchSaveData currentMatch;
+        public bool showTutorial;
     }
 
     [Serializable]
@@ -285,6 +301,7 @@ public class SuperManager : MonoBehaviour
     private GameManager gameMan;
     private StructureManager structMan;
     private EnemySpawner enemySpawner;
+    private EnemyWaveSystem waveSystem;
 
     public static SuperManager GetInstance()
     {
@@ -396,7 +413,7 @@ public class SuperManager : MonoBehaviour
         modDefinitions = new List<ModifierDefinition>()
         { 
             // ID, Name, Description, Coefficient
-            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure price acceleration hits twice as hard.", 0.5f),
+            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
             new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
             new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
             new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
@@ -430,6 +447,7 @@ public class SuperManager : MonoBehaviour
         gameMan = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
+        waveSystem = FindObjectOfType<EnemyWaveSystem>();
         DataInitialization();
         currentLevel = 0;
         if (startMaxed) { StartNewGame(); }
@@ -474,8 +492,8 @@ public class SuperManager : MonoBehaviour
         gameMan = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
+        waveSystem = FindObjectOfType<EnemyWaveSystem>();
     }
-
 
     public bool LoadCurrentMatch()
     {
@@ -512,6 +530,7 @@ public class SuperManager : MonoBehaviour
         gameMan.gameAlreadyWon = _matchData.matchWon;
         Longhaus.SetVillagers(_matchData.villagers);
         Longhaus.SetAvailable(_matchData.availableVillagers);
+        waveSystem.LoadSystemFromData(_matchData);
         // not so easy stuff...
 
         // structures
@@ -591,20 +610,20 @@ public class SuperManager : MonoBehaviour
             structureCosts = structMan.structureCosts,
             structureCounts = structMan.structureCounts,
             playerResources = gameMan.playerResources,
-            spawning = enemySpawner.IsSpawning(),
             wave = enemySpawner.GetWaveCurrent(),
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = enemySpawner.GetKillCount(),
-            spawnerCooldown = enemySpawner.cooldown,
             matchWon = gameMan.WinConditionIsMet() || gameMan.gameAlreadyWon,
             nextStructureID = structMan.GetNextStructureID(),
             villagers = Longhaus.GetVillagers(),
             availableVillagers = Longhaus.GetAvailable()
         };
 
+        waveSystem.SaveSystemToData(ref save);
+        
         // not so easy stuff...
         // invaders
         foreach (Invader invader in FindObjectsOfType<Invader>())
@@ -873,5 +892,15 @@ public class SuperManager : MonoBehaviour
     public void ResetSaveData()
     {
         StartNewGame();
+    }
+
+    public void SetShowTutorial(bool _showTutorial)
+    {
+        saveData.showTutorial = _showTutorial;
+    }
+
+    public bool GetShowTutorial()
+    {
+        return saveData.showTutorial;
     }
 }

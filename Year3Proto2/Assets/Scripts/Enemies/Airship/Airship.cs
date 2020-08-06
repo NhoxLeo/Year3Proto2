@@ -68,7 +68,10 @@ public class Airship : MonoBehaviour
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), speed * Time.deltaTime * 2.0f);
                     transform.position += heading * Time.deltaTime * speed / 4.0f;
 
-                    if (heading.sqrMagnitude < distanceOffset * 4.0f) Destroy(gameObject);
+                    if (heading.sqrMagnitude < distanceOffset * 4.0f)
+                    {
+                        Destroy(gameObject);
+                    }
 
                     break;
                 case AirshipState.Move:
@@ -111,8 +114,9 @@ public class Airship : MonoBehaviour
             Invader invader = instantiatedTransform.GetComponent<Invader>();
             if(invader)
             {
-                invader.SetScale(Random.Range(1.5f, 2f));
+                invader.SetScale(Random.Range(0.8f, 1.5f));
                 invader.spawner = enemySpawner;
+                enemySpawner.RecordNewEnemy(invader);
             }
 
             HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
@@ -120,7 +124,9 @@ public class Airship : MonoBehaviour
             {
                 heavyInvader.Randomize();
                 heavyInvader.spawner = enemySpawner;
+                enemySpawner.RecordNewEnemy(heavyInvader);
             }
+
 
             yield return wait;
 
