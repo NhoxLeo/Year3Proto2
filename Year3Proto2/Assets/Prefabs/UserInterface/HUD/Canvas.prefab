@@ -3008,7 +3008,7 @@ MonoBehaviour:
   showElement: 1
   width: 0
   height: 0
-  entrance: 0
+  entrance: 1
   pulse: 0
   playAudio: 0
   toolSound: {fileID: 0}
@@ -7805,8 +7805,8 @@ GameObject:
   - component: {fileID: 3759209682215505857}
   - component: {fileID: 4718661633449586414}
   - component: {fileID: 7454480641238334669}
-  - component: {fileID: 696517375441701623}
   - component: {fileID: 4461689962319598270}
+  - component: {fileID: 2519990585354527427}
   m_Layer: 5
   m_Name: PauseMenu
   m_TagString: Untagged
@@ -7938,22 +7938,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPaused: 0
---- !u!114 &696517375441701623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896141913822098303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showTooltip: 0
-  width: 0
-  height: 0
-  toolSound: {fileID: 0}
 --- !u!114 &4461689962319598270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8008,6 +7992,26 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2519990585354527427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6896141913822098303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8343d95189b3674bb84dcd8b228a592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactable: 1
+  showElement: 0
+  width: 0
+  height: 0
+  entrance: 1
+  pulse: 0
+  playAudio: 0
+  toolSound: {fileID: 0}
 --- !u!1 &7061498040819046380
 GameObject:
   m_ObjectHideFlags: 0
@@ -8558,7 +8562,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3745757213977141429}
-  - {fileID: 6321819888759543138}
+  - {fileID: 600443226636769072}
   - {fileID: 2640882017143391595}
   - {fileID: 6077846840317155063}
   - {fileID: 2176033115338780482}
@@ -15497,7 +15501,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 626060686499462130, guid: 2020d210b0e19d54196077da1255126f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2020d210b0e19d54196077da1255126f, type: 3}
---- !u!224 &6321819888759543138 stripped
+--- !u!224 &600443226636769072 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6912654201860014718, guid: 2020d210b0e19d54196077da1255126f,
     type: 3}

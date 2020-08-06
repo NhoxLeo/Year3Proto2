@@ -5,12 +5,12 @@ using DG.Tweening;
 
 public class PauseMenu : MonoBehaviour
 {
-    private Tooltip tool;
+    private UIAnimator tool;
     public bool isPaused;
 
     void Start()
     {
-        tool = GetComponent<Tooltip>();
+        tool = GetComponent<UIAnimator>();
         isPaused = false;
     }
 
@@ -28,8 +28,8 @@ public class PauseMenu : MonoBehaviour
 
     public void ToggleMenu()
     {
-        tool.showTooltip = !tool.showTooltip;
+        tool.showElement = !tool.showElement;
         isPaused = !isPaused;
-        GlobalData.isPaused = tool.showTooltip;
+        GlobalData.isPaused = tool.showElement;
     }
 }
