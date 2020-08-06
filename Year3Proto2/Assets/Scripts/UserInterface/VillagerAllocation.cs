@@ -37,7 +37,7 @@ public class VillagerAllocation : MonoBehaviour
 
         // Position info panel near target building
         Vector3 pos = Camera.main.WorldToScreenPoint(target.transform.position);
-        pos.y -= 64.0f;
+        //pos.y -= 64.0f;
         transform.position = pos;
     }
 
