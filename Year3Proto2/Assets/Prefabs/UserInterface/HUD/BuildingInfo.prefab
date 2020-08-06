@@ -695,7 +695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1755,7 +1755,17 @@ MonoBehaviour:
   emptySprite: {fileID: 0}
   destroySprite: {fileID: 21300000, guid: a55d6af383dcfea4fa3b1371a9672402, type: 3}
   minimizeSprite: {fileID: 21300000, guid: 1e44595c76f67e746ae1c1c0481b15a5, type: 3}
-  repairTooltip: {fileID: 0}
+  headingTextFloating: {fileID: 6016880127769472829}
+  headingText: {fileID: 5192665833845057337}
+  statHeadingText: {fileID: 1693402830865229809}
+  statValueText: {fileID: 3011600164449836829}
+  statInfoText: {fileID: 3021259879845885320}
+  statIcon: {fileID: 8621034507295448427}
+  repairButton: {fileID: 8190318036018021888}
+  destroyButton: {fileID: 7951792235364528690}
+  showDestroyConfirm: 0
+  destroyButtonConfirm: {fileID: 6788745574507910283}
+  trainVillagerButton: {fileID: 6703620290666257189}
   doAutoUpdate: 1
   updateInterval: 1.5
 --- !u!1 &5464813732693005564
@@ -3350,22 +3360,6 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
---- !u!114 &6703620290666257189
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9205154951219447275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showTooltip: 0
-  width: 0
-  height: 0
-  toolSound: {fileID: 0}
 --- !u!114 &1709095024467269141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3409,6 +3403,22 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &6703620290666257189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9205154951219447275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showTooltip: 0
+  width: 0
+  height: 0
+  toolSound: {fileID: 0}
 --- !u!1001 &1789396303130159755
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,27 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
+﻿using UnityEngine;
 
 public class PauseMenu : MonoBehaviour
 {
     private UIAnimator tool;
     public bool isPaused;
 
-    void Start()
+    private void Start()
     {
         tool = GetComponent<UIAnimator>();
         isPaused = false;
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleMenu();
         }
-
-
 
         Time.timeScale = isPaused ? 0.0f : 1.0f;
     }
