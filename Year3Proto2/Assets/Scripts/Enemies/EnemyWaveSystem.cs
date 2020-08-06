@@ -20,10 +20,11 @@ public class EnemyWaveSystem : MonoBehaviour
 {
     [Header("Properties")]
     [SerializeField] private EnemySpawner enemySpawner;
-    [SerializeField] private float weightageScalar = 0.0025f; // 0.25% boost to tokens for each structure/research element
-    [SerializeField] private float tokenIncrement = 0.2f; // 5 seconds to earn an Invader, 20 to earn a heavy, at base.
-    [SerializeField] private float tokensScalar = 0.00034f; // 0.1f every 5 minutes
-    [SerializeField] private float time = 0.0f;
+    [SerializeField] private float weightageScalar = 0.01f; // 1% boost to tokens for each structure/research element
+    [SerializeField] private float tokenIncrement = 0.05f; // 20 seconds to earn an Invader, 80 to earn a heavy, at base.
+    [SerializeField] private float tokensScalar = 0.0001f; // 0.05f every 500 seconds
+    [SerializeField] private float time = 90.0f;
+    [SerializeField] private float tokens = 0.0f;
     [SerializeField] private Vector2 timeVariance = new Vector2(20, 80);
     [SerializeField] private bool spawning = false;
 
@@ -39,7 +40,6 @@ public class EnemyWaveSystem : MonoBehaviour
     [SerializeField] private float radiusOffset;
     [SerializeField] private float distance = 0.0f;
 
-    private float tokens = 0.0f;
     private MessageBox messageBox;
     private const int InvaderTokenCost = 1;
     private const int HeavyInvaderTokenCost = 4;

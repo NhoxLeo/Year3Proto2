@@ -145,8 +145,9 @@ public class Barracks : DefenseStructure
         Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
         newSoldier.barracksID = ID;
         newSoldier.home = this;
-        float vectorSampler = Random.Range(0f, 1f);
-        newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
+        //float vectorSampler = Random.Range(0f, 1f);
+        //newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
+        newSoldier.transform.position = transform.position + (transform.right * Random.Range(-0.1f, 0.1f)) + (transform.forward * Random.Range(-0.1f, 0.1f));
         newSoldier.puffEffect = puffEffect;
 
         if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))

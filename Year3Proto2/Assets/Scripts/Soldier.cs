@@ -42,10 +42,13 @@ public class Soldier : MonoBehaviour
         TileBehaviour startTile = null;
         if (Physics.Raycast(_startPoint + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
         {
-            startTile = hit.transform.GetComponent<TileBehaviour>();
+            TileBehaviour tile = hit.transform.GetComponent<TileBehaviour>();
+            if (tile)
+            {
+                startTile = tile;
+            }
         }
         SoldierPath path = new SoldierPath();
-
 
         // get the closest observed enemy to the _startPoint
         _enemyFound = false;
@@ -69,9 +72,8 @@ public class Soldier : MonoBehaviour
             }
         }
 
-        if (_enemyFound)
+        if (_enemyFound && startTile)
         {
-
             float startTime = Time.realtimeSinceStartup;
 
             // find a path to the enemy
@@ -99,7 +101,7 @@ public class Soldier : MonoBehaviour
             // while a path hasn't been found
             bool pathFound = false;
             int lapCount = 0;
-            while (!pathFound && open.Count > 0 && lapCount < 100)
+            while (!pathFound && open.Count > 0 && lapCount < 20000)
             {
                 lapCount++;
                 if (EnemySpawner.ProcessTile(EnemySpawner.GetNextOpenTile(open), open, closed, destination))
@@ -157,7 +159,7 @@ public class Soldier : MonoBehaviour
                 {
                     Vector3 toHome = home.transform.position - transform.position;
                     toHome.y = 0f;
-                    if (toHome.magnitude > 0.7f)
+                    if (toHome.magnitude > 0.25f)
                     {
                         LookAtPosition(home.transform.position);
                         transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
@@ -211,7 +213,7 @@ public class Soldier : MonoBehaviour
                     // if you are further than 1.0f from target
                     if (distanceFromTarget > 1.0f)
                     {
-                        //      if you have a path, follow the path, otherwise follow the follow target
+                        // if you have a path, follow the path, otherwise follow the follow target
                         if (hasPath)
                         {
                             // follow the path

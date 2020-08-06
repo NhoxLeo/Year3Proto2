@@ -208,7 +208,7 @@ public class EnemySpawner : MonoBehaviour
         // while a path hasn't been found
         bool pathFound = false;
         int lapCount = 0;
-        while (!pathFound && open.Count > 0 && lapCount < 100)
+        while (!pathFound && open.Count > 0 && lapCount < 200000)
         {
             lapCount++;
             if (ProcessTile(GetNextOpenTile(open), open, closed, destination))
@@ -227,6 +227,10 @@ public class EnemySpawner : MonoBehaviour
                 path.pathPoints = reversePath;
                 path.target = closest;
                 pathFound = true;
+            }
+            if (lapCount % 10000 == 0)
+            {
+                Debug.LogWarning("lapCount = " + lapCount);
             }
         }
 
