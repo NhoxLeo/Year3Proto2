@@ -76,22 +76,22 @@ public class VillagerPriority : MonoBehaviour
         switch (_type)
         {
             case "Food":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(0).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(0).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Food);
                 break;
 
             case "Wood":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(1).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(1).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Wood);
                 break;
 
             case "Metal":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(2).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(2).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Metal);
                 break;
 
             case "Defence":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(3).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(3).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Defensive);
                 break;
 
