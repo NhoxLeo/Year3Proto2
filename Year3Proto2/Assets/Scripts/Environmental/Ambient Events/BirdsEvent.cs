@@ -38,10 +38,10 @@ public class BirdsEvent : EnvironmentAmbientEvent
         if(ambient && !completed)
         {
             Vector3 heading = destination - ambient.position;
-            Quaternion rotation = Quaternion.LookRotation(heading.normalized);
+            Vector3 direction = heading.normalized;
 
-            ambient.rotation = rotation;
-            ambient.position += heading.normalized * Time.deltaTime;
+            ambient.position += direction * Time.deltaTime;
+            ambient.rotation = Quaternion.LookRotation(direction);
 
             if (heading.sqrMagnitude < 2.0f * 2.0f) completed = true;
         }
