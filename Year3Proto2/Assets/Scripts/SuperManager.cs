@@ -876,6 +876,7 @@ public class SuperManager : MonoBehaviour
         };
         saveData.currentMatch.match = false;
         saveData.currentMatch.matchWon = false;
+        saveData.showTutorial = true;
         for (int i = 0; i < researchDefinitions.Count; i++)
         {
             if (i == 0) { saveData.research.Add(0, true); }
