@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -14,11 +15,17 @@
 
 public class AirshipPointer : MonoBehaviour
 {
+    [Header("Images")]
+    [SerializeField] private Sprite pointerOffScreen;
+    [SerializeField] private Sprite pointerOnScreen;
+
+    [Header("Attributes")]
     [SerializeField] private float xOffset = 200.0f;
     [SerializeField] private float yOffset = 80.0f;
     [SerializeField] private float scale = 1.0f;
 
-    private RectTransform indicator;
+    private Image indicator;
+    private RectTransform rectTransform;
     private Transform target;
     private Vector3 center;
 
@@ -32,8 +39,9 @@ public class AirshipPointer : MonoBehaviour
     {
         // Data Assignment
         center = new Vector3(Screen.width, Screen.height, 0.0f) / 2.0f;
-        indicator = GetComponent<RectTransform>();
-        indicator.localScale = Vector3.one * scale;
+        indicator = GetComponent<Image>();
+        rectTransform = indicator.rectTransform;
+        rectTransform.localScale = Vector3.one * scale;
         transform.SetParent(FindObjectOfType<Canvas>().transform);
     }
 
@@ -68,14 +76,15 @@ public class AirshipPointer : MonoBehaviour
             float minimum = Mathf.Min(width + (xOffset * 2.0f), height + yOffset);
 
             // Updating Indicator
-            indicator.localPosition = minimum * direction;
-            indicator.localEulerAngles = new Vector3(0.0f, 0.0f, angle * Mathf.Rad2Deg);
+            rectTransform.localPosition = minimum * direction;
+            rectTransform.localEulerAngles = new Vector3(0.0f, 0.0f, angle * Mathf.Rad2Deg);
+            indicator.sprite = pointerOffScreen;
         }
         else
         {
-            // Indicator World Position
-            if(indicator.localEulerAngles.z != 270.0f) indicator.localEulerAngles = new Vector3(0.0f, 0.0f, 270.0f);
-            indicator.position = screenPosition;
+            rectTransform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+            rectTransform.position = screenPosition;
+            indicator.sprite = pointerOnScreen;
         }
     }
 
