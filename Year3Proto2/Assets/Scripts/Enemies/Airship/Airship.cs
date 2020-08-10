@@ -36,6 +36,7 @@ public class Airship : MonoBehaviour
     private Vector3 controlPoint = Vector3.zero;
 
     [Header("Attributes")]
+    [SerializeField] private float height = 0.75f;
     [SerializeField] private float speed = 2.4f;
     [SerializeField] private float distanceOffset = 0.75f;
     [SerializeField] private Transform[] transforms;
@@ -62,11 +63,18 @@ public class Airship : MonoBehaviour
             switch (airshipState)
             {
                 case AirshipState.Depart:
-                    heading = initialLocation - transform.position;
+                    Vector3 newLocation = initialLocation;
+                    newLocation.y = height;
+
+                    heading = newLocation - transform.position;
                     direction = heading.normalized;
 
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), speed * Time.deltaTime * 2.0f);
                     transform.position += heading * Time.deltaTime * speed / 4.0f;
+
+                    Vector3 position = transform.position;
+                    position.y = height;
+                    transform.position = position;
 
                     if (heading.sqrMagnitude < distanceOffset * 4.0f)
                     {
@@ -75,12 +83,21 @@ public class Airship : MonoBehaviour
 
                     break;
                 case AirshipState.Move:
-                    heading = target.position - transform.position;
+                    Vector3 targetPosition = target.position;
+                    targetPosition.y = height;
+
+                    heading = targetPosition - transform.position;
                     direction = heading.normalized;
+
 
                     // Update Airship Values
                     transform.rotation = Quaternion.LookRotation(direction);
                     transform.position += heading * Time.deltaTime * speed;
+
+                    Vector3 newPosition = transform.position;
+                    newPosition.y = height;
+
+                    transform.position = newPosition;
 
                     if (heading.sqrMagnitude < Mathf.Pow(distanceOffset, 2))
                     {
