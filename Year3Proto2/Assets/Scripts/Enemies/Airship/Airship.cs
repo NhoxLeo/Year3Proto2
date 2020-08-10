@@ -135,6 +135,7 @@ public class Airship : MonoBehaviour
         yield return wait;
 
 
+        target.GetComponent<TileBehaviour>().SetApproached(false);
         airshipState = AirshipState.Depart;
         yield return null;
     }

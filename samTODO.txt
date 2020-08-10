@@ -1,6 +1,0 @@
-05/08/20
-Defensive Tower Upgrades
-Island shape has one land bridge connecting the enemies to where the player is (future levels include  2, 3 and 4 land bridges.)
-Bugfixing Barracks & Soldier
-Bugfixing pathfinding problem
-Move EnemyWaveSpawner information into MatchSaveData.
