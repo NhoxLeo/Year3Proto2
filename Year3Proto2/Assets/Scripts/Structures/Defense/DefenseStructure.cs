@@ -15,12 +15,12 @@ public abstract class DefenseStructure : Structure
     public override void OnSelected()
     {
         base.OnSelected();
-        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
+        //FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
     }
 
     public override void OnDeselected()
     {
         base.OnDeselected();
-        FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
+        //FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
     }
 }

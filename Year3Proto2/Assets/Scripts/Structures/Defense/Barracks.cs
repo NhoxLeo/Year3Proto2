@@ -36,7 +36,8 @@ public class Barracks : DefenseStructure
 
     private void UpdateCapacity()
     {
-        maxSoldiers = allocatedVillagers;
+        //maxSoldiers = allocatedVillagers;
+        maxSoldiers = 3;
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
         {
@@ -88,7 +89,7 @@ public class Barracks : DefenseStructure
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
+        //EnableFogMask();
         Barracks[] barracks = FindObjectsOfType<Barracks>();
         if (barracks.Length >= 2)
         {
@@ -144,8 +145,9 @@ public class Barracks : DefenseStructure
         Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
         newSoldier.barracksID = ID;
         newSoldier.home = this;
-        float vectorSampler = Random.Range(0f, 1f);
-        newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
+        //float vectorSampler = Random.Range(0f, 1f);
+        //newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
+        newSoldier.transform.position = transform.position + (transform.right * Random.Range(-0.1f, 0.1f)) + (transform.forward * Random.Range(-0.1f, 0.1f));
         newSoldier.puffEffect = puffEffect;
 
         if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
