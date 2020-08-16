@@ -93,10 +93,10 @@ public class HUDManager : MonoBehaviour
 
         RefreshResources();
         GetVictoryInfo();
-
-        resourceBar.SetVisibility(!GlobalData.showTutorial);
-        buildPanel.showPanel = !GlobalData.showTutorial;
-        helpScreen.SetActive(GlobalData.showTutorial);
+        bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
+        resourceBar.SetVisibility(!showTutorial);
+        buildPanel.showPanel = !showTutorial;
+        helpScreen.SetActive(showTutorial);
     }
 
     void LateUpdate()
@@ -271,7 +271,7 @@ public class HUDManager : MonoBehaviour
 
     public void HideHelpScreen()
     {
-        GlobalData.showTutorial = false;
+        SuperManager.GetInstance().SetShowTutorial(false);
         Invoke("DisableHelpScreen", 2.0f);
     }
 

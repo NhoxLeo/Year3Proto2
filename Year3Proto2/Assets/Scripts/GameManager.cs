@@ -365,7 +365,7 @@ public class GameManager : MonoBehaviour
         Enemy[] enemies = FindObjectsOfType<Enemy>();
         foreach (Enemy enemy in enemies)
         {
-            enemy.Next();
+            enemy.SetState(EnemyState.Idle);
         }
     }
 

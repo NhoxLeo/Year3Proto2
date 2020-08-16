@@ -25,6 +25,52 @@ public class TileBehaviour : MonoBehaviour
     //Determines whether or not it is being approached by an airship.")]
     private bool isApproached;
 
+    private int ID;
+    private static int nextID = 0;
+    private static int GenerateID()
+    {
+        return nextID++;
+    }
+
+    public static int GetTileID(TileBehaviour _tile)
+    {
+        return _tile.ID;
+    }
+
+    public JSTileData GenerateJSTileData()
+    {
+        JSTileData tileData = new JSTileData
+        {
+            ID = ID,
+            position = transform.position
+        };
+        tileData.adjacentTiles = new JSTileNeighborContainer();
+        for (int i = 0; i < 4; i++)
+        {
+            if (GetAdjacentTiles().ContainsKey((TileCode)i))
+            {
+                tileData.adjacentTiles[i] = GetAdjacentTiles()[(TileCode)i].ID;
+            }
+            else
+            {
+                tileData.adjacentTiles[i] = -1;
+            }
+        }
+        tileData.diagonalTiles = new JSTileNeighborContainer();
+        for (int i = 0; i < 4; i++)
+        {
+            if (GetDiagonalTiles().ContainsKey(i))
+            {
+                tileData.diagonalTiles[i] = GetDiagonalTiles()[i].ID;
+            }
+            else
+            {
+                tileData.diagonalTiles[i] = -1;
+            }
+        }
+        return tileData;
+    }
+
     public enum TileCode
     { 
         north = 0,
@@ -188,6 +234,7 @@ public class TileBehaviour : MonoBehaviour
         DetectStructure();
         GetCliffParent();
         SpawnCliffFaces();
+        ID = GenerateID();
     }
 
     private void SpawnCliffFaces()
