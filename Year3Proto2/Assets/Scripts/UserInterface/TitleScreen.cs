@@ -18,6 +18,8 @@ public class TitleScreen : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1.0f;
+
         GetComponent<Tooltip>().showTooltip = true;
 
         gameLogo = transform.Find("GameLogo").gameObject;
@@ -72,6 +74,7 @@ public class TitleScreen : MonoBehaviour
 
         TMP_Text startText = transform.Find("ButtonStart/Text").GetComponent<TMP_Text>();
         startText.text = SuperManager.GetInstance().GetSavedMatch().match ? "CONTINUE" : "NEW GAME";
+        GlobalData.showTutorial = !SuperManager.GetInstance().GetSavedMatch().match;
         Debug.Log(SuperManager.GetInstance().currentLevel);
     }
 

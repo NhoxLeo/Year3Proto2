@@ -40,6 +40,7 @@ public class Healthbar : MonoBehaviour
 
         // Position info panel near target building
         Vector3 pos = Camera.main.WorldToScreenPoint(target.transform.position);
+        //pos.y += 50.0f;
         transform.position = pos;
     }
 

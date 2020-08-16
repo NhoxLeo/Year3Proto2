@@ -86,6 +86,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9438983e9f0709f4fa676e48b0c3288f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pointerOffScreen: {fileID: 21300000, guid: dbab3496caafe074a8ce02d5ac75c0ee, type: 3}
+  pointerOnScreen: {fileID: 21300000, guid: 5de61819483168c48bc34d79a5367659, type: 3}
   xOffset: 200
   yOffset: 70
   scale: 0.4

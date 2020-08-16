@@ -563,7 +563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadePanel: {fileID: 654577854}
-  fadeTime: 0.5
+  fadeTime: 0.2
   loadTime: 2
   loadingScreen: {fileID: 1021990743}
   clickSound: {fileID: 0}
@@ -1800,6 +1800,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.materialCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7629057144457876464, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 7629057144457876464, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 7629057144457876464, guid: 865716adac792ae48be58378569ba4da,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.97
       objectReference: {fileID: 0}
     - target: {fileID: 8148467928566345293, guid: 865716adac792ae48be58378569ba4da,
         type: 3}

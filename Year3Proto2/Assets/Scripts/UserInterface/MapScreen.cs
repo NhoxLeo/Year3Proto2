@@ -62,6 +62,8 @@ public class MapScreen : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1.0f;
+
         levelGroup = transform.Find("Levels");
         RPCounter = transform.Find("RPCounter").GetComponent<TMP_Text>();
         levelPanel = transform.Find("LevelPanel");
@@ -69,6 +71,7 @@ public class MapScreen : MonoBehaviour
 
         levels = new List<Level>();
         SuperManager.GetInstance().GetLevelData(ref levels);
+        GlobalData.showTutorial = !SuperManager.GetInstance().GetSavedMatch().match;
 
         InitializeLevels();
     }
