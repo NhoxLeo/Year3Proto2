@@ -178,7 +178,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, 0 },
         { BuildPanel.Buildings.MetalStorage, 0 }
     };
-    private List<Structure> playerStructures = new List<Structure>();
+    private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
 
     // Defined in window
     [HideInInspector]
@@ -322,6 +322,34 @@ public class StructureManager : MonoBehaviour
             returnStructure = hit.collider.gameObject.GetComponent<Structure>();
         }
         return returnStructure;
+    }
+
+    public static TileBehaviour FindTileAtPosition(int _posX, int _posZ)
+    {
+        TileBehaviour result = null;
+        Vector3 position = new Vector3
+        {
+            x = _posX,
+            y = 0f,
+            z = _posZ
+        };
+        if (Physics.Raycast(position + Vector3.up, Vector3.down, out RaycastHit hit, 2f, LayerMask.GetMask("Ground")))
+        {
+            result = hit.collider.gameObject.GetComponent<TileBehaviour>();
+        }
+        return result;
+    }
+
+    public Structure FindStructureWithID(int _ID)
+    {
+        if (playerStructureDict.ContainsKey(_ID))
+        {
+            return playerStructureDict[_ID];
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private void Start()
@@ -739,6 +767,7 @@ public class StructureManager : MonoBehaviour
                                                             structure.AllocateVillager();
                                                         }
                                                         structureState = StructManState.Selected;
+                                                        playerStructureDict.Add(structure.GetID(), structure);
                                                     }
                                                 }
                                             }
@@ -1303,6 +1332,7 @@ public class StructureManager : MonoBehaviour
         newStructure.SetHealth(_saveData.health);
         newStructure.fromSaveData = true;
         newStructure.SetID(_saveData.ID);
+        playerStructureDict.Add(_saveData.ID, newStructure);
     }
 
     private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)

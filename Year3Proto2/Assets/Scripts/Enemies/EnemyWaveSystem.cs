@@ -94,12 +94,12 @@ public class EnemyWaveSystem : MonoBehaviour
     ***************************************/
     public void SpawnAirship(Transform[] transforms)
     {
-        float angle = Random.Range(0.0f, 360.0f);
-        //Vector3 location = new Vector3(Mathf.Sin(angle) * distance, 0.0f, Mathf.Cos(angle) * distance)
-        //{
-        //    y = 0.0f
-        //};
-        Vector3 location = new Vector3(-1f * distance, 0.0f, Mathf.Cos(angle) * distance);
+        float PiByTwo = Mathf.PI / 2f;
+        Vector3 location = new Vector3(Mathf.Sin(Random.Range(0.0f, PiByTwo)) * distance, 0.0f, Mathf.Cos(Random.Range(0.0f, PiByTwo)) * distance)
+        {
+            y = 0.0f
+        };
+        //Vector3 location = new Vector3(-1f * distance, 0.0f, Mathf.Cos(angle) * distance);
         Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
