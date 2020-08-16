@@ -30,9 +30,9 @@ public class HeavyInvader : Enemy
         };
     }
 
-    private void Start()
+    protected override void Start()
     {
-        EnemyStart();
+        base.Start();
         UpdateEquipment();
     }
 
@@ -49,7 +49,7 @@ public class HeavyInvader : Enemy
         {
             switch (enemyState)
             {
-                case EnemyState.ACTION:
+                case EnemyState.Action:
                     if (defending)
                     {
                         Action();
@@ -59,7 +59,7 @@ public class HeavyInvader : Enemy
                         if (!target)
                         {
                             animator.SetBool("Attack", false);
-                            enemyState = EnemyState.IDLE;
+                            enemyState = EnemyState.Idle;
                         }
                         else
                         {
@@ -87,41 +87,28 @@ public class HeavyInvader : Enemy
                                 else
                                 {
                                     animator.SetBool("Attack", false);
-                                    enemyState = EnemyState.IDLE;
+                                    enemyState = EnemyState.Idle;
                                 }
                             }
                         }
                     }
                     break;
-                case EnemyState.WALK:
+                case EnemyState.Walk:
                     if (target)
                     {
-                        if (!target.attachedTile)
-                        {
-                            if (!Next()) { target = null; }
-                        }
                         // if the distance from the enemy to the target is greater than 1 unit (one tile), the enemy should follow a path to the target. If they don't have one, they should request a path.
                         // if the distance is less than 1 unit, go ahead as normal
                         float distanceToTarget = (transform.position - target.transform.position).magnitude;
                         
                         if (distanceToTarget > 1f)
                         {
-                            // do we have a path?  If we don't have a path, get one.
                             if (!hasPath)
                             {
-                                path = spawner.GetPath(transform.position, structureTypes);
+                                animator.SetBool("Attack", false);
+                                enemyState = EnemyState.Idle;
+                                break;
                             }
-                            // follow the path
-                            // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
-                            Vector3 nextPathPoint = path.pathPoints[0];
-                            nextPathPoint.y = transform.position.y;
-                            float distanceToNextPathPoint = (transform.position - nextPathPoint).magnitude;
-                            if (distanceToNextPathPoint < 0.25f)
-                            {
-                                // delete the first element in the path
-                                path.pathPoints.RemoveAt(0);
-                            }
-                            Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                            Vector3 newPosition = GetNextPositionPathFollow();
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
                         }
@@ -140,7 +127,7 @@ public class HeavyInvader : Enemy
                             {
                                 animator.SetBool("Attack", true);
                                 LookAtPosition(target.transform.position);
-                                enemyState = EnemyState.ACTION;
+                                enemyState = EnemyState.Action;
                                 needToMoveAway = (target.transform.position - transform.position).magnitude < 0.5f;
                                 if (needToMoveAway) { animator.SetBool("Attack", false); }
                             }
@@ -149,12 +136,11 @@ public class HeavyInvader : Enemy
                     else
                     {
                         animator.SetBool("Attack", false);
-                        enemyState = EnemyState.IDLE;
+                        enemyState = EnemyState.Idle;
                     }
                     break;
-                case EnemyState.IDLE:
-                    if (!Next()) { target = null; }
-                    if (!target) { Destroy(gameObject); }
+                case EnemyState.Idle:
+                    RequestNewPath();
                     break;
             }
         }

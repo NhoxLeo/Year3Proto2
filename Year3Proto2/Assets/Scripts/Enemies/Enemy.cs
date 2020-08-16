@@ -6,10 +6,10 @@ using System;
 [Serializable]
 public enum EnemyState
 {
-    DEPLOY,
-    IDLE,
-    WALK,
-    ACTION
+    Deploy,
+    Idle,
+    Walk,
+    Action
 }
 
 // Bachelor of Software Engineering
@@ -40,7 +40,7 @@ public abstract class Enemy : MonoBehaviour
     protected Structure target = null;
     [HideInInspector]
     public Soldier defenseTarget = null;
-    protected EnemyState enemyState = EnemyState.IDLE;
+    protected EnemyState enemyState = EnemyState.Idle;
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     protected bool needToMoveAway;
     protected float finalSpeed = 0.0f;
@@ -53,40 +53,32 @@ public abstract class Enemy : MonoBehaviour
     protected bool hasPath = false;
     protected EnemySpawner.EnemyPath path;
     public EnemySpawner spawner;
-
-    public void AddObserver()
-    {
-        observers++;
-    }
-
-    public void RemoveObserver()
-    {
-        observers--;
-    }
-
-    public bool IsBeingObserved()
-    {
-        return observers > 0;
-    }
+    private EnemySpawner.EnemyPathSignature signature;
 
     public abstract void Action();
 
-    protected void EnemyStart()
+    protected virtual void Start()
     {
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        signature = new EnemySpawner.EnemyPathSignature()
+        {
+            startTile = null,
+            validStructureTypes = structureTypes
+        };
+
     }
 
     public virtual void OnKill()
     {
-        FindObjectOfType<EnemySpawner>().OnEnemyDeath(this);
+        spawner.OnEnemyDeath(this);
     }
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)
     {
-        enemyState = EnemyState.ACTION;
+        enemyState = EnemyState.Action;
         defenseTarget = _soldier;
         defending = true;
         animator.SetBool("Attack", true);
@@ -99,7 +91,7 @@ public abstract class Enemy : MonoBehaviour
         defenseTarget = null;
         defending = false;
         action = false;
-        enemyState = EnemyState.IDLE;
+        enemyState = EnemyState.Idle;
         animator.SetBool("Attack", false);
     }
 
@@ -125,6 +117,12 @@ public abstract class Enemy : MonoBehaviour
                 Damage(health);
             }
         }
+
+        // update signature
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            signature.startTile = hit.transform.GetComponent<TileBehaviour>();
+        }
     }
 
     public bool Next()
@@ -141,34 +139,19 @@ public abstract class Enemy : MonoBehaviour
         hasPath = true;
 
         target = path.target;
-        enemyState = EnemyState.WALK;
+        enemyState = EnemyState.Walk;
         return true;
-        /*
-        float closestDistanceSqr = Mathf.Infinity;
-        Vector3 currentPosition = transform.position;
+    }
 
-        foreach (Structure structure in FindObjectsOfType<Structure>())
+    public void RequestNewPath()
+    {
+        // if the spawner returns true, a valid path was found...
+        if (spawner.RequestPath(signature, ref path))
         {
-            if (structureTypes.Contains(structure.GetStructureType()))
-            {
-                if (structure.attachedTile)
-                {
-                    Vector3 directionToTarget = structure.transform.position - currentPosition;
-                    float dSqrToTarget = directionToTarget.sqrMagnitude;
-                    if (dSqrToTarget < closestDistanceSqr)
-                    {
-                        closestDistanceSqr = dSqrToTarget;
-                        //transform.LookAt(structure.transform);
-
-                        enemyState = EnemyState.WALK;
-
-                        target = structure;
-                    }
-                }
-            }
+            hasPath = true;
+            target = path.target;
+            enemyState = EnemyState.Walk;
         }
-        return closestDistanceSqr != Mathf.Infinity;
-        */
     }
 
     private void OnTriggerEnter(Collider other)
@@ -194,6 +177,21 @@ public abstract class Enemy : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, target.transform.position);
         }
+    }
+
+    protected Vector3 GetNextPositionPathFollow()
+    {
+        // follow the path
+        // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
+        Vector3 nextPathPoint = path.pathPoints[0];
+        nextPathPoint.y = transform.position.y;
+        float distanceToNextPathPoint = (transform.position - nextPathPoint).magnitude;
+        if (distanceToNextPathPoint < 0.25f)
+        {
+            // delete the first element in the path
+            path.pathPoints.RemoveAt(0);
+        }
+        return transform.position + (GetPathVector() * Time.fixedDeltaTime);
     }
 
     protected Vector3 GetPathVector()
@@ -298,5 +296,20 @@ public abstract class Enemy : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public void AddObserver()
+    {
+        observers++;
+    }
+
+    public void RemoveObserver()
+    {
+        observers--;
+    }
+
+    public bool IsBeingObserved()
+    {
+        return observers > 0;
     }
 }

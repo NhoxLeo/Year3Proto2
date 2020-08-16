@@ -10,10 +10,14 @@ public class CatapultTower : AttackStructure
     public float boulderDamage = 5f;
     public float boulderExplosionRadius = 0.25f;
     private float boulderSpeed = 1.0f;
-    public float fireRate = 0f;
+    private float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
 
+    public float GetFirerate()
+    {
+        return fireRate;
+    }
 
     protected override void Awake()
     {
@@ -28,14 +32,23 @@ public class CatapultTower : AttackStructure
     {
         base.Start();
         SetFirerate();
-        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 8 : 16, 0);
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) 
+        { 
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; 
+        }
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) 
+        { 
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; 
+        }
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);
         if (superMan.GetResearchComplete(SuperManager.CatapultPower))
         {
             boulderDamage *= 1.3f;
         }
-        if (superMan.GetResearchComplete(SuperManager.CatapultSuper)) { boulderExplosionRadius *= 1.5f; }
+        if (superMan.GetResearchComplete(SuperManager.CatapultSuper)) 
+        { 
+            boulderExplosionRadius *= 1.5f; 
+        }
     }
 
     protected override void Update()
@@ -121,7 +134,7 @@ public class CatapultTower : AttackStructure
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
+        //EnableFogMask();
         CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
         if (catapultTowers.Length >= 2)
         {
@@ -132,6 +145,7 @@ public class CatapultTower : AttackStructure
 
     void SetFirerate()
     {
+        /*
         switch (allocatedVillagers)
         {
             case 0:
@@ -153,7 +167,9 @@ public class CatapultTower : AttackStructure
                 fireRate = 1.0f;
                 break;
         }
-        fireDelay = 1 / fireRate;
+        */
+        fireRate = 1f / 3f;
+        fireDelay = 1f / fireRate;
     }
 
     public override Vector3 GetResourceDelta()

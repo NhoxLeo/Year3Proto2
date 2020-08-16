@@ -114,7 +114,7 @@ public class BuildingInfo : MonoBehaviour
                 BallistaTower ballista = targetBuilding.GetComponent<BallistaTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = ballista.fireRate.ToString("F");
+                statValueText.text = ballista.GetFirerate().ToString("F");
                 statInfoText.text = "per second";
                 //foodValueText.text = ballista.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
@@ -125,7 +125,7 @@ public class BuildingInfo : MonoBehaviour
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = catapult.fireRate.ToString("F");
+                statValueText.text = catapult.GetFirerate().ToString("F");
                 statInfoText.text = "per second";
                 //foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 

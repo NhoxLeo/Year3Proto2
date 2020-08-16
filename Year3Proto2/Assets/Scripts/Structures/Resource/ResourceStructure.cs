@@ -47,6 +47,7 @@ public abstract class ResourceStructure : Structure
     public float productionTime = 2f;
     protected Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
     protected Dictionary<TileBehaviour.TileCode, GameObject> fences;
+    protected Dictionary<TileBehaviour.TileCode, GameObject> closedFences;
     protected int batchSize = 1;
     protected float remainingTime = 2f;
     protected ResourceType resourceType;
@@ -139,6 +140,7 @@ public abstract class ResourceStructure : Structure
                                     newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
                                     tileBonus++;
                                     fences[(TileBehaviour.TileCode)i].SetActive(true);
+                                    closedFences[(TileBehaviour.TileCode)i].SetActive(false);
                                 }
                                 else
                                 {
@@ -147,11 +149,13 @@ public abstract class ResourceStructure : Structure
                                         newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
                                         tileBonus++;
                                         fences[(TileBehaviour.TileCode)i].SetActive(true);
+                                        closedFences[(TileBehaviour.TileCode)i].SetActive(false);
                                     }
                                     else
                                     {
                                         newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                                         fences[(TileBehaviour.TileCode)i].SetActive(false);
+                                        closedFences[(TileBehaviour.TileCode)i].SetActive(true);
                                     }
                                 }
                             }
@@ -159,12 +163,14 @@ public abstract class ResourceStructure : Structure
                             {
                                 newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                                 fences[(TileBehaviour.TileCode)i].SetActive(false);
+                                closedFences[(TileBehaviour.TileCode)i].SetActive(true);
                             }
                         }
                         else
                         {
                             newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                             fences[(TileBehaviour.TileCode)i].SetActive(false);
+                            closedFences[(TileBehaviour.TileCode)i].SetActive(true);
                         }
                         newTileHighlight.SetActive(false);
                     }
@@ -172,6 +178,7 @@ public abstract class ResourceStructure : Structure
                 else
                 {
                     fences[(TileBehaviour.TileCode)i].SetActive(false);
+                    closedFences[(TileBehaviour.TileCode)i].SetActive(true);
                 }
             }
         }
@@ -242,6 +249,13 @@ public abstract class ResourceStructure : Structure
             { TileBehaviour.TileCode.east, transform.GetChild(1).gameObject },
             { TileBehaviour.TileCode.south, transform.GetChild(2).gameObject },
             { TileBehaviour.TileCode.west, transform.GetChild(3).gameObject }
+        };
+        closedFences = new Dictionary<TileBehaviour.TileCode, GameObject>
+        {
+            { TileBehaviour.TileCode.north, transform.GetChild(4).gameObject },
+            { TileBehaviour.TileCode.east, transform.GetChild(5).gameObject },
+            { TileBehaviour.TileCode.south, transform.GetChild(6).gameObject },
+            { TileBehaviour.TileCode.west, transform.GetChild(7).gameObject }
         };
         villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
         villagerWidget.SetTarget(this);
