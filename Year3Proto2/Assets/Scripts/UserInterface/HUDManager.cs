@@ -66,7 +66,7 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
-        villAllocCanvas = transform.Find("VillagerAllocataionWidgets").GetComponent<CanvasGroup>();
+        villAllocCanvas = transform.Find("VillagerAllocationWidgets").GetComponent<CanvasGroup>();
         villAllocCanvas.alpha = 0.0f;
         buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
         buildButtonText.text = "SHOW VILLAGERS";

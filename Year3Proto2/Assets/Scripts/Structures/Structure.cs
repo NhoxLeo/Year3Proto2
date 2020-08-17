@@ -42,7 +42,7 @@ public abstract class Structure : MonoBehaviour
     private GameObject destructionEffect;
     protected int allocatedVillagers = 0;
     protected int villagerCapacity = 3;
-    protected VillagerAllocation villagerWidget = null;
+    protected VillagerAllocation villagerAllocation = null;
     private Transform spottingRange = null;
 
     public int GetAllocated()

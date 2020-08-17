@@ -128,14 +128,17 @@ public class Barracks : DefenseStructure
 
     protected override void Update()
     {
-        base.Update();
-        if (soldiers.Count < maxSoldiers)
+        if (attachedTile != null)
         {
-            timeTrained += Time.deltaTime;
-            if (timeTrained >= trainTime)
+            base.Update();
+            if (soldiers.Count < maxSoldiers)
             {
-                timeTrained = 0f;
-                SpawnSoldier();
+                timeTrained += Time.deltaTime;
+                if (timeTrained >= trainTime)
+                {
+                    timeTrained = 0f;
+                    SpawnSoldier();
+                }
             }
         }
     }
