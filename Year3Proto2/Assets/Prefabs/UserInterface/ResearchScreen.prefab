@@ -183,8 +183,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 7500
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: acba5489bbd17a04187dc1d23f1eef45, type: 2}
-  m_sharedMaterial: {fileID: 2092400340085329678, guid: acba5489bbd17a04187dc1d23f1eef45,
+  m_fontAsset: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f, type: 2}
+  m_sharedMaterial: {fileID: 7645484080085442564, guid: 4cb101f38e3982e46a978b948792b79f,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -894,8 +894,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Building Research
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: acf96668d4ac8234ca99f933d453607a, type: 2}
-  m_sharedMaterial: {fileID: 955247091600741525, guid: acf96668d4ac8234ca99f933d453607a,
+  m_fontAsset: {fileID: 11400000, guid: 9184905881067db4bacedaa7dd4076b4, type: 2}
+  m_sharedMaterial: {fileID: 1612501218419185297, guid: 9184905881067db4bacedaa7dd4076b4,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -938,7 +938,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: -1
+  m_firstOverflowCharacterIndex: 0
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0

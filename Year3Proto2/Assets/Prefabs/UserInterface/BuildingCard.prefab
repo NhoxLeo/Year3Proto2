@@ -138,8 +138,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Upgrade Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7dba8e6911e5e8a4b879f3284010b6fa, type: 2}
-  m_sharedMaterial: {fileID: 955247091600741525, guid: 7dba8e6911e5e8a4b879f3284010b6fa,
+  m_fontAsset: {fileID: 11400000, guid: fbfd2739654355142baf30d9d42cd008, type: 2}
+  m_sharedMaterial: {fileID: 1612501218419185297, guid: fbfd2739654355142baf30d9d42cd008,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: -1
+  m_firstOverflowCharacterIndex: 0
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -949,8 +949,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Research Cost
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7dba8e6911e5e8a4b879f3284010b6fa, type: 2}
-  m_sharedMaterial: {fileID: 955247091600741525, guid: 7dba8e6911e5e8a4b879f3284010b6fa,
+  m_fontAsset: {fileID: 11400000, guid: fbfd2739654355142baf30d9d42cd008, type: 2}
+  m_sharedMaterial: {fileID: 1612501218419185297, guid: fbfd2739654355142baf30d9d42cd008,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -976,8 +976,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 13
+  m_fontSizeBase: 13
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1334,16 +1334,16 @@ MonoBehaviour:
       m_Calls: []
   m_text: Research
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: acf96668d4ac8234ca99f933d453607a, type: 2}
-  m_sharedMaterial: {fileID: 955247091600741525, guid: acf96668d4ac8234ca99f933d453607a,
+  m_fontAsset: {fileID: 11400000, guid: 9184905881067db4bacedaa7dd4076b4, type: 2}
+  m_sharedMaterial: {fileID: 1612501218419185297, guid: 9184905881067db4bacedaa7dd4076b4,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4290564075
+  m_fontColor: {r: 0.922, g: 0.81352943, b: 0.73669606, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1658,8 +1658,8 @@ MonoBehaviour:
   m_text: A consise description of  this building will go into this paragraph. This
     is only a placeholder.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: acba5489bbd17a04187dc1d23f1eef45, type: 2}
-  m_sharedMaterial: {fileID: 2092400340085329678, guid: acba5489bbd17a04187dc1d23f1eef45,
+  m_fontAsset: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f, type: 2}
+  m_sharedMaterial: {fileID: 7645484080085442564, guid: 4cb101f38e3982e46a978b948792b79f,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1685,8 +1685,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1702,7 +1702,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 69
+  m_firstOverflowCharacterIndex: 58
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -1731,7 +1731,7 @@ MonoBehaviour:
     spaceCount: 16
     wordCount: 16
     linkCount: 0
-    lineCount: 3
+    lineCount: 4
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -1814,8 +1814,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: One line description of the upgrade
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: acba5489bbd17a04187dc1d23f1eef45, type: 2}
-  m_sharedMaterial: {fileID: 2092400340085329678, guid: acba5489bbd17a04187dc1d23f1eef45,
+  m_fontAsset: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f, type: 2}
+  m_sharedMaterial: {fileID: 7645484080085442564, guid: 4cb101f38e3982e46a978b948792b79f,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2524,8 +2524,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: acba5489bbd17a04187dc1d23f1eef45, type: 2}
-  m_sharedMaterial: {fileID: 2092400340085329678, guid: acba5489bbd17a04187dc1d23f1eef45,
+  m_fontAsset: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f, type: 2}
+  m_sharedMaterial: {fileID: 7645484080085442564, guid: 4cb101f38e3982e46a978b948792b79f,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2863,8 +2863,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Research Cost to Unlock Building
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7dba8e6911e5e8a4b879f3284010b6fa, type: 2}
-  m_sharedMaterial: {fileID: 955247091600741525, guid: 7dba8e6911e5e8a4b879f3284010b6fa,
+  m_fontAsset: {fileID: 11400000, guid: fbfd2739654355142baf30d9d42cd008, type: 2}
+  m_sharedMaterial: {fileID: 1612501218419185297, guid: fbfd2739654355142baf30d9d42cd008,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2907,7 +2907,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 17
+  m_firstOverflowCharacterIndex: 0
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -3023,8 +3023,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1800
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: acba5489bbd17a04187dc1d23f1eef45, type: 2}
-  m_sharedMaterial: {fileID: 2092400340085329678, guid: acba5489bbd17a04187dc1d23f1eef45,
+  m_fontAsset: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f, type: 2}
+  m_sharedMaterial: {fileID: 7645484080085442564, guid: 4cb101f38e3982e46a978b948792b79f,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
