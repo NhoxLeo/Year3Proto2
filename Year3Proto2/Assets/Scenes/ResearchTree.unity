@@ -519,41 +519,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1602741815}
     m_Modifications:
-    - target: {fileID: 192639410344409877, guid: 281a4d182b034e44bb329b00392930c1,
+    - target: {fileID: 1525955419017503040, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
-      propertyPath: m_text
-      value: WORLD MAP
-      objectReference: {fileID: 0}
-    - target: {fileID: 192639410344409877, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 192639410344409877, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.spaceCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 192639410344409877, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 192639410344409877, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 192639410344409877, guid: 281a4d182b034e44bb329b00392930c1,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3092492803493300559, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 1602741811}
+    - target: {fileID: 3092492803493300559, guid: 281a4d182b034e44bb329b00392930c1,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SceneSwitch
+      objectReference: {fileID: 0}
     - target: {fileID: 3970063865032666625, guid: 281a4d182b034e44bb329b00392930c1,
         type: 3}
       propertyPath: m_Name
@@ -790,12 +770,12 @@ PrefabInstance:
     - target: {fileID: 4202667823943932574, guid: 702be716e66ac114989d7cf489eba9c4,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.00012207031
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4202667823943932574, guid: 702be716e66ac114989d7cf489eba9c4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000061035156
+      value: -0.00012207031
       objectReference: {fileID: 0}
     - target: {fileID: 4202667823943932574, guid: 702be716e66ac114989d7cf489eba9c4,
         type: 3}
@@ -1097,7 +1077,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadePanel: {fileID: 2014354538}
-  fadeTime: 0.5
+  fadeTime: 0.2
   loadTime: 2
   loadingScreen: {fileID: 689503112}
   clickSound: {fileID: 0}

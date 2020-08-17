@@ -18,7 +18,7 @@ public abstract class StorageStructure : Structure
     protected override void Start()
     {
         base.Start();
-        structureType = StructureType.storage;
+        structureType = StructureType.Storage;
     }
 
     public ResourceType GetResourceType()
@@ -29,7 +29,7 @@ public abstract class StorageStructure : Structure
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
+        //EnableFogMask();
         gameMan.CalculateStorageMaximum();
     }
 

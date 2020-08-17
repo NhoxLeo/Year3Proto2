@@ -4,18 +4,11 @@ using UnityEngine;
 
 public class SpottingRange : MonoBehaviour
 {
-    AttackStructure parentStructure;
     int enemyStructureColliderLayer;
 
     private void Start()
     {
-        GetParent();
         enemyStructureColliderLayer = LayerMask.NameToLayer("EnemyStructureCollider");
-    }
-
-    private void GetParent()
-    {
-        parentStructure = transform.parent.GetComponent<AttackStructure>();
     }
 
     private void OnTriggerEnter(Collider other)

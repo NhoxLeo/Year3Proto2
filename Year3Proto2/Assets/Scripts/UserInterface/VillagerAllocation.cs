@@ -37,6 +37,7 @@ public class VillagerAllocation : MonoBehaviour
 
         // Position info panel near target building
         Vector3 pos = Camera.main.WorldToScreenPoint(target.transform.position);
+        //pos.y -= 64.0f;
         transform.position = pos;
     }
 
@@ -55,6 +56,9 @@ public class VillagerAllocation : MonoBehaviour
 
         SetInfo();
         FindObjectOfType<HUDManager>().RefreshResources();
+        FindObjectOfType<VillagerPriority>().HideCheck();
+        FindObjectOfType<BuildingInfo>().SetInfo();
+
     }
 
     public void SetInfo()
@@ -68,7 +72,6 @@ public class VillagerAllocation : MonoBehaviour
     private void OnEnable()
     {
         SetInfo();
-        Debug.Log("dsaads");
     }
 
 }

@@ -18,14 +18,14 @@ public class GlobalData
         "Try placing your production buildings in a checkerboard pattern",
         "Heavy invaders are slower than standard invaders but have more health",
         "Standard enemies are a force to be reckoned with in large groups",
-        "A thick fog enshrouds the island, restricting vision and construction",
+        //"A thick fog enshrouds the island, restricting vision and construction",
         "Press the R key to repair all buildings",
         "The best way of dealing with enemies is to reduce their health to zero",
         "You can destroy buildings with the red button next to the repair button",
         "How do Vikings talk to each other? Using Norse Code!",
         "Production buildings and defensive structures need Villagers to run them",
-        "Unallocated Villagers still consume food",
-        "Buildings of a type will cost more to build the more there are"
+        "Unallocated Villagers still consume food"//,
+        //"Buildings of a type will cost more to build the more there are"
     };
 
     public static string currentLoadingHint = "This is a test loading hint";

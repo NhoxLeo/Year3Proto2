@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3396511813781939704}
   - component: {fileID: 3396511813781939707}
-  - component: {fileID: 3396511813781939705}
   m_Layer: 0
   m_Name: Enemy Spawner
   m_TagString: Untagged
@@ -44,29 +43,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9288ec39486596045b2c73980b8e8fbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemySpawner: {fileID: 0}
   weightageScalar: 0.2
   tokensScalar: 0.1
-  timeVariance: {x: 40, y: 80}
+  time: 120
+  timeVariance: {x: 60, y: 120}
   enemyPrefabs:
-  - {fileID: 5762467443428630963, guid: 5e2ebca78058f484f9d85641098b7efb, type: 3}
-  - {fileID: 5361603649855522029, guid: fa66fa1b8ad636842a9bbfb104a61dea, type: 3}
+  - {fileID: 5323469284787221598, guid: 7c85a205f5e638b4d8eeace9685d07c6, type: 3}
+  - {fileID: 4317903546219083560, guid: 6264ac47d9f223a48a9997c27bb5f11f, type: 3}
   maxEnemies: 300
-  enemiesPerAirship: 9
-  airshipSpawner: {fileID: 3396511813781939705}
-  time: 0
---- !u!114 &3396511813781939705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3396511813781939706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c1f961962b47b342ae953d3e216ce41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  airshipPrefab: {fileID: 3056834929655612559, guid: 8eb991c5726be7640a78e32e6e27599e,
-    type: 3}
+  minEnemies: 3
+  airshipPrefab: {fileID: 0}
   pointerParent: {fileID: 0}
-  radiusOffset: 10
+  enemiesPerAirship: 9
+  radiusOffset: 0
+  distance: 0

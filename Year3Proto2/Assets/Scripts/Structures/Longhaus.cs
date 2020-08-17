@@ -121,7 +121,7 @@ public class Longhaus : Structure
     protected override void Awake()
     {
         base.Awake();
-        structureType = StructureType.longhaus;
+        structureType = StructureType.Longhaus;
         structureName = "Longhaus";
         maxHealth = 400f;
         health = maxHealth;
@@ -167,7 +167,6 @@ public class Longhaus : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
-        // wood metal food
         resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime - (villagers * villagerHungerModifier / productionTime));
 
         return resourceDelta;

@@ -365,7 +365,7 @@ public class GameManager : MonoBehaviour
         Enemy[] enemies = FindObjectsOfType<Enemy>();
         foreach (Enemy enemy in enemies)
         {
-            enemy.Next();
+            enemy.SetState(EnemyState.Idle);
         }
     }
 
@@ -378,7 +378,7 @@ public class GameManager : MonoBehaviour
         Structure[] structures = FindObjectsOfType<Structure>();
         foreach (Structure structure in structures)
         {
-            if (structure.GetStructureType() != StructureType.environment)
+            if (structure.GetStructureType() != StructureType.Environment)
             {
                 ResourceBundle repairCost = structure.RepairCost();
                 bool repaired = structure.Repair(true);

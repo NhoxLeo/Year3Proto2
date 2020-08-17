@@ -18,6 +18,8 @@ public class TitleScreen : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1.0f;
+
         GetComponent<Tooltip>().showTooltip = true;
 
         gameLogo = transform.Find("GameLogo").gameObject;

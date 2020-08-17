@@ -11,7 +11,7 @@ public class VillagerPriority : MonoBehaviour
 
     private GameObject check;
     private Transform panel;
-    private float panelXinitial;
+    private float panelYinitial;
     private Transform toggleButton;
     private float toggleButtonXinitial;
     private StructureManager structMan;
@@ -25,8 +25,8 @@ public class VillagerPriority : MonoBehaviour
         check.GetComponent<CanvasGroup>().alpha = 0.0f;
 
         panel = transform.Find("VillagerPriorityPanel");
-        panelXinitial = panel.localPosition.x;
-        toggleButton = transform.Find("TogglePanelButton");
+        panelYinitial = panel.localPosition.y;
+        toggleButton = transform.Find("VillagerPriorityPanel/TogglePanelButton");
         toggleButtonXinitial = toggleButton.localPosition.x;
         structMan = FindObjectOfType<StructureManager>();
     }
@@ -54,16 +54,16 @@ public class VillagerPriority : MonoBehaviour
 
     private void ShowPanel()
     {
-        panel.DOLocalMoveX(panelXinitial + 231.0f, 0.4f).SetEase(Ease.OutQuint);
-        toggleButton.DOLocalMoveX(toggleButtonXinitial + 231.0f - 66.0f, 0.4f).SetEase(Ease.OutQuint);
+        panel.DOLocalMoveY(panelYinitial + 125.0f, 0.4f).SetEase(Ease.OutQuint);
+        //toggleButton.DOLocalMoveX(toggleButtonXinitial + 231.0f - 66.0f, 0.4f).SetEase(Ease.OutQuint);
         toggleButton.transform.Rotate(new Vector3(0, 0, -180));
         toggleButton.GetComponent<Image>().sprite = minimizeSprite;
     }
 
     private void HidePanel()
     {
-        panel.DOLocalMoveX(panelXinitial, 0.4f).SetEase(Ease.OutQuint);
-        toggleButton.DOLocalMoveX(toggleButtonXinitial, 0.4f).SetEase(Ease.OutQuint);
+        panel.DOLocalMoveY(panelYinitial, 0.4f).SetEase(Ease.OutQuint);
+        //toggleButton.DOLocalMoveX(toggleButtonXinitial, 0.4f).SetEase(Ease.OutQuint);
         toggleButton.transform.Rotate(new Vector3(0, 0, 180));
         toggleButton.GetComponent<Image>().sprite = expandSprite;
     }
@@ -76,22 +76,22 @@ public class VillagerPriority : MonoBehaviour
         switch (_type)
         {
             case "Food":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(0).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(0).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Food);
                 break;
 
             case "Wood":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(1).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(1).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Wood);
                 break;
 
             case "Metal":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(2).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(2).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Metal);
                 break;
 
             case "Defence":
-                check.transform.DOLocalMoveY(transform.Find("VillagerPriorityPanel/Content").GetChild(3).transform.localPosition.y - 18.0f, 0.0f);
+                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(3).transform.localPosition.x, 0.0f);
                 structMan.SetPriority(Priority.Defensive);
                 break;
 
@@ -99,7 +99,7 @@ public class VillagerPriority : MonoBehaviour
                 break;
         }
 
-        check.GetComponent<CanvasGroup>().DOFade(0.0f, 2.0f).SetEase(Ease.InQuint);
+        //check.GetComponent<CanvasGroup>().DOFade(0.0f, 2.0f).SetEase(Ease.InQuint);
     }
 
     public void HideCheck()

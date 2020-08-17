@@ -178,7 +178,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, 0 },
         { BuildPanel.Buildings.MetalStorage, 0 }
     };
-    private List<Structure> playerStructures = new List<Structure>();
+    private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
 
     // Defined in window
     [HideInInspector]
@@ -227,6 +227,7 @@ public class StructureManager : MonoBehaviour
     private BuildPanel panel;
     private GameObject buildingPuff;
     private EnemySpawner enemySpawner;
+    private EnemyWaveSystem enemyWaveSystem;
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private MessageBox messageBox;
@@ -289,6 +290,7 @@ public class StructureManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
+        enemyWaveSystem = FindObjectOfType<EnemyWaveSystem>();
         HUDman = FindObjectOfType<HUDManager>();
         superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
@@ -320,6 +322,34 @@ public class StructureManager : MonoBehaviour
             returnStructure = hit.collider.gameObject.GetComponent<Structure>();
         }
         return returnStructure;
+    }
+
+    public static TileBehaviour FindTileAtPosition(int _posX, int _posZ)
+    {
+        TileBehaviour result = null;
+        Vector3 position = new Vector3
+        {
+            x = _posX,
+            y = 0f,
+            z = _posZ
+        };
+        if (Physics.Raycast(position + Vector3.up, Vector3.down, out RaycastHit hit, 2f, LayerMask.GetMask("Ground")))
+        {
+            result = hit.collider.gameObject.GetComponent<TileBehaviour>();
+        }
+        return result;
+    }
+
+    public Structure FindStructureWithID(int _ID)
+    {
+        if (playerStructureDict.ContainsKey(_ID))
+        {
+            return playerStructureDict[_ID];
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private void Start()
@@ -471,8 +501,8 @@ public class StructureManager : MonoBehaviour
 
                         StructureType selectedStructType = selectedStructure.GetStructureType();
                         if (Input.GetKeyDown(KeyCode.Delete) &&
-                            selectedStructType != StructureType.environment &&
-                            selectedStructType != StructureType.longhaus)
+                            selectedStructType != StructureType.Environment &&
+                            selectedStructType != StructureType.Longhaus)
                         {
                             DestroySelectedBuilding();
                             break;
@@ -592,23 +622,44 @@ public class StructureManager : MonoBehaviour
                                                 if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                                                 if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
 
-                                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                                else if (attachedStructureType == StructureType.environment)
+                                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill"))
+                                                { 
+                                                    if (!attached.GetComponent<EnvironmentStructure>().GetExploited())
+                                                    {
+                                                        canPlaceHere = true;
+                                                    }
+                                                }
+                                                else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine"))
                                                 {
-                                                    if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                    if (!attached.GetComponent<EnvironmentStructure>().GetExploited())
+                                                    {
+                                                        canPlaceHere = true;
+                                                    }
+                                                }
+                                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm"))
+                                                {
+                                                    if (!attached.GetComponent<EnvironmentStructure>().GetExploited())
+                                                    {
+                                                        canPlaceHere = true;
+                                                    }
+                                                }
+                                                else if (attachedStructureType == StructureType.Environment)
+                                                {
+                                                    if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense || newStructureType == StructureType.Storage)
                                                     {
                                                         canPlaceHere = true;
                                                     }
                                                 }
                                             }
                                             //else { canPlaceHere = hitFogMask; }
-                                            else { canPlaceHere = true; }
+                                            else 
+                                            { 
+                                                canPlaceHere = true;
+                                            }
                                             // if the structure can be placed here...
                                             if (canPlaceHere)
                                             {
-                                                if (structure.GetStructureType() == StructureType.attack)
+                                                if (structure.GetStructureType() == StructureType.Attack)
                                                 {
                                                     structure.GetComponent<AttackStructure>().ShowRangeDisplay(true);
                                                 }
@@ -616,13 +667,13 @@ public class StructureManager : MonoBehaviour
                                                 if (attached)
                                                 {
                                                     StructureType attachedStructureType = attached.GetStructureType();
-                                                    if (attachedStructureType == StructureType.environment)
+                                                    if (attachedStructureType == StructureType.Environment)
                                                     {
-                                                        if (newStructureType == StructureType.resource)
+                                                        if (newStructureType == StructureType.Resource)
                                                         {
                                                             SetStructureColour(Color.green);
                                                         }
-                                                        else if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
+                                                        else if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense || newStructureType == StructureType.Storage)
                                                         {
                                                             SetStructureColour(Color.yellow);
                                                         }
@@ -661,14 +712,14 @@ public class StructureManager : MonoBehaviour
                                                         // Attach the structure to the tile and vica versa
                                                         if (attached) { attached.attachedTile.Detach(); }
                                                         tile.Attach(structure);
-                                                        structure.OnPlace();
                                                         structure.SetID(GetNewID());
+                                                        structure.OnPlace();
                                                         Instantiate(buildingPuff, structure.transform.position, Quaternion.Euler(-90f, 0f, 0f));
                                                         if (attached)
                                                         {
                                                             StructureType attachedStructType = attached.GetStructureType();
                                                             StructureType structType = structure.GetStructureType();
-                                                            if (attachedStructType == StructureType.environment && structType == StructureType.resource)
+                                                            if (attachedStructType == StructureType.Environment && structType == StructureType.Resource)
                                                             {
                                                                 messageBox.HideMessage();
                                                                 switch (structure.GetStructureName())
@@ -698,15 +749,25 @@ public class StructureManager : MonoBehaviour
                                                         }
                                                         if (!towerPlaced)
                                                         {
+                                                            if (!enemyWaveSystem.GetSpawning())
+                                                            {
+                                                                enemyWaveSystem.SetSpawning(true);
+                                                            }
+                                                            /*
                                                             if (!enemySpawner.IsSpawning())
                                                             {
                                                                 enemySpawner.ToggleSpawning();
                                                             }
+                                                            */
                                                             towerPlaced = true;
                                                         }
                                                         SelectStructure(structure);
-                                                        structure.AllocateVillager();
+                                                        if (structure.GetStructureType() == StructureType.Resource)
+                                                        {
+                                                            structure.AllocateVillager();
+                                                        }
                                                         structureState = StructManState.Selected;
+                                                        playerStructureDict.Add(structure.GetID(), structure);
                                                     }
                                                 }
                                             }
@@ -797,10 +858,13 @@ public class StructureManager : MonoBehaviour
 
     private Vector3 CalculateStructureCost(string _structureName)
     {
-        float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
-        Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
-        structureCosts[_structureName] = new ResourceBundle(newCost);
-        return newCost;
+        //float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
+        if (superMan.CurrentLevelHasModifier(SuperManager.SnoballPrices))
+        {
+            Vector3 newCost = (4f + structureCounts[StructureIDs[_structureName]]) / 4f * (Vector3)structureDict[_structureName].originalCost;
+            structureCosts[_structureName] = new ResourceBundle(newCost);
+        }
+        return structureCosts[_structureName];
     }
 
     public void DeselectStructure()
@@ -1237,16 +1301,38 @@ public class StructureManager : MonoBehaviour
         ResourceStructure resourceStructComp = newStructure.gameObject.GetComponent<ResourceStructure>();
         if (resourceStructComp)
         {
-            if (_saveData.structure == "Farm") { newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn; }
-            if (_saveData.structure == "Mine") { newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn; }
-            if (_saveData.structure == "Lumber Mill") { newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn; }
+            if (_saveData.structure == "Farm")
+            {
+                newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn; 
+            }
+            if (_saveData.structure == "Mine") 
+            { 
+                newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn; 
+            }
+            if (_saveData.structure == "Lumber Mill") 
+            { 
+                newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn; 
+            }
         }
         Barracks barracksComponent = newStructure.gameObject.GetComponent<Barracks>();
-        if (barracksComponent) { barracksComponent.SetTimeTrained(_saveData.timeTrained); }
+        if (barracksComponent) 
+        { 
+            barracksComponent.SetTimeTrained(_saveData.timeTrained);
+        }
+        if (_saveData.exploited)
+        { 
+            EnvironmentStructure environmentComponent = newStructure.gameObject.GetComponent<EnvironmentStructure>();
+            if (environmentComponent)
+            {
+                environmentComponent.SetExploited(true);
+                environmentComponent.SetExploiterID(_saveData.exploiterID);
+            }
+        }
         newStructure.isPlaced = true;
         newStructure.SetHealth(_saveData.health);
         newStructure.fromSaveData = true;
         newStructure.SetID(_saveData.ID);
+        playerStructureDict.Add(_saveData.ID, newStructure);
     }
 
     private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
@@ -1287,8 +1373,8 @@ public class StructureManager : MonoBehaviour
             allocationStructures.Clear();
         }
         allocationStructures.AddRange(FindObjectsOfType<ResourceStructure>());
-        allocationStructures.AddRange(FindObjectsOfType<AttackStructure>());
-        allocationStructures.AddRange(FindObjectsOfType<DefenseStructure>());
+        //allocationStructures.AddRange(FindObjectsOfType<AttackStructure>());
+        //allocationStructures.AddRange(FindObjectsOfType<DefenseStructure>());
         DeallocateAll();
 
         switch (priority)
@@ -1301,7 +1387,7 @@ public class StructureManager : MonoBehaviour
                 AADistributeResources();
 
                 // then distribute to defenses
-                AADistributeProtection();
+                //AADistributeProtection();
 
                 break;
             case Priority.Food:
@@ -1312,7 +1398,7 @@ public class StructureManager : MonoBehaviour
                 AADistributeResources();
 
                 // then distribute to defenses
-                AADistributeProtection();
+                //AADistributeProtection();
 
                 break;
             case Priority.Wood:
@@ -1326,7 +1412,7 @@ public class StructureManager : MonoBehaviour
                 AADistributeResources();
 
                 // then distribute to defenses
-                AADistributeProtection();
+                //AADistributeProtection();
                 break;
             case Priority.Metal:
                 // first even out with food
@@ -1339,17 +1425,17 @@ public class StructureManager : MonoBehaviour
                 AADistributeResources();
 
                 // then distribute to defenses
-                AADistributeProtection();
+                //AADistributeProtection();
                 break;
             case Priority.Defensive:
                 // then distribute to defenses
-                AADistributeProtection();
+                //AADistributeProtection();
 
                 // first even out with food
-                AAProduceMinimumFood();
+                //AAProduceMinimumFood();
 
                 // then distribute to all resources fairly
-                AADistributeResources();
+                //AADistributeResources();
                 break;
             default:
                 break;
@@ -1362,6 +1448,7 @@ public class StructureManager : MonoBehaviour
         {
             structure.DeallocateAll();
         }
+        /*
         foreach (Structure structure in FindObjectsOfType<DefenseStructure>())
         {
             structure.DeallocateAll();
@@ -1370,6 +1457,7 @@ public class StructureManager : MonoBehaviour
         {
             structure.DeallocateAll();
         }
+        */
     }
 
     private void AAProduceMinimumFood()
