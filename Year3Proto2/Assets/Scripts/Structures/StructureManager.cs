@@ -761,11 +761,14 @@ public class StructureManager : MonoBehaviour
                                                             */
                                                             towerPlaced = true;
                                                         }
-                                                        SelectStructure(structure);
                                                         if (structure.GetStructureType() == StructureType.Resource)
                                                         {
+                                                            VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
+                                                            villagerAllocation.SetTarget(structure);
+                                                            structure.SetAllocationWidget(villagerAllocation);
                                                             structure.AllocateVillager();
                                                         }
+                                                        SelectStructure(structure);
                                                         structureState = StructManState.Selected;
                                                         playerStructureDict.Add(structure.GetID(), structure);
                                                     }
@@ -1332,7 +1335,10 @@ public class StructureManager : MonoBehaviour
         newStructure.SetHealth(_saveData.health);
         newStructure.fromSaveData = true;
         newStructure.SetID(_saveData.ID);
-        playerStructureDict.Add(_saveData.ID, newStructure);
+        if (newStructure.GetStructureType() != StructureType.Environment)
+        {
+            playerStructureDict.Add(_saveData.ID, newStructure);
+        }
     }
 
     private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)

@@ -8,8 +8,8 @@ public abstract class DefenseStructure : Structure
     {
         base.Start();
         structureType = StructureType.Defense;
-        VillagerAllocation villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
-        villagerAllocation.SetTarget(this);
+        //villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
+        //villagerAllocation.SetTarget(this);
     }
 
     public override void OnSelected()

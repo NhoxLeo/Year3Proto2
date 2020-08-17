@@ -194,7 +194,7 @@ public abstract class ResourceStructure : Structure
                 tileHighlights[(TileBehaviour.TileCode)i].SetActive(true);
             }
         }
-        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
+        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerAllocation);
     }
 
     protected override void OnDestroyed()
@@ -257,8 +257,6 @@ public abstract class ResourceStructure : Structure
             { TileBehaviour.TileCode.south, transform.GetChild(6).gameObject },
             { TileBehaviour.TileCode.west, transform.GetChild(7).gameObject }
         };
-        villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
-        villagerWidget.SetTarget(this);
     }
 
     private GameObject GetTileHighlight()
