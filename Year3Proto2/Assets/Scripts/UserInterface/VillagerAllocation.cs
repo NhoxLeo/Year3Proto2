@@ -7,18 +7,9 @@ using TMPro;
 public class VillagerAllocation : MonoBehaviour
 {
     public Structure target;
-    private TMP_Text villagerText;
-
-    void Awake()
-    {
-        villagerText = transform.Find("VillagerBox/VillagerValue").GetComponent<TMP_Text>();
-        SetInfo();
-    }
-
-    private void Update()
-    {
-        SetInfo();
-    }
+    [SerializeField] private GameObject autoIndicator;
+    [SerializeField] private GameObject manualIndicator;
+    [SerializeField] private Transform allocationButtons;
 
     private void LateUpdate()
     {
@@ -37,7 +28,6 @@ public class VillagerAllocation : MonoBehaviour
 
         // Position info panel near target building
         Vector3 pos = Camera.main.WorldToScreenPoint(target.transform.position);
-        //pos.y -= 64.0f;
         transform.position = pos;
     }
 
@@ -54,24 +44,47 @@ public class VillagerAllocation : MonoBehaviour
         if (amount > 0) { target.AllocateVillager(); }
         else { target.DeallocateVillager(); }
 
-        SetInfo();
         FindObjectOfType<HUDManager>().RefreshResources();
         FindObjectOfType<VillagerPriority>().HideCheck();
         FindObjectOfType<BuildingInfo>().SetInfo();
 
     }
 
-    public void SetInfo()
+    public void SetAllocation(int _value)
     {
-        if (target == null)
-            return;
+        Debug.Log("Allocation for " + target.ToString() + " is being set to " + _value);
 
-        villagerText.text = target.GetAllocated().ToString("0") + "/" + target.GetVillagerCapacity().ToString("0");
+        // Allocate Villager Function here
     }
 
-    private void OnEnable()
+    public void SetAutoIndicator(int _value)
     {
-        SetInfo();
+        if (_value >= 0)
+        {
+            autoIndicator.SetActive(true);
+            Vector3 pos = autoIndicator.transform.position;
+            pos.x = allocationButtons.GetChild(_value).position.x;
+            autoIndicator.transform.position = pos;
+        }
+        else
+        {
+            autoIndicator.SetActive(false);
+        }
+    }
+
+    public void SetManualIndicator(int _value)
+    {
+        if (_value >= 0)
+        {
+            manualIndicator.SetActive(true);
+            Vector3 pos = manualIndicator.transform.position;
+            pos.x = allocationButtons.GetChild(_value).position.x;
+            manualIndicator.transform.position = pos;
+        }
+        else
+        {
+            manualIndicator.SetActive(false);
+        }
     }
 
 }

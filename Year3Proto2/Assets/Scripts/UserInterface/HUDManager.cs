@@ -24,72 +24,52 @@ public class HUDManager : MonoBehaviour
     private float updateInterval = 0.5f;
     private float updateTimer;
 
-    [SerializeField] HorizontalLayoutGroup hLayoutGroup;
-    [SerializeField] HorizontalLayoutGroup foodCard;
-    [SerializeField] HorizontalLayoutGroup woodCard;
-    [SerializeField] HorizontalLayoutGroup metalCard;
-
     UIAnimator animator;
-    private CanvasGroup villAllocCanvas;
-    private TMP_Text buildButtonText;
     public bool doShowHUD = true;
     private bool buildMode = true;
 
+    [Header("Resource Cards")]
+    [SerializeField] private UIAnimator resourceBar;
     public Color gainColour;
     public Color lossColour;
     public Color fullColour;
     private GameManager game;
     private StructureManager structMan;
-    private TMP_Text villagerText;
-    private TMP_Text foodText;
-    private TMP_Text woodText;
-    private TMP_Text metalText;
+    [SerializeField] private TMP_Text villagerText;
+    [SerializeField] private TMP_Text foodText;
+    [SerializeField] private TMP_Text woodText;
+    [SerializeField] private TMP_Text metalText;
+    [SerializeField] HorizontalLayoutGroup hLayoutGroup;
+    [SerializeField] HorizontalLayoutGroup foodCard;
+    [SerializeField] HorizontalLayoutGroup woodCard;
+    [SerializeField] HorizontalLayoutGroup metalCard;
 
+    [Header("Delta Popups")]
+    [SerializeField] private Tooltip foodDeltaTip;
+    [SerializeField] private TMP_Text foodDeltaText;
     private float foodDeltaTimer;
-    private Tooltip foodDeltaTip;
-    private TMP_Text foodDeltaText;
-
+    [SerializeField] private Tooltip woodDeltaTip;
+    [SerializeField] private TMP_Text woodDeltaText;
     private float woodDeltaTimer;
-    private Tooltip woodDeltaTip;
-    private TMP_Text woodDeltaText;
-
+    [SerializeField] private Tooltip metalDeltaTip;
+    [SerializeField] private TMP_Text metalDeltaText;
     private float metalDeltaTimer;
-    private Tooltip metalDeltaTip;
-    private TMP_Text metalDeltaText;
 
-    [SerializeField] private UIAnimator resourceBar;
+    [Header("Misc")]
+    [SerializeField] private TMP_Text victoryProgress;
+    [SerializeField] private Transform villAlloc;
     [SerializeField] private GameObject helpScreen;
     [SerializeField] private BuildPanel buildPanel;
 
     private EnemySpawner spawner;
-    private TMP_Text victoryProgress;
 
     void Start()
     {
-        villAllocCanvas = transform.Find("VillagerAllocationWidgets").GetComponent<CanvasGroup>();
-        villAllocCanvas.alpha = 0.0f;
-        buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
-        buildButtonText.text = "SHOW VILLAGERS";
         animator = GetComponent<UIAnimator>();
 
         game = FindObjectOfType<GameManager>();
         structMan = FindObjectOfType<StructureManager>();
         spawner = FindObjectOfType<EnemySpawner>();
-
-        villagerText = transform.Find("ResourceBar/ResourceCards/ResourceCardVillager/VillagerText").GetComponent<TMP_Text>();
-        foodText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText").GetComponent<TMP_Text>();
-        woodText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText").GetComponent<TMP_Text>();
-        metalText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText").GetComponent<TMP_Text>();
-        victoryProgress = transform.Find("ResourceBar/VictoryProgress/ProgressText").GetComponent<TMP_Text>();
-
-        foodDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText/FoodIcon/FoodDelta").GetComponent<Tooltip>();
-        foodDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText/FoodIcon/FoodDelta/FoodDeltaText").GetComponent<TMP_Text>();
-
-        woodDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText/WoodIcon/WoodDelta").GetComponent<Tooltip>();
-        woodDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardWood/WoodText/WoodIcon/WoodDelta/WoodDeltaText").GetComponent<TMP_Text>();
-
-        metalDeltaTip = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta").GetComponent<Tooltip>();
-        metalDeltaText = transform.Find("ResourceBar/ResourceCards/ResourceCardMetal/MetalText/MetalIcon/MetalDelta/MetalDeltaText").GetComponent<TMP_Text>();
 
         RefreshResources();
         GetVictoryInfo();
@@ -286,21 +266,11 @@ public class HUDManager : MonoBehaviour
 
         if (buildMode)
         {
-            villAllocCanvas.blocksRaycasts = false;
-            villAllocCanvas.interactable = false;
-            villAllocCanvas.DOFade(0.0f, 0.3f);
             SetAllVillagerWidgets(false);
-            //FindObjectOfType<BuildPanel>().showPanel = true;
-            buildButtonText.text = "SHOW VILLAGERS";
         }
         else
         {
             SetAllVillagerWidgets(true);
-            villAllocCanvas.blocksRaycasts = true;
-            villAllocCanvas.interactable = true;
-            villAllocCanvas.DOFade(1.0f, 0.3f);
-            //FindObjectOfType<BuildPanel>().showPanel = false;
-            buildButtonText.text = "HIDE VILLAGERS";
         }
     }
 
@@ -309,29 +279,37 @@ public class HUDManager : MonoBehaviour
         if (buildMode)
         {
             SetAllVillagerWidgets(false);
-            _widget.gameObject.SetActive(true);
-            villAllocCanvas.blocksRaycasts = true;
-            villAllocCanvas.interactable = true;
-            villAllocCanvas.DOFade(1.0f, 0.1f);
         }
+
+        for (int i = 0; i < villAlloc.transform.childCount; i++)
+        {
+            UIAnimator widgetAnimatorAll = villAlloc.transform.GetChild(i).GetComponent<UIAnimator>();
+            UIAnimator widgetAnimator = _widget.gameObject.GetComponent<UIAnimator>();
+            widgetAnimator.SetVisibility(true);
+            if (widgetAnimatorAll != widgetAnimator)
+            {
+                widgetAnimatorAll.SetVisibility(false);
+            }
+        }
+    }
+
+    public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
+    {
+        _widget.SetVisibility(_visible);
+        
     }
 
     public void HideAllVillagerWidgets()
     {
-        if (buildMode)
-        {
-            villAllocCanvas.blocksRaycasts = false;
-            villAllocCanvas.interactable = false;
-            villAllocCanvas.DOFade(0.0f, 0.1f);
-        }
+        SetAllVillagerWidgets(false);
     }
 
     private void SetAllVillagerWidgets(bool _enabled)
     {
-        VillagerAllocation[] widgets = Resources.FindObjectsOfTypeAll<VillagerAllocation>();
-        foreach (VillagerAllocation widget in widgets)
+        for (int i = 0; i < villAlloc.transform.childCount; i++)
         {
-            widget.gameObject.SetActive(_enabled);
+            SetVillagerWidgetVisibility(villAlloc.transform.GetChild(i).GetComponent<UIAnimator>(), _enabled);
         }
+            Debug.Log(villAlloc.transform.childCount);
     }
 }

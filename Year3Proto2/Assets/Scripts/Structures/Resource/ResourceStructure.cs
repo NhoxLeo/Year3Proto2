@@ -54,6 +54,7 @@ public abstract class ResourceStructure : Structure
     protected int tileBonus = 0;
     protected static GameObject TileHighlight = null;
     protected static GameObject Fencing = null;
+    protected VillagerAllocation villagerWidget;
 
     private void EnableFogMask()
     {
@@ -194,7 +195,7 @@ public abstract class ResourceStructure : Structure
                 tileHighlights[(TileBehaviour.TileCode)i].SetActive(true);
             }
         }
-        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerAllocation);
+        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
     }
 
     protected override void OnDestroyed()
@@ -257,9 +258,8 @@ public abstract class ResourceStructure : Structure
             { TileBehaviour.TileCode.south, transform.GetChild(6).gameObject },
             { TileBehaviour.TileCode.west, transform.GetChild(7).gameObject }
         };
-
-        villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
-        villagerAllocation.SetTarget(this);
+        villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
+        villagerWidget.SetTarget(this);
     }
 
     private GameObject GetTileHighlight()

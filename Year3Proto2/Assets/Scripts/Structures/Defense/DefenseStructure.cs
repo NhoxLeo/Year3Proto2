@@ -8,7 +8,7 @@ public abstract class DefenseStructure : Structure
     {
         base.Start();
         structureType = StructureType.Defense;
-        villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
+        VillagerAllocation villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
         villagerAllocation.SetTarget(this);
     }
 
