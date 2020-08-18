@@ -146,7 +146,7 @@ public class Longhaus : Structure
 
         }
 
-        if (Input.GetKeyDown(KeyCode.N) && structMan.IsThisStructureSelected(this))
+        if (Input.GetKeyDown(KeyCode.N) && structMan.StructureIsSelected(this))
         {
             TrainVillager();
         }

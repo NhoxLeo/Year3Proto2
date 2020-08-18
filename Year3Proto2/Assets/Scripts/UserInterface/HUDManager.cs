@@ -38,8 +38,6 @@ public class HUDManager : MonoBehaviour
     public Color gainColour;
     public Color lossColour;
     public Color fullColour;
-    private GameManager game;
-    private StructureManager structMan;
     private TMP_Text villagerText;
     private TMP_Text foodText;
     private TMP_Text woodText;
@@ -61,7 +59,6 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private GameObject helpScreen;
     [SerializeField] private BuildPanel buildPanel;
 
-    private EnemySpawner spawner;
     private TMP_Text victoryProgress;
 
     void Start()
@@ -71,10 +68,6 @@ public class HUDManager : MonoBehaviour
         buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
         buildButtonText.text = "SHOW VILLAGERS";
         animator = GetComponent<UIAnimator>();
-
-        game = FindObjectOfType<GameManager>();
-        structMan = FindObjectOfType<StructureManager>();
-        spawner = FindObjectOfType<EnemySpawner>();
 
         villagerText = transform.Find("ResourceBar/ResourceCards/ResourceCardVillager/VillagerText").GetComponent<TMP_Text>();
         foodText = transform.Find("ResourceBar/ResourceCards/ResourceCardFood/FoodText").GetComponent<TMP_Text>();
@@ -151,8 +144,8 @@ public class HUDManager : MonoBehaviour
 
         // Info Bar
 
-        int wavesSurvived = Mathf.Clamp(spawner.GetWaveCurrent() - 1, 0, 999);
-        if (spawner.GetWaveCurrent() >= 1 && spawner.enemyCount == 0) { wavesSurvived++; }
+        int wavesSurvived = Mathf.Clamp(EnemyManager.GetInstance().GetWaveCurrent() - 1, 0, 999);
+        if (EnemyManager.GetInstance().GetWaveCurrent() >= 1 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) { wavesSurvived++; }
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
@@ -175,31 +168,31 @@ public class HUDManager : MonoBehaviour
         string villagers = Longhaus.GetVillagers().ToString("0");
         villagerText.text = availableVillagers + "/" + villagers;
 
-        Vector3 velocity = game.GetResourceVelocity();
+        Vector3 velocity = GameManager.GetInstance().GetResourceVelocity();
 
         float foodVel = velocity.z;
         string foodVelDP = AddSign(Mathf.Round(foodVel * 10f) * .1f);
-        foodText.text = game.playerResources.Get(ResourceType.Food).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + "/s)";
+        foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + "/s)";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
-        if (game.playerResources.ResourceIsFull(ResourceType.Food))
+        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Food))
         {
             foodText.color = fullColour;
         }
 
         float woodVel = velocity.x;
         string woodVelDP = AddSign(Mathf.Round(woodVel * 10f) * .1f);
-        woodText.text = game.playerResources.Get(ResourceType.Wood).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + "/s)";
+        woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + "/s)";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
-        if (game.playerResources.ResourceIsFull(ResourceType.Wood))
+        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Wood))
         {
             woodText.color = fullColour;
         }
 
         float metalVel = velocity.y;
         string metalVelDP = AddSign(Mathf.Round(metalVel * 10f) * .1f);
-        metalText.text = game.playerResources.Get(ResourceType.Metal).ToString() + "/" + game.playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + "/s)";
+        metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + "/s)";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
-        if (game.playerResources.ResourceIsFull(ResourceType.Metal))
+        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Metal))
         {
             metalText.color = fullColour;
         }
@@ -256,10 +249,10 @@ public class HUDManager : MonoBehaviour
 
     public void SetOverUI(bool _isOver)
     {
-        if (structMan == null)
+        if (StructureManager.GetInstance() == null)
             return;
 
-        structMan.SetIsOverUI(_isOver);
+        StructureManager.GetInstance().SetIsOverUI(_isOver);
     }
 
     private string AddSign(float _value)

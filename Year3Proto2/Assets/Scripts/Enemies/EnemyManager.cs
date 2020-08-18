@@ -16,10 +16,11 @@ using System.Collections.Generic;
 // Mail         : tjeu.vreeburg@gmail.com
 //
 
-public class EnemyWaveSystem : MonoBehaviour
+public class EnemyManager : MonoBehaviour
 {
+    private static EnemyManager instance = null;
+
     [Header("Properties")]
-    [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private float weightageScalar = 0.01f; // 1% boost to tokens for each structure/research element
     [SerializeField] private float tokenIncrement = 0.05f; // 20 seconds to earn an Invader, 80 to earn a heavy, at base.
     [SerializeField] private float tokensScalar = 0.0001f; // 0.05f every 500 seconds
@@ -43,6 +44,20 @@ public class EnemyWaveSystem : MonoBehaviour
     private MessageBox messageBox;
     private const int InvaderTokenCost = 1;
     private const int HeavyInvaderTokenCost = 4;
+
+    private List<Enemy> enemies = new List<Enemy>();
+    private int enemiesKilled = 0;
+    private int waveCounter = 0;
+
+    public static EnemyManager GetInstance()
+    {
+        return instance;
+    }
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     /**************************************
     * Name of the Function: Start
@@ -94,8 +109,7 @@ public class EnemyWaveSystem : MonoBehaviour
     ***************************************/
     public void SpawnAirship(Transform[] transforms)
     {
-        float PiByTwo = Mathf.PI / 2f;
-        Vector3 location = new Vector3(Mathf.Sin(Random.Range(0.0f, PiByTwo)) * distance, 0.0f, Mathf.Cos(Random.Range(0.0f, PiByTwo)) * distance)
+        Vector3 location = new Vector3(Mathf.Sin(Random.Range(0.0f, 180f)) * distance, 0.0f, Mathf.Cos(Random.Range(0.0f, 180f)) * distance)
         {
             y = 0.0f
         };
@@ -104,7 +118,6 @@ public class EnemyWaveSystem : MonoBehaviour
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
         if (airship) {
-            airship.SetSpawner(enemySpawner);
             if (airship.HasTarget()) {
                 airship.Embark(transforms, pointerParent);
             }
@@ -129,7 +142,7 @@ public class EnemyWaveSystem : MonoBehaviour
             time -= Time.deltaTime;
             if (time <= 0f)
             {
-                enemySpawner.SetWaveCurrent(enemySpawner.GetWaveCurrent() + 1);
+                waveCounter++;
                 time = Random.Range(timeVariance.x, timeVariance.y);
 
                 float enemiesToSpawn = tokens * (1f + GetWeightage());
@@ -294,5 +307,80 @@ public class EnemyWaveSystem : MonoBehaviour
         _data.waveSystemTime = time;
         _data.waveSystemTimeVariance = new SuperManager.SaveVector3(timeVariance);
         _data.waveSystemTokens = tokens;
+    }
+
+    public int GetEnemiesAlive()
+    {
+        return enemies.Count;
+    }
+
+    public int GetEnemiesKilled()
+    {
+        return enemiesKilled;
+    }
+
+    public void SetEnemiesKilled(int _killed)
+    {
+        enemiesKilled = _killed;
+    }
+
+    public void RecordNewEnemy(Enemy _enemy)
+    {
+        enemies.Add(_enemy);
+    }
+
+    public void LoadInvader(SuperManager.InvaderSaveData _saveData)
+    {
+        Invader enemy = Instantiate(enemyPrefabs[0]).GetComponent<Invader>();
+
+        enemy.transform.position = _saveData.enemyData.position;
+        enemy.transform.rotation = _saveData.enemyData.orientation;
+        enemy.SetScale(_saveData.scale);
+        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
+        enemy.SetState(_saveData.enemyData.state);
+
+        enemies.Add(enemy);
+    }
+
+    public void LoadHeavyInvader(SuperManager.HeavyInvaderSaveData _saveData)
+    {
+        HeavyInvader enemy = Instantiate(enemyPrefabs[1]).GetComponent<HeavyInvader>();
+
+        enemy.transform.position = _saveData.enemyData.position;
+        enemy.transform.rotation = _saveData.enemyData.orientation;
+        enemy.SetEquipment(_saveData.equipment);
+        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
+        enemy.SetState(_saveData.enemyData.state);
+
+        enemies.Add(enemy);
+    }
+
+    public void OnEnemyDeath(Enemy _enemy)
+    {
+        enemiesKilled++;
+        if (enemies.Contains(_enemy))
+        {
+            enemies.Remove(_enemy);
+        }
+    }
+
+    public int GetWaveCurrent()
+    {
+        return waveCounter;
+    }
+
+    public void SetWaveCurrent(int _wave)
+    {
+        waveCounter = _wave;
+    }
+
+    public float GetTime()
+    {
+        return time;
+    }
+
+    public void SetTime(float _time)
+    {
+        time = _time;
     }
 }

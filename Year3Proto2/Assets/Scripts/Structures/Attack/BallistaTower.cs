@@ -10,7 +10,7 @@ public class BallistaTower : AttackStructure
     public GameObject ballista;
     public static bool arrowPierce;
     private float arrowDamage = 10f;
-    private float arrowSpeed = 7.5f;
+    private float arrowSpeed = 12.5f;
     private float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
@@ -129,11 +129,7 @@ public class BallistaTower : AttackStructure
         fireCooldown = 0;
         GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
         BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
-        arrowBehaviour.target = target.transform;
-        arrowBehaviour.damage = arrowDamage;
-        arrowBehaviour.speed = arrowSpeed;
-        arrowBehaviour.puffEffect = puffPrefab;
-        arrowBehaviour.pierce = arrowPierce;
+        arrowBehaviour.Initialize(target.transform, arrowDamage, arrowSpeed, puffPrefab, arrowPierce);
         GameManager.CreateAudioEffect("arrow", transform.position);
     }
 
