@@ -1330,7 +1330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: 1
-  showElement: 1
+  showElement: 0
   width: 0
   height: 0
   entrance: 0
