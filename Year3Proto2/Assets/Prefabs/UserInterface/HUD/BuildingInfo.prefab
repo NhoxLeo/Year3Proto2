@@ -647,6 +647,7 @@ GameObject:
   - component: {fileID: 5738249982617269265}
   - component: {fileID: 3468993400450723663}
   - component: {fileID: 2245784392557327689}
+  - component: {fileID: 3868758785181401316}
   m_Layer: 5
   m_Name: BuildingName
   m_TagString: Untagged
@@ -697,7 +698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.6}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.67058825}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -712,6 +713,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &3868758785181401316
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768162032266222199}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &2542908414330327177
 GameObject:
   m_ObjectHideFlags: 0
@@ -3772,15 +3785,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bccad2a79d9fc164c8b0167db8f0a601, type: 3}
---- !u!224 &7590806739269839453 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8179312044486000854, guid: bccad2a79d9fc164c8b0167db8f0a601,
-    type: 3}
-  m_PrefabInstance: {fileID: 1789396303130159755}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &9205154951219447275 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
+    type: 3}
+  m_PrefabInstance: {fileID: 1789396303130159755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &7590806739269839453 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8179312044486000854, guid: bccad2a79d9fc164c8b0167db8f0a601,
     type: 3}
   m_PrefabInstance: {fileID: 1789396303130159755}
   m_PrefabAsset: {fileID: 0}
@@ -4071,6 +4084,11 @@ PrefabInstance:
     - target: {fileID: 7815220335974244269, guid: 55886cd92e2201e41a371ef7ebe2b4da,
         type: 3}
       propertyPath: m_textInfo.pageCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710547951998466280, guid: 55886cd92e2201e41a371ef7ebe2b4da,
+        type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
