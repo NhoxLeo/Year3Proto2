@@ -9,39 +9,15 @@
 // Description  : Contains interface for data manipulation along with base class for objects.
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
+public delegate void OptionCallback();
+public interface OptionDataBase { }
 
-public interface OptionData<T>
+public class OptionData 
 {
-    /**************************************
-    * Name of the Function: SetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: Template Data
-    ***************************************/
-    T GetData();
+    protected OptionCallback optionCallback;
 
-    /**************************************
-    * Name of the Function: SetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: Template Data
-    * @Return: void
-    ***************************************/
-
-    void SetData(T _data);
-
-    /**************************************
-    * Name of the Function: Deserialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: Template Data
-    * @Return: void
-    ***************************************/
-    void Deserialise(T _data);
-
-    /**************************************
-    * Name of the Function: Serialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    void Serialise();
+    public OptionCallback GetCallback()
+    {
+        return optionCallback;
+    }
 }
