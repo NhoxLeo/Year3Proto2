@@ -40,22 +40,22 @@ public class HUDManager : MonoBehaviour
     public Color fullColour;
     private GameManager game;
     private StructureManager structMan;
-    private TMP_Text villagerText;
-    private TMP_Text foodText;
-    private TMP_Text woodText;
-    private TMP_Text metalText;
+    [SerializeField] private TMP_Text villagerText;
+    [SerializeField] private TMP_Text foodText;
+    [SerializeField] private TMP_Text woodText;
+    [SerializeField] private TMP_Text metalText;
 
     private float foodDeltaTimer;
-    private Tooltip foodDeltaTip;
-    private TMP_Text foodDeltaText;
+    [SerializeField] private Tooltip foodDeltaTip;
+    [SerializeField] private TMP_Text foodDeltaText;
 
     private float woodDeltaTimer;
-    private Tooltip woodDeltaTip;
-    private TMP_Text woodDeltaText;
+    [SerializeField] private Tooltip woodDeltaTip;
+    [SerializeField] private TMP_Text woodDeltaText;
 
     private float metalDeltaTimer;
-    private Tooltip metalDeltaTip;
-    private TMP_Text metalDeltaText;
+    [SerializeField] private Tooltip metalDeltaTip;
+    [SerializeField] private TMP_Text metalDeltaText;
 
     [SerializeField] private UIAnimator resourceBar;
     [SerializeField] private GameObject helpScreen;

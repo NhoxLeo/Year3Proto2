@@ -11,13 +11,13 @@ public class VillagerAllocation : MonoBehaviour
 
     void Awake()
     {
-        villagerText = transform.Find("VillagerBox/VillagerValue").GetComponent<TMP_Text>();
-        SetInfo();
+        //villagerText = transform.Find("VillagerBox/VillagerValue").GetComponent<TMP_Text>();
+        //SetInfo();
     }
 
     private void Update()
     {
-        SetInfo();
+        //SetInfo();
     }
 
     private void LateUpdate()
@@ -66,7 +66,7 @@ public class VillagerAllocation : MonoBehaviour
         if (target == null)
             return;
 
-        villagerText.text = target.GetAllocated().ToString("0") + "/" + target.GetVillagerCapacity().ToString("0");
+        //villagerText.text = target.GetAllocated().ToString("0") + "/" + target.GetVillagerCapacity().ToString("0");
     }
 
     private void OnEnable()
