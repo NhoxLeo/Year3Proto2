@@ -84,7 +84,10 @@ public abstract class ResourceStructure : Structure
                 }
             }
         }
-        FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
+        if (FindObjectOfType<HUDManager>().buildMode)
+        {
+            villagerWidget.gameObject.GetComponent<UIAnimator>().SetVisibility(false);
+        }
     }
 
     public override void OnPlace()
@@ -194,7 +197,7 @@ public abstract class ResourceStructure : Structure
                 tileHighlights[(TileBehaviour.TileCode)i].SetActive(true);
             }
         }
-        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
+        villagerWidget.gameObject.GetComponent<UIAnimator>().SetVisibility(true);
     }
 
     protected override void OnDestroyed()

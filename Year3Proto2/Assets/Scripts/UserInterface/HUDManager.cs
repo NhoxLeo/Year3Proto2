@@ -26,7 +26,7 @@ public class HUDManager : MonoBehaviour
 
     UIAnimator animator;
     public bool doShowHUD = true;
-    private bool buildMode = true;
+    public bool buildMode = true;
 
     [Header("Resource Cards")]
     [SerializeField] private UIAnimator resourceBar;
@@ -276,27 +276,12 @@ public class HUDManager : MonoBehaviour
 
     public void ShowOneVillagerWidget(VillagerAllocation _widget)
     {
-        if (buildMode)
-        {
-            SetAllVillagerWidgets(false);
-        }
-
-        for (int i = 0; i < villAlloc.transform.childCount; i++)
-        {
-            UIAnimator widgetAnimatorAll = villAlloc.transform.GetChild(i).GetComponent<UIAnimator>();
-            UIAnimator widgetAnimator = _widget.gameObject.GetComponent<UIAnimator>();
-            widgetAnimator.SetVisibility(true);
-            if (widgetAnimatorAll != widgetAnimator)
-            {
-                widgetAnimatorAll.SetVisibility(false);
-            }
-        }
+        _widget.gameObject.GetComponent<UIAnimator>().SetVisibility(true);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
     {
         _widget.SetVisibility(_visible);
-        
     }
 
     public void HideAllVillagerWidgets()
