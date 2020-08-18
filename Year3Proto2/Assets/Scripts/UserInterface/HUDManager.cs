@@ -25,7 +25,6 @@ public class HUDManager : MonoBehaviour
     private float updateTimer;
 
     UIAnimator animator;
-    private TMP_Text buildButtonText;
     public bool doShowHUD = true;
     private bool buildMode = true;
 
@@ -66,8 +65,6 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
-        buildButtonText = transform.Find("BuildButton/Text").GetComponent<TMP_Text>();
-        buildButtonText.text = "SHOW VILLAGERS";
         animator = GetComponent<UIAnimator>();
 
         game = FindObjectOfType<GameManager>();
@@ -270,16 +267,10 @@ public class HUDManager : MonoBehaviour
         if (buildMode)
         {
             SetAllVillagerWidgets(false);
-            //villAllocCanvas.blocksRaycasts = false;
-            //villAllocCanvas.interactable = false;
-            //villAllocCanvas.DOFade(0.0f, 0.3f);
         }
         else
         {
             SetAllVillagerWidgets(true);
-            //villAllocCanvas.blocksRaycasts = true;
-            //villAllocCanvas.interactable = true;
-            //villAllocCanvas.DOFade(1.0f, 0.3f);
         }
     }
 
@@ -288,12 +279,6 @@ public class HUDManager : MonoBehaviour
         if (buildMode)
         {
             SetAllVillagerWidgets(false);
-            //_widget.gameObject.SetActive(true);
-            //villAllocCanvas.blocksRaycasts = true;
-            //villAllocCanvas.interactable = true;
-            //villAllocCanvas.DOFade(1.0f, 0.1f);
-
-
         }
 
         for (int i = 0; i < villAlloc.transform.childCount; i++)
@@ -316,25 +301,11 @@ public class HUDManager : MonoBehaviour
 
     public void HideAllVillagerWidgets()
     {
-        //if (buildMode)
-        //{
-        //    villAllocCanvas.blocksRaycasts = false;
-        //    villAllocCanvas.interactable = false;
-        //    villAllocCanvas.DOFade(0.0f, 0.1f);
-        //}
-
         SetAllVillagerWidgets(false);
-        
     }
 
     private void SetAllVillagerWidgets(bool _enabled)
     {
-        //VillagerAllocation[] widgets = Resources.FindObjectsOfTypeAll<VillagerAllocation>();
-        //foreach (VillagerAllocation widget in widgets)
-        //{
-        //    widget.gameObject.SetActive(_enabled);
-        //}
-
         for (int i = 0; i < villAlloc.transform.childCount; i++)
         {
             SetVillagerWidgetVisibility(villAlloc.transform.GetChild(i).GetComponent<UIAnimator>(), _enabled);

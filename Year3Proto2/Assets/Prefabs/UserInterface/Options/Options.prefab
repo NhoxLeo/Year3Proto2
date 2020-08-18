@@ -1232,11 +1232,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   display: {fileID: 699267392035509444}
   graphics: {fileID: 3195180222391324492}
-  togglePrefab: {fileID: 6767463291540540757, guid: 24184e756cfec254badedf7583aad8e0,
+  togglePrefab: {fileID: 381413995761681123, guid: d6e44535c66b8d54a85791f83b8cdfb7,
     type: 3}
-  sliderPrefab: {fileID: 7022500381385589106, guid: 7d0ca36224713a747b8f1eed3b923ff7,
+  sliderPrefab: {fileID: 1793204711935092994, guid: fec8c483d03b6954f911ee29d330de72,
     type: 3}
-  switcherPrefab: {fileID: 8621682050580097470, guid: d25cccd7d8125a04db69bbbce09fb0eb,
+  switcherPrefab: {fileID: 4676872845570321818, guid: 9648c665f10fd6448bb42711a19cd945,
     type: 3}
 --- !u!1 &8887787932022587333
 GameObject:
