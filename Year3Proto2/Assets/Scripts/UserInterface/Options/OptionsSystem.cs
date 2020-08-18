@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 // Bachelor of Software Engineering
@@ -14,180 +16,87 @@ using UnityEngine;
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
-delegate void OptionCallback();
-
-// Data container for switchers.
-struct OptionSwitcherData
-{
-    public int index;
-    public string[] values;
-    public OptionCallback optionCallback;
-
-    public OptionSwitcherData(int _index, string[] _values, OptionCallback _optionCallback)
-    {
-        index = _index;
-        values = _values;
-        optionCallback = _optionCallback;
-    }
-}
-
-// Data container for sliders.
-struct OptionSliderData
-{
-    public float value;
-    public OptionCallback optionCallback;
-
-    public OptionSliderData(float _value, OptionCallback _optionCallback)
-    {
-        value = _value;
-        optionCallback = _optionCallback;
-    }
-}
-
-// Data container for checkbox.
-struct OptionCheckboxData
-{
-    public bool value;
-    public OptionCallback optionCallback;
-
-    public OptionCheckboxData(bool _value, OptionCallback _optionCallback)
-    {
-        value = _value;
-        optionCallback = _optionCallback;
-    }
-}
-
-
 public class OptionsSystem : MonoBehaviour
 {
-    // Get a reference to game manager or super manager. 
-    // TODO: delegates, control values, saving...
-    [SerializeField] private Transform[] optionObjects;
+    [Header("Parents")]
+    [SerializeField] private Transform display;
+    [SerializeField] private Transform graphics;
 
-    private Dictionary<string, OptionSwitcherData> switchers;
-    private Dictionary<string, OptionSliderData> sliders;
-    private Dictionary<string, OptionCheckboxData> checkBoxes;
+    [Header("Prefabrication")]
+    [SerializeField] private Transform togglePrefab;
+    [SerializeField] private Transform sliderPrefab;
+    [SerializeField] private Transform switcherPrefab;
 
-    /**************************************
-    * Name of the Function: Start
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    private void Start()
+    private List<OptionObject> optionObjects = new List<OptionObject>();
+    private void Awake()
     {
-        // Setting function calls to keys
-        switchers = new Dictionary<string, OptionSwitcherData>
-        {
-            { "RESOLUTION", new OptionSwitcherData(0, Screen.resolutions.Select(o => o.ToString()).ToArray(), 
-                delegate {
-                    OptionSwitcher optionSwitcher = (OptionSwitcher) GetOptionObject("RESOLUTION");
-                    if(optionSwitcher)
+        optionObjects.Add(InstantiateOption("RESOLUTION",
+            new OptionSwitcherData(0, 0, Screen.resolutions.Select(o => o.ToString()).ToArray(),
+                delegate
+                {
+                    OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "RESOLUTION");
+                    if (optionSwitcher)
                     {
-                        Resolution resolution = Screen.resolutions[optionSwitcher.GetData()];
+                        OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
+                        Resolution resolution = Screen.resolutions[optionSwitcherData.value];
                         Screen.SetResolution(resolution.width, resolution.height, true);
                     }
-                }) 
-            },
-            { "QUALITY", new OptionSwitcherData(0, QualitySettings.names, 
-                delegate {
-                    OptionSwitcher optionSwitcher = (OptionSwitcher) GetOptionObject("QUALITY");
-                    if(optionSwitcher)
-                    {
-                        string[] names = QualitySettings.names;
-                        QualitySettings.SetQualityLevel(optionSwitcher.GetData());
-                    }
-                }) 
-            },
-            { "TEXTURE_QUALITY", new OptionSwitcherData(0, QualitySettings.names,
-                delegate {
-                    // TODO
-                }) 
-            },
-            { "SHADOW_QUALITY", new OptionSwitcherData(0, QualitySettings.names, 
-                delegate { 
-                    // TODO
-                }) 
-            },
-            { "ANTI_ALIASING", new OptionSwitcherData(0, QualitySettings.names,
-                delegate { 
-                    // TODO
-                }) 
-            }
-        };
+                }
+            ), switcherPrefab, display)
+        );
 
-        sliders = new Dictionary<string, OptionSliderData>
-        {
-            { "MASTER_VOLUME", new OptionSliderData(1.0f, 
-                delegate { 
+        optionObjects.Add(InstantiateOption("QUALITY",
+            new OptionSwitcherData(0, 0, QualitySettings.names.ToArray(),
+               delegate {
+                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "RESOLUTION");
+                   if (optionSwitcher)
+                   {
+                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
+                       string[] names = QualitySettings.names;
+                       QualitySettings.SetQualityLevel(optionSwitcherData.value);
+                   }
+               }
+            ), switcherPrefab, graphics)
+        );
 
-                }) 
-            },
-            { "MUSIC_VOLUME", new OptionSliderData(0.5f, 
-                delegate { 
+        /* 
+        [Switchers]
 
-                })
-            },
-            { "AMBIENT_VOLUME", new OptionSliderData(0.5f,
-                delegate { 
+        RESOLUTION
+        QUALITY
+        TEXTURE_QUALITY
+        SHADOW_QUALITY
+        ANTI_ALIASING
 
-                }) 
-            },
-            { "SOUND_EFFECTS_VOLUME", new OptionSliderData(0.5f, 
-                delegate { 
+        [Sliders]
 
-                }) 
-            },
-        };
+        MASTER_VOLUME
+        MUSIC_VOLUME
+        AMBIENT_VOLUME
+        SOUND_EFFECTS_VOLUME
+        
 
-        checkBoxes = new Dictionary<string, OptionCheckboxData>
-        {
-            { "FULL_SCREEN_MODE", new OptionCheckboxData(true,
-                delegate { 
+        pToggles]
 
-                }) 
-            },
-            { "V_SYNC", new OptionCheckboxData(false, 
-                delegate {
+        FULL_SCREEN_MODE
+        V_SYNC
+        ENEMY_INDICATORS
+        ENEMY_TOOLTIPS
+        AMBIENT_OCCLUSION
+        WAVE_HORN_START
 
-                }) 
-            },
-            { "ENEMY_INDICATORS", new OptionCheckboxData(true, 
-                delegate { 
-
-                })
-            },
-            { "ENVIRONMENT_TOOLTIPS", new OptionCheckboxData(true, 
-                delegate {
-
-                })
-            },
-            { "AMBIENT_OCCLUSION", new OptionCheckboxData(false,
-                delegate { 
-
-                }) 
-            },
-            { "WAVE_HORN_START", new OptionCheckboxData(true, 
-                delegate { 
-
-                }) 
-            }
-        };
+         */
     }
 
-    /**************************************
-    * Name of the Function: Start
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    public OptionObject GetOptionObject(string _key)
+    public OptionObject InstantiateOption(string _key, OptionData _optionData, Transform _prefab, Transform _parent)
     {
-        for (int i = 0; i < optionObjects.Length; i++)
+        Transform transform = Instantiate(_prefab, _parent);
+        OptionObject optionObject = transform.GetComponent<OptionObject>();
+        if (optionObject)
         {
-            Transform transform = optionObjects[i];
-            OptionObject optionObject = transform.GetComponent<OptionObject>();
-            if (optionObject && optionObject.GetKey() == _key) return optionObject;
+            optionObject.SetData(_optionData);
+            optionObject.SetKey(_key);
+            return optionObject;
         }
         return null;
     }
@@ -200,38 +109,7 @@ public class OptionsSystem : MonoBehaviour
     ***************************************/
     public void LoadData()
     {
-        for (int i = 0; i < optionObjects.Length; i++)
-        {
-            Transform optionObject = optionObjects[i];
-
-            OptionSwitcher optionSwitcher = optionObject.GetComponent<OptionSwitcher>();
-            if (optionSwitcher)
-            {
-                if (switchers.TryGetValue(optionSwitcher.GetKey(), out OptionSwitcherData data))
-                {
-                    optionSwitcher.SetValues(data.values);
-                    optionSwitcher.Deserialise(data.index);
-                } // ELSE STATEMENT (default values, error messages)
-            }
-
-            OptionSlider optionSlider = optionObject.GetComponent<OptionSlider>();
-            if (optionSlider)
-            {
-                if (sliders.TryGetValue(optionSlider.GetKey(), out OptionSliderData data))
-                {
-                    optionSlider.Deserialise(data.value);
-                }
-            }
-
-            OptionCheckBox optionCheckBox = optionObject.GetComponent<OptionCheckBox>();
-            if (optionCheckBox)
-            {
-                if (checkBoxes.TryGetValue(optionCheckBox.GetKey(), out OptionCheckboxData data))
-                {
-                    optionCheckBox.Deserialise(data.value);
-                }
-            }
-        }
+        optionObjects.ForEach(optionObject => optionObject.Deserialize());
     }
 
     /**************************************
@@ -242,39 +120,12 @@ public class OptionsSystem : MonoBehaviour
     ***************************************/
     public void SaveData()
     {
-        for (int i = 0; i < optionObjects.Length; i++)
+        optionObjects.ForEach(optionObject =>
         {
-            Transform optionObject = optionObjects[i];
+            optionObject.Serialize();
+            optionObject.GetData().GetCallback().Invoke();
+        });
 
-            OptionSwitcher optionSwitcher = optionObject.GetComponent<OptionSwitcher>();
-            if (optionSwitcher)
-            {
-                if (switchers.TryGetValue(optionSwitcher.GetKey(), out OptionSwitcherData data))
-                {
-                    optionSwitcher.Serialise();
-                    data.optionCallback.Invoke();
-                }
-            }
-
-            OptionSlider optionSlider = optionObject.GetComponent<OptionSlider>();
-            if (optionSlider)
-            {
-                if (sliders.TryGetValue(optionSlider.GetKey(), out OptionSliderData data))
-                {
-                    optionSlider.Serialise();
-                    data.optionCallback.Invoke();
-                }
-            }
-
-            OptionCheckBox optionCheckBox = optionObject.GetComponent<OptionCheckBox>();
-            if (optionCheckBox)
-            {
-                if (checkBoxes.TryGetValue(optionCheckBox.GetKey(), out OptionCheckboxData data))
-                {
-                    optionCheckBox.Serialise();
-                    data.optionCallback.Invoke();
-                }
-            }
-        }
+        PlayerPrefs.Save();
     }
 }
