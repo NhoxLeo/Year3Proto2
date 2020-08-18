@@ -54,7 +54,6 @@ public abstract class ResourceStructure : Structure
     protected int tileBonus = 0;
     protected static GameObject TileHighlight = null;
     protected static GameObject Fencing = null;
-    protected VillagerAllocation villagerWidget;
 
     private void EnableFogMask()
     {
