@@ -32,6 +32,7 @@ public class CatapultTower : AttackStructure
     {
         base.Start();
         SetFirerate();
+        SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.CatapultRange)) 
         { 
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; 
@@ -96,7 +97,7 @@ public class CatapultTower : AttackStructure
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
+            if (GameManager.GetInstance().playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
                 Fire();
             }
@@ -117,29 +118,13 @@ public class CatapultTower : AttackStructure
         GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
-    public override void SetFoodAllocation(int _newFoodAllocation)
-    {
-        base.SetFoodAllocation(_newFoodAllocation);
-        SetFirerate();
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        foreach (CatapultTower catapult in FindObjectsOfType<CatapultTower>())
-        {
-            catapult.SetFoodAllocation(_allocation);
-        }
-    }
-
     public override void OnPlace()
     {
         base.OnPlace();
-        //EnableFogMask();
         CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
         if (catapultTowers.Length >= 2)
         {
             CatapultTower other = (catapultTowers[0] == this) ? catapultTowers[1] : catapultTowers[0];
-            SetFoodAllocation(other.foodAllocation);
         }
     }
 
@@ -180,11 +165,5 @@ public class CatapultTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
-    }
-
-    private void EnableFogMask()
-    {
-        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 }

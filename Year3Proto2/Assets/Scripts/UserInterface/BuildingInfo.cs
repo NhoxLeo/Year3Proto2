@@ -50,9 +50,12 @@ public class BuildingInfo : MonoBehaviour
         rTrans = GetComponent<RectTransform>();
         buildPanel = FindObjectOfType<BuildPanel>();
 
-        statInfoText.text = "";
-        updateTimer = updateInterval;
-    }
+        statInfoText.text = "";
+
+        updateTimer = updateInterval;
+
+    }
+
     private void LateUpdate()
     {
         infoPanel.SetVisibility(showPanel);
@@ -66,10 +69,12 @@ public class BuildingInfo : MonoBehaviour
             //if (buildingName == "Barracks") { globalFoodText.text = "Affects all " + buildingName; }
             //else { globalFoodText.text = "Affects all " + buildingName + "s"; }
 
-            // Auto update info
+            // Auto update info
+
             if (showPanel && doAutoUpdate)
             {
-                updateTimer -= Time.deltaTime;
+                updateTimer -= Time.deltaTime;
+
                 if (updateTimer <= 0.0f)
                 {
                     SetInfo();
@@ -103,11 +108,15 @@ public class BuildingInfo : MonoBehaviour
     public void SetInfo()
     {
         repairButton.gameObject.SetActive(true);
-        repairButton.interactable = false;        destroyButton.gameObject.SetActive(false);        trainVillagerButton.showTooltip = false;
+        repairButton.interactable = false;
+        destroyButton.gameObject.SetActive(false);
+        trainVillagerButton.showTooltip = false;
+
         if (targetBuilding == null)
         {
             return;
-        }
+        }
+
         switch (buildingName)
         {
             case "Ballista Tower":
@@ -120,7 +129,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = ballista.CanBeRepaired();
-                break;
+                break;
+
             case "Catapult Tower":
                 CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
                 statIcon.sprite = defenceSprite;
@@ -131,7 +141,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = catapult.CanBeRepaired();
-                break;
+                break;
+
             case "Barracks":
                 Barracks barracks = targetBuilding.GetComponent<Barracks>();
                 statIcon.sprite = defenceSprite;
@@ -142,7 +153,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = barracks.CanBeRepaired();
-                break;
+                break;
+
 
             case "Farm":
                 Farm farm = targetBuilding.GetComponent<Farm>();
@@ -153,7 +165,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = farm.CanBeRepaired();
-                break;
+                break;
+
             case "Granary":
                 Granary granary = targetBuilding.GetComponent<Granary>();
                 statIcon.sprite = foodSprite;
@@ -163,7 +176,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = granary.CanBeRepaired();
-                break;
+                break;
+
             case "Lumber Mill":
                 LumberMill mill = targetBuilding.GetComponent<LumberMill>();
                 statIcon.sprite = woodSprite;
@@ -174,7 +188,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mill.CanBeRepaired();
-                break;
+                break;
+
             case "Lumber Pile":
                 LumberPile pile = targetBuilding.GetComponent<LumberPile>();
                 statIcon.sprite = woodSprite;
@@ -184,7 +199,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = pile.CanBeRepaired();
-                break;
+                break;
+
             case "Mine":
                 Mine mine = targetBuilding.GetComponent<Mine>();
                 statIcon.sprite = metalSprite;
@@ -194,7 +210,8 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mine.CanBeRepaired();
-                break;
+                break;
+
             case "Metal Storage":
                 MetalStorage metStore = targetBuilding.GetComponent<MetalStorage>();
                 statIcon.sprite = metalSprite;
@@ -204,15 +221,19 @@ public class BuildingInfo : MonoBehaviour
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = metStore.CanBeRepaired();
-                break;
+                break;
+
             case "Longhaus":
                 Longhaus haus = targetBuilding.GetComponent<Longhaus>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Your home base";
-                statValueText.text = "Protect me!";                statInfoText.text = "";
+                statValueText.text = "Protect me!";
+                statInfoText.text = "";
+
                 trainVillagerButton.showTooltip = true;
                 repairButton.interactable = haus.CanBeRepaired();
-                break;
+                break;
+
             case "Forest Environment":
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Bonus Building Type";
@@ -220,7 +241,8 @@ public class BuildingInfo : MonoBehaviour
                 statInfoText.text = "";
 
                 repairButton.gameObject.SetActive(false);
-                break;
+                break;
+
             case "Hills Environment":
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Bonus Building Type";
@@ -228,7 +250,8 @@ public class BuildingInfo : MonoBehaviour
                 statInfoText.text = "";
 
                 repairButton.gameObject.SetActive(false);
-                break;
+                break;
+
             case "Plains Environment":
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Bonus Building Type";
@@ -236,7 +259,8 @@ public class BuildingInfo : MonoBehaviour
                 statInfoText.text = "";
 
                 repairButton.gameObject.SetActive(false);
-                break;
+                break;
+
             default:
                 statIcon.sprite = emptySprite;
                 statHeadingText.text = "Unknown Stat";
@@ -249,7 +273,8 @@ public class BuildingInfo : MonoBehaviour
     private void SetPosition()
     {
         if (targetBuilding == null)
-            return;
+            return;
+
         // Position action panel near target building
         Vector3 pos = Camera.main.WorldToScreenPoint(targetBuilding.transform.position);
         actionPanel.transform.position = pos;
@@ -258,7 +283,9 @@ public class BuildingInfo : MonoBehaviour
     public void SetTargetBuilding(GameObject building, string name)
     {
         targetBuilding = building;
-        buildingName = name;        if (infoPanel.showElement)
+        buildingName = name;
+
+        if (infoPanel.showElement)
         {
             infoPanel.Pulse();
             actionPanel.Pulse();
@@ -276,9 +303,12 @@ public class BuildingInfo : MonoBehaviour
         if (targetBuilding == null)
             return;
 
-        Structure targetStructure = targetBuilding.GetComponent<Structure>();
-        //ResourceBundle repairCost = targetStructure.RepairCost();
-        targetStructure.Repair();
+        Structure targetStructure = targetBuilding.GetComponent<Structure>();
+
+        //ResourceBundle repairCost = targetStructure.RepairCost();
+
+        targetStructure.Repair();
+
         SetInfo();
     }
 

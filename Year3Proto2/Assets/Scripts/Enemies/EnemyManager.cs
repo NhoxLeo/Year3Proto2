@@ -252,14 +252,14 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     private float GetWeightage()
     {
-        SuperManager superManager = SuperManager.GetInstance();
-        if (superManager)
+        SuperManager superMan = SuperManager.GetInstance();
+        if (superMan)
         {
             // Data is serialized correctly
-            if (superManager.CheckData())
+            if (superMan.CheckData())
             {
-                int researchCompleted = superManager.GetResearch().ToList().RemoveAll(entry => !entry.Value);
-                int currentStructures = FindObjectsOfType<Structure>().Length;
+                int researchCompleted = superMan.GetResearch().ToList().RemoveAll(entry => !entry.Value);
+                int currentStructures = StructureManager.GetInstance().GetPlayerStructureCount();
                 return (researchCompleted + currentStructures) * weightageScalar;
             }
         }
@@ -369,7 +369,7 @@ public class EnemyManager : MonoBehaviour
         return waveCounter;
     }
 
-    public void SetWaveCurrent(int _wave)
+    public void SetWave(int _wave)
     {
         waveCounter = _wave;
     }

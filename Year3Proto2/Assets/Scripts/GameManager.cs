@@ -41,7 +41,7 @@ public struct PlayerResources
                 if (rFood > rFoodMax) { rFood = rFoodMax; }
                 if (rFood < 0)
                 {
-                    Longhaus.AddStarveTicks(-rFood);
+                    VillagerManager.GetInstance().AddStarveTicks(-rFood);
                     rFood = 0;
                 }
                 break;

@@ -14,7 +14,6 @@ public class VillagerPriority : MonoBehaviour
     private float panelYinitial;
     private Transform toggleButton;
     private float toggleButtonXinitial;
-    private StructureManager structMan;
 
     [SerializeField] private Sprite minimizeSprite;
     [SerializeField] private Sprite expandSprite;
@@ -28,7 +27,6 @@ public class VillagerPriority : MonoBehaviour
         panelYinitial = panel.localPosition.y;
         toggleButton = transform.Find("VillagerPriorityPanel/TogglePanelButton");
         toggleButtonXinitial = toggleButton.localPosition.x;
-        structMan = FindObjectOfType<StructureManager>();
     }
 
 
@@ -77,22 +75,17 @@ public class VillagerPriority : MonoBehaviour
         {
             case "Food":
                 check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(0).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Food);
+                VillagerManager.GetInstance().SetPriority(Priority.Food);
                 break;
 
             case "Wood":
                 check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(1).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Wood);
+                VillagerManager.GetInstance().SetPriority(Priority.Wood);
                 break;
 
             case "Metal":
                 check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(2).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Metal);
-                break;
-
-            case "Defence":
-                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(3).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Defensive);
+                VillagerManager.GetInstance().SetPriority(Priority.Metal);
                 break;
 
             default:

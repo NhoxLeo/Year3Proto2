@@ -23,31 +23,57 @@ public abstract class Structure : MonoBehaviour
     public bool isPlaced = false;
     public float sitHeight;
     public string structureName;
-    static readonly public int foodAllocationMax = 5;
-    static readonly public int foodAllocationMin = 1;
     protected int ID;
-    protected int foodAllocation = 3;
     protected float health;
     protected Healthbar healthBar;
     protected float maxHealth = 100.0f;
     protected StructureType structureType;
     protected float timeSinceLastHit = Mathf.Infinity;
-    protected GameManager gameMan;
-    protected SuperManager superMan;
-    protected StructureManager structMan;
     protected BuildingInfo buildingInfo;
-    protected HUDManager HUDMan;
     public bool fromSaveData = false;
     public bool saveDataStartFrame = false;
     private GameObject destructionEffect;
     protected int allocatedVillagers = 0;
     protected int villagerCapacity = 3;
-    protected VillagerAllocation villagerAllocation = null;
+    protected VillagerAllocation villagerWidget = null;
     private Transform spottingRange = null;
+    private bool manualAllocation = false;
+
+    public void ManuallyAllocate(int _villagers)
+    {
+        manualAllocation = true;
+        allocatedVillagers = _villagers;
+        if (villagerWidget)
+        {
+            villagerWidget.SetManualIndicator(_villagers);
+            villagerWidget.SetAutoIndicator(-1);
+        }
+    }
+
+    public void AutomaticallyAllocate(int _villagers)
+    {
+        manualAllocation = false;
+        allocatedVillagers = _villagers;
+        if (villagerWidget)
+        {
+            villagerWidget.SetManualIndicator(-1);
+            villagerWidget.SetAutoIndicator(_villagers);
+        }
+    }
+
+    public void SetManualAllocation(bool _allocation)
+    {
+        manualAllocation = _allocation;
+    }
+
+    public bool GetManualAllocation()
+    {
+        return manualAllocation;
+    }
 
     public void SetAllocationWidget(VillagerAllocation _widget)
     {
-        villagerAllocation = _widget;
+        villagerWidget = _widget;
     }
 
     public int GetAllocated()
@@ -67,10 +93,10 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void AllocateVillager()
     {
-        if (Longhaus.VillagerAvailable() && allocatedVillagers < villagerCapacity)
+        if (VillagerManager.GetInstance().VillagerAvailable() && allocatedVillagers < villagerCapacity)
         {
             allocatedVillagers++;
-            Longhaus.OnVillagerAllocated();
+            VillagerManager.GetInstance().OnVillagerAllocated();
         }
     }
 
@@ -79,13 +105,13 @@ public abstract class Structure : MonoBehaviour
         if (allocatedVillagers > 0)
         {
             allocatedVillagers--;
-            Longhaus.OnVillagerDeallocated();
+            VillagerManager.GetInstance().OnVillagerDeallocated();
         }
     }
 
     public virtual void DeallocateAll()
     {
-        Longhaus.ReturnVillagers(allocatedVillagers);
+        VillagerManager.GetInstance().ReturnVillagers(allocatedVillagers);
         allocatedVillagers = 0;
     }
 
@@ -97,34 +123,6 @@ public abstract class Structure : MonoBehaviour
     public int GetID()
     {
         return ID;
-    }
-
-    public int GetFoodAllocation()
-    {
-        return foodAllocation;
-    }
-
-    public void DecreaseFoodAllocation()
-    {
-        if (foodAllocation > foodAllocationMin)
-        {
-            SetFoodAllocationGlobal(foodAllocation - 1);
-        }
-    }
-
-    public virtual void SetFoodAllocation(int _newFoodAllocation)
-    {
-        foodAllocation = _newFoodAllocation;
-    }
-
-    public abstract void SetFoodAllocationGlobal(int _allocation);
-
-    public void IncreaseFoodAllocation()
-    {
-        if (foodAllocation < foodAllocationMax)
-        {
-            SetFoodAllocationGlobal(foodAllocation + 1);
-        }
     }
 
     public virtual Vector3 GetResourceDelta()
@@ -151,7 +149,7 @@ public abstract class Structure : MonoBehaviour
 
         if (health <= 0f)
         {
-            Longhaus.RemoveVillagers(allocatedVillagers);
+            VillagerManager.GetInstance().RemoveVillagers(allocatedVillagers);
             GameObject destroyedVFX = Instantiate(destructionEffect);
             destroyedVFX.transform.position = transform.position;
         }
@@ -246,14 +244,12 @@ public abstract class Structure : MonoBehaviour
         {
             return true;
         }
-
+        GameManager gameMan = GameManager.GetInstance();
         ResourceBundle repairCost = RepairCost();
-        if (gameMan.playerResources.CanAfford(repairCost) &&
-            timeSinceLastHit >= 5.0f &&
-            !repairCost.IsEmpty())
+        if (gameMan.playerResources.CanAfford(repairCost) && timeSinceLastHit >= 5.0f && !repairCost.IsEmpty())
         {
             GameManager.IncrementRepairCount();
-            if (!_mass) { HUDMan.ShowResourceDelta(repairCost, true); }
+            if (!_mass) { HUDManager.GetInstance().ShowResourceDelta(repairCost, true); }
             gameMan.playerResources.DeductResourceBundle(repairCost);
             health = maxHealth;
             return true;
@@ -263,7 +259,7 @@ public abstract class Structure : MonoBehaviour
 
     public ResourceBundle RepairCost()
     {
-        return structMan.structureDict[structureName].originalCost * (1.0f - (health / maxHealth));
+        return StructureManager.GetInstance().structureDict[structureName].originalCost * (1.0f - (health / maxHealth));
     }
 
     public void SetHealthbar(Healthbar _healthBar)
@@ -273,9 +269,6 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void Awake()
     {
-        structMan = FindObjectOfType<StructureManager>();
-        gameMan = FindObjectOfType<GameManager>();
-        HUDMan = FindObjectOfType<HUDManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         health = maxHealth;
         destructionEffect = Resources.Load("DestructionEffect") as GameObject;
@@ -284,18 +277,18 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void Start()
     {
-        superMan = SuperManager.GetInstance();
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
         {
             hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
         }
+        StructureManager structMan = StructureManager.GetInstance();
         GameObject healthBarInst = Instantiate(structMan.healthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
         SetHealthbar(healthBarInst.GetComponent<Healthbar>());
         healthBar.target = gameObject;
         healthBar.fillAmount = 1.0f;
         healthBarInst.SetActive(false);
         // health is set in awake, so this is called after and will affect all structures
-        if (superMan.CurrentLevelHasModifier(SuperManager.PoorTimber)) { health = maxHealth *= 0.5f; }
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber)) { health = maxHealth *= 0.5f; }
     }
 
     protected virtual void Update()
@@ -311,11 +304,11 @@ public abstract class Structure : MonoBehaviour
             timeSinceLastHit += Time.deltaTime;
             if (health <= 0.0f)
             {
-                if (GetStructureType() == StructureType.Longhaus) { gameMan.longhausDead = true; GlobalData.longhausDead = true; }
+                if (GetStructureType() == StructureType.Longhaus) { GameManager.GetInstance().longhausDead = true; GlobalData.longhausDead = true; }
                 OnDestroyed();
                 attachedTile.Detach();
                 GameManager.CreateAudioEffect("buildingDestroy", transform.position);
-                structMan.DecreaseStructureCost(structureName);
+                StructureManager.GetInstance().DecreaseStructureCost(structureName);
                 Destroy(gameObject);
             }
             else

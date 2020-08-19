@@ -185,17 +185,14 @@ public class SuperManager : MonoBehaviour
         public List<HeavyInvaderSaveData> heavyInvaders;
         public List<SoldierSaveData> soldiers;
         public int enemiesKilled;
-
         public float spawnTime;
         public bool spawning;
-
         public float waveSystemWeightageScalar;
         public float waveSystemTokenIncrement;
         public float waveSystemTokenScalar;
         public float waveSystemTime;
         public SaveVector3 waveSystemTimeVariance;
         public float waveSystemTokens;
-
         public int wave;
         public bool tutorialDone;
         public bool repairMessage;
@@ -203,6 +200,7 @@ public class SuperManager : MonoBehaviour
         public int nextStructureID;
         public int villagers;
         public int availableVillagers;
+        public int starveTicks;
     }
 
     [Serializable]
@@ -495,6 +493,7 @@ public class SuperManager : MonoBehaviour
         }
 
         // easy stuff
+        currentLevel = _matchData.levelID;
         GameManager.GetInstance().repairAll = _matchData.repairAll;
         GameManager.GetInstance().repairMessage = _matchData.repairMessage;
         GameManager.GetInstance().tutorialDone = _matchData.tutorialDone;
@@ -503,14 +502,14 @@ public class SuperManager : MonoBehaviour
         StructureManager.GetInstance().SetNextStructureID(_matchData.nextStructureID);
         GameManager.GetInstance().playerResources = _matchData.playerResources;
         EnemyManager.GetInstance().SetSpawning(_matchData.spawning);
-        EnemyManager.GetInstance().SetWaveCurrent(_matchData.wave);
+        EnemyManager.GetInstance().SetWave(_matchData.wave);
         EnemyManager.GetInstance().SetTime(_matchData.spawnTime);
-        currentLevel = _matchData.levelID;
         EnemyManager.GetInstance().SetEnemiesKilled(_matchData.enemiesKilled);
         GameManager.GetInstance().gameAlreadyWon = _matchData.matchWon;
-        Longhaus.SetVillagers(_matchData.villagers);
-        Longhaus.SetAvailable(_matchData.availableVillagers);
+        VillagerManager.GetInstance().SetVillagers(_matchData.villagers);
+        VillagerManager.GetInstance().SetAvailable(_matchData.availableVillagers);
         EnemyManager.GetInstance().LoadSystemFromData(_matchData);
+        VillagerManager.GetInstance().SetStarveTicks(_matchData.starveTicks);
         // not so easy stuff...
 
         // structures
@@ -596,9 +595,10 @@ public class SuperManager : MonoBehaviour
             enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
             matchWon = GameManager.GetInstance().WinConditionIsMet() || GameManager.GetInstance().gameAlreadyWon,
             nextStructureID = StructureManager.GetInstance().GetNextStructureID(),
-            villagers = Longhaus.GetVillagers(),
-            availableVillagers = Longhaus.GetAvailable(),
-            spawnTime = EnemyManager.GetInstance().GetTime()            
+            villagers = VillagerManager.GetInstance().GetVillagers(),
+            availableVillagers = VillagerManager.GetInstance().GetAvailable(),
+            spawnTime = EnemyManager.GetInstance().GetTime(),
+            starveTicks = VillagerManager.GetInstance().GetStarveTicks()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);

@@ -33,8 +33,15 @@ public class BallistaTower : AttackStructure
     {
         base.Start();
         SetFirerate();
-        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
+        SuperManager superMan = SuperManager.GetInstance();
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
+        {
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
+        }
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
+        {
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+        }
         bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.BallistaEfficiency);
         int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
         attackCost = new ResourceBundle(woodCost, 0, 0);
@@ -91,36 +98,20 @@ public class BallistaTower : AttackStructure
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerResources.AttemptPurchase(attackCost))
+            if (GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
             {
                 Fire();
             }
         }
     }
 
-    public override void SetFoodAllocation(int _newFoodAllocation)
-    {
-        base.SetFoodAllocation(_newFoodAllocation);
-        SetFirerate();
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        foreach (BallistaTower ballista in FindObjectsOfType<BallistaTower>())
-        {
-            ballista.SetFoodAllocation(_allocation);
-        }
-    }
-
     public override void OnPlace()
     {
         base.OnPlace();
-        //EnableFogMask();
         BallistaTower[] ballistaTowers = FindObjectsOfType<BallistaTower>();
         if (ballistaTowers.Length >= 2)
         {
             BallistaTower other = (ballistaTowers[0] == this) ? ballistaTowers[1] : ballistaTowers[0];
-            SetFoodAllocation(other.foodAllocation);
         }
     }
 
@@ -170,11 +161,5 @@ public class BallistaTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
-    }
-
-    private void EnableFogMask()
-    {
-        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 }

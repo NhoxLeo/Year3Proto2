@@ -28,12 +28,6 @@ public class Barracks : DefenseStructure
         return maxSoldiers;
     }
 
-    private void EnableFogMask()
-    {
-        transform.GetChild(0).gameObject.SetActive(true);
-        transform.GetChild(0).DOScale(Vector3.one * 3.0f, 1.0f).SetEase(Ease.OutQuint);
-    }
-
     private void UpdateCapacity()
     {
         //maxSoldiers = allocatedVillagers;
@@ -60,20 +54,6 @@ public class Barracks : DefenseStructure
         }
     }
 
-    public override void SetFoodAllocation(int _newFoodAllocation)
-    {
-        base.SetFoodAllocation(_newFoodAllocation);
-        UpdateCapacity();
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        foreach (Barracks barracks in FindObjectsOfType<Barracks>())
-        {
-            barracks.SetFoodAllocation(_allocation);
-        }
-    }
-
     public override void AllocateVillager()
     {
         base.AllocateVillager();
@@ -89,12 +69,10 @@ public class Barracks : DefenseStructure
     public override void OnPlace()
     {
         base.OnPlace();
-        //EnableFogMask();
         Barracks[] barracks = FindObjectsOfType<Barracks>();
         if (barracks.Length >= 2)
         {
             Barracks other = (barracks[0] == this) ? barracks[1] : barracks[0];
-            SetFoodAllocation(other.foodAllocation);
         }
     }
 
@@ -107,7 +85,7 @@ public class Barracks : DefenseStructure
     protected override void Awake()
     {
         base.Awake();
-        superMan = SuperManager.GetInstance();
+        SuperManager superMan = SuperManager.GetInstance();
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Barracks];
         soldiers = new List<Soldier>();
         soldierPrefab = Resources.Load("Soldier") as GameObject;
@@ -145,6 +123,7 @@ public class Barracks : DefenseStructure
 
     private void SpawnSoldier()
     {
+        SuperManager superMan = SuperManager.GetInstance();
         Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
         newSoldier.barracksID = ID;
         newSoldier.home = this;
@@ -179,6 +158,7 @@ public class Barracks : DefenseStructure
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
     {
+        SuperManager superMan = SuperManager.GetInstance();
         Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
         newSoldier.barracksID = ID;
         newSoldier.home = this;
