@@ -47,7 +47,8 @@ public class OptionsSystem : MonoBehaviour
 
         optionObjects.Add(InstantiateOption("QUALITY",
             new OptionSwitcherData(0, 0, QualitySettings.names.ToArray(),
-               delegate {
+               delegate
+               {
                    OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "RESOLUTION");
                    if (optionSwitcher)
                    {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Boulder : Projectile
+public class Boulder : PhysicalProjectile
 {
     private readonly float height = 0.8f;
     private readonly float radius = 10.0f;
@@ -8,7 +8,6 @@ public class Boulder : Projectile
     private void Start() 
     {
         Physics.gravity = Vector3.up * -1.8f;
-        Ready();
         StartCoroutine(DestroyLater(10));
     }
 

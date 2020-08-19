@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 
-public class Arrow : Projectile
+public class Arrow : PhysicalProjectile
 {
     private void Start()
     {
-        Ready();
         StartCoroutine(DestroyLater(2));
     }
 
@@ -16,8 +15,11 @@ public class Arrow : Projectile
 
     public override void OnProjectileHit(GameObject _target, Vector3 _contactPoint)
     {
-        if(_target.GetComponent<Structure>() != null) _target.GetComponent<Structure>().Damage(damage);
-        if(_target.GetComponent<Enemy>() != null) _target.GetComponent<Enemy>().Damage(damage);
+        Structure structure = _target.GetComponent<Structure>();
+        if(structure) structure.Damage(damage);
+
+        Enemy enemy = _target.GetComponent<Enemy>();
+        if(enemy) enemy.Damage(damage);
 
         Destroy(gameObject);
     }
