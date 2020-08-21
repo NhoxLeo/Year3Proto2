@@ -145,9 +145,10 @@ MonoBehaviour:
   puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
     type: 3}
   health: 10
-  avoidForce: 3
   damage: 2
   nextReturnFalse: 0
+  defenseTarget: {fileID: 0}
+  spawner: {fileID: 0}
 --- !u!95 &988293539997631802
 Animator:
   serializedVersion: 3

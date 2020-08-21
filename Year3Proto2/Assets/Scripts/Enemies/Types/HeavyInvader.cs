@@ -45,6 +45,10 @@ public class HeavyInvader : Enemy
 
     private void FixedUpdate()
     {
+        velocity = (body.position - lastPosition) * 1 / Time.fixedDeltaTime;
+        lastPosition = body.position;
+
+
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)

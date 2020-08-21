@@ -55,6 +55,9 @@ public abstract class Enemy : MonoBehaviour
     public EnemySpawner spawner;
     private EnemySpawner.EnemyPathSignature signature;
 
+    protected Vector3 velocity;
+    protected Vector3 lastPosition;
+
     public abstract void Action();
 
     protected virtual void Start()
@@ -311,5 +314,10 @@ public abstract class Enemy : MonoBehaviour
     public bool IsBeingObserved()
     {
         return observers > 0;
+    }
+
+    public Vector3 GetVelocity()
+    {
+        return velocity;
     }
 }

@@ -120,10 +120,10 @@ public class BuildingInfo : MonoBehaviour
         switch (buildingName)
         {
             case "Ballista Tower":
-                BallistaTower ballista = targetBuilding.GetComponent<BallistaTower>();
+                Ballista ballista = targetBuilding.GetComponent<Ballista>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = ballista.GetFirerate().ToString("F");
+                statValueText.text = ballista.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
                 //foodValueText.text = ballista.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
@@ -147,7 +147,7 @@ public class BuildingInfo : MonoBehaviour
                 Barracks barracks = targetBuilding.GetComponent<Barracks>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Troop Capacity";
-                statValueText.text = barracks.GetTroopCapacity().ToString("0");
+                //statValueText.text = barracks.GetTroopCapacity().ToString("0");
                 statInfoText.text = "units";
                 //foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 

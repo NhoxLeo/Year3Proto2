@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class Barracks : DefenseStructure
 {
+    /*
     private GameObject soldierPrefab;
     private GameObject puffEffect;
     private int maxSoldiers = 3;
@@ -208,5 +209,20 @@ public class Barracks : DefenseStructure
         }
 
         soldiers.Add(newSoldier);
+    }
+    */
+    public override void CheckResearch()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override bool Launch()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void SetFoodAllocationGlobal(int _allocation)
+    {
+        throw new System.NotImplementedException();
     }
 }

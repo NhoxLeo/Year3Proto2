@@ -245,8 +245,8 @@ public class StructureManager : MonoBehaviour
             // NAME                                                     NAME                                                        wC       mC      fC
             { "Longhaus",           new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(600,     200,    0)) },
 
-            { "Ballista Tower",     new StructureDefinition(Resources.Load("Archer Tower") as GameObject,       new ResourceBundle(150,     50,     0)) },
-            { "Catapult Tower",     new StructureDefinition(Resources.Load("Catapult Tower") as GameObject,     new ResourceBundle(200,     250,    0)) },
+            { "Ballista Tower",     new StructureDefinition(Resources.Load("Structures/DefenseStructures/Ballista Tower") as GameObject,       new ResourceBundle(150,     50,     0)) },
+            { "Catapult Tower",     new StructureDefinition(Resources.Load("Structures/DefenseStructures/Catapult Tower") as GameObject,     new ResourceBundle(200,     250,    0)) },
             { "Barracks",           new StructureDefinition(Resources.Load("Barracks") as GameObject,           new ResourceBundle(200,     250,    0)) },
 
             { "Farm",               new StructureDefinition(Resources.Load("Farm") as GameObject,               new ResourceBundle(40,      0,      0)) },
@@ -1317,7 +1317,7 @@ public class StructureManager : MonoBehaviour
         Barracks barracksComponent = newStructure.gameObject.GetComponent<Barracks>();
         if (barracksComponent) 
         { 
-            barracksComponent.SetTimeTrained(_saveData.timeTrained);
+            //barracksComponent.SetTimeTrained(_saveData.timeTrained);
         }
         if (_saveData.exploited)
         { 

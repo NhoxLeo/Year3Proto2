@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class TowerRange : MonoBehaviour
 {
-    AttackStructure parentStructure;
-    int enemyStructureColliderLayer;
+    private DefenseStructure defenseStructure;
+    private int enemyStructureColliderLayer;
 
     private void Start()
     {
@@ -15,7 +15,7 @@ public class TowerRange : MonoBehaviour
 
     private void GetParent()
     {
-        parentStructure = transform.parent.GetComponent<AttackStructure>();
+        defenseStructure = transform.parent.GetComponent<DefenseStructure>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -26,10 +26,10 @@ public class TowerRange : MonoBehaviour
             {
                 if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    if (!parentStructure) { GetParent(); }
-                    if (!parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
+                    if (!defenseStructure) { GetParent(); }
+                    if (!defenseStructure.GetEnemies().Contains(other.transform.parent))
                     {
-                        parentStructure.GetEnemies().Add(other.transform.parent.gameObject);
+                        defenseStructure.GetEnemies().Add(other.transform.parent);
                     }
                 }
             }
@@ -44,10 +44,10 @@ public class TowerRange : MonoBehaviour
             {
                 if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    if (!parentStructure) { GetParent(); }
-                    if (parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
+                    if (!defenseStructure) { GetParent(); }
+                    if (defenseStructure.GetEnemies().Contains(other.transform.parent))
                     {
-                        parentStructure.GetEnemies().Remove(other.transform.parent.gameObject);
+                        defenseStructure.GetEnemies().Remove(other.transform.parent);
                     }
                 }
             }

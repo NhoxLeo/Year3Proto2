@@ -1,60 +1,106 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
-    [SerializeField] private Projectile projectilePrefab;
+    [Header("Attributes")]
+    [SerializeField] private Transform attackingRange;
+
+    [Header("Projectile")]
+    [SerializeField] protected Transform projectilePrefab;
     [SerializeField] private float projectileTime;
     [SerializeField] private float projectileDelay;
     [SerializeField] private float projectileRate;
 
     protected ResourceBundle attackCost;
-    protected Transform target;
+    protected Transform enemy;
+    protected List<Transform> enemies = new List<Transform>();
 
     protected override void Start()
     {
         base.Start();
         structureType = StructureType.Defense;
         projectileTime = projectileDelay;
-        
+
+        DetectEnemies();
+        CheckResearch();
+
         /*villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
         villagerWidget.SetTarget(this);*/
     }
 
-    private void Update()
+    protected override void Update()
     {
-        if(attachedTile)
+        base.Update();
+        if (attachedTile && enemies.Count > 0)
         {
-            projectileTime += Time.deltaTime;
-            if(projectileTime >= projectileDelay && gameMan.playerResources.AttemptPurchase(attackCost))
+            enemies.RemoveAll(enemy => !enemy);
+            if (!enemy)
             {
-                Projectile projectile = Instantiate(projectilePrefab, transform);
-                if (projectile)
+                enemy = GetClosestEnemy();
+            }
+            else
+            {
+                projectileTime += Time.deltaTime;
+                if (projectileTime >= projectileDelay && gameMan.playerResources.AttemptPurchase(attackCost))
                 {
-                    projectile.Launch();
-                    projectileTime = 0.0f;
+                    if(Launch())
+                    {
+                        projectileTime = 0.0f;
+                        projectileRate = allocatedVillagers * 0.5f + projectileDelay;
+                        projectileDelay = projectileRate;
+                    }
                 }
             }
         }
     }
 
-    public void SetProjectileRate(float _projectileRate)
+    public abstract bool Launch();
+
+    private Transform GetClosestEnemy()
     {
-        projectileRate = allocatedVillagers * 0.5f;
-        projectileDelay = 1.0f / projectileRate;
+        float closestDistanceSqr = Mathf.Infinity;
+
+        Transform nearestSpottedEnemy = null;
+
+        foreach (Transform enemy in enemies)
+        {
+            if (enemy.GetComponent<Enemy>().IsBeingObserved())
+            {
+                Vector3 directionToTarget = enemy.transform.position - transform.position;
+                float dSqrToTarget = directionToTarget.sqrMagnitude;
+                if (dSqrToTarget < closestDistanceSqr)
+                {
+                    closestDistanceSqr = dSqrToTarget;
+                    nearestSpottedEnemy = enemy;
+                }
+            }
+        }
+        return nearestSpottedEnemy;
+    }
+
+    private void DetectEnemies()
+    {
+        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+            if (distanceFromEnemy <= rangeCollider.radius)
+            {
+                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+            }
+        }
     }
 
     public override Vector3 GetResourceDelta()
     {
         Vector3 resourceDelta = base.GetResourceDelta();
-        if (target)
+        if (enemy)
         {
             resourceDelta -= attackCost * projectileRate;
         }
         return resourceDelta;
     }
-
 
     public override void OnSelected()
     {
@@ -67,4 +113,22 @@ public abstract class DefenseStructure : Structure
         base.OnDeselected();
         //FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
     }
+
+    public override void ShowRangeDisplay(bool _active)
+    {
+        base.ShowRangeDisplay(_active);
+        attackingRange.GetChild(0).gameObject.SetActive(_active);
+    }
+
+    public float GetFireRate()
+    {
+        return projectileRate;
+    }
+
+    public List<Transform> GetEnemies()
+    {
+        return enemies;
+    }
+
+    public abstract void CheckResearch();
 }

@@ -574,7 +574,7 @@ public class SuperManager : MonoBehaviour
             {
                 if (barr.GetID() == saveData.barracksID)
                 {
-                    barr.LoadSoldier(saveData);
+                    //barr.LoadSoldier(saveData);
                     break;
                 }
             }
@@ -714,7 +714,7 @@ public class SuperManager : MonoBehaviour
                 }
                 if (structure.IsStructure("Barracks"))
                 {
-                    saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained();
+                    //saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained();
                 }
                 save.structures.Add(saveData);
             }

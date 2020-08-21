@@ -2,15 +2,15 @@
 using UnityEngine;
 
 public abstract class Projectile : MonoBehaviour
-{
-    protected GameObject target;
-
+{ 
     [Header("Properties")]
     [SerializeField] protected LayerMask layerMask;
     [SerializeField] protected float damage = 10.0f;
     [SerializeField] protected float speed = 1.0f;
 
-    public abstract void OnProjectileHit(GameObject _target, Vector3 _contactPoint);
+    protected Transform target;
+
+    public abstract void OnProjectileHit(Transform _target, Vector3 _contactPoint);
 
     public abstract void Launch();
 
@@ -20,8 +20,18 @@ public abstract class Projectile : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void SetTarget(GameObject _target)
+    public void SetDamage(float  _damage)
+    {
+        damage = _damage;
+    }
+
+    public void SetTarget(Transform _target)
     {
         target = _target;
+    }
+
+    public float GetDamage()
+    {
+        return damage;
     }
 }

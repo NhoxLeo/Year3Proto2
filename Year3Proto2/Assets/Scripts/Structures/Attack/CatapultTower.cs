@@ -54,7 +54,7 @@ public class CatapultTower : AttackStructure
     protected override void Update()
     {
         base.Update();
-        if (target && isPlaced)
+        if (target && isPlaced) 
         {
             Vector3 catapultPosition = catapult.transform.position;
             Vector3 targetPosition = target.transform.position;

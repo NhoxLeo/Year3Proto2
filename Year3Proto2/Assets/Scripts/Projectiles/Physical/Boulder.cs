@@ -4,6 +4,7 @@ public class Boulder : PhysicalProjectile
 {
     private readonly float height = 0.8f;
     private readonly float radius = 10.0f;
+    [SerializeField] private float explosionRadius;
 
     private void Start() 
     {
@@ -11,7 +12,7 @@ public class Boulder : PhysicalProjectile
         StartCoroutine(DestroyLater(10));
     }
 
-    public override void OnProjectileHit(GameObject _target, Vector3 _contactPoint)
+    public override void OnProjectileHit(Transform _target, Vector3 _contactPoint)
     {
         Collider[] hitColliders = Physics.OverlapSphere(_contactPoint, radius);
 
@@ -39,6 +40,16 @@ public class Boulder : PhysicalProjectile
         Vector3 velocityXZ = target.GetComponent<Enemy>().GetBody().velocity + displacementXZ / time;
 
         return velocityXZ + velocityY * -Mathf.Sign(Physics.gravity.y);
+    }
+
+    public void SetExplosionRadius(float _explosionRadius)
+    {
+        explosionRadius = _explosionRadius;
+    }
+    
+    public float GetExplosionRadius()
+    {
+        return explosionRadius;
     }
 
     private void OnDrawGizmos()

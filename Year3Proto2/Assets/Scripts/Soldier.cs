@@ -380,10 +380,12 @@ public class Soldier : MonoBehaviour
         {
             if (home)
             {
+                /*
                 if (home.soldiers.Contains(this))
                 {
                     home.soldiers.Remove(this);
                 }
+                */
             }
             GameObject puff = Instantiate(puffEffect);
             puff.transform.position = transform.position;

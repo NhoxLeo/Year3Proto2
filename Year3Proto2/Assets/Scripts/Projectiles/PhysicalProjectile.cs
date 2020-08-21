@@ -4,13 +4,7 @@ using UnityEngine;
 
 public abstract class PhysicalProjectile : Projectile
 {
-    protected Rigidbody body;
-
-    void Start()
-    {
-        body = GetComponent<Rigidbody>();
-    }
-
+    [SerializeField] private Rigidbody body;
     public override void Launch()
     {
         body.velocity = CalculateVelocity();
@@ -18,11 +12,11 @@ public abstract class PhysicalProjectile : Projectile
         body.AddRelativeForce(oppositeVelocity);
     }
 
-    private void OnCollisionEnter(Collision _collision)
+    private void OnTriggerEnter(Collider _other)
     {
-        if ((layerMask.value & (1 << _collision.gameObject.layer)) != 0)
+        if ((layerMask.value & (1 << _other.gameObject.layer)) != 0)
         {
-            OnProjectileHit(_collision.gameObject, _collision.contacts[0].point);
+            OnProjectileHit(_other.transform, _other.bounds.center);
         }
     }
 

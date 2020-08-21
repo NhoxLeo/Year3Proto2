@@ -10,4 +10,6 @@ public abstract class ParticleProjectile : Projectile
     {
         particlePrefab = Instantiate(particlePrefab, particleParent);
     }
+
+    public abstract void OnParticleHit();
 }
