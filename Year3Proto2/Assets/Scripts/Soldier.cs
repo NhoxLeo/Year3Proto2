@@ -93,10 +93,10 @@ public class Soldier : MonoBehaviour
                 tile = startTile,
                 fromTile = startTile,
                 gCost = 0f,
-                hCost = EnemySpawner.CalculateHCost(startTile, destination)
+                hCost = PathManager.CalculateHCost(startTile, destination)
             };
 
-            EnemySpawner.ProcessTile(startingData, open, closed, destination);
+            PathManager.ProcessTile(startingData, open, closed, destination);
 
             // while a path hasn't been found
             bool pathFound = false;
@@ -104,7 +104,7 @@ public class Soldier : MonoBehaviour
             while (!pathFound && open.Count > 0 && lapCount < 20000)
             {
                 lapCount++;
-                if (EnemySpawner.ProcessTile(EnemySpawner.GetNextOpenTile(open), open, closed, destination))
+                if (PathManager.ProcessTile(PathManager.GetNextOpenTile(open), open, closed, destination))
                 {
                     // generate a path from the tiles in the closed list
                     // path from the source tile to the destination tile
@@ -114,7 +114,7 @@ public class Soldier : MonoBehaviour
                     while (currentData.fromTile != currentData.tile)
                     {
                         reversePath.Add(currentData.tile.transform.position);
-                        currentData = EnemySpawner.FollowFromTile(closed, currentData.fromTile);
+                        currentData = PathManager.FollowFromTile(closed, currentData.fromTile);
                     }
                     reversePath.Reverse();
                     path.pathPoints = reversePath;

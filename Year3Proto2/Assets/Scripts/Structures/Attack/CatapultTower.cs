@@ -32,6 +32,7 @@ public class CatapultTower : AttackStructure
     {
         base.Start();
         SetFirerate();
+        SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.CatapultRange)) 
         { 
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; 
@@ -54,6 +55,7 @@ public class CatapultTower : AttackStructure
     protected override void Update()
     {
         base.Update();
+        SetFirerate();
         if (target && isPlaced)
         {
             Vector3 catapultPosition = catapult.transform.position;
@@ -67,36 +69,12 @@ public class CatapultTower : AttackStructure
         }
     }
 
-    public override void AllocateVillager()
-    {
-        base.AllocateVillager();
-        SetFirerate();
-    }
-
-    public override void DeallocateVillager()
-    {
-        base.DeallocateVillager();
-        SetFirerate();
-    }
-
-    public override void DeallocateAll()
-    {
-        base.DeallocateAll();
-        SetFirerate();
-    }
-
-    public override void SetAllocated(int _allocated)
-    {
-        base.SetAllocated(_allocated);
-        SetFirerate();
-    }
-
     public override void Attack(GameObject target)
     {
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
+            if (GameManager.GetInstance().playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
                 Fire();
             }
@@ -117,35 +95,18 @@ public class CatapultTower : AttackStructure
         GameManager.CreateAudioEffect("catapultFire", transform.position);
     }
 
-    public override void SetFoodAllocation(int _newFoodAllocation)
-    {
-        base.SetFoodAllocation(_newFoodAllocation);
-        SetFirerate();
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        foreach (CatapultTower catapult in FindObjectsOfType<CatapultTower>())
-        {
-            catapult.SetFoodAllocation(_allocation);
-        }
-    }
-
     public override void OnPlace()
     {
         base.OnPlace();
-        //EnableFogMask();
         CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
         if (catapultTowers.Length >= 2)
         {
             CatapultTower other = (catapultTowers[0] == this) ? catapultTowers[1] : catapultTowers[0];
-            SetFoodAllocation(other.foodAllocation);
         }
     }
 
     void SetFirerate()
     {
-        /*
         switch (allocatedVillagers)
         {
             case 0:
@@ -155,20 +116,12 @@ public class CatapultTower : AttackStructure
                 fireRate = 0.25f;
                 break;
             case 2:
-                fireRate = 1f / 3f;
+                fireRate = 0.334f;
                 break;
             case 3:
                 fireRate = 0.5f;
                 break;
-            case 4:
-                fireRate = 1f / 1.5f;
-                break;
-            case 5:
-                fireRate = 1.0f;
-                break;
         }
-        */
-        fireRate = 1f / 3f;
         fireDelay = 1f / fireRate;
     }
 
@@ -180,11 +133,5 @@ public class CatapultTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
-    }
-
-    private void EnableFogMask()
-    {
-        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
     }
 }

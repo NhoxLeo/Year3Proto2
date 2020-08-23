@@ -54,12 +54,10 @@ public class VillagerPriority : MonoBehaviour
     private Vector3 dragOffset;
 
     private float panelYinitial;
-    private StructureManager structMan;
 
     private void Start()
     {
         panelYinitial = panel.localPosition.y;
-        structMan = FindObjectOfType<StructureManager>();
 
         // Set Text
         foodText.text = (foodPriority + 1).ToString() + ".";
@@ -293,5 +291,10 @@ public class VillagerPriority : MonoBehaviour
     {
         // Apply priority in StructureManager
         // >>> SAM <<<
+
+        VillagerManager.GetInstance().SetPriorities(foodPriority, woodPriority, metalPriority);
+
     }
+
+
 }
