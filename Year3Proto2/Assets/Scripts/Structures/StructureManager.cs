@@ -800,11 +800,11 @@ public class StructureManager : MonoBehaviour
                 villagerAllocation.SetTarget(structure);
                 structure.SetAllocationWidget(villagerAllocation);
             }
-            SelectStructure(structure);
             playerStructureDict.Add(structure.GetID(), structure);
             GameManager.GetInstance().OnStructurePlaced();
             PathManager.GetInstance().OnStructurePlaced();
             VillagerManager.GetInstance().RedistributeVillagers();
+            SelectStructure(structure);
             if (structType == StructureType.Resource || structType == StructureType.Attack)
             {
                 structure.RefreshWidget();
