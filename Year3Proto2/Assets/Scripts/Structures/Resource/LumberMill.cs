@@ -23,14 +23,14 @@ public class LumberMill : ResourceStructure
     public override void OnPlace()
     {
         base.OnPlace();
-        LumberMill[] lumberMills = FindObjectsOfType<LumberMill>();
-        if (lumberMills.Length >= 2)
-        {
-            LumberMill other = (lumberMills[0] == this) ? lumberMills[1] : lumberMills[0];
-        }
         if (wasPlacedOnForest)
         {
             tileBonus++;
         }
+    }
+
+    protected override void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
+    {
+        // intentionally does nothing, but must be implemented for the compiler
     }
 }

@@ -46,8 +46,6 @@ public abstract class ResourceStructure : Structure
 
     public float productionTime = 2f;
     protected Dictionary<TileBehaviour.TileCode, GameObject> tileHighlights;
-    protected Dictionary<TileBehaviour.TileCode, GameObject> fences;
-    protected Dictionary<TileBehaviour.TileCode, GameObject> closedFences;
     protected int batchSize = 1;
     protected float remainingTime = 2f;
     protected ResourceType resourceType;
@@ -131,8 +129,7 @@ public abstract class ResourceStructure : Structure
                                     envStructure.SetExploiterID(ID);
                                     newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
                                     tileBonus++;
-                                    fences[(TileBehaviour.TileCode)i].SetActive(true);
-                                    closedFences[(TileBehaviour.TileCode)i].SetActive(false);
+                                    AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                                 }
                                 else
                                 {
@@ -140,41 +137,38 @@ public abstract class ResourceStructure : Structure
                                     {
                                         newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
                                         tileBonus++;
-                                        fences[(TileBehaviour.TileCode)i].SetActive(true);
-                                        closedFences[(TileBehaviour.TileCode)i].SetActive(false);
+                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                                     }
                                     else
                                     {
                                         newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                        fences[(TileBehaviour.TileCode)i].SetActive(false);
-                                        closedFences[(TileBehaviour.TileCode)i].SetActive(true);
+                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
                                     }
                                 }
                             }
                             else
                             {
                                 newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                fences[(TileBehaviour.TileCode)i].SetActive(false);
-                                closedFences[(TileBehaviour.TileCode)i].SetActive(true);
+                                AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
                             }
                         }
                         else
                         {
                             newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                            fences[(TileBehaviour.TileCode)i].SetActive(false);
-                            closedFences[(TileBehaviour.TileCode)i].SetActive(true);
+                            AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
                         }
                         newTileHighlight.SetActive(false);
                     }
                 }
                 else
                 {
-                    fences[(TileBehaviour.TileCode)i].SetActive(false);
-                    closedFences[(TileBehaviour.TileCode)i].SetActive(true);
+                    AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
                 }
             }
         }
     }
+
+    protected abstract void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit);
 
     public override void OnSelected()
     {
@@ -237,20 +231,6 @@ public abstract class ResourceStructure : Structure
         base.Start();
         structureType = StructureType.Resource;
         tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
-        fences = new Dictionary<TileBehaviour.TileCode, GameObject>
-        {
-            { TileBehaviour.TileCode.north, transform.GetChild(0).gameObject },
-            { TileBehaviour.TileCode.east, transform.GetChild(1).gameObject },
-            { TileBehaviour.TileCode.south, transform.GetChild(2).gameObject },
-            { TileBehaviour.TileCode.west, transform.GetChild(3).gameObject }
-        };
-        closedFences = new Dictionary<TileBehaviour.TileCode, GameObject>
-        {
-            { TileBehaviour.TileCode.north, transform.GetChild(4).gameObject },
-            { TileBehaviour.TileCode.east, transform.GetChild(5).gameObject },
-            { TileBehaviour.TileCode.south, transform.GetChild(6).gameObject },
-            { TileBehaviour.TileCode.west, transform.GetChild(7).gameObject }
-        };
     }
 
     private GameObject GetTileHighlight()
