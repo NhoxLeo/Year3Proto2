@@ -39,10 +39,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TMP_Text foodText;
     [SerializeField] private TMP_Text woodText;
     [SerializeField] private TMP_Text metalText;
-    [SerializeField] HorizontalLayoutGroup hLayoutGroup;
-    [SerializeField] HorizontalLayoutGroup foodCard;
-    [SerializeField] HorizontalLayoutGroup woodCard;
-    [SerializeField] HorizontalLayoutGroup metalCard;
+    [SerializeField] private RectTransform resourceBarTransform;
 
     [Header("Delta Popups")]
     [SerializeField] private Tooltip foodDeltaTip;
@@ -188,11 +185,7 @@ public class HUDManager : MonoBehaviour
         }
 
         // Update content size fitters
-        Canvas.ForceUpdateCanvases();
-        hLayoutGroup.SetLayoutHorizontal();
-        foodCard.SetLayoutHorizontal();
-        woodCard.SetLayoutHorizontal();
-        metalCard.SetLayoutHorizontal();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
@@ -266,7 +259,7 @@ public class HUDManager : MonoBehaviour
     public void ToggleHUDMode()
     {
         buildMode = !buildMode;
-
+        SetAllVillagerWidgets(!buildMode);
         if (buildMode)
         {
             SetAllVillagerWidgets(false);
@@ -275,6 +268,12 @@ public class HUDManager : MonoBehaviour
         {
             SetAllVillagerWidgets(true);
         }
+    }
+
+    public void SetHudMode(bool _buildMode)
+    {
+        buildMode = _buildMode;
+        SetAllVillagerWidgets(!buildMode);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
