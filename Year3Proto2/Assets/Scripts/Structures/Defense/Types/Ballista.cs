@@ -47,6 +47,7 @@ public class Ballista : DefenseStructure
 
     public override void SetFoodAllocationGlobal(int _allocation)
     {
+        // TODO?
         throw new System.NotImplementedException();
     }
 }

@@ -36,6 +36,7 @@ public class Catapult : DefenseStructure
 
     public override void SetFoodAllocationGlobal(int _allocation)
     {
+        // TODO?
         throw new System.NotImplementedException();
     }
 
