@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class BoltBehaviour : MonoBehaviour
 {
-    public Transform target;
-    public float damage;
-    public float speed;
-    public GameObject puffEffect;
-    public bool pierce;
+    private Transform target;
+    private float damage;
+    private float speed;
+    private GameObject puffEffect;
+    private bool pierce;
     private Vector3 endPosition;
     private bool endPositionReached = false;
     private bool damageDealt = false;
+
+    public void Initialize(Transform _target, float _damage, float _speed, GameObject _puffEffect, bool _pierce)
+    {
+        target = _target;
+        damage = _damage;
+        speed = _speed;
+        puffEffect = _puffEffect;
+        pierce = _pierce;
+    }
 
     private void Start()
     {

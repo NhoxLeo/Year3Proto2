@@ -1917,7 +1917,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doShowHUD: 1
-  buildMode: 0
+  buildMode: 1
   resourceBar: {fileID: 7476203242106710477}
   gainColour: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   lossColour: {r: 0.67058825, g: 0.20117648, b: 0.23763575, a: 1}

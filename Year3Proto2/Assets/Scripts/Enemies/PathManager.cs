@@ -85,11 +85,7 @@ public struct JSPathfindingTileData
     }
 }
 
-
-
-public class EnemySpawner : MonoBehaviour
-{
-    public struct EnemyPathSignature
+public struct EnemyPathSignature
     {
         public TileBehaviour startTile;
         public List<StructureType> validStructureTypes;
@@ -149,172 +145,212 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    public struct EnemyPath
+public struct EnemyPath
+{
+    public List<Vector3> pathPoints;
+    public Structure target;
+}
+
+public struct FindPath : IJob
+{
+    private JSTileData startingTile;
+    private JSTileData destinationTile;
+    private readonly NativeArray<int> allTileIDs;
+    private readonly NativeArray<JSTileData> allTiles;
+    public NativeList<Vector3> path;
+
+    public FindPath(JSTileData _startingTile, JSTileData _destinationTile, NativeArray<int> _allTileIDs, NativeArray<JSTileData> _allTiles, NativeList<Vector3> _path)
     {
-        public List<Vector3> pathPoints;
-        public Structure target;
+        startingTile = _startingTile;
+        destinationTile = _destinationTile;
+        allTileIDs = _allTileIDs;
+        allTiles = _allTiles;
+        path = _path;
     }
 
-    public struct FindPath : IJob
+    public void Execute()
     {
-        private JSTileData startingTile;
-        private JSTileData destinationTile;
-        private readonly NativeArray<int> allTileIDs;
-        private readonly NativeArray<JSTileData> allTiles;
-        public NativeList<Vector3> path;
-
-        public FindPath(JSTileData _startingTile, JSTileData _destinationTile, NativeArray<int> _allTileIDs, NativeArray<JSTileData> _allTiles, NativeList<Vector3> _path)
+        // we have our destination and our source, now use A* to find the path
+        // generate initial open and closed lists
+        List<JSPathfindingTileData> open = new List<JSPathfindingTileData>();
+        List<JSPathfindingTileData> closed = new List<JSPathfindingTileData>();
+        // add the tiles next to the start tile to the open list and calculate their costs
+        JSPathfindingTileData startingData = new JSPathfindingTileData()
         {
-            startingTile = _startingTile;
-            destinationTile = _destinationTile;
-            allTileIDs = _allTileIDs;
-            allTiles = _allTiles;
-            path = _path;
+            tile = startingTile,
+            fromTile = startingTile,
+            gCost = 0f,
+            hCost = JSCalculateHCost(startingTile.position, destinationTile.position)
+        };
+
+        JSProcessTile(startingData, open, closed, destinationTile);
+
+        // while a path hasn't been found
+        while (open.Count > 0)
+        {
+            if (JSProcessTile(JSGetNextOpenTile(open), open, closed, destinationTile))
+            {
+                break;
+            }
         }
 
-        public void Execute()
+        // generate a path from the tiles in the closed list
+        // path from the source tile to the destination tile
+        // find the destination tile in the closed list
+        NativeList<Vector3> reversePath = new NativeList<Vector3>(Allocator.Temp);
+        //List<Vector3> reversePath = new List<Vector3>();
+        JSPathfindingTileData currentData = closed[closed.Count - 1];
+        while (currentData.fromTile.ID != currentData.tile.ID)
         {
-            // we have our destination and our source, now use A* to find the path
-            // generate initial open and closed lists
-            List<JSPathfindingTileData> open = new List<JSPathfindingTileData>();
-            List<JSPathfindingTileData> closed = new List<JSPathfindingTileData>();
-            // add the tiles next to the start tile to the open list and calculate their costs
-            JSPathfindingTileData startingData = new JSPathfindingTileData()
+            Vector3 position = currentData.tile.position;
+            reversePath.Add(position);
+            if (TryGetTileInList(currentData.fromTile, closed, out JSPathfindingTileData outTile))
             {
-                tile = startingTile,
-                fromTile = startingTile,
-                gCost = 0f,
-                hCost = JSCalculateHCost(startingTile.position, destinationTile.position)
-            };
-
-            JSProcessTile(startingData, open, closed, destinationTile);
-
-            // while a path hasn't been found
-            while (open.Count > 0)
-            {
-                if (JSProcessTile(JSGetNextOpenTile(open), open, closed, destinationTile))
-                {
-                    break;
-                }
+                currentData = outTile;
             }
+        }
+        for (int i = reversePath.Length - 1; i >= 0; i--)
+        {
+            path.Add(reversePath[i]);
+        }
+        reversePath.Dispose();
+    }
 
-            // generate a path from the tiles in the closed list
-            // path from the source tile to the destination tile
-            // find the destination tile in the closed list
-            NativeList<Vector3> reversePath = new NativeList<Vector3>(Allocator.Temp);
-            //List<Vector3> reversePath = new List<Vector3>();
-            JSPathfindingTileData currentData = closed[closed.Count - 1];
-            while (currentData.fromTile.ID != currentData.tile.ID)
+    private JSTileData GetTileDataWithID(int _ID)
+    {
+        for (int i = 0; i < allTileIDs.Length; i++)
+        {
+            if (allTileIDs[i] == _ID)
             {
-                Vector3 position = currentData.tile.position;
-                reversePath.Add(position);
-                if (TryGetTileInList(currentData.fromTile, closed, out JSPathfindingTileData outTile))
-                {
-                    currentData = outTile;
-                }
+                return allTiles[i];
             }
-            for (int i = reversePath.Length - 1; i >= 0; i--)
-            {
-                path.Add(reversePath[i]);
-            }
-            reversePath.Dispose();
         }
 
-        private JSTileData GetTileDataWithID(int _ID)
+        // if we couldn't find a tile with that ID, return an invalid tileData to communicate that.
+        return new JSTileData() { ID = -1 };
+    }
+
+    private bool TryRemoveDataFromList(List<JSPathfindingTileData> _list, JSPathfindingTileData _tileData)
+    {
+        for (int i = 0; i < _list.Count; i++)
         {
-            for (int i = 0; i < allTileIDs.Length; i++)
+            // if we found the tile...
+            if (_list[i].tile.ID == _tileData.tile.ID)
             {
-                if (allTileIDs[i] == _ID)
-                {
-                    return allTiles[i];
-                }
-            }
-
-            // if we couldn't find a tile with that ID, return an invalid tileData to communicate that.
-            return new JSTileData() { ID = -1 };
-        }
-
-        private bool TryRemoveDataFromList(List<JSPathfindingTileData> _list, JSPathfindingTileData _tileData)
-        {
-            for (int i = 0; i < _list.Count; i++)
-            {
-                // if we found the tile...
-                if (_list[i].tile.ID == _tileData.tile.ID)
-                {
-                    // remove the tile, report success.
-                    _list.RemoveAtSwapBack(i);
-                    return true;
-                }
-            }
-            // report failure
-            return false;
-        }
-
-        private bool TryGetTileInList(JSTileData _tile, List<JSPathfindingTileData> _list, out JSPathfindingTileData _pathingData)
-        {
-            // if the list is empty...
-            if (_list.Count == 0)
-            {
-                // assign junk to _pathingData, report a fail.
-                _pathingData = new JSPathfindingTileData();
-                return false;
-            }
-            for (int i = 0; i < _list.Count; i++)
-            {
-                // if we found the tile...
-                if (_list[i].tile.ID == _tile.ID)
-                {
-                    // assign the tile to _pathingData, report success.
-                    _pathingData = _list[i];
-                    return true;
-                }
-            }
-            // if we haven't found the tile...
-            // assign junk to _pathingData, report a fail.
-            _pathingData = _list[0];
-            return false;
-        }
-
-        private float JSCalculateHCost(Vector3 _tilePosition, Vector3 _destination)
-        {
-            // find how many tiles in x and z
-            // use the shorter one as the number of diagonal steps
-            // use the difference between the longer one and the shorter one as the number of vertical/horizontal steps
-            int XDistance = Mathf.RoundToInt(Mathf.Abs(_tilePosition.x - _destination.x));
-            int ZDistance = Mathf.RoundToInt(Mathf.Abs(_tilePosition.z - _destination.z));
-            if (ZDistance < XDistance)
-            {
-                return (14 * ZDistance) + (10 * (XDistance - ZDistance));
-            }
-            else
-            {
-                return (14 * XDistance) + (10 * (ZDistance - XDistance));
-            }
-
-        }
-
-        private bool JSProcessTile(JSPathfindingTileData _pathingData, List<JSPathfindingTileData> _open, List<JSPathfindingTileData> _closed, JSTileData _destination)
-        {
-            // if the tile is the destination...
-            if (_pathingData.tile.ID == _destination.ID)
-            {
-                // move the tile to the closed list
-                TryRemoveDataFromList(_open, _pathingData);
-                _closed.Add(_pathingData);
-                // report success
+                // remove the tile, report success.
+                _list.RemoveAtSwapBack(i);
                 return true;
             }
-            // otherwise...
-            // calculate the costs for each neighbor of the tile and place them on the open list
-            for (int i = 0; i < 8; i++)
+        }
+        // report failure
+        return false;
+    }
+
+    private bool TryGetTileInList(JSTileData _tile, List<JSPathfindingTileData> _list, out JSPathfindingTileData _pathingData)
+    {
+        // if the list is empty...
+        if (_list.Count == 0)
+        {
+            // assign junk to _pathingData, report a fail.
+            _pathingData = new JSPathfindingTileData();
+            return false;
+        }
+        for (int i = 0; i < _list.Count; i++)
+        {
+            // if we found the tile...
+            if (_list[i].tile.ID == _tile.ID)
             {
-                // adjacents first, using 0 <= i < 4...
-                if (i < 4)
+                // assign the tile to _pathingData, report success.
+                _pathingData = _list[i];
+                return true;
+            }
+        }
+        // if we haven't found the tile...
+        // assign junk to _pathingData, report a fail.
+        _pathingData = _list[0];
+        return false;
+    }
+
+    private float JSCalculateHCost(Vector3 _tilePosition, Vector3 _destination)
+    {
+        // find how many tiles in x and z
+        // use the shorter one as the number of diagonal steps
+        // use the difference between the longer one and the shorter one as the number of vertical/horizontal steps
+        int XDistance = Mathf.RoundToInt(Mathf.Abs(_tilePosition.x - _destination.x));
+        int ZDistance = Mathf.RoundToInt(Mathf.Abs(_tilePosition.z - _destination.z));
+        if (ZDistance < XDistance)
+        {
+            return (14 * ZDistance) + (10 * (XDistance - ZDistance));
+        }
+        else
+        {
+            return (14 * XDistance) + (10 * (ZDistance - XDistance));
+        }
+
+    }
+
+    private bool JSProcessTile(JSPathfindingTileData _pathingData, List<JSPathfindingTileData> _open, List<JSPathfindingTileData> _closed, JSTileData _destination)
+    {
+        // if the tile is the destination...
+        if (_pathingData.tile.ID == _destination.ID)
+        {
+            // move the tile to the closed list
+            TryRemoveDataFromList(_open, _pathingData);
+            _closed.Add(_pathingData);
+            // report success
+            return true;
+        }
+        // otherwise...
+        // calculate the costs for each neighbor of the tile and place them on the open list
+        for (int i = 0; i < 8; i++)
+        {
+            // adjacents first, using 0 <= i < 4...
+            if (i < 4)
+            {
+                // if the tile has an adjacent tile in that direction...
+                if (_pathingData.tile.adjacentTiles[i] != -1)
                 {
-                    // if the tile has an adjacent tile in that direction...
-                    if (_pathingData.tile.adjacentTiles[i] != -1)
+                    JSTileData tileI = GetTileDataWithID(_pathingData.tile.adjacentTiles[i]);
+                    if (!TryGetTileInList(tileI, _closed, out _))
                     {
-                        JSTileData tileI = GetTileDataWithID(_pathingData.tile.adjacentTiles[i]);
+                        // add tile to open list
+                        JSPathfindingTileData tileIPathingData = new JSPathfindingTileData()
+                        {
+                            tile = tileI,
+                            fromTile = _pathingData.tile,
+                            hCost = JSCalculateHCost(tileI.position, _destination.position),
+                            gCost = _pathingData.gCost + 10f
+                        };
+                        if (TryGetTileInList(tileI, _open, out JSPathfindingTileData oldPathingData))
+                        {
+                            // if the new GCost is lower (we found a shorter route to that tile)...
+                            if (tileIPathingData.gCost < oldPathingData.gCost)
+                            {
+                                // replace the pathing data with the new one
+                                TryRemoveDataFromList(_open, oldPathingData);
+                                _open.Add(tileIPathingData);
+                            }
+                        }
+                        else // if there isn't any pathing data for that tile...
+                        {
+                            _open.Add(tileIPathingData);
+                        }
+                    }
+                }
+            }
+            else // diagonals, using 4 <= i < 8
+            {
+                // if there is a diagonal tile for this index...
+                if (_pathingData.tile.diagonalTiles[i - 4] != -1)
+                {
+                    // check that both adjacents for this diagonal are valid tiles
+                    // CCW tile = i - 4, CW tile = (i - 3) % 4
+                    bool CCWTile = _pathingData.tile.adjacentTiles[i - 4] != -1;
+                    bool CWTile = _pathingData.tile.adjacentTiles[(i - 3) % 4] != -1;
+                    // if they are, evaluate the diagonal for the open list
+                    if (CCWTile && CWTile)
+                    {
+                        JSTileData tileI = GetTileDataWithID(_pathingData.tile.diagonalTiles[i - 4]);
                         if (!TryGetTileInList(tileI, _closed, out _))
                         {
                             // add tile to open list
@@ -323,7 +359,7 @@ public class EnemySpawner : MonoBehaviour
                                 tile = tileI,
                                 fromTile = _pathingData.tile,
                                 hCost = JSCalculateHCost(tileI.position, _destination.position),
-                                gCost = _pathingData.gCost + 10f
+                                gCost = _pathingData.gCost + 14f
                             };
                             if (TryGetTileInList(tileI, _open, out JSPathfindingTileData oldPathingData))
                             {
@@ -342,139 +378,87 @@ public class EnemySpawner : MonoBehaviour
                         }
                     }
                 }
-                else // diagonals, using 4 <= i < 8
+            }
+        }
+        TryRemoveDataFromList(_open, _pathingData);
+        _closed.Add(_pathingData);
+        return false;
+    }
+
+    private JSPathfindingTileData JSGetNextOpenTile(List<JSPathfindingTileData> _openList)
+    {
+        if (_openList.Count == 0)
+        {
+            return new JSPathfindingTileData();
+        }
+        JSPathfindingTileData result = _openList[0];
+        if (_openList.Count > 1)
+        {
+            // find the open tile with the least FCost
+            // if there are multiple with the same FCost, pick the one with the lowest HCost (the tile closest to the destination)
+            float lowestFCost = result.FCost();
+            float lowestHCost = result.hCost;
+            foreach (JSPathfindingTileData pathingData in _openList)
+            {
+                float fCost = pathingData.FCost();
+                if (fCost <= lowestFCost)
                 {
-                    // if there is a diagonal tile for this index...
-                    if (_pathingData.tile.diagonalTiles[i - 4] != -1)
+                    if (fCost < lowestFCost)
                     {
-                        // check that both adjacents for this diagonal are valid tiles
-                        // CCW tile = i - 4, CW tile = (i - 3) % 4
-                        bool CCWTile = _pathingData.tile.adjacentTiles[i - 4] != -1;
-                        bool CWTile = _pathingData.tile.adjacentTiles[(i - 3) % 4] != -1;
-                        // if they are, evaluate the diagonal for the open list
-                        if (CCWTile && CWTile)
-                        {
-                            JSTileData tileI = GetTileDataWithID(_pathingData.tile.diagonalTiles[i - 4]);
-                            if (!TryGetTileInList(tileI, _closed, out _))
-                            {
-                                // add tile to open list
-                                JSPathfindingTileData tileIPathingData = new JSPathfindingTileData()
-                                {
-                                    tile = tileI,
-                                    fromTile = _pathingData.tile,
-                                    hCost = JSCalculateHCost(tileI.position, _destination.position),
-                                    gCost = _pathingData.gCost + 14f
-                                };
-                                if (TryGetTileInList(tileI, _open, out JSPathfindingTileData oldPathingData))
-                                {
-                                    // if the new GCost is lower (we found a shorter route to that tile)...
-                                    if (tileIPathingData.gCost < oldPathingData.gCost)
-                                    {
-                                        // replace the pathing data with the new one
-                                        TryRemoveDataFromList(_open, oldPathingData);
-                                        _open.Add(tileIPathingData);
-                                    }
-                                }
-                                else // if there isn't any pathing data for that tile...
-                                {
-                                    _open.Add(tileIPathingData);
-                                }
-                            }
-                        }
+                        lowestFCost = fCost;
+                        result = pathingData;
+                    }
+                    else if (pathingData.hCost < lowestHCost)
+                    {
+                        lowestHCost = pathingData.hCost;
+                        result = pathingData;
                     }
                 }
             }
-            TryRemoveDataFromList(_open, _pathingData);
-            _closed.Add(_pathingData);
-            return false;
         }
-
-        private JSPathfindingTileData JSGetNextOpenTile(List<JSPathfindingTileData> _openList)
-        {
-            if (_openList.Count == 0)
-            {
-                return new JSPathfindingTileData();
-            }
-            JSPathfindingTileData result = _openList[0];
-            if (_openList.Count > 1)
-            {
-                // find the open tile with the least FCost
-                // if there are multiple with the same FCost, pick the one with the lowest HCost (the tile closest to the destination)
-                float lowestFCost = result.FCost();
-                float lowestHCost = result.hCost;
-                foreach (JSPathfindingTileData pathingData in _openList)
-                {
-                    float fCost = pathingData.FCost();
-                    if (fCost <= lowestFCost)
-                    {
-                        if (fCost < lowestFCost)
-                        {
-                            lowestFCost = fCost;
-                            result = pathingData;
-                        }
-                        else if (pathingData.hCost < lowestHCost)
-                        {
-                            lowestHCost = pathingData.hCost;
-                            result = pathingData;
-                        }
-                    }
-                }
-            }
-            return result;
-        }
+        return result;
     }
+}
 
-    public struct PathJobInfo
-    {
-        public EnemyPathSignature signature;
-        public JobHandle jobHandle;
-        public float startTime;
-        public NativeList<Vector3> resultPath;
-        public Structure target;
-    }
+public struct PathJobInfo
+{
+    public EnemyPathSignature signature;
+    public JobHandle jobHandle;
+    public float startTime;
+    public NativeList<Vector3> resultPath;
+    public Structure target;
+}
 
-    public struct CompletedPathInfo
-    {
-        public EnemyPathSignature signature;
-        public JobHandle jobHandle;
-        public EnemyPath path;
-        public float runTime;
-    }
+public struct CompletedPathInfo
+{
+    public EnemyPathSignature signature;
+    public JobHandle jobHandle;
+    public EnemyPath path;
+    public float runTime;
+}
 
+public class PathManager : MonoBehaviour
+{
+    private static PathManager instance = null;
 
-    [Header("Prefabrication")]
-    private List<Enemy> enemies = new List<Enemy>();
-    public GameObject[] enemyPrefabs;
-    public GameObject puffEffect;
-    public int enemyCount
-    {
-        get
-        {
-            return enemies.Count;
-        }
-    }
-
-    private int enemiesKilled = 0;
-    private int waveCounter = 0;
-    private float lastPathsClearTime = 0f;
+    private NativeArray<int> allTileIDs;
+    private NativeArray<JSTileData> allTiles;
     private Dictionary<EnemyPathSignature, EnemyPath> calculatedPaths;
     private Dictionary<EnemyPathSignature, PathJobInfo> activeJobDict;
     private List<CompletedPathInfo> completedJobs;
+    private TMP_Text debugText;
     private float totalTimeSync = 0f;
     private float totalTimeAsync = 0f;
-    // to be deleted/moved, I think
-    private bool spawning = false;
-    public int enemiesPerWave = 8;
-    public int newEnemiesPerWave = 4;
-    public float cooldown = 30.0f;
-    public float timeBetweenWaves = 30.0f;
-    private NativeArray<int> allTileIDs;
-    private NativeArray<JSTileData> allTiles;
-    private TMP_Text debugText;
+    private float lastPathsClearTime = 0f;
 
-    public int GetKillCount()
+    public static PathManager GetInstance()
     {
-        return enemiesKilled;
+        return instance;
+    }
+
+    private void Awake()
+    {
+        instance = this;
     }
 
     public static EnemyPathSignature GenerateSignature(Vector3 _startPoint, List<StructureType> _validStructureTypes)
@@ -488,16 +472,6 @@ public class EnemySpawner : MonoBehaviour
             };
         }
         else return new EnemyPathSignature();
-    }
-
-    public EnemyPath GetPath(Vector3 _startPoint, List<StructureType> _validStructureTypes)
-    {
-        return FindPathWithSignature(GenerateSignature(_startPoint, _validStructureTypes));
-    }
-    
-    public bool RequestPath(Vector3 _startPoint, List<StructureType> _validStructureTypes, ref EnemyPath _path)
-    {
-        return RequestPath(GenerateSignature(_startPoint, _validStructureTypes), ref _path);
     }
 
     public bool RequestPath(EnemyPathSignature _signature, ref EnemyPath _path)
@@ -679,11 +653,6 @@ public class EnemySpawner : MonoBehaviour
     {
         calculatedPaths.Clear();
         lastPathsClearTime = Time.realtimeSinceStartup;
-    }
-
-    public void RecordNewEnemy(Enemy _enemy)
-    {
-        enemies.Add(_enemy);
     }
 
     public static PathfindingTileData GetNextOpenTile(List<PathfindingTileData> _open)
@@ -881,11 +850,6 @@ public class EnemySpawner : MonoBehaviour
             return (14 * xDist) + (10 * (zDist - xDist));
         }
     }
-    
-    public void SetKillCount(int _killCount)
-    {
-        enemiesKilled = _killCount;
-    }
 
     private void Start()
     {
@@ -1045,198 +1009,6 @@ public class EnemySpawner : MonoBehaviour
             string totalTimeSyncString = "\nJob Active Time: " + totalTimeSync.ToString();
             string totalTimeAsyncString = "\nCumulative Total Runtime: " + totalTimeAsync.ToString();
             debugText.text = heading + activeJobs + jobsCompleted + totalTimeSyncString + totalTimeAsyncString;
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        /*
-        if (spawning && false)
-        {
-            cooldown -= Time.fixedDeltaTime;
-            if (cooldown <= 0.0f)
-            {
-                waveCounter++;
-                if (waveCounter == 1)
-                {
-                    messageBox.ShowMessage("Invaders incoming!", 3.5f);
-                }
-                cooldown = timeBetweenWaves;
-
-                enemiesPerWave = Mathf.Clamp(enemiesPerWave, 0, 300);
-                int enemiesLeftToSpawn = enemiesPerWave;
-                // SPAWN ENEMY WAVE
-                // up to 4 enemies per tile, spread out at 0.25 points
-
-                // calculate how many tiles are needed
-                int tilesRequired = (int)Mathf.Ceil(enemiesPerWave / 4f);
-
-                // randomly select that number of tiles, store them as a seperate collection of tiles
-                // randomly select one tile...
-                TileBehaviour startTile = GetRandomSpawnTile();
-                waveSelectedTiles.Clear();
-                waveSelectedTiles.Add(startTile);
-                int tilesSelected = 1;
-
-                // then grow from that point until enough tiles are selected...
-
-                while (tilesSelected < tilesRequired)
-                {
-                    Debug.Log("Tiles selected: " + tilesSelected);
-                    int tilesToFind = tilesRequired - tilesSelected;
-                    TileBehaviour randomSelectedTile = waveSelectedTiles[Random.Range(0, waveSelectedTiles.Count)];
-                    waveValidTiles.Clear();
-                    for (int i = 0; i < 8; i++)
-                    {
-                        if (i < 4)
-                        {
-                            if (randomSelectedTile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)i))
-                            {
-                                TileBehaviour tileI = randomSelectedTile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
-                                if (tileI.GetSpawnTile() && !waveSelectedTiles.Contains(tileI))
-                                {
-                                    waveValidTiles.Add(tileI);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (randomSelectedTile.GetDiagonalTiles().ContainsKey(i - 4))
-                            {
-                                TileBehaviour tileI = randomSelectedTile.GetDiagonalTiles()[i - 4];
-                                if (tileI.GetSpawnTile() && !waveSelectedTiles.Contains(tileI))
-                                {
-                                    waveValidTiles.Add(tileI);
-                                }
-                            }
-                        }
-                    }
-                    while (tilesToFind > 0 && waveValidTiles.Count > 0)
-                    {
-                        tilesToFind--;
-                        TileBehaviour movingTile = waveValidTiles[Random.Range(0, waveValidTiles.Count)];
-                        waveSelectedTiles.Add(movingTile);
-                        waveValidTiles.Remove(movingTile);
-                        tilesSelected++;
-                    }
-                }
-
-                Vector3 lastEnemySpawnedPosition = Vector3.zero;
-                // for each tile
-                for (int i = 0; i < waveSelectedTiles.Count; i++)
-                {
-                    TileBehaviour spawnTile = waveSelectedTiles[i];
-                    //   enemies to spawn on this tile = clamp total number to spawn left between 0 and 4
-                    int enemiesToSpawnHere = Mathf.Clamp(enemiesLeftToSpawn, 0, 4);
-                    //   if there are enemies to spawn, spawn them
-                    for (int j = 0; j < enemiesToSpawnHere; j++)
-                    {
-                        // Calculate position to spawn enemy
-                        Vector3 startingPosition = spawnTile.transform.position;
-                        Vector3 enemySpawnPosition = startingPosition;
-                        // y position is handled by enemy start function
-                        enemySpawnPosition.x += (j % 2 == 0) ? -.25f : .25f;
-                        enemySpawnPosition.z += ((j + 1) % 2 == 0) ? -.25f : .25f;
-                        if (j == 0 && enemiesToSpawnHere == 4) // we can afford a heavy invader
-                        {
-                            // 25% chance to spawn a heavy invader
-                            float random = Random.Range(0f, 1f);
-                            if (random < 0.20f)
-                            {
-                                enemySpawnPosition = spawnTile.transform.position;
-                                HeavyInvader newInvader = Instantiate(enemyPrefabs[1], enemySpawnPosition, Quaternion.identity).GetComponent<HeavyInvader>();
-                                lastEnemySpawnedPosition = newInvader.transform.position;
-                                newInvader.Randomize();
-                                newInvader.spawner = this;
-                                enemies.Add(newInvader);
-                                enemiesLeftToSpawn -= 4;
-                                j = 3;
-                            }
-                            else
-                            {
-                                Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
-                                lastEnemySpawnedPosition = newInvader.transform.position;
-                                newInvader.SetScale(Random.Range(0.8f, 1.5f));
-                                newInvader.spawner = this;
-                                enemies.Add(newInvader);
-                                enemiesLeftToSpawn--;
-                            }
-                        }
-                        else // we can't afford a heavy invader
-                        {
-                            Invader newInvader = Instantiate(enemyPrefabs[0], enemySpawnPosition, Quaternion.identity).GetComponent<Invader>();
-                            lastEnemySpawnedPosition = newInvader.transform.position;
-                            newInvader.SetScale(Random.Range(0.8f, 1.5f));
-                            newInvader.spawner = this;
-                            enemies.Add(newInvader);
-                            enemiesLeftToSpawn--;
-                        }
-                    }
-                }
-                // The start tile plays the spawn effect
-                GameManager.CreateAudioEffect("horn", lastEnemySpawnedPosition);
-
-                // Next wave is bigger
-                enemiesPerWave += newEnemiesPerWave;
-            }
-        }
-        */
-    }
-    
-    public void LoadInvader(SuperManager.InvaderSaveData _saveData)
-    {
-        Invader enemy = Instantiate(enemyPrefabs[0]).GetComponent<Invader>();
-
-        enemy.transform.position = _saveData.enemyData.position;
-        enemy.transform.rotation = _saveData.enemyData.orientation;
-        enemy.SetScale(_saveData.scale);
-        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
-        enemy.SetState(_saveData.enemyData.state);
-        enemy.spawner = this;
-
-        enemies.Add(enemy);
-    }
-
-    public void LoadHeavyInvader(SuperManager.HeavyInvaderSaveData _saveData)
-    {
-        HeavyInvader enemy = Instantiate(enemyPrefabs[1]).GetComponent<HeavyInvader>();
-
-        enemy.transform.position = _saveData.enemyData.position;
-        enemy.transform.rotation = _saveData.enemyData.orientation;
-        enemy.SetEquipment(_saveData.equipment);
-        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
-        enemy.SetState(_saveData.enemyData.state);
-        enemy.spawner = this;
-
-        enemies.Add(enemy);
-    }
-
-    public int GetWaveCurrent()
-    {
-        return waveCounter;
-    }
-
-    public void SetWaveCurrent(int _wave)
-    {
-        waveCounter = _wave;
-    }
-
-    public void ToggleSpawning()
-    {
-        spawning = !spawning;
-    }
-
-    public bool IsSpawning()
-    {
-        return spawning;
-    }
-
-    public void OnEnemyDeath(Enemy _enemy)
-    {
-        enemiesKilled++;
-        if (enemies.Contains(_enemy))
-        {
-            enemies.Remove(_enemy);
         }
     }
 }

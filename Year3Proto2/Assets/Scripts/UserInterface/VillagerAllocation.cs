@@ -10,6 +10,12 @@ public class VillagerAllocation : MonoBehaviour
     [SerializeField] private GameObject autoIndicator;
     [SerializeField] private GameObject manualIndicator;
     [SerializeField] private Transform allocationButtons;
+    private UIAnimator uiAnimator;
+
+    private void Awake()
+    {
+        uiAnimator = GetComponent<UIAnimator>();
+    }
 
     private void LateUpdate()
     {
@@ -36,24 +42,15 @@ public class VillagerAllocation : MonoBehaviour
         target = _target;
     }
 
-    public void AllocateVillager(int amount)
-    {
-        if (target == null)
-            return;
-
-        if (amount > 0) { target.AllocateVillager(); }
-        else { target.DeallocateVillager(); }
-
-        FindObjectOfType<HUDManager>().RefreshResources();
-        FindObjectOfType<BuildingInfo>().SetInfo();
-
-    }
-
     public void SetAllocation(int _value)
     {
-        Debug.Log("Allocation for " + target.ToString() + " is being set to " + _value);
+        //Debug.Log("Allocation for " + target.ToString() + " is being set to " + _value);
 
         // Allocate Villager Function here
+
+        target.HandleAllocation(_value);
+
+        
     }
 
     public void SetAutoIndicator(int _value)
@@ -86,4 +83,19 @@ public class VillagerAllocation : MonoBehaviour
         }
     }
 
+    public void SetVisibility(bool _visible)
+    {
+        // if the caller is trying to turn off the widget...
+        if (!_visible)
+        {
+            // and the HUDMan is not in build mode (aka showing all widgets currently)
+            if (!HUDManager.GetInstance().buildMode)
+            {
+                // don't set the visibility.
+                return;
+            }
+        }
+        // if we got this far, set it.
+        uiAnimator.SetVisibility(_visible);
+    }
 }
