@@ -409,8 +409,13 @@ public class BuildingInfo : MonoBehaviour
         showDestroyConfirm = !showDestroyConfirm;
         destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
         destroyButtonConfirm.showTooltip = showDestroyConfirm;
+    }
 
-        //repairTooltip.SetVisibility(!showDestroyConfirm);
+    public void HideDestroyConfirm()
+    {
+        showDestroyConfirm = false;
+        destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+        destroyButtonConfirm.showTooltip = showDestroyConfirm;
     }
 
     public void TrainVillager()
