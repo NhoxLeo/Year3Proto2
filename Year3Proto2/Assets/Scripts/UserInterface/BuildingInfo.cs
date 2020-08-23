@@ -309,6 +309,8 @@ public class BuildingInfo : MonoBehaviour
 
         targetStructure.Repair();
 
+        targetStructure.RepairCost();
+
         SetInfo();
     }
 
@@ -329,7 +331,6 @@ public class BuildingInfo : MonoBehaviour
     public void TrainVillager()
     {
         Longhaus.TrainVillager();
-        FindObjectOfType<VillagerPriority>().HideCheck();
     }
 
     public void SetVisibility(bool visible)

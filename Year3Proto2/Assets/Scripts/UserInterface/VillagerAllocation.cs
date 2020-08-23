@@ -45,7 +45,6 @@ public class VillagerAllocation : MonoBehaviour
         else { target.DeallocateVillager(); }
 
         FindObjectOfType<HUDManager>().RefreshResources();
-        FindObjectOfType<VillagerPriority>().HideCheck();
         FindObjectOfType<BuildingInfo>().SetInfo();
 
     }
