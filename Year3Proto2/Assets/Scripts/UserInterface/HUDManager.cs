@@ -158,7 +158,7 @@ public class HUDManager : MonoBehaviour
         Vector3 velocity = GameManager.GetInstance().GetResourceVelocity();
 
         float foodVel = velocity.z;
-        string foodVelDP = AddSign(Mathf.Round(foodVel * 10f) * .1f);
+        string foodVelDP = AddSign(Mathf.Round(foodVel));
         foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + "/s)";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Food))
@@ -167,7 +167,7 @@ public class HUDManager : MonoBehaviour
         }
 
         float woodVel = velocity.x;
-        string woodVelDP = AddSign(Mathf.Round(woodVel * 10f) * .1f);
+        string woodVelDP = AddSign(Mathf.Round(woodVel));
         woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + "/s)";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Wood))
@@ -176,7 +176,7 @@ public class HUDManager : MonoBehaviour
         }
 
         float metalVel = velocity.y;
-        string metalVelDP = AddSign(Mathf.Round(metalVel * 10f) * .1f);
+        string metalVelDP = AddSign(Mathf.Round(metalVel));
         metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + "/s)";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Metal))
