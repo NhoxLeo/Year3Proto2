@@ -5,14 +5,15 @@ using UnityEngine.UI;
 public class BuildingInfo : MonoBehaviour
 {
     public bool showPanel;
-    private RectTransform rTrans;
     [SerializeField] private UIAnimator infoPanel;
     [SerializeField] private UIAnimator actionPanel;
     private Vector3 actionPanelPos;
     private BuildPanel buildPanel;
+    private StructureManager structMan;
 
-    public GameObject targetBuilding;
-    public string buildingName;
+    private GameObject targetBuilding;
+    private Structure targetStructure;
+    private string buildingName;
 
     [Header("Sprites")]
     [SerializeField] private Sprite defenceSprite;
@@ -40,6 +41,15 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
     [SerializeField] private Tooltip trainVillagerButton;        // Button to train a new villager for the Longhaus
 
+    [Header("Tooltip")]                                          // Repair and Destroy tooltips
+    [SerializeField] private RectTransform tooltipTransform;
+    [SerializeField] private TMP_Text tooltipHeading;
+    [SerializeField] private GameObject costComponent;
+    [SerializeField] private TMP_Text woodCost;
+    [SerializeField] private TMP_Text metalCost;
+    [SerializeField] private TMP_Text tooltipDescription;
+    private int tooltipMode = -1;
+
     [Header("Settings")]
     public bool doAutoUpdate;                   // Whether to automatically update info panel
     public float updateInterval = 0.25f;        // Time between info panel updates
@@ -47,8 +57,9 @@ public class BuildingInfo : MonoBehaviour
 
     private void Start()
     {
-        rTrans = GetComponent<RectTransform>();
         buildPanel = FindObjectOfType<BuildPanel>();
+        structMan = FindObjectOfType<StructureManager>();
+        buildingName = "Building Name";
 
         statInfoText.text = "";
 
@@ -66,11 +77,7 @@ public class BuildingInfo : MonoBehaviour
             headingText.text = buildingName;
             headingTextFloating.text = buildingName;
 
-            //if (buildingName == "Barracks") { globalFoodText.text = "Affects all " + buildingName; }
-            //else { globalFoodText.text = "Affects all " + buildingName + "s"; }
-
             // Auto update info
-
             if (showPanel && doAutoUpdate)
             {
                 updateTimer -= Time.deltaTime;
@@ -102,6 +109,17 @@ public class BuildingInfo : MonoBehaviour
             showDestroyConfirm = false;
             destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
             destroyButtonConfirm.showTooltip = showDestroyConfirm;
+        }
+        
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            targetBuilding.GetComponent<Structure>().Damage(50.0f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            targetBuilding.GetComponent<Structure>().Damage(-50.0f);
         }
     }
 
@@ -268,6 +286,20 @@ public class BuildingInfo : MonoBehaviour
                 statInfoText.text = "Missing target";
                 break;
         }
+
+        switch (tooltipMode)
+        {
+            case -1:
+                tooltipDescription.gameObject.SetActive(false);
+                break;
+
+            case 0:
+                FetchRepairInfo();
+                break;
+            case 1:
+                FetchCompensationInfo();
+                break;
+        }
     }
 
     private void SetPosition()
@@ -283,6 +315,7 @@ public class BuildingInfo : MonoBehaviour
     public void SetTargetBuilding(GameObject building, string name)
     {
         targetBuilding = building;
+        targetStructure = targetBuilding.GetComponent<Structure>();
         buildingName = name;
 
         if (infoPanel.showElement)
@@ -298,14 +331,68 @@ public class BuildingInfo : MonoBehaviour
         SetInfo();
     }
 
+    public void SetTooptipMode(int _mode)
+    {
+        tooltipMode = +_mode;
+    }
+
+    private void RefreshTooltip()
+    {
+        if (tooltipDescription.text == "")
+        {
+            tooltipDescription.gameObject.SetActive(false);
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipTransform);
+    }
+
+    public void FetchRepairInfo()
+    {
+        tooltipHeading.text = "Repair (R: Mass Repair)";
+        ResourceBundle repairCost = targetStructure.RepairCost();
+
+        if (repairCost.woodCost + repairCost.metalCost != 0)
+        {
+            costComponent.SetActive(true);
+            woodCost.text = repairCost.woodCost.ToString();
+            metalCost.text = repairCost.metalCost.ToString();
+
+            tooltipDescription.gameObject.SetActive(true);
+            tooltipDescription.text = repairButton.interactable ? "" : "Cannot repair while recently damaged";
+        }
+        else
+        {
+            costComponent.SetActive(false);
+            tooltipDescription.gameObject.SetActive(true);
+            tooltipDescription.text = "Building is at full health";
+        }
+
+        RefreshTooltip();
+    }
+
+    public void FetchCompensationInfo()
+    {
+        float health = targetStructure.GetHealth();
+        float maxHealth = targetStructure.GetMaxHealth();
+        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structMan.structureCosts[targetStructure.GetStructureName()]);
+
+        tooltipHeading.text = "Destroy Building";
+
+        costComponent.SetActive(true);
+        woodCost.text = "+" + compensation.woodCost;
+        metalCost.text = "+" + compensation.metalCost;
+        tooltipDescription.gameObject.SetActive(true);
+        tooltipDescription.text = "Villagers will be evacuated";
+
+        RefreshTooltip();
+    }
+
+
+
     public void RepairBuilding()
     {
         if (targetBuilding == null)
             return;
-
-        Structure targetStructure = targetBuilding.GetComponent<Structure>();
-
-        //ResourceBundle repairCost = targetStructure.RepairCost();
 
         targetStructure.Repair();
 
@@ -329,7 +416,6 @@ public class BuildingInfo : MonoBehaviour
     public void TrainVillager()
     {
         Longhaus.TrainVillager();
-        FindObjectOfType<VillagerPriority>().HideCheck();
     }
 
     public void SetVisibility(bool visible)
