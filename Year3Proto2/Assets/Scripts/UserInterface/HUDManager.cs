@@ -260,14 +260,6 @@ public class HUDManager : MonoBehaviour
     {
         buildMode = !buildMode;
         SetAllVillagerWidgets(!buildMode);
-        if (buildMode)
-        {
-            SetAllVillagerWidgets(false);
-        }
-        else
-        {
-            SetAllVillagerWidgets(true);
-        }
     }
 
     public void SetHudMode(bool _buildMode)
