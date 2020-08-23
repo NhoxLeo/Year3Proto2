@@ -259,7 +259,7 @@ public class HUDManager : MonoBehaviour
     public void ToggleHUDMode()
     {
         buildMode = !buildMode;
-
+        SetAllVillagerWidgets(!buildMode);
         if (buildMode)
         {
             SetAllVillagerWidgets(false);
@@ -268,6 +268,12 @@ public class HUDManager : MonoBehaviour
         {
             SetAllVillagerWidgets(true);
         }
+    }
+
+    public void SetHudMode(bool _buildMode)
+    {
+        buildMode = _buildMode;
+        SetAllVillagerWidgets(!buildMode);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
