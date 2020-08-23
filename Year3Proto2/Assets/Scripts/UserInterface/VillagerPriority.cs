@@ -29,7 +29,6 @@ public class VillagerPriority : MonoBehaviour
         toggleButtonXinitial = toggleButton.localPosition.x;
     }
 
-
     void Update()
     {
         if (showPanel && !panelShown)
@@ -75,17 +74,17 @@ public class VillagerPriority : MonoBehaviour
         {
             case "Food":
                 check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(0).transform.localPosition.x, 0.0f);
-                VillagerManager.GetInstance().SetPriority(Priority.Food);
+                VillagerManager.GetInstance().IncreasePriority(Priority.Food);
                 break;
 
             case "Wood":
                 check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(1).transform.localPosition.x, 0.0f);
-                VillagerManager.GetInstance().SetPriority(Priority.Wood);
+                VillagerManager.GetInstance().IncreasePriority(Priority.Wood);
                 break;
 
             case "Metal":
                 check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(2).transform.localPosition.x, 0.0f);
-                VillagerManager.GetInstance().SetPriority(Priority.Metal);
+                VillagerManager.GetInstance().IncreasePriority(Priority.Metal);
                 break;
 
             default:

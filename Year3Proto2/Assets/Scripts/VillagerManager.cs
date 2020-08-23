@@ -6,7 +6,7 @@ public class VillagerManager : MonoBehaviour
 {
     private static VillagerManager instance;
 
-    private List<Structure> allocationStructures = null;
+    private List<Structure> allocationStructures = new List<Structure>();
     private int villagers = 0;
     private int availableVillagers = 0;
     private int villagersManAllocated = 0;
@@ -35,7 +35,28 @@ public class VillagerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public static string PriorityToString(Priority _priority)
+    {
+        if (_priority == Priority.Food)
+        {
+            return "Food";
+        }
+        if (_priority == Priority.Wood)
+        {
+            return "Wood";
+        }
+        return "Metal";
+    }
+
+    public void RefreshAllocStructs()
+    {
+        allocationStructures.Clear();
+        allocationStructures.AddRange(StructureManager.GetInstance().GetPlayerStructures());
+        allocationStructures.RemoveAll(structure => structure.GetStructureType() != StructureType.Resource);
+        allocationStructures.RemoveAll(structure => structure.GetManualAllocation());
     }
 
     public void IncreasePriority(Priority _priority)
@@ -43,6 +64,7 @@ public class VillagerManager : MonoBehaviour
         // if the first element is the priority to be increased...
         if (priorityOrder[0] == _priority)
         {
+            Debug.Log(PriorityToString(_priority) + " was already first priority.");
             // there's nothing to do.
             return;
         }
@@ -55,69 +77,46 @@ public class VillagerManager : MonoBehaviour
                 Priority temp = priorityOrder[i - 1];
                 priorityOrder[i - 1] = _priority;
                 priorityOrder[i] = temp;
+                Debug.Log(PriorityToString(_priority) + " is now priority " + i.ToString() + " and " +
+                    PriorityToString(priorityOrder[i]) + " is now priority " + (i + 1).ToString());
             }
         }
+        RedistributeVillagers();
     }
 
-    public void SetPriority(Priority priority)
+    public void RedistributeVillagers()
     {
-        if (allocationStructures == null)
-        {
-            allocationStructures = new List<Structure>();
-        }
-        else
-        {
-            allocationStructures.Clear();
-        }
-        allocationStructures.AddRange(FindObjectsOfType<ResourceStructure>());
-        DeallocateAll();
-
-        switch (priority)
-        {
-            case Priority.BalancedProduction:
-                // first even out with food
-                AAProduceMinimumFood();
-
-                // then distribute to all resources fairly
-                AADistributeResources();
-                break;
-            case Priority.Food:
-                // first put all into food
-                AAFillResourceType(ResourceType.Food);
-
-                // then distribute to all resources fairly
-                AADistributeResources();
-                break;
-            case Priority.Wood:
-                // first even out with food
-                AAProduceMinimumFood();
-
-                // then put all into wood
-                AAFillResourceType(ResourceType.Wood);
-
-                // then distribute to all resources fairly
-                AADistributeResources();
-                break;
-            case Priority.Metal:
-                // first even out with food
-                AAProduceMinimumFood();
-
-                // then put all into wood
-                AAFillResourceType(ResourceType.Metal);
-
-                // then distribute to all resources fairly
-                AADistributeResources();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void DeallocateAll()
-    {
-        foreach (Structure structure in FindObjectsOfType<ResourceStructure>())
+        RefreshAllocStructs();
+        foreach (Structure structure in allocationStructures)
         {
             structure.DeallocateAll();
+        }
+
+        foreach (Priority priority in priorityOrder)
+        {
+            switch (priority)
+            {
+                case Priority.Food:
+                    // put all into food
+                    AAFillResourceType(ResourceType.Food);
+                    break;
+                case Priority.Wood:
+                    // first even out with food
+                    AAProduceMinimumFood();
+
+                    // then put all into wood
+                    AAFillResourceType(ResourceType.Wood);
+                    break;
+                case Priority.Metal:
+                    // first even out with food
+                    AAProduceMinimumFood();
+
+                    // then put all into wood
+                    AAFillResourceType(ResourceType.Metal);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -139,6 +138,20 @@ public class VillagerManager : MonoBehaviour
                 farms.Add(farmComponent);
             }
         }
+        float foodProductionPerSec = 0f;
+        for (int i = 0; i < farms.Count; i++)
+        {
+            Farm farm = farms[i];
+            int allocated = farm.GetAllocated();
+            if (allocated > 0)
+            {
+                foodProductionPerSec += farm.GetRPSPerVillager() * allocated;
+            }
+            if (foodProductionPerSec >= foodConsumptionPerSec)
+            {
+                return;
+            }
+        }
         if (farms.Count > 0)
         {
             farms.Sort(ResourceStructure.SortTileBonusDescending());
@@ -147,12 +160,12 @@ public class VillagerManager : MonoBehaviour
         {
             return;
         }
-        float foodProductionPerSec = 0f;
+
         foreach (Farm farm in farms)
         {
             for (int i = 0; i < 3; i++)
             {
-                farm.AllocateVillager();
+                farm.AutomaticallyAllocate();
                 villagersRemaining--;
                 foodProductionPerSec += farm.GetRPSPerVillager();
                 if (foodProductionPerSec >= foodConsumptionPerSec || villagersRemaining == 0)
@@ -213,7 +226,6 @@ public class VillagerManager : MonoBehaviour
         }
         if (resStructures.Count > 0)
         {
-
             resStructures.Sort(ResourceStructure.SortTileBonusDescending());
         }
         else
@@ -222,9 +234,9 @@ public class VillagerManager : MonoBehaviour
         }
         foreach (ResourceStructure resStructure in resStructures)
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = resStructure.GetAllocated(); i < 3; i++)
             {
-                resStructure.AllocateVillager();
+                resStructure.AutomaticallyAllocate();
                 villagersRemaining--;
                 if (villagersRemaining == 0)
                 {
@@ -384,7 +396,7 @@ public class VillagerManager : MonoBehaviour
         {
             if (_structures[i].GetAllocated() < 3)
             {
-                _structures[i].AllocateVillager();
+                _structures[i].AutomaticallyAllocate();
                 ResourceStructure resStructure = _structures[i].GetComponent<ResourceStructure>();
                 if (resStructure)
                 {
@@ -437,7 +449,8 @@ public class VillagerManager : MonoBehaviour
                 }
                 if (populated.Count > 0)
                 {
-                    populated[Random.Range(0, populated.Count)].DeallocateVillager();
+                    Structure structure = populated[Random.Range(0, populated.Count)];
+                    structure.ManuallyAllocate(structure.GetAllocated() - 1);
                 }
                 villagers--;
                 availableVillagers--;
@@ -448,7 +461,9 @@ public class VillagerManager : MonoBehaviour
                 availableVillagers--;
             }
         }
+        RedistributeVillagers();
     }
+
     public int GetVillagers()
     {
         return villagers;
@@ -505,6 +520,17 @@ public class VillagerManager : MonoBehaviour
         availableVillagers += _villagers;
     }
 
+    public void ReturnFromManual(int _villagers)
+    {
+        ReturnVillagers(_villagers);
+        villagersManAllocated -= _villagers;
+    }
+
+    public void MarkAsAllocated(int _villagers)
+    {
+        availableVillagers -= _villagers;
+    }
+
     public float GetFoodConsumptionPerSec()
     {
         return villagers * villagerHungerModifier / Longhaus.productionTime;
@@ -513,5 +539,56 @@ public class VillagerManager : MonoBehaviour
     public int GetRationCost()
     {
         return villagers * -villagerHungerModifier;
+    }
+
+    public int GetManuallyAllocated()
+    {
+        return villagersManAllocated;
+    }
+
+    public void MarkVillagersAsManAlloc(int _manuallyAllocated)
+    {
+        villagersManAllocated += _manuallyAllocated;
+    }
+
+    public int TryGetVillForManAlloc(int _numVillagers)
+    {
+        if (availableVillagers >= _numVillagers)
+        {
+            villagersManAllocated += _numVillagers;
+            return _numVillagers;
+        }
+        else
+        {
+            if (villagers - villagersManAllocated >= _numVillagers)
+            {
+                RefreshAllocStructs();
+                foreach (Structure structure in allocationStructures)
+                {
+                    structure.DeallocateAll();
+                }
+                availableVillagers -= _numVillagers;
+                // mark them as manually allocated
+                villagersManAllocated += _numVillagers;
+                return _numVillagers;
+            }
+            else
+            {
+                // return as many as possible
+                // mark all as manually allocated
+                int result = villagersManAllocated - villagers;
+                if (result != 0)
+                {
+                    RefreshAllocStructs();
+                    foreach (Structure structure in allocationStructures)
+                    {
+                        structure.DeallocateAll();
+                    }
+                    availableVillagers -= result;
+                    villagersManAllocated = villagers;
+                }
+                return result;
+            }
+        }
     }
 }

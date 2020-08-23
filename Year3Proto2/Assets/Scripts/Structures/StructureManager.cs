@@ -32,11 +32,9 @@ public enum StructManState
 
 public enum Priority
 {
-    BalancedProduction,
     Food,
     Wood,
-    Metal,
-    Defensive
+    Metal
 }
 
 [Serializable]
@@ -783,8 +781,6 @@ public class StructureManager : MonoBehaviour
                 }
                 Destroy(attached.gameObject);
             }
-            GameManager.GetInstance().OnStructurePlace();
-            PathManager.GetInstance().OnStructurePlaced();
             if (structureFromStore)
             {
                 panel.UINoneSelected();
@@ -803,10 +799,17 @@ public class StructureManager : MonoBehaviour
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(structure);
                 structure.SetAllocationWidget(villagerAllocation);
-                structure.AllocateVillager();
             }
             SelectStructure(structure);
             playerStructureDict.Add(structure.GetID(), structure);
+            GameManager.GetInstance().OnStructurePlaced();
+            PathManager.GetInstance().OnStructurePlaced();
+            VillagerManager.GetInstance().RedistributeVillagers();
+            if (structure.GetStructureType() == StructureType.Resource)
+            {
+                structure.RefreshWidget();
+                structure.SetWidgetVisibility(true);
+            }
         }
     }
 
@@ -1342,6 +1345,12 @@ public class StructureManager : MonoBehaviour
         if (newStructure.GetStructureType() != StructureType.Environment)
         {
             playerStructureDict.Add(_saveData.ID, newStructure);
+            if (newStructure.GetStructureType() == StructureType.Resource)
+            {
+                VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
+                villagerAllocation.SetTarget(newStructure);
+                newStructure.SetAllocationWidget(villagerAllocation);
+            }
         }
     }
 
@@ -1372,11 +1381,14 @@ public class StructureManager : MonoBehaviour
         return pgp;
     }
 
-    
-
     public int GetPlayerStructureCount()
     {
         return playerStructureDict.Count;
+    }
+
+    public Dictionary<int, Structure>.ValueCollection GetPlayerStructures()
+    {
+        return playerStructureDict.Values;
     }
 }
 

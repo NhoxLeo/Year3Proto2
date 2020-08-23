@@ -34,36 +34,88 @@ public abstract class Structure : MonoBehaviour
     public bool saveDataStartFrame = false;
     private GameObject destructionEffect;
     protected int allocatedVillagers = 0;
-    protected int villagerCapacity = 3;
+    protected static int villagerCapacity = 3;
     protected VillagerAllocation villagerWidget = null;
     private Transform spottingRange = null;
     private bool manualAllocation = false;
 
+    public void HandleAllocation(int _villagers)
+    {
+        if (allocatedVillagers == _villagers && manualAllocation)
+        {
+            VillagerManager villMan = VillagerManager.GetInstance();
+            villMan.ReturnFromManual(allocatedVillagers);
+            allocatedVillagers = 0;
+            manualAllocation = false;
+            RefreshWidget();
+            villMan.RedistributeVillagers();
+            return;
+        }
+
+        ManuallyAllocate(_villagers);
+    }
+
     public void ManuallyAllocate(int _villagers)
     {
+        VillagerManager villMan = VillagerManager.GetInstance();
+        bool previousManualAllocation = manualAllocation;
         manualAllocation = true;
-        allocatedVillagers = _villagers;
+        int change = _villagers - allocatedVillagers;
+        if (change < 0)
+        {
+            // we are returning villagers to the manager's control.
+            if (previousManualAllocation)
+            {
+                villMan.ReturnFromManual(-change);
+            }
+            else
+            {
+                villMan.ReturnVillagers(-change);
+            }
+            allocatedVillagers = _villagers;
+            villMan.RedistributeVillagers();
+        }
+        else if (change > 0)
+        {
+            if (!previousManualAllocation)
+            {
+                villMan.MarkVillagersAsManAlloc(allocatedVillagers);
+            }
+            // try to get the number necessary from the villagerMan.
+            int villagersGiven = villMan.TryGetVillForManAlloc(change);
+            // if we got any
+            if (villagersGiven > 0)
+            {
+                allocatedVillagers += villagersGiven;
+                villMan.RedistributeVillagers();
+            }
+        }
+        else if (change == 0 && !previousManualAllocation)
+        {
+            villMan.MarkVillagersAsManAlloc(_villagers);
+        }
+        RefreshWidget();
+    }
+
+    public void RefreshWidget()
+    {
         if (villagerWidget)
         {
-            villagerWidget.SetManualIndicator(_villagers);
-            villagerWidget.SetAutoIndicator(-1);
+            villagerWidget.SetManualIndicator(manualAllocation ? allocatedVillagers : -1);
+            villagerWidget.SetAutoIndicator(manualAllocation ? -1 : allocatedVillagers);
         }
     }
 
-    public void AutomaticallyAllocate(int _villagers)
+    public virtual void AutomaticallyAllocate()
     {
-        manualAllocation = false;
-        allocatedVillagers = _villagers;
-        if (villagerWidget)
+        VillagerManager villMan = VillagerManager.GetInstance();
+        if (villMan.VillagerAvailable() && allocatedVillagers < villagerCapacity)
         {
-            villagerWidget.SetManualIndicator(-1);
-            villagerWidget.SetAutoIndicator(_villagers);
+            manualAllocation = false;
+            allocatedVillagers += 1;
+            RefreshWidget();
+            villMan.OnVillagerAllocated();
         }
-    }
-
-    public void SetManualAllocation(bool _allocation)
-    {
-        manualAllocation = _allocation;
     }
 
     public bool GetManualAllocation()
@@ -76,14 +128,14 @@ public abstract class Structure : MonoBehaviour
         villagerWidget = _widget;
     }
 
+    public void SetWidgetVisibility(bool _visibility)
+    {
+        villagerWidget.SetVisibility(_visibility);
+    }
+
     public int GetAllocated()
     {
         return allocatedVillagers;
-    }
-
-    public int GetVillagerCapacity()
-    {
-        return villagerCapacity;
     }
 
     public virtual void SetAllocated(int _allocated)
@@ -91,28 +143,11 @@ public abstract class Structure : MonoBehaviour
         allocatedVillagers = _allocated;
     }
 
-    public virtual void AllocateVillager()
-    {
-        if (VillagerManager.GetInstance().VillagerAvailable() && allocatedVillagers < villagerCapacity)
-        {
-            allocatedVillagers++;
-            VillagerManager.GetInstance().OnVillagerAllocated();
-        }
-    }
-
-    public virtual void DeallocateVillager()
-    {
-        if (allocatedVillagers > 0)
-        {
-            allocatedVillagers--;
-            VillagerManager.GetInstance().OnVillagerDeallocated();
-        }
-    }
-
     public virtual void DeallocateAll()
     {
         VillagerManager.GetInstance().ReturnVillagers(allocatedVillagers);
         allocatedVillagers = 0;
+        RefreshWidget();
     }
 
     public void SetID(int _ID)
@@ -186,6 +221,7 @@ public abstract class Structure : MonoBehaviour
     {
         return structureType;
     }
+
     public bool IsStructure(string _structureName)
     {
         return _structureName == structureName;
@@ -202,6 +238,7 @@ public abstract class Structure : MonoBehaviour
         {
             healthBar.gameObject.SetActive(true);
             ShowRangeDisplay(true);
+            RefreshWidget();
         }
     }
 
@@ -315,6 +352,7 @@ public abstract class Structure : MonoBehaviour
             {
                 healthBar.fillAmount = health / maxHealth;
             }
+            RefreshWidget();
         }
     }
 

@@ -69,30 +69,6 @@ public class BallistaTower : AttackStructure
         }
     }
 
-    public override void AllocateVillager()
-    {
-        base.AllocateVillager();
-        SetFirerate();
-    }
-
-    public override void DeallocateVillager()
-    {
-        base.DeallocateVillager();
-        SetFirerate();
-    }
-
-    public override void DeallocateAll()
-    {
-        base.DeallocateAll();
-        SetFirerate();
-    }
-
-    public override void SetAllocated(int _allocated)
-    {
-        base.SetAllocated(_allocated);
-        SetFirerate();
-    }
-
     public override void Attack(GameObject target)
     {
         fireCooldown += Time.deltaTime;

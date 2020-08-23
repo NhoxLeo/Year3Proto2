@@ -42,27 +42,15 @@ public class VillagerAllocation : MonoBehaviour
         target = _target;
     }
 
-    public void AllocateVillager(int amount)
-    {
-        if (target == null)
-            return;
-
-        if (amount > 0) { target.AllocateVillager(); }
-        else { target.DeallocateVillager(); }
-
-        FindObjectOfType<HUDManager>().RefreshResources();
-        FindObjectOfType<VillagerPriority>().HideCheck();
-        FindObjectOfType<BuildingInfo>().SetInfo();
-
-    }
-
     public void SetAllocation(int _value)
     {
         //Debug.Log("Allocation for " + target.ToString() + " is being set to " + _value);
 
         // Allocate Villager Function here
 
+        target.HandleAllocation(_value);
 
+        
     }
 
     public void SetAutoIndicator(int _value)

@@ -54,18 +54,6 @@ public class Barracks : DefenseStructure
         }
     }
 
-    public override void AllocateVillager()
-    {
-        base.AllocateVillager();
-        UpdateCapacity();
-    }
-
-    public override void DeallocateVillager()
-    {
-        base.DeallocateVillager();
-        UpdateCapacity();
-    }
-
     public override void OnPlace()
     {
         base.OnPlace();

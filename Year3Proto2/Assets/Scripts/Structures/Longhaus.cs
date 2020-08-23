@@ -56,8 +56,10 @@ public class Longhaus : Structure
         ResourceBundle cost = new ResourceBundle(0, 0, 100);
         if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
         {
-            VillagerManager.GetInstance().AddNewVillager();
+            VillagerManager villMan = VillagerManager.GetInstance();
+            villMan.AddNewVillager();
             HUDManager.GetInstance().ShowResourceDelta(cost, true);
+            villMan.RedistributeVillagers();
         }
     }
 

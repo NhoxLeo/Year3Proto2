@@ -296,7 +296,7 @@ public class GameManager : MonoBehaviour
         return resourceVelocity;
     }
 
-    public void OnStructurePlace()
+    public void OnStructurePlaced()
     {
         CalculateStorageMaximum();
 
