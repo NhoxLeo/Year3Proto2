@@ -55,6 +55,7 @@ public class BallistaTower : AttackStructure
     protected override void Update()
     {
         base.Update();
+        SetFirerate();
         if (target && isPlaced)
         {
             Vector3 ballistaPosition = ballista.transform.position;
@@ -102,7 +103,6 @@ public class BallistaTower : AttackStructure
 
     void SetFirerate()
     {
-        /*
         switch (allocatedVillagers)
         {
             case 0:
@@ -115,17 +115,9 @@ public class BallistaTower : AttackStructure
                 fireRate = 1f;
                 break;
             case 3:
-                fireRate = 1.5f;
-                break;
-            case 4:
                 fireRate = 2f;
                 break;
-            case 5:
-                fireRate = 2.5f;
-                break;
         }
-        */
-        fireRate = 1f;
         fireDelay = 1f / fireRate;
     }
 

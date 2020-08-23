@@ -67,7 +67,6 @@ public class BuildPanel : MonoBehaviour
         canvas = GetComponent<CanvasGroup>();
         structMan = FindObjectOfType<StructureManager>();
         superMan = SuperManager.GetInstance();
-        //rTrans.DOSizeDelta(new Vector2(64.0f, 212.0f), 0.0f);
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
         tooltip = tooltipBox.GetComponent<Tooltip>();

@@ -78,10 +78,6 @@ public abstract class ResourceStructure : Structure
                 }
             }
         }
-        if (villagerWidget)
-        {
-            villagerWidget.SetVisibility(false);
-        }
     }
 
     public override void OnPlace()
@@ -190,7 +186,6 @@ public abstract class ResourceStructure : Structure
                 tileHighlights[(TileBehaviour.TileCode)i].SetActive(true);
             }
         }
-        villagerWidget.SetVisibility(true);
     }
 
     protected override void OnDestroyed()

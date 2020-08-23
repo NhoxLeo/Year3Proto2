@@ -239,6 +239,10 @@ public abstract class Structure : MonoBehaviour
             healthBar.gameObject.SetActive(true);
             ShowRangeDisplay(true);
             RefreshWidget();
+            if (villagerWidget)
+            {
+                villagerWidget.SetVisibility(true);
+            }
         }
     }
 
@@ -251,6 +255,10 @@ public abstract class Structure : MonoBehaviour
                 healthBar.gameObject.SetActive(false);
             }
             ShowRangeDisplay(false);
+            if (villagerWidget)
+            {
+                villagerWidget.SetVisibility(false);
+            }
         }
     }
 

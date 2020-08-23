@@ -59,6 +59,14 @@ public class VillagerManager : MonoBehaviour
         allocationStructures.RemoveAll(structure => structure.GetManualAllocation());
     }
 
+    public void SetPriorities(int _food, int _wood, int _metal)
+    {
+        priorityOrder[_food] = Priority.Food;
+        priorityOrder[_wood] = Priority.Wood;
+        priorityOrder[_metal] = Priority.Metal;
+        RedistributeVillagers();
+    }
+
     public void IncreasePriority(Priority _priority)
     {
         // if the first element is the priority to be increased...
@@ -556,6 +564,7 @@ public class VillagerManager : MonoBehaviour
         if (availableVillagers >= _numVillagers)
         {
             villagersManAllocated += _numVillagers;
+            availableVillagers -= _numVillagers;
             return _numVillagers;
         }
         else
@@ -576,7 +585,7 @@ public class VillagerManager : MonoBehaviour
             {
                 // return as many as possible
                 // mark all as manually allocated
-                int result = villagersManAllocated - villagers;
+                int result = villagers - villagersManAllocated;
                 if (result != 0)
                 {
                     RefreshAllocStructs();

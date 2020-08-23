@@ -44,8 +44,6 @@ public abstract class AttackStructure : Structure
         puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
         structureType = StructureType.Attack;
         enemies = new List<GameObject>();
-        //villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
-        //villagerWidget.SetTarget(this);
         DetectEnemies();
     }
 

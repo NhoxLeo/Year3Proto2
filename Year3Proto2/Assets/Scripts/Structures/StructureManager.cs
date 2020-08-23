@@ -746,6 +746,7 @@ public class StructureManager : MonoBehaviour
     public void AttemptPlaceStructure(TileBehaviour _tile)
     {
         Structure attached = _tile.GetAttached();
+        StructureType structType = structure.GetStructureType();
         if ((structureFromStore && BuyBuilding()) || !structureFromStore)
         {
             GameManager.CreateAudioEffect("build", structure.transform.position);
@@ -759,7 +760,6 @@ public class StructureManager : MonoBehaviour
             if (attached)
             {
                 StructureType attachedStructType = attached.GetStructureType();
-                StructureType structType = structure.GetStructureType();
                 if (attachedStructType == StructureType.Environment && structType == StructureType.Resource)
                 {
                     messageBox.HideMessage();
@@ -794,7 +794,7 @@ public class StructureManager : MonoBehaviour
                 }
                 firstStructurePlaced = true;
             }
-            if (structure.GetStructureType() == StructureType.Resource)
+            if (structType == StructureType.Resource || structType == StructureType.Attack)
             {
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(structure);
@@ -805,7 +805,7 @@ public class StructureManager : MonoBehaviour
             GameManager.GetInstance().OnStructurePlaced();
             PathManager.GetInstance().OnStructurePlaced();
             VillagerManager.GetInstance().RedistributeVillagers();
-            if (structure.GetStructureType() == StructureType.Resource)
+            if (structType == StructureType.Resource || structType == StructureType.Attack)
             {
                 structure.RefreshWidget();
                 structure.SetWidgetVisibility(true);

@@ -55,6 +55,7 @@ public class CatapultTower : AttackStructure
     protected override void Update()
     {
         base.Update();
+        SetFirerate();
         if (target && isPlaced)
         {
             Vector3 catapultPosition = catapult.transform.position;
@@ -106,7 +107,6 @@ public class CatapultTower : AttackStructure
 
     void SetFirerate()
     {
-        /*
         switch (allocatedVillagers)
         {
             case 0:
@@ -116,20 +116,12 @@ public class CatapultTower : AttackStructure
                 fireRate = 0.25f;
                 break;
             case 2:
-                fireRate = 1f / 3f;
+                fireRate = 0.334f;
                 break;
             case 3:
                 fireRate = 0.5f;
                 break;
-            case 4:
-                fireRate = 1f / 1.5f;
-                break;
-            case 5:
-                fireRate = 1.0f;
-                break;
         }
-        */
-        fireRate = 1f / 3f;
         fireDelay = 1f / fireRate;
     }
 
