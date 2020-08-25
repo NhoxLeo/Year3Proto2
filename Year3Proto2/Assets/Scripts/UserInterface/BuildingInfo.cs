@@ -150,10 +150,10 @@ public class BuildingInfo : MonoBehaviour
                 break;
 
             case "Catapult Tower":
-                CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
+                Catapult catapult = targetBuilding.GetComponent<Catapult>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = catapult.GetFirerate().ToString("F");
+                statValueText.text = catapult.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
                 //foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 

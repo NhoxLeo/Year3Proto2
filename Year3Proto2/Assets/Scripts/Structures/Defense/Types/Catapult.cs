@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class Catapult : DefenseStructure
 {
+    protected override void Start()
+    {
+        base.Start();
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
+    }
+
     public override void CheckResearch()
     {
         attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);

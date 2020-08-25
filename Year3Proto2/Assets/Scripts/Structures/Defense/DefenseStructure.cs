@@ -4,13 +4,7 @@ using UnityEngine;
 public abstract class DefenseStructure : Structure
 {
     [Header("Attributes")]
-    [SerializeField] private Transform attackingRange;
-
-    [Header("Projectile")]
-    [SerializeField] protected Transform projectilePrefab;
-    [SerializeField] private float projectileTime;
-    [SerializeField] private float projectileDelay;
-    [SerializeField] private float projectileRate;
+    [SerializeField] protected Transform attackingRange;
 
     protected ResourceBundle attackCost;
     protected Transform enemy;
@@ -20,7 +14,6 @@ public abstract class DefenseStructure : Structure
     {
         base.Start();
         structureType = StructureType.Defense;
-        projectileTime = projectileDelay;
 
         DetectEnemies();
         CheckResearch();
@@ -29,35 +22,9 @@ public abstract class DefenseStructure : Structure
         villagerWidget.SetTarget(this);*/
     }
 
-    protected override void Update()
-    {
-        base.Update();
-        if (attachedTile && enemies.Count > 0)
-        {
-            enemies.RemoveAll(enemy => !enemy);
-            if (!enemy)
-            {
-                enemy = GetClosestEnemy();
-            }
-            else
-            {
-                projectileTime += Time.deltaTime;
-                if (projectileTime >= projectileDelay && GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
-                {
-                    if(Launch())
-                    {
-                        projectileTime = 0.0f;
-                        projectileRate = allocatedVillagers * 0.5f + projectileDelay;
-                        projectileDelay = projectileRate;
-                    }
-                }
-            }
-        }
-    }
-
     public abstract bool Launch();
 
-    private Transform GetClosestEnemy()
+    protected Transform GetClosestEnemy()
     {
         float closestDistanceSqr = Mathf.Infinity;
 
@@ -79,7 +46,7 @@ public abstract class DefenseStructure : Structure
         return nearestSpottedEnemy;
     }
 
-    private void DetectEnemies()
+    protected void DetectEnemies()
     {
         SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
         foreach (Enemy enemy in FindObjectsOfType<Enemy>())
@@ -90,16 +57,6 @@ public abstract class DefenseStructure : Structure
                 if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
             }
         }
-    }
-
-    public override Vector3 GetResourceDelta()
-    {
-        Vector3 resourceDelta = base.GetResourceDelta();
-        if (enemy)
-        {
-            resourceDelta -= attackCost * projectileRate;
-        }
-        return resourceDelta;
     }
 
     public override void OnSelected()
@@ -116,11 +73,6 @@ public abstract class DefenseStructure : Structure
     {
         base.ShowRangeDisplay(_active);
         attackingRange.GetChild(0).gameObject.SetActive(_active);
-    }
-
-    public float GetFireRate()
-    {
-        return projectileRate;
     }
 
     public List<Transform> GetEnemies()

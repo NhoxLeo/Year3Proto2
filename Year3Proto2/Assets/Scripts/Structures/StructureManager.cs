@@ -259,9 +259,9 @@ public class StructureManager : MonoBehaviour
             { "Lumber Pile",        new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")    as GameObject,  new ResourceBundle(120,     0,      0)) },
             { "Metal Storage",      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")  as GameObject,  new ResourceBundle(120,     80,     0)) },
 
-            { "Forest",             new StructureDefinition(Resources.Load("Resources/Forest")                  as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { "Hills",              new StructureDefinition(Resources.Load("Resources/Hills")                   as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { "Plains",             new StructureDefinition(Resources.Load("Resources/Plains")                  as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Forest Environment", new StructureDefinition(Resources.Load("Environment/Forest")    as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Hills Environment",  new StructureDefinition(Resources.Load("Environment/Hills")     as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Plains Environment", new StructureDefinition(Resources.Load("Environment/Plains")    as GameObject,  new ResourceBundle(0,       0,      0)) },
         };
 
         structureCosts = new Dictionary<string, ResourceBundle>
