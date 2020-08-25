@@ -188,9 +188,4 @@ public class Barracks : DefenseStructure
     {
         throw new System.NotImplementedException();
     }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        throw new System.NotImplementedException();
-    }
 }

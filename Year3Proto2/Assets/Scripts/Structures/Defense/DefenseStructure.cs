@@ -42,7 +42,7 @@ public abstract class DefenseStructure : Structure
             else
             {
                 projectileTime += Time.deltaTime;
-                if (projectileTime >= projectileDelay && gameMan.playerResources.AttemptPurchase(attackCost))
+                if (projectileTime >= projectileDelay && GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
                 {
                     if(Launch())
                     {

@@ -15,11 +15,11 @@ public class Ballista : DefenseStructure
 
     public override void CheckResearch()
     {
-        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
 
-        bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.BallistaEfficiency);
+        bool efficiencyUpgrade = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaEfficiency);
         int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
         attackCost = new ResourceBundle(woodCost, 0, 0);
     }
@@ -33,9 +33,9 @@ public class Ballista : DefenseStructure
         Arrow arrow = projectile.GetComponent<Arrow>();
         if(arrow)
         {
-            float damageFactor = superMan.GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
+            float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
 
-            arrow.SetPierce(superMan.GetResearchComplete(SuperManager.BallistaSuper));
+            arrow.SetPierce(SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper));
             arrow.SetDamage(arrow.GetDamage() * damageFactor);
             arrow.SetTarget(enemy);
             arrow.Launch();
@@ -43,11 +43,5 @@ public class Ballista : DefenseStructure
             return true;
         }
         return false;
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        // TODO?
-        throw new System.NotImplementedException();
     }
 }
