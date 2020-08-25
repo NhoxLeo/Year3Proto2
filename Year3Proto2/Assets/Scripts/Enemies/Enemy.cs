@@ -51,9 +51,8 @@ public abstract class Enemy : MonoBehaviour
     protected bool defending = false;
     protected int observers = 0;
     protected bool hasPath = false;
-    protected EnemySpawner.EnemyPath path;
-    public EnemySpawner spawner;
-    private EnemySpawner.EnemyPathSignature signature;
+    protected EnemyPath path;
+    private EnemyPathSignature signature;
 
     protected Vector3 velocity;
     protected Vector3 lastPosition;
@@ -66,7 +65,7 @@ public abstract class Enemy : MonoBehaviour
         body = GetComponent<Rigidbody>();
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
-        signature = new EnemySpawner.EnemyPathSignature()
+        signature = new EnemyPathSignature()
         {
             startTile = null,
             validStructureTypes = structureTypes
@@ -76,7 +75,7 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void OnKill()
     {
-        spawner.OnEnemyDeath(this);
+        EnemyManager.GetInstance().OnEnemyDeath(this);
     }
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)
@@ -128,28 +127,10 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public bool Next()
-    {
-        // get a path
-        path = spawner.GetPath(transform.position, structureTypes);
-        bool foundPath = path.pathPoints != new List<Vector3>();
-        bool targetFound = path.target != null;
-        if (!foundPath && !targetFound)
-        {
-            // couldn't find a path
-            return false;
-        }
-        hasPath = true;
-
-        target = path.target;
-        enemyState = EnemyState.Walk;
-        return true;
-    }
-
     public void RequestNewPath()
     {
         // if the spawner returns true, a valid path was found...
-        if (spawner.RequestPath(signature, ref path))
+        if (PathManager.GetInstance().RequestPath(signature, ref path))
         {
             hasPath = true;
             target = path.target;

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Mine : ResourceStructure
 {
     public bool wasPlacedOnHills = false;
+    protected Dictionary<TileBehaviour.TileCode, GameObject> scaffolding;
 
     protected override void Awake()
     {
@@ -14,26 +15,29 @@ public class Mine : ResourceStructure
         health = maxHealth;
     }
 
-    public override void SetFoodAllocationGlobal(int _allocation)
+    protected override void Start()
     {
-        foreach (Mine mine in FindObjectsOfType<Mine>())
+        base.Start();
+        scaffolding = new Dictionary<TileBehaviour.TileCode, GameObject>
         {
-            mine.SetFoodAllocation(_allocation);
-        }
+            { TileBehaviour.TileCode.north, transform.GetChild(0).gameObject },
+            { TileBehaviour.TileCode.east, transform.GetChild(1).gameObject },
+            { TileBehaviour.TileCode.south, transform.GetChild(2).gameObject },
+            { TileBehaviour.TileCode.west, transform.GetChild(3).gameObject }
+        };
     }
 
     public override void OnPlace()
     {
         base.OnPlace();
-        Mine[] mines = FindObjectsOfType<Mine>();
-        if (mines.Length >= 2)
-        {
-            Mine other = (mines[0] == this) ? mines[1] : mines[0];
-            SetFoodAllocation(other.foodAllocation);
-        }
         if (wasPlacedOnHills)
         {
             tileBonus++;
         }
+    }
+
+    protected override void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
+    {
+        scaffolding[_side].SetActive(_exploit);
     }
 }
