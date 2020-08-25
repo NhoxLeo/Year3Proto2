@@ -123,9 +123,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 578a28a6a5dc37943bfbab4f71c43354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body: {fileID: 3874149362772673663}
   layerMask:
     serializedVersion: 2
     m_Bits: 7680
   damage: 1.2
   speed: 0.2
+  body: {fileID: 3874149362772673663}
+  explosionRadius: 0.6

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ballista : DefenseStructure
 {
-    public const int CostArrowBase = 4;
+    private const int CostArrowBase = 4;
 
     protected override void Start()
     {

@@ -132,7 +132,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   isPlaced: 0
   sitHeight: 0.5
-  structureName: Ballista Tower
+  structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
   attackingRange: {fileID: 8230385698136794530}
