@@ -25,6 +25,7 @@ public class BuildPanel : MonoBehaviour
         None,
         Ballista,
         Catapult,
+        FreezeTower,
         Barracks,
         Farm,
         LumberMill,

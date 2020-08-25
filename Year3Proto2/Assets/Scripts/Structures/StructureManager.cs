@@ -140,6 +140,7 @@ public class StructureManager : MonoBehaviour
     {
         { BuildPanel.Buildings.Ballista, "Ballista Tower" },
         { BuildPanel.Buildings.Catapult, "Catapult Tower" },
+        { BuildPanel.Buildings.FreezeTower, "Freeze Tower" },
         { BuildPanel.Buildings.Barracks, "Barracks" },
         { BuildPanel.Buildings.Farm, "Farm" },
         { BuildPanel.Buildings.Granary, "Granary" },

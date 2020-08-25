@@ -183,9 +183,4 @@ public class Barracks : DefenseStructure
     {
         throw new System.NotImplementedException();
     }
-
-    public override bool Launch()
-    {
-        throw new System.NotImplementedException();
-    }
 }

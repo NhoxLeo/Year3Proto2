@@ -20,6 +20,8 @@ public class Invader : Enemy
 
     private void FixedUpdate()
     {
+        if (stunned) return;
+
         velocity = (body.position - lastPosition) * 1 / Time.fixedDeltaTime;
         lastPosition = body.position;
 

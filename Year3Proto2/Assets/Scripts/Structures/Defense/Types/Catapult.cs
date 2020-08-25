@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Catapult : DefenseStructure
+public class Catapult : ProjectileDefenseStructure
 {
+    private const int CostBoulderBase = 3;
+
     protected override void Start()
     {
         base.Start();
@@ -22,21 +24,19 @@ public class Catapult : DefenseStructure
         }
     }
 
-    public override bool Launch()
+    public override void Launch(Transform _target)
     {
         Transform projectile = Instantiate(projectilePrefab, transform);
         Boulder boulder = projectile.GetComponent<Boulder>();
-        if(boulder)
+        if (boulder)
         {
             float explosionFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultSuper) ? 1.5f : 1.0f;
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultPower) ? 1.3f : 1.0f;
 
             boulder.SetExplosionRadius(boulder.GetExplosionRadius() * explosionFactor);
             boulder.SetDamage(boulder.GetDamage() * damageFactor);
-            boulder.SetTarget(enemy);
+            boulder.SetTarget(_target);
             boulder.Launch();
-            return true;
         }
-        return false;
     }
 }

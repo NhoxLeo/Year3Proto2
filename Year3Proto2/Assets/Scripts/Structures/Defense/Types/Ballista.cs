@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Ballista : DefenseStructure
+public class Ballista : ProjectileDefenseStructure
 {
     private const int CostArrowBase = 4;
 
@@ -24,24 +22,21 @@ public class Ballista : DefenseStructure
         attackCost = new ResourceBundle(woodCost, 0, 0);
     }
 
-    public override bool Launch()
+    public override void Launch(Transform _target)
     {
         Vector3 position = transform.position;
         position.y = 1.0f;
 
         Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity, transform);
         Arrow arrow = projectile.GetComponent<Arrow>();
-        if(arrow)
+        if (arrow)
         {
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
 
             arrow.SetPierce(SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper));
             arrow.SetDamage(arrow.GetDamage() * damageFactor);
-            arrow.SetTarget(enemy);
+            arrow.SetTarget(_target);
             arrow.Launch();
-
-            return true;
         }
-        return false;
     }
 }

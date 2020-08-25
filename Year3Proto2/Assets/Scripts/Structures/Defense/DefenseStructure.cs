@@ -5,10 +5,11 @@ public abstract class DefenseStructure : Structure
 {
     [Header("Attributes")]
     [SerializeField] protected Transform attackingRange;
+    [SerializeField] protected int enemyTargetAmount;
 
     protected ResourceBundle attackCost;
-    protected Transform enemy;
     protected List<Transform> enemies = new List<Transform>();
+    protected List<Transform> targetedEnemies = new List<Transform>();
 
     protected override void Start()
     {
@@ -22,28 +23,37 @@ public abstract class DefenseStructure : Structure
         villagerWidget.SetTarget(this);*/
     }
 
-    public abstract bool Launch();
-
-    protected Transform GetClosestEnemy()
+    public List<Transform> GetTargetedEnemies()
     {
-        float closestDistanceSqr = Mathf.Infinity;
+        List<Transform> closestEnemies = new List<Transform>();
 
-        Transform nearestSpottedEnemy = null;
+        int foundEnemies = 0;
+        float closestDistanceSqr;
 
-        foreach (Transform enemy in enemies)
+        while (foundEnemies < (enemies.Count > enemyTargetAmount ? enemyTargetAmount : enemies.Count))
         {
-            if (enemy.GetComponent<Enemy>().IsBeingObserved())
+            closestDistanceSqr = Mathf.Infinity;
+
+            foreach (Transform enemy in enemies)
             {
-                Vector3 directionToTarget = enemy.transform.position - transform.position;
-                float dSqrToTarget = directionToTarget.sqrMagnitude;
-                if (dSqrToTarget < closestDistanceSqr)
+                if (!targetedEnemies.Contains(enemy))
                 {
-                    closestDistanceSqr = dSqrToTarget;
-                    nearestSpottedEnemy = enemy;
+                    if (enemy.GetComponent<Enemy>().IsBeingObserved())
+                    {
+                        Vector3 directionToTarget = enemy.transform.position - transform.position;
+                        float dSqrToTarget = directionToTarget.sqrMagnitude;
+                        if (dSqrToTarget < closestDistanceSqr)
+                        {
+                            closestDistanceSqr = dSqrToTarget;
+                            closestEnemies.Add(enemy);
+                            foundEnemies += 1;
+                        }
+                    }
                 }
             }
         }
-        return nearestSpottedEnemy;
+
+        return closestEnemies;
     }
 
     protected void DetectEnemies()
@@ -57,16 +67,6 @@ public abstract class DefenseStructure : Structure
                 if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
             }
         }
-    }
-
-    public override void OnSelected()
-    {
-        base.OnSelected();
-    }
-
-    public override void OnDeselected()
-    {
-        base.OnDeselected();
     }
 
     public override void ShowRangeDisplay(bool _active)

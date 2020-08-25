@@ -46,6 +46,13 @@ public abstract class Enemy : MonoBehaviour
     protected float finalSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+
+    // Stun
+    protected bool stunned = false;
+    protected float stunTime = 1.0f;
+    protected float stunCurrentTime = 0.0f;
+
+
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
@@ -70,7 +77,14 @@ public abstract class Enemy : MonoBehaviour
             startTile = null,
             validStructureTypes = structureTypes
         };
+    }
 
+    public void Stun(float _stunDuration)
+    {
+        stunned = true;
+        stunCurrentTime = _stunDuration;
+        animator.SetBool("Attack", false);
+        animator.SetBool("Walk", false);
     }
 
     public virtual void OnKill()
@@ -106,6 +120,16 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
+        if(stunned)
+        {
+            stunCurrentTime -= Time.deltaTime;
+            if(stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.SetBool("Walk", true);
+            }
+        }
+
         if (GlobalData.longhausDead)
         {
             if (!delayedDeathCalled)
