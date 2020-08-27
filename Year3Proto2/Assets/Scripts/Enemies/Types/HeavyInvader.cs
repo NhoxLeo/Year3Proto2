@@ -96,6 +96,15 @@ public class HeavyInvader : Enemy
                 case EnemyState.Walk:
                     if (target)
                     {
+                        updatePathTimer += Time.fixedDeltaTime;
+                        if (updatePathTimer >= updatePathDelay)
+                        {
+                            if (RequestNewPath())
+                            {
+                                updatePathTimer = 0f;
+                            }
+
+                        }
                         // if the distance from the enemy to the target is greater than 1 unit (one tile), the enemy should follow a path to the target. If they don't have one, they should request a path.
                         // if the distance is less than 1 unit, go ahead as normal
                         float distanceToTarget = (transform.position - target.transform.position).magnitude;
@@ -214,7 +223,7 @@ public class HeavyInvader : Enemy
         {
             if (defenseTarget)
             {
-                if (defenseTarget.health > 0)
+                if (defenseTarget.GetHealth() > 0)
                 {
                     LookAtPosition(defenseTarget.transform.position);
                     action = true;
@@ -246,7 +255,7 @@ public class HeavyInvader : Enemy
             {
                 if (defenseTarget)
                 {
-                    if (defenseTarget.Damage(damage))
+                    if (defenseTarget.ApplyDamage(damage))
                     {
                         ForgetSoldier();
                     }

@@ -86,69 +86,68 @@ public struct JSPathfindingTileData
 }
 
 public struct EnemyPathSignature
+{
+    public TileBehaviour startTile;
+    public List<StructureType> validStructureTypes;
+
+    public bool IsValid
     {
-        public TileBehaviour startTile;
-        public List<StructureType> validStructureTypes;
-
-        public static bool operator ==(EnemyPathSignature _lhs, EnemyPathSignature _rhs)
+        get
         {
-            // if the signatures are both empty
-            if (_lhs.validStructureTypes == null && _rhs.validStructureTypes == null)
+            // if the list has been initialized...
+            if (validStructureTypes != null)
             {
-                return true;
-            }
-            // if the signatures are both well defined
-            else if (_lhs.validStructureTypes != null && _rhs.validStructureTypes != null)
-            {
-                foreach (StructureType type in _lhs.validStructureTypes)
+                // if the list is greater than 0...
+                if (validStructureTypes.Count > 0)
                 {
-                    if (!_rhs.validStructureTypes.Contains(type))
+                    // if there is a startTile...
+                    if (startTile)
                     {
-                        return false;
+                        // the signature appears to be valid.
+                        return true;
                     }
                 }
-                return _lhs.startTile == _rhs.startTile;
             }
-            // if one of them is defined and the other is empty
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool isValid
-        {
-            get
-            {
-                // if the list has been initialized...
-                if (validStructureTypes != null)
-                {
-                    // if the list is greater than 0...
-                    if (validStructureTypes.Count > 0)
-                    {
-                        // if there is a startTile...
-                        if (startTile)
-                        {
-                            // the signature appears to be valid.
-                            return true;
-                        }
-                    }
-                }
-                // the signature is invalid.
-                return false;
-            }
-        }
-
-        public static bool operator !=(EnemyPathSignature _lhs, EnemyPathSignature _rhs)
-        {
-            return !(_lhs == _rhs);
+            // the signature is invalid.
+            return false;
         }
     }
+}
+
+public enum SoldierPathState
+{
+    Uninitialized = 0,
+    Working,
+    Done
+}
+
+public struct SoldierPathData
+{
+    public Soldier caller;
+    public JobHandle jobHandle;
+    public JSTileData startTile;
+    public JSTileData endTile;
+    public SoldierPath path;
+    public NativeList<Vector3> nativePath;
+    public Enemy target;
+}
 
 public struct EnemyPath
 {
     public List<Vector3> pathPoints;
     public Structure target;
+
+    public EnemyPath(EnemyPath _copyFrom)
+    {
+        pathPoints = new List<Vector3>(_copyFrom.pathPoints); // copy
+        target = _copyFrom.target; // reference
+    }
+}
+
+public struct SoldierPath
+{
+    public List<Vector3> pathPoints;
+    public Enemy target;
 }
 
 public struct FindPath : IJob
@@ -420,7 +419,7 @@ public struct FindPath : IJob
     }
 }
 
-public struct PathJobInfo
+public struct EnemyPathJobInfo
 {
     public EnemyPathSignature signature;
     public JobHandle jobHandle;
@@ -429,7 +428,7 @@ public struct PathJobInfo
     public Structure target;
 }
 
-public struct CompletedPathInfo
+public struct CompletedEnemyPathInfo
 {
     public EnemyPathSignature signature;
     public JobHandle jobHandle;
@@ -443,9 +442,16 @@ public class PathManager : MonoBehaviour
 
     private NativeArray<int> allTileIDs;
     private NativeArray<JSTileData> allTiles;
+
+    // Enemy Pathfinding
     private Dictionary<EnemyPathSignature, EnemyPath> calculatedPaths;
-    private Dictionary<EnemyPathSignature, PathJobInfo> activeJobDict;
-    private List<CompletedPathInfo> completedJobs;
+    private Dictionary<EnemyPathSignature, EnemyPathJobInfo> activeJobDict;
+    private List<CompletedEnemyPathInfo> completedEnemyPathJobs;
+
+    // Soldier Pathfinding
+    private Dictionary<Soldier, SoldierPathData> soldierPaths;
+    private Dictionary<Soldier, SoldierPathData> soldierHomeTrips;
+
     private TMP_Text debugText;
     private float totalTimeSync = 0f;
     private float totalTimeAsync = 0f;
@@ -477,7 +483,7 @@ public class PathManager : MonoBehaviour
     public bool RequestPath(EnemyPathSignature _signature, ref EnemyPath _path)
     {
         // if the signature isn't valid...
-        if (!_signature.isValid)
+        if (!_signature.IsValid)
         {
             // don't return anything, report false
             return false;
@@ -487,7 +493,7 @@ public class PathManager : MonoBehaviour
         if (calculatedPaths.ContainsKey(_signature))
         {
             // return the path & report true
-            _path = calculatedPaths[_signature];
+            _path = new EnemyPath(calculatedPaths[_signature]);
             return true;
         }
         else // there isn't a calculated path for that signature.
@@ -502,151 +508,94 @@ public class PathManager : MonoBehaviour
             {
                 // there isn't a path already, and there isn't a job working on it right now.
                 // That means we need to schedule a new job.
-                ScheduleNewPathJob(_signature);
+                ScheduleEnemyPathJob(_signature);
                 // the path isn't ready yet, so report false
                 return false;
             }
-            
         }
     }
 
-
-    private EnemyPath FindPathWithSignature(EnemyPathSignature _signature)
+    public bool RequestPath(Soldier _soldier, ref SoldierPath _path, bool _home = false)
     {
-        // if a path already exists for that signature...
-        if (calculatedPaths.ContainsKey(_signature))
+        if (soldierPaths.ContainsKey(_soldier) && !_home)
         {
-            // return that path.
-            return calculatedPaths[_signature];
+            if (soldierPaths[_soldier].jobHandle.IsCompleted)
+            {
+                soldierPaths[_soldier].jobHandle.Complete();
+                _path = new SoldierPath
+                {
+                    target = soldierPaths[_soldier].target,
+                    pathPoints = new List<Vector3>(soldierPaths[_soldier].nativePath.ToArray())
+                };
+                soldierPaths[_soldier].nativePath.Dispose();
+                soldierPaths.Remove(_soldier);
+
+                return true;
+            }
+            return false;
         }
-        // otherwise, if the signature is a dud...
-        else if (!_signature.isValid)
+        else if (soldierHomeTrips.ContainsKey(_soldier) && _home)
         {
-            // return an empty path
-            return new EnemyPath();
+            if (soldierHomeTrips[_soldier].jobHandle.IsCompleted)
+            {
+                soldierHomeTrips[_soldier].jobHandle.Complete();
+                _path = new SoldierPath
+                {
+                    target = soldierHomeTrips[_soldier].target,
+                    pathPoints = new List<Vector3>(soldierHomeTrips[_soldier].nativePath.ToArray())
+                };
+                soldierHomeTrips[_soldier].nativePath.Dispose();
+                soldierHomeTrips.Remove(_soldier);
+
+                return true;
+            }
+            return false;
         }
         else
         {
-            return GenerateNewPath(_signature);
-        }
-    }
-
-    private EnemyPath GenerateNewPath(EnemyPathSignature _signature)
-    {
-        EnemyPath path = new EnemyPath();
-        path.pathPoints = new List<Vector3>();
-
-        float startTime = Time.realtimeSinceStartup;
-
-        // FIRST VERSION
-        // Find the closest target, path find to it | DONE
-        // SECOND VERSION
-        // Find the closest target, path find to it,
-        // Test 4 points along the path to see if there are closer targets at each point - Path testing
-        // Test paths when a new structure is placed
-        // if the test fails (there's a closer structure) find a new path to that structure
-
-        // starting from _signature.startTile, find the closest valid structure
-        List<Structure> validStructures = new List<Structure>();
-        for (int i = 0; i < _signature.validStructureTypes.Count; i++)
-        {
-            Structure[] structures = { };
-            switch (_signature.validStructureTypes[i])
+            SoldierPathData newData = new SoldierPathData();
+            newData.caller = _soldier;
+            newData.nativePath = new NativeList<Vector3>(Allocator.Persistent);
+            newData.path = new SoldierPath();
+            TileBehaviour soldierTile = _soldier.GetCurrentTile();
+            TileBehaviour destination;
+            if (!_home)
             {
-                case StructureType.Attack:
-                    structures = FindObjectsOfType<AttackStructure>();
-                    break;
-                case StructureType.Defense:
-                    structures = FindObjectsOfType<DefenseStructure>();
-                    break;
-                case StructureType.Longhaus:
-                    structures = FindObjectsOfType<Longhaus>();
-                    break;
-                case StructureType.Storage:
-                    structures = FindObjectsOfType<StorageStructure>();
-                    break;
-                case StructureType.Resource:
-                    structures = FindObjectsOfType<ResourceStructure>();
-                    break;
-                default:
-                    break;
-            }
-
-            validStructures.AddRange(structures);
-        }
-
-        // now that we have all the structures that the enemy can attack, let's find the closest structure.
-        if (validStructures.Count == 0)
-        {
-            return path;
-        }
-
-        Structure closest = validStructures[0];
-        float closestDistance = (validStructures[0].transform.position - _signature.startTile.transform.position).magnitude;
-
-        for (int i = 1; i < validStructures.Count; i++)
-        {
-            float distance = (validStructures[i].transform.position - _signature.startTile.transform.position).magnitude;
-            if (distance < closestDistance)
-            {
-                closest = validStructures[i];
-                closestDistance = distance;
-            }
-        }
-
-        // we have our destination and our source, now use A* to find the path
-        // generate initial open and closed lists
-        List<PathfindingTileData> open = new List<PathfindingTileData>();
-        List<PathfindingTileData> closed = new List<PathfindingTileData>();
-        TileBehaviour destination = closest.attachedTile;
-        // add the tiles next to the start tile to the open list and calculate their costs
-        PathfindingTileData startingData = new PathfindingTileData()
-        {
-            tile = _signature.startTile,
-            fromTile = _signature.startTile,
-            gCost = 0f,
-            hCost = CalculateHCost(_signature.startTile, destination)
-        };
-
-        ProcessTile(startingData, open, closed, destination);
-
-        // while a path hasn't been found
-        bool pathFound = false;
-        int lapCount = 0;
-        while (!pathFound && open.Count > 0 && lapCount < 200000)
-        {
-            lapCount++;
-            if (ProcessTile(GetNextOpenTile(open), open, closed, destination))
-            {
-                // generate a path from the tiles in the closed list
-                // path from the source tile to the destination tile
-                // find the destination tile in the closed list
-                List<Vector3> reversePath = new List<Vector3>();
-                PathfindingTileData currentData = closed[closed.Count - 1];
-                while (currentData.fromTile != currentData.tile)
+                newData.target = _soldier.GetClosestEnemy();
+                if (newData.target)
                 {
-                    reversePath.Add(currentData.tile.transform.position);
-                    currentData = FollowFromTile(closed, currentData.fromTile);
+                    destination = newData.target.GetCurrentTile();
                 }
-                reversePath.Reverse();
-                path.pathPoints = reversePath;
-                path.target = closest;
-                pathFound = true;
+                else
+                {
+                    newData.nativePath.Dispose();
+                    return false;
+                }
             }
-            if (lapCount % 10000 == 0)
+            else
             {
-                Debug.LogWarning("lapCount = " + lapCount);
+                destination = _soldier.GetHomeTile();
             }
-        }
+            if (soldierTile && destination)
+            {
+                newData.startTile = soldierTile.GenerateJSTileData();
+                newData.endTile = destination.GenerateJSTileData();
 
-        if (!calculatedPaths.ContainsKey(_signature))
-        {
-            calculatedPaths.Add(_signature, path);
-        }
+                FindPath jobData = new FindPath(newData.startTile, newData.endTile, allTileIDs, allTiles, newData.nativePath);
 
-        float finishTime = Time.realtimeSinceStartup;
-        Debug.Log("Pathfinding complete, took " + (finishTime - startTime).ToString() + " seconds");
-        return path;
+                newData.jobHandle = jobData.Schedule();
+                if (_home)
+                {
+                    soldierHomeTrips[_soldier] = newData;
+                }
+                else
+                {
+                    soldierPaths[_soldier] = newData;
+                }
+            }
+            return false;
+
+        }
     }
 
     public void OnStructurePlaced()
@@ -655,208 +604,14 @@ public class PathManager : MonoBehaviour
         lastPathsClearTime = Time.realtimeSinceStartup;
     }
 
-    public static PathfindingTileData GetNextOpenTile(List<PathfindingTileData> _open)
-    {
-        PathfindingTileData next = new PathfindingTileData();
-        if (_open.Count >= 1)
-        {
-            next = _open[0];
-            if (_open.Count == 1)
-            {
-                return next;
-            }
-            // find the open tile with the least FCost
-            // if there are multiple with the same FCost, pick the one with the lowest HCost (the tile closest to the destination)
-            float lowestFCost = next.FCost();
-            float lowestHCost = next.hCost;
-            foreach (PathfindingTileData tileData in _open)
-            {
-                if (tileData.FCost() <= lowestFCost)
-                {
-                    if (tileData.FCost() < lowestFCost)
-                    {
-                        lowestFCost = tileData.FCost();
-                        next = tileData;
-                    }
-                    else if (tileData.hCost < lowestHCost)
-                    {
-                        lowestHCost = tileData.hCost;
-                        next = tileData;
-                    }
-                }
-            }
-        }
-        return next;
-    }
-
-    public static bool ProcessTile(PathfindingTileData _tileData, List<PathfindingTileData> _open, List<PathfindingTileData> _closed, TileBehaviour _destination)
-    {
-        // evaluate if the tile is the destination tile
-        if (_tileData.tile == _destination)
-        {
-            // generate pathfinding data and put on the closed list
-            _open.Remove(_tileData);
-            _closed.Add(_tileData);
-            return true;
-        }
-        // if not
-        else
-        {
-            // calculate the costs for each neighbor of the tile and place them on the open list
-            for (int i = 0; i < 8; i++)
-            {
-                // adjacents
-                if (i < 4)
-                {
-                    if (_tileData.tile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)i))
-                    {
-                        TileBehaviour iTile = _tileData.tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
-
-                        if (!TileInClosedList(iTile, _closed))
-                        {
-                            // add tile to open list
-                            // calculate the pathfinding data
-                            PathfindingTileData iTileData = new PathfindingTileData()
-                            {
-                                tile = iTile,
-                                fromTile = _tileData.tile,
-                                hCost = CalculateHCost(iTile, _destination),
-                                gCost = _tileData.gCost + 10f
-                            };
-
-                            // if the tile is not in the closed list
-                            PathfindingTileData oldITileData = new PathfindingTileData();
-                            // if there already is pathfinding data for that tile...
-                            if (TileInOpenList(iTile, _open, ref oldITileData))
-                            {
-                                // compare the GCosts and only replace it if the new GCost is lower (we found a shorter route to that tile)
-                                if (iTileData.gCost < oldITileData.gCost)
-                                {
-                                    // remove the tile from the open list and replace it with the shorter gCost path
-                                    _open.Remove(oldITileData);
-                                    _open.Add(iTileData);
-                                }
-                            }
-                            // if there isn't any pathfinding data for that tile
-                            else
-                            {
-                                // add the tile to the open list
-                                _open.Add(iTileData);
-                            }
-                        }
-                    }
-                }
-                // diagonals
-                else
-                {
-                    if (_tileData.tile.GetDiagonalTiles().ContainsKey(i - 4))
-                    {
-                        TileBehaviour iTile = _tileData.tile.GetDiagonalTiles()[i - 4];
-                        // check that both adjacents for this diagonal are valid
-                        // CCW tile = i - 4, CW tile = (i - 3) % 4
-                        bool CCWTile = _tileData.tile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)(i - 4));
-                        bool CWTile = _tileData.tile.GetAdjacentTiles().ContainsKey((TileBehaviour.TileCode)((i - 3) % 4));
-                        // if they are, evaluate the diagonal for the open list
-                        if (CCWTile && CWTile)
-                        {
-                            // add tile to open list
-                            // calculate the pathfinding data
-                            PathfindingTileData iTileData = new PathfindingTileData()
-                            {
-                                tile = iTile,
-                                fromTile = _tileData.tile,
-                                hCost = CalculateHCost(iTile, _destination),
-                                gCost = _tileData.gCost + 14f
-                            };
-                            PathfindingTileData oldITileData = new PathfindingTileData();
-                            // if there already is pathfinding data for that tile...
-                            if (TileInOpenList(iTile, _open, ref oldITileData))
-                            {
-                                // compare the GCosts and only replace it if the new GCost is lower (we found a shorter route to that tile)
-                                if (iTileData.gCost < oldITileData.gCost)
-                                {
-                                    // remove the tile from the open list and place the tile on the closed list
-                                    _open.Remove(oldITileData);
-                                    _open.Add(iTileData);
-                                }
-                            }
-                            // if there isn't any pathfinding data for that tile
-                            else
-                            {
-                                // add the tile to the open list
-                                _open.Add(iTileData);
-                            }
-                        }
-                    }
-                }
-            }
-            _open.Remove(_tileData);
-            _closed.Add(_tileData);
-            return false;
-        }
-    }
-
-    private static bool TileInOpenList(TileBehaviour _tile, List<PathfindingTileData> _open, ref PathfindingTileData _tileData)
-    {
-        foreach (PathfindingTileData tileData in _open)
-        {
-            if (tileData.tile == _tile)
-            {
-                _tileData = tileData;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static bool TileInClosedList(TileBehaviour _tile, List<PathfindingTileData> _closed)
-    {
-        foreach (PathfindingTileData tileData in _closed)
-        {
-            if (tileData.tile == _tile)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static PathfindingTileData FollowFromTile(List<PathfindingTileData> _closed, TileBehaviour _tile)
-    {
-        //find the tiledata in the closed list that corresponds to _tile
-        foreach (PathfindingTileData tileData in _closed)
-        {
-            if (tileData.tile == _tile)
-            {
-                return tileData;
-            }
-        }
-        return new PathfindingTileData();
-    }
-
-    public static float CalculateHCost(TileBehaviour _tile, TileBehaviour _destination)
-    {
-        // find how many tiles in x and z
-        // use the shorter one as the number of diagonal steps
-        // use the difference between the longer one and the shorter one as the number of vertical/horizontal steps
-        int xDist = Mathf.RoundToInt(Mathf.Abs(_tile.transform.position.x - _destination.transform.position.x));
-        int zDist = Mathf.RoundToInt(Mathf.Abs(_tile.transform.position.z - _destination.transform.position.z));
-        if (zDist < xDist)
-        {
-            return (14 * zDist) + (10 * (xDist - zDist));
-        }
-        else
-        {
-            return (14 * xDist) + (10 * (zDist - xDist));
-        }
-    }
-
     private void Start()
     {
         debugText = FindObjectOfType<Canvas>().transform.Find("PathfindingDebug").GetComponent<TMP_Text>();
         calculatedPaths = new Dictionary<EnemyPathSignature, EnemyPath>();
-        activeJobDict = new Dictionary<EnemyPathSignature, PathJobInfo>();
-        completedJobs = new List<CompletedPathInfo>();
+        activeJobDict = new Dictionary<EnemyPathSignature, EnemyPathJobInfo>();
+        completedEnemyPathJobs = new List<CompletedEnemyPathInfo>();
+        soldierPaths = new Dictionary<Soldier, SoldierPathData>();
+        soldierHomeTrips = new Dictionary<Soldier, SoldierPathData>();
 
         // get all the tiles and generate a NativeList for all of them
         TileBehaviour[] allTileBehaviours = FindObjectsOfType<TileBehaviour>();
@@ -876,7 +631,7 @@ public class PathManager : MonoBehaviour
         allTileIDs.Dispose();
     }
 
-    private PathJobInfo ScheduleNewPathJob(EnemyPathSignature _signature)
+    private EnemyPathJobInfo ScheduleEnemyPathJob(EnemyPathSignature _signature)
     {
 
         // starting from _signature.startTile, find the closest valid structure
@@ -912,7 +667,7 @@ public class PathManager : MonoBehaviour
         if (validStructures.Count == 0)
         {
             Debug.LogError("An Enemy tried to pathfind, and found no structures.");
-            return new PathJobInfo();
+            return new EnemyPathJobInfo();
         }
         
         // stop enemies from pathfinding to a structure that hasn't been placed yet
@@ -933,7 +688,7 @@ public class PathManager : MonoBehaviour
 
         JSTileData startTile = _signature.startTile.GenerateJSTileData();
         JSTileData destinationTile = closest.attachedTile.GenerateJSTileData();
-        PathJobInfo newJobInfo = new PathJobInfo
+        EnemyPathJobInfo newJobInfo = new EnemyPathJobInfo
         {
             startTime = Time.realtimeSinceStartup,
             resultPath = new NativeList<Vector3>(Allocator.Persistent),
@@ -962,14 +717,14 @@ public class PathManager : MonoBehaviour
             totalTimeSync += Time.deltaTime;
         }
 
-        List<PathJobInfo> toBeRemoved = new List<PathJobInfo>();
-        foreach (PathJobInfo info in activeJobDict.Values)
+        List<EnemyPathJobInfo> toBeRemoved = new List<EnemyPathJobInfo>();
+        foreach (EnemyPathJobInfo info in activeJobDict.Values)
         {
             // If the path has been found
             if (info.jobHandle.IsCompleted)
             {
                 // create a completedJob instance from the info.
-                CompletedPathInfo completedJob = new CompletedPathInfo
+                CompletedEnemyPathInfo completedJob = new CompletedEnemyPathInfo
                 {
                     signature = info.signature,
                     jobHandle = info.jobHandle
@@ -990,25 +745,28 @@ public class PathManager : MonoBehaviour
                 }
                 
                 // move the info into the other containers
-                completedJobs.Add(completedJob);
+                completedEnemyPathJobs.Add(completedJob);
                 totalTimeAsync += completedJob.runTime;
                 toBeRemoved.Add(info);
             }
         }
-        foreach (PathJobInfo info in toBeRemoved)
+        foreach (EnemyPathJobInfo info in toBeRemoved)
         {
             // release memory
             info.resultPath.Dispose();
             activeJobDict.Remove(info.signature);
         }
+
         if (debugText.gameObject.activeSelf)
         {
             string heading = "Pathfinding Debugger Readout:";
             string activeJobs = "\nActive Jobs: " + activeJobDict.Count.ToString();
-            string jobsCompleted = "\nJobs Completed: " + completedJobs.Count.ToString();
+            string jobsCompleted = "\nJobs Completed: " + completedEnemyPathJobs.Count.ToString();
             string totalTimeSyncString = "\nJob Active Time: " + totalTimeSync.ToString();
             string totalTimeAsyncString = "\nCumulative Total Runtime: " + totalTimeAsync.ToString();
-            debugText.text = heading + activeJobs + jobsCompleted + totalTimeSyncString + totalTimeAsyncString;
+
+            string soldierJobs = "\n\nSoldier Jobs: " + soldierPaths.Count.ToString();
+            debugText.text = heading + activeJobs + jobsCompleted + totalTimeSyncString + totalTimeAsyncString + soldierJobs;
         }
     }
 }
