@@ -15,6 +15,7 @@ public enum ResourceType
     Metal,
     Food
 }
+
 public abstract class Structure : MonoBehaviour
 {
     public TileBehaviour attachedTile = null;
@@ -353,7 +354,7 @@ public abstract class Structure : MonoBehaviour
                 OnDestroyed();
                 attachedTile.Detach();
                 GameManager.CreateAudioEffect("buildingDestroy", transform.position);
-                StructureManager.GetInstance().DecreaseStructureCost(structureName);
+                StructureManager.GetInstance().OnStructureDestroyed(this);
                 Destroy(gameObject);
             }
             else
