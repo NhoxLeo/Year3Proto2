@@ -3,37 +3,46 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
-    [Header("Attributes")]
-    [SerializeField] protected Transform attackingRange;
-    [SerializeField] protected int enemyTargetAmount = 1;
+    protected List<GameObject> enemies;
+    private Transform attackingRange;
 
-    protected Transform target;
-    protected ResourceBundle attackCost;
-    protected List<Transform> enemies = new List<Transform>();
-
-    protected override void Start()
+    public List<GameObject> GetEnemies()
     {
-        base.Start();
-        structureType = StructureType.Defense;
-
-        DetectEnemies();
-        CheckResearch();
-
-        /*villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
-        villagerWidget.SetTarget(this);*/
+        return enemies ?? (enemies = new List<GameObject>());
     }
 
-    protected void DetectEnemies()
+    public void DetectEnemies()
     {
+        GetEnemies();
         SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
         foreach (Enemy enemy in FindObjectsOfType<Enemy>())
         {
             float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
             if (distanceFromEnemy <= rangeCollider.radius)
             {
-                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+                if (!enemies.Contains(enemy.gameObject)) { enemies.Add(enemy.gameObject); }
             }
         }
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        attackingRange = transform.Find("Range");
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        structureType = StructureType.Defense;
+        enemies = new List<GameObject>();
+        DetectEnemies();
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        enemies.RemoveAll(enemy => !enemy);
     }
 
     public override void ShowRangeDisplay(bool _active)

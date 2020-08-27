@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class TowerRange : MonoBehaviour
 {
-    private DefenseStructure defenseStructure;
-    private int enemyStructureColliderLayer;
+    AttackStructure parentStructure;
+    DefenseStructure defenseParent;
+    int enemyStructureColliderLayer;
 
     private void Start()
     {
@@ -15,7 +16,8 @@ public class TowerRange : MonoBehaviour
 
     private void GetParent()
     {
-        defenseStructure = transform.parent.GetComponent<DefenseStructure>();
+        parentStructure = transform.parent.GetComponent<AttackStructure>();
+        defenseParent = transform.parent.GetComponent<DefenseStructure>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -26,10 +28,20 @@ public class TowerRange : MonoBehaviour
             {
                 if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    if (!defenseStructure) { GetParent(); }
-                    if (!defenseStructure.GetEnemies().Contains(other.transform.parent))
+                    if (!parentStructure && !defenseParent) { GetParent(); }
+                    if (parentStructure)
                     {
-                        defenseStructure.GetEnemies().Add(other.transform.parent);
+                        if (!parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
+                        {
+                            parentStructure.GetEnemies().Add(other.transform.parent.gameObject);
+                        }
+                    }
+                    else
+                    {
+                        if (!defenseParent.GetEnemies().Contains(other.transform.parent.gameObject))
+                        {
+                            defenseParent.GetEnemies().Add(other.transform.parent.gameObject);
+                        }
                     }
                 }
             }
@@ -44,10 +56,20 @@ public class TowerRange : MonoBehaviour
             {
                 if (other.transform.parent.GetComponent<Enemy>())
                 {
-                    if (!defenseStructure) { GetParent(); }
-                    if (defenseStructure.GetEnemies().Contains(other.transform.parent))
+                    if (!parentStructure && !defenseParent) { GetParent(); }
+                    if (parentStructure)
                     {
-                        defenseStructure.GetEnemies().Remove(other.transform.parent);
+                        if (parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
+                        {
+                            parentStructure.GetEnemies().Remove(other.transform.parent.gameObject);
+                        }
+                    }
+                    else
+                    {
+                        if (defenseParent.GetEnemies().Contains(other.transform.parent.gameObject))
+                        {
+                            defenseParent.GetEnemies().Remove(other.transform.parent.gameObject);
+                        }
                     }
                 }
             }

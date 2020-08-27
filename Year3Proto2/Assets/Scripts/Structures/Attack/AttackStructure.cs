@@ -89,14 +89,4 @@ public abstract class AttackStructure : Structure
         base.ShowRangeDisplay(_active);
         attackingRange.GetChild(0).gameObject.SetActive(_active);
     }
-
-    public override void OnSelected()
-    {
-        base.OnSelected();
-    }
-
-    public override void OnDeselected()
-    {
-        base.OnDeselected();
-    }
 }

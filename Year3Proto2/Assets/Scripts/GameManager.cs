@@ -389,6 +389,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        SuperManager superMan = SuperManager.GetInstance();
         playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
         recentBatches = new List<ResourceBatch>();
@@ -396,6 +397,19 @@ public class GameManager : MonoBehaviour
         HUDMan = FindObjectOfType<HUDManager>();
         buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
+        {
+            Soldier.SetMaxHealth(1.5f * Soldier.GetMaxHealth());
+        }
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
+        {
+            Soldier.SetDamage(1.3f * Soldier.GetDamage());
+        }
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
+        {
+            Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
+        }
+
     }
 
     // Update is called once per frame

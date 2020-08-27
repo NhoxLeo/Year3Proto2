@@ -26,8 +26,6 @@ public enum EnemyState
 
 public abstract class Enemy : MonoBehaviour
 {
-    [SerializeField] private Transform head;
-
     [HideInInspector]
     public GameObject puffEffect;
     [HideInInspector]
@@ -61,10 +59,9 @@ public abstract class Enemy : MonoBehaviour
     protected int observers = 0;
     protected bool hasPath = false;
     protected EnemyPath path;
+    protected float updatePathTimer = 0f;
+    protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
-
-    protected Vector3 velocity;
-    protected Vector3 lastPosition;
 
     public abstract void Action();
 
@@ -122,9 +119,6 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
-        velocity = (transform.position - lastPosition) * (1 / Time.deltaTime);
-        lastPosition = transform.position;
-
         if (stunned)
         {
             stunCurrentTime -= Time.deltaTime;
@@ -156,7 +150,7 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public void RequestNewPath()
+    public bool RequestNewPath()
     {
         // if the spawner returns true, a valid path was found...
         if (PathManager.GetInstance().RequestPath(signature, ref path))
@@ -164,7 +158,9 @@ public abstract class Enemy : MonoBehaviour
             hasPath = true;
             target = path.target;
             enemyState = EnemyState.Walk;
+            return true;
         }
+        return false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -213,7 +209,7 @@ public abstract class Enemy : MonoBehaviour
         Vector3 toTarget = path.pathPoints[0] - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        if (toTarget.magnitude > 0.5f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -223,7 +219,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;
@@ -244,7 +240,7 @@ public abstract class Enemy : MonoBehaviour
         Vector3 toTarget = target.transform.position - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        if (toTarget.magnitude > 0.5f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -254,7 +250,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;
@@ -326,13 +322,12 @@ public abstract class Enemy : MonoBehaviour
         return observers > 0;
     }
 
-    public Vector3 GetVelocity()
+    public TileBehaviour GetCurrentTile()
     {
-        return velocity;
-    }
-
-    public Transform GetHead()
-    {
-        return head;
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            return hit.transform.GetComponent<TileBehaviour>();
+        }
+        return null;
     }
 }

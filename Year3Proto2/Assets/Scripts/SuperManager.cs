@@ -659,12 +659,12 @@ public class SuperManager : MonoBehaviour
         {
             SoldierSaveData saveData = new SoldierSaveData
             {
-                health = soldier.health,
+                health = soldier.GetHealth(),
                 position = new SaveVector3(soldier.transform.position),
                 orientation = new SaveQuaternion(soldier.transform.rotation),
-                barracksID = soldier.barracksID,
-                state = soldier.state,
-                returnHome = soldier.returnHome
+                barracksID = soldier.GetBarracksID(),
+                state = soldier.GetState(),
+                returnHome = soldier.GetReturnHome()
             };
             save.soldiers.Add(saveData);
         }
