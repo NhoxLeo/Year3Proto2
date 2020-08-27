@@ -314,6 +314,10 @@ public class Soldier : MonoBehaviour
         health -= _damage;
         if (health <= 0f)
         {
+            if (target)
+            {
+                target.ForgetSoldier();
+            }
             if (home)
             {
                 if (home.soldiers.Contains(this))
