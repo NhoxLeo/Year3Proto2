@@ -5,11 +5,11 @@ public abstract class DefenseStructure : Structure
 {
     [Header("Attributes")]
     [SerializeField] protected Transform attackingRange;
-    [SerializeField] protected int enemyTargetAmount;
+    [SerializeField] protected int enemyTargetAmount = 1;
 
+    protected Transform target;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
-    protected List<Transform> targetedEnemies = new List<Transform>();
 
     protected override void Start()
     {

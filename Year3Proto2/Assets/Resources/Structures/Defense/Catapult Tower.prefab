@@ -254,6 +254,7 @@ Transform:
   - {fileID: 335211558885193708}
   - {fileID: 6024124383908247927}
   - {fileID: 59576384940809894}
+  - {fileID: 4930374839016949463}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -355,11 +356,14 @@ MonoBehaviour:
   fromSaveData: 0
   saveDataStartFrame: 0
   attackingRange: {fileID: 335211558885193708}
+  enemyTargetAmount: 1
   projectilePrefab: {fileID: 185811030295116845, guid: 0416ee26af62c4243886562404841d1f,
     type: 3}
+  projectileLocation: {fileID: 4930374839016949463}
   projectileTime: 0
-  projectileDelay: 1.5
+  projectileDelay: 5
   projectileRate: 0
+  projectileRateFactor: 0.33
 --- !u!1 &1921419247907477422
 GameObject:
   m_ObjectHideFlags: 0
@@ -662,3 +666,33 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7789367044851504246
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4930374839016949463}
+  m_Layer: 9
+  m_Name: ProjectileLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4930374839016949463
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7789367044851504246}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1864682718465883426}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

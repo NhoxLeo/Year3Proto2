@@ -6,7 +6,7 @@ public class FreezeTower : ProjectileDefenseStructure
     protected override void Start()
     {
         base.Start();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.FreezeTower];
+        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
     }
 
     public override void CheckResearch()
@@ -32,7 +32,6 @@ public class FreezeTower : ProjectileDefenseStructure
             // Duration of stun 
             icicle.SetStunDuration(durationFactor);
             icicle.SetTarget(_target);
-            icicle.Launch();
         }
     }
 }

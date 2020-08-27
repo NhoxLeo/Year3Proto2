@@ -4,21 +4,26 @@ using UnityEngine;
 
 public abstract class PhysicalProjectile : Projectile
 {
-    [SerializeField] private Rigidbody body;
-    public override void Launch()
-    {
-        body.velocity = CalculateVelocity();
-        Vector3 oppositeVelocity = -body.velocity;
-        body.AddRelativeForce(oppositeVelocity);
-    }
+    private const float Ground = 0.51f;
 
-    private void OnTriggerEnter(Collider _other)
-    {
-        if ((layerMask.value & (1 << _other.gameObject.layer)) != 0)
-        {
-            OnProjectileHit(_other.transform, _other.bounds.center);
-        }
-    }
+    [SerializeField] private float distanceOffset = 0.5f;
+    [SerializeField] private bool ground = false;
+    protected abstract void OnDisplacement(Vector3 _heading, Vector3 _direction, float distance);
+    protected abstract void OnDestination(Vector3 _location);
 
-    public abstract Vector3 CalculateVelocity();
+    private void Update()
+    {
+        Destination = target ? target.position : Destination;
+        Vector3 position = Destination;
+
+        Vector3 heading = position - transform.position; 
+
+        Vector3 direction = heading.normalized;
+        float distance = heading.magnitude;
+
+        OnDisplacement(heading, direction, distance);
+
+        if (transform.position.y <= Ground && ground) OnDestination(transform.position);
+        if (heading.sqrMagnitude < distanceOffset * distanceOffset && !ground) OnDestination(transform.position);
+    }
 }

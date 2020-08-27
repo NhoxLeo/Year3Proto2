@@ -22,9 +22,6 @@ public class Invader : Enemy
     {
         if (stunned) return;
 
-        velocity = (body.position - lastPosition) * 1 / Time.fixedDeltaTime;
-        lastPosition = body.position;
-
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)

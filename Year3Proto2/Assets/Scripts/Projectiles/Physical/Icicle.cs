@@ -4,33 +4,14 @@ public class Icicle : PhysicalProjectile
 {
     [SerializeField] private float stunDuration;
 
-    public override Vector3 CalculateVelocity()
+    protected override void OnDestination(Vector3 _location)
     {
-        Enemy enemy = target.GetComponent<Enemy>();
-
-        Vector3 velocity = Vector3.zero;
-        if (enemy) velocity = enemy.GetVelocity();
-
-        Vector3 heading = target.transform.position - transform.position;
-        Vector3 direction = heading.normalized;
-        transform.rotation = Quaternion.LookRotation(heading);
-
-        // Velocity Vector for the arrow.
-        return direction * speed + velocity.normalized;
+        throw new System.NotImplementedException();
     }
 
-
-    public override void OnProjectileHit(Transform _target, Vector3 _contactPoint)
+    protected override void OnDisplacement(Vector3 _heading, Vector3 _direction, float distance)
     {
-        // Makes sure that the target hit is actually the correct target
-        if (_target == target)
-        { 
-            // Checks whether the target is an enemy.
-            Enemy enemy = target.GetComponent<Enemy>();
-            if (enemy) enemy.Stun(stunDuration);
-        }
-
-        Destroy(gameObject);
+        throw new System.NotImplementedException();
     }
      
     public void SetStunDuration(float _stunDuration)

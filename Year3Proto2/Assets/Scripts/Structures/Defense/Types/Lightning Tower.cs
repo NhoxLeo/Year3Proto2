@@ -20,7 +20,6 @@ public class LightningTower : ProjectileDefenseStructure
             // Duration of stun 
             icicle.SetStunDuration(durationFactor);
             icicle.SetTarget(_target);
-            icicle.Launch();
         }
     }
 }

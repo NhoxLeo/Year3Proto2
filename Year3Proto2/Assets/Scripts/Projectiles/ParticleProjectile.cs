@@ -6,10 +6,6 @@ public abstract class ParticleProjectile : Projectile
 {
     [SerializeField] private Transform particlePrefab;
     [SerializeField] private Transform particleParent;
-    public override void Launch()
-    {
-        particlePrefab = Instantiate(particlePrefab, particleParent);
-    }
 
     public abstract void OnParticleHit();
 }

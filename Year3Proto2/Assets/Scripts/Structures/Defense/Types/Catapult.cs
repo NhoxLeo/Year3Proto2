@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Catapult : ProjectileDefenseStructure
 {
-    private const int CostBoulderBase = 3;
-
     protected override void Start()
     {
         base.Start();
@@ -26,17 +24,19 @@ public class Catapult : ProjectileDefenseStructure
 
     public override void Launch(Transform _target)
     {
-        Transform projectile = Instantiate(projectilePrefab, transform);
+        Vector3 position = transform.position;
+        position.y = 1.5f;
+
+        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity, transform);
         Boulder boulder = projectile.GetComponent<Boulder>();
         if (boulder)
         {
             float explosionFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultSuper) ? 1.5f : 1.0f;
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultPower) ? 1.3f : 1.0f;
 
-            boulder.SetExplosionRadius(boulder.GetExplosionRadius() * explosionFactor);
+            boulder.ExplosionRadius = boulder.ExplosionRadius * explosionFactor;
             boulder.SetDamage(boulder.GetDamage() * damageFactor);
             boulder.SetTarget(_target);
-            boulder.Launch();
         }
     }
 }

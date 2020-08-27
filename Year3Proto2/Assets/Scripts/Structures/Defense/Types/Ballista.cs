@@ -2,6 +2,8 @@
 
 public class Ballista : ProjectileDefenseStructure
 {
+    [SerializeField] private Transform ballista;
+
     private const int CostArrowBase = 4;
 
     protected override void Start()
@@ -9,7 +11,6 @@ public class Ballista : ProjectileDefenseStructure
         base.Start();
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Ballista];
     }
-
 
     public override void CheckResearch()
     {
@@ -22,10 +23,24 @@ public class Ballista : ProjectileDefenseStructure
         attackCost = new ResourceBundle(woodCost, 0, 0);
     }
 
+    protected override void Update()
+    {
+        base.Update();
+
+        if (target)
+        {
+            Vector3 difference = ballista.position - target.position;
+            difference.y = 0.0f;
+
+            Quaternion rotation = Quaternion.LookRotation(difference);
+            ballista.transform.rotation = Quaternion.Slerp(ballista.transform.rotation, rotation * Quaternion.AngleAxis(90.0f, Vector3.up), Time.deltaTime * 2.5f);
+        }
+    }
+
     public override void Launch(Transform _target)
     {
         Vector3 position = transform.position;
-        position.y = 1.0f;
+        position.y = 1.25f;
 
         Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity, transform);
         Arrow arrow = projectile.GetComponent<Arrow>();
@@ -33,10 +48,9 @@ public class Ballista : ProjectileDefenseStructure
         {
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
 
-            arrow.SetPierce(SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper));
+            arrow.Pierce = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper);
             arrow.SetDamage(arrow.GetDamage() * damageFactor);
             arrow.SetTarget(_target);
-            arrow.Launch();
         }
     }
 }

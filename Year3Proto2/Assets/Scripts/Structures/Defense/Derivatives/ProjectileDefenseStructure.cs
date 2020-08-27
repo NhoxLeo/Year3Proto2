@@ -5,6 +5,7 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
 {
     [Header("Projectile")]
     [SerializeField] protected Transform projectilePrefab;
+    [SerializeField] protected Transform projectileLocation;
     [SerializeField] private float projectileTime;
     [SerializeField] private float projectileDelay;
     [SerializeField] private float projectileRate;
@@ -19,7 +20,10 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
             if (projectileTime >= projectileDelay && GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
             {
                 enemies.RemoveAll(enemy => !enemy);
-                GetTargetedEnemies().ForEach(target => Launch(target));
+                GetTargetedEnemies().ForEach(target => {
+                    Launch(target);
+                    this.target = target;
+                });
    
                 projectileTime = 0.0f;
                 projectileRate = allocatedVillagers * projectileRateFactor + projectileDelay;
@@ -31,17 +35,16 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
     private List<Transform> GetTargetedEnemies()
     {
         List<Transform> closestEnemies = new List<Transform>();
-
-        int foundEnemies = 0;
+          
         float closestDistanceSqr;
 
-        while (foundEnemies < (enemies.Count > enemyTargetAmount ? enemyTargetAmount : enemies.Count))
+        for (int i = 0; i < enemyTargetAmount; i++)
         {
             closestDistanceSqr = Mathf.Infinity;
-
             foreach (Transform enemy in enemies)
             {
-                if (!targetedEnemies.Contains(enemy))
+                if (closestEnemies.Count >= enemyTargetAmount) break;
+                if (!closestEnemies.Contains(enemy))
                 {
                     if (enemy.GetComponent<Enemy>().IsBeingObserved())
                     {
@@ -51,13 +54,11 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
                         {
                             closestDistanceSqr = dSqrToTarget;
                             closestEnemies.Add(enemy);
-                            foundEnemies += 1;
                         }
                     }
                 }
             }
         }
-
         return closestEnemies;
     }
 

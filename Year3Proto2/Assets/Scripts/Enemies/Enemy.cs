@@ -26,6 +26,8 @@ public enum EnemyState
 
 public abstract class Enemy : MonoBehaviour
 {
+    [SerializeField] private Transform head;
+
     [HideInInspector]
     public GameObject puffEffect;
     [HideInInspector]
@@ -120,7 +122,10 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
-        if(stunned)
+        velocity = (transform.position - lastPosition) * (1 / Time.deltaTime);
+        lastPosition = transform.position;
+
+        if (stunned)
         {
             stunCurrentTime -= Time.deltaTime;
             if(stunTime <= 0.0f)
@@ -324,5 +329,10 @@ public abstract class Enemy : MonoBehaviour
     public Vector3 GetVelocity()
     {
         return velocity;
+    }
+
+    public Transform GetHead()
+    {
+        return head;
     }
 }
