@@ -6,12 +6,14 @@ public class Icicle : PhysicalProjectile
 
     protected override void OnDestination(Vector3 _location)
     {
-        throw new System.NotImplementedException();
+        Enemy enemy = target.GetComponent<Enemy>();
+        if(enemy) enemy.Stun(stunDuration);
     }
 
     protected override void OnDisplacement(Vector3 _heading, Vector3 _direction, float distance)
     {
-        throw new System.NotImplementedException();
+        transform.position += _direction * speed * Time.deltaTime;
+        transform.rotation = Quaternion.LookRotation(_heading);
     }
      
     public void SetStunDuration(float _stunDuration)
