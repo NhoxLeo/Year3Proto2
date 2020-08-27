@@ -6,11 +6,12 @@ using System;
 public class Soldier : MonoBehaviour
 {
 
-    public static Enemy GetEnemy(GameObject enemy)
+    public static Enemy GetEnemy(Transform enemy)
     {
         return enemy.GetComponent<Enemy>();
     }
-    private static Converter<GameObject, Enemy> ToEnemyConverter = new Converter<GameObject, Enemy>(GetEnemy);
+
+    private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
 
     private static float MaxHealth = 18.0f;
     private static float Damage = 3.0f;

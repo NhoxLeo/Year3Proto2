@@ -6,6 +6,7 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
     [Header("Projectile")]
     [SerializeField] protected Transform projectilePrefab;
     [SerializeField] protected Transform projectileLocation;
+    [SerializeField] private int projectileAmount;
     [SerializeField] private float projectileTime;
     [SerializeField] private float projectileDelay;
     [SerializeField] private float projectileRate;
@@ -19,7 +20,6 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
             projectileTime += Time.deltaTime;
             if (projectileTime >= projectileDelay && GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
             {
-                enemies.RemoveAll(enemy => !enemy);
                 GetTargetedEnemies().ForEach(target => {
                     Launch(target);
                     this.target = target;
@@ -38,22 +38,22 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
           
         float closestDistanceSqr;
 
-        for (int i = 0; i < enemyTargetAmount; i++)
+        for (int i = 0; i < projectileAmount; i++)
         {
             closestDistanceSqr = Mathf.Infinity;
-            foreach (Transform enemy in enemies)
+            foreach (Transform target in enemies)
             {
-                if (closestEnemies.Count >= enemyTargetAmount) break;
-                if (!closestEnemies.Contains(enemy))
+                if (closestEnemies.Count >= projectileAmount) break;
+                if (!closestEnemies.Contains(target))
                 {
-                    if (enemy.GetComponent<Enemy>().IsBeingObserved())
+                    if (target.GetComponent<Enemy>().IsBeingObserved())
                     {
-                        Vector3 directionToTarget = enemy.transform.position - transform.position;
+                        Vector3 directionToTarget = target.transform.position - transform.position;
                         float dSqrToTarget = directionToTarget.sqrMagnitude;
                         if (dSqrToTarget < closestDistanceSqr)
                         {
                             closestDistanceSqr = dSqrToTarget;
-                            closestEnemies.Add(enemy);
+                            closestEnemies.Add(target);
                         }
                     }
                 }

@@ -38,9 +38,9 @@ public class TowerRange : MonoBehaviour
                     }
                     else
                     {
-                        if (!defenseParent.GetEnemies().Contains(other.transform.parent.gameObject))
+                        if (!defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
-                            defenseParent.GetEnemies().Add(other.transform.parent.gameObject);
+                            defenseParent.GetEnemies().Add(other.transform.parent);
                         }
                     }
                 }
@@ -66,9 +66,9 @@ public class TowerRange : MonoBehaviour
                     }
                     else
                     {
-                        if (defenseParent.GetEnemies().Contains(other.transform.parent.gameObject))
+                        if (defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
-                            defenseParent.GetEnemies().Remove(other.transform.parent.gameObject);
+                            defenseParent.GetEnemies().Remove(other.transform.parent);
                         }
                     }
                 }

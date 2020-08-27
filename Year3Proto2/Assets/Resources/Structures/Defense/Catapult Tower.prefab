@@ -355,11 +355,10 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
-  attackingRange: {fileID: 335211558885193708}
-  enemyTargetAmount: 1
   projectilePrefab: {fileID: 185811030295116845, guid: 0416ee26af62c4243886562404841d1f,
     type: 3}
   projectileLocation: {fileID: 4930374839016949463}
+  projectileAmount: 1
   projectileTime: 0
   projectileDelay: 5
   projectileRate: 0

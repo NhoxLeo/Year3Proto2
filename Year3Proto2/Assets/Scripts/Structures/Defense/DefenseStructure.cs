@@ -3,24 +3,21 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
-    protected List<GameObject> enemies;
-    private Transform attackingRange;
+    protected ResourceBundle attackCost;
+    protected List<Transform> enemies = new List<Transform>();
+    protected Transform target;
 
-    public List<GameObject> GetEnemies()
-    {
-        return enemies ?? (enemies = new List<GameObject>());
-    }
+    private Transform attackingRange;
 
     public void DetectEnemies()
     {
-        GetEnemies();
         SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
         foreach (Enemy enemy in FindObjectsOfType<Enemy>())
         {
             float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
             if (distanceFromEnemy <= rangeCollider.radius)
             {
-                if (!enemies.Contains(enemy.gameObject)) { enemies.Add(enemy.gameObject); }
+                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
             }
         }
     }
@@ -35,7 +32,6 @@ public abstract class DefenseStructure : Structure
     {
         base.Start();
         structureType = StructureType.Defense;
-        enemies = new List<GameObject>();
         DetectEnemies();
     }
 
