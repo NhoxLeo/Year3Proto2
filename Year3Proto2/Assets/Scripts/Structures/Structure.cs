@@ -282,6 +282,7 @@ public abstract class Structure : MonoBehaviour
                 enemy.SetTargetNull();
             }
         }
+        PathManager.GetInstance().ClearPaths();
     }
 
     public bool Repair(bool _mass = false)

@@ -807,7 +807,7 @@ public class StructureManager : MonoBehaviour
             }
             playerStructureDict.Add(structure.GetID(), structure);
             GameManager.GetInstance().OnStructurePlaced();
-            PathManager.GetInstance().OnStructurePlaced();
+            PathManager.GetInstance().ClearPaths();
             VillagerManager.GetInstance().RedistributeVillagers();
             SelectStructure(structure);
             if (structType == StructureType.Resource || structType == StructureType.Attack)
