@@ -20,6 +20,8 @@ public class Invader : Enemy
 
     private void FixedUpdate()
     {
+        if (stunned) return;
+
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)

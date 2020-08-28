@@ -45,6 +45,8 @@ public class HeavyInvader : Enemy
 
     private void FixedUpdate()
     {
+        if (stunned) return;
+
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)

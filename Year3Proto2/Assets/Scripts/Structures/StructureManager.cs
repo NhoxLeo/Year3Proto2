@@ -260,29 +260,45 @@ public class StructureManager : MonoBehaviour
     {
         return selectedStructure == _structure;
     }
-    
+
     private void DefineDictionaries()
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            // NAME                                                     NAME                                                        wC       mC      fC
-            { "Longhaus",           new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(600,     200,    0)) },
+            // NAME                                                     NAME                                                                       wC       mC      fC
+            { "Longhaus",           new StructureDefinition(Resources.Load("Structures/Longhaus")               as GameObject,  new ResourceBundle(600,     200,    0)) },
 
-            { "Ballista Tower",     new StructureDefinition(Resources.Load("Archer Tower") as GameObject,       new ResourceBundle(150,     50,     0)) },
-            { "Catapult Tower",     new StructureDefinition(Resources.Load("Catapult Tower") as GameObject,     new ResourceBundle(200,     250,    0)) },
-            { "Barracks",           new StructureDefinition(Resources.Load("Barracks") as GameObject,           new ResourceBundle(200,     250,    0)) },
+            { "Ballista Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower") as GameObject,  new ResourceBundle(150,     50,     0)) },
+            { "Catapult Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower") as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { "Barracks",           new StructureDefinition(Resources.Load("Structures/Defense/Barracks")       as GameObject,  new ResourceBundle(200,     250,    0)) },
 
-            { "Farm",               new StructureDefinition(Resources.Load("Farm") as GameObject,               new ResourceBundle(40,      0,      0)) },
-            { "Lumber Mill",        new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(60,      20,     0)) },
-            { "Mine",               new StructureDefinition(Resources.Load("Mine") as GameObject,               new ResourceBundle(100,     20,     0)) },
+            { "Farm",               new StructureDefinition(Resources.Load("Structures/Resource/Farm")          as GameObject,  new ResourceBundle(40,      0,      0)) },
+            { "Lumber Mill",        new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")   as GameObject,  new ResourceBundle(60,      20,     0)) },
+            { "Mine",               new StructureDefinition(Resources.Load("Structures/Resource/Mine")          as GameObject,  new ResourceBundle(100,     20,     0)) },
 
-            { "Granary",            new StructureDefinition(Resources.Load("Granary") as GameObject,            new ResourceBundle(120,     0,      0)) },
-            { "Lumber Pile",        new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,        new ResourceBundle(120,     0,      0)) },
-            { "Metal Storage",      new StructureDefinition(Resources.Load("Metal Storage") as GameObject,      new ResourceBundle(120,     80,     0)) },
+            { "Granary",            new StructureDefinition(Resources.Load("Structures/Storage/Granary")        as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { "Lumber Pile",        new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")    as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { "Metal Storage",      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")  as GameObject,  new ResourceBundle(120,     80,     0)) },
 
-            { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0,       0,      0)) },
-            { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0,       0,      0)) },
-            { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Forest Environment", new StructureDefinition(Resources.Load("Environment/Forest")    as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Hills Environment",  new StructureDefinition(Resources.Load("Environment/Hills")     as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Plains Environment", new StructureDefinition(Resources.Load("Environment/Plains")    as GameObject,  new ResourceBundle(0,       0,      0)) },
+        };
+
+        structureCosts = new Dictionary<string, ResourceBundle>
+        {
+            // NAME                                    wC       mC      fC
+            { "Ballista Tower",     new ResourceBundle(150,     50,     0) },
+            { "Catapult Tower",     new ResourceBundle(200,     250,    0) },
+            { "Barracks",           new ResourceBundle(200,     100,    0) },
+
+            { "Farm",               new ResourceBundle(40,      0,      0) },
+            { "Lumber Mill",        new ResourceBundle(60,      20,     0) },
+            { "Mine",               new ResourceBundle(100,     20,     0) },
+
+            { "Granary",            new ResourceBundle(120,     0,      0) },
+            { "Lumber Pile",        new ResourceBundle(120,     0,      0) },
+            { "Metal Storage",      new ResourceBundle(120,     80,     0) }
         };
     }
 
@@ -611,7 +627,7 @@ public class StructureManager : MonoBehaviour
                     return;
                 }
                 if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
-                { 
+                {
                     if (hitGround.transform.GetComponent<TileBehaviour>().GetPlayable())
                     {
                         tileHighlight.gameObject.SetActive(true);
@@ -960,7 +976,7 @@ public class StructureManager : MonoBehaviour
     public void ProceduralGeneration(bool _useSeed = false, int _seed = 0)
     {
         if (_useSeed) { UnityEngine.Random.InitState(_seed); }
-        
+
         // find our totals
         int forestTotal = UnityEngine.Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
         int hillsTotal = UnityEngine.Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
@@ -1174,24 +1190,24 @@ public class StructureManager : MonoBehaviour
         {
             if (_saveData.structure == "Farm")
             {
-                newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn; 
+                newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn;
             }
-            if (_saveData.structure == "Mine") 
-            { 
-                newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn; 
+            if (_saveData.structure == "Mine")
+            {
+                newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn;
             }
-            if (_saveData.structure == "Lumber Mill") 
-            { 
-                newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn; 
+            if (_saveData.structure == "Lumber Mill")
+            {
+                newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn;
             }
         }
         Barracks barracksComponent = newStructure.gameObject.GetComponent<Barracks>();
-        if (barracksComponent) 
-        { 
-            barracksComponent.SetTimeTrained(_saveData.timeTrained);
+        if (barracksComponent)
+        {
+            //barracksComponent.SetTimeTrained(_saveData.timeTrained);
         }
         if (_saveData.exploited)
-        { 
+        {
             EnvironmentStructure environmentComponent = newStructure.gameObject.GetComponent<EnvironmentStructure>();
             if (environmentComponent)
             {

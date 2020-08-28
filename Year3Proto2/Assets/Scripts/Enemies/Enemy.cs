@@ -46,6 +46,13 @@ public abstract class Enemy : MonoBehaviour
     protected float finalSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+
+    // Stun
+    protected bool stunned = false;
+    protected float stunTime = 1.0f;
+    protected float stunCurrentTime = 0.0f;
+
+
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
@@ -69,7 +76,14 @@ public abstract class Enemy : MonoBehaviour
             startTile = null,
             validStructureTypes = structureTypes
         };
+    }
 
+    public void Stun(float _stunDuration)
+    {
+        stunned = true;
+        stunCurrentTime = _stunDuration;
+        animator.SetBool("Attack", false);
+        animator.SetBool("Walk", false);
     }
 
     public virtual void OnKill()
@@ -105,6 +119,16 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (stunned)
+        {
+            stunCurrentTime -= Time.deltaTime;
+            if(stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.SetBool("Walk", true);
+            }
+        }
+
         if (GlobalData.longhausDead)
         {
             if (!delayedDeathCalled)
@@ -195,7 +219,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;
@@ -226,7 +250,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;

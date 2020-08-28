@@ -28,19 +28,33 @@ public class SuperManager : MonoBehaviour
     public const int SurviveII = 7;
     public const int SurviveIII = 8;
 
-    // Research Elements
+    // FREEZE TOWER
+    public const int FreezeTower = 0;
+    public const int FreezeTowerRange = 1;
+    public const int FreezeTowerStunDuration = 1;
+    public const int FreezeTowerFortification = 3;
+    public const int FreezeTowerEfficiency = 4;
+    public const int FreezeTowerSuper = 5;
+
+    // TODO REFACTOR NUMBERS
+
+    // BALLISTA
     public const int Ballista = 0;
     public const int BallistaRange = 1;
     public const int BallistaPower = 2;
     public const int BallistaFortification = 3;
     public const int BallistaEfficiency = 4;
     public const int BallistaSuper = 5;
+
+    // CATAPULT
     public const int Catapult = 6;
     public const int CatapultRange = 7;
     public const int CatapultPower = 8;
     public const int CatapultFortification = 9;
     public const int CatapultEfficiency = 10;
     public const int CatapultSuper = 11;
+
+    // BARRACKS
     public const int Barracks = 12;
     public const int BarracksSoldierDamage = 13;
     public const int BarracksSoldierHealth = 14;
@@ -553,7 +567,7 @@ public class SuperManager : MonoBehaviour
             {
                 if (barr.GetID() == saveData.barracksID)
                 {
-                    barr.LoadSoldier(saveData);
+                    //barr.LoadSoldier(saveData);
                     break;
                 }
             }
@@ -693,7 +707,7 @@ public class SuperManager : MonoBehaviour
                 }
                 if (structure.IsStructure("Barracks"))
                 {
-                    saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained();
+                    //saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained();
                 }
                 save.structures.Add(saveData);
             }

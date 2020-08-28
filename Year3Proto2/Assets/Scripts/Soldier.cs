@@ -6,11 +6,12 @@ using System;
 public class Soldier : MonoBehaviour
 {
 
-    public static Enemy GetEnemy(GameObject enemy)
+    public static Enemy GetEnemy(Transform enemy)
     {
         return enemy.GetComponent<Enemy>();
     }
-    private static Converter<GameObject, Enemy> ToEnemyConverter = new Converter<GameObject, Enemy>(GetEnemy);
+
+    private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
 
     private static float MaxHealth = 18.0f;
     private static float Damage = 3.0f;
@@ -306,7 +307,7 @@ public class Soldier : MonoBehaviour
             }
         }
 
-        
+
     }
 
     public bool ApplyDamage(float _damage)
@@ -320,10 +321,12 @@ public class Soldier : MonoBehaviour
             }
             if (home)
             {
+                /*
                 if (home.soldiers.Contains(this))
                 {
                     home.soldiers.Remove(this);
                 }
+                */
             }
             GameObject puff = Instantiate(PuffEffect);
             puff.transform.position = transform.position;
@@ -393,7 +396,7 @@ public class Soldier : MonoBehaviour
                 soldierWasNull = true;
                 continue;
             }
-            // get a vector pointing from them to me, indicating a direction for this soldier to move 
+            // get a vector pointing from them to me, indicating a direction for this soldier to move
             Vector3 soldierToThis = transform.position - soldier.transform.position;
             soldierToThis.y = 0f;
             float inverseMag = 1f / soldierToThis.magnitude;
