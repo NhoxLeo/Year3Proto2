@@ -11,7 +11,7 @@ public class Mine : ResourceStructure
     {
         base.Awake();
         resourceType = ResourceType.Metal;
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Mine];
+        structureName = StructureNames.MetalResource;
         health = maxHealth;
     }
 

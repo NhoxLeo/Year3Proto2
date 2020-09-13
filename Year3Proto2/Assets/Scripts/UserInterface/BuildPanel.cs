@@ -185,15 +185,15 @@ public class BuildPanel : MonoBehaviour
     {
         toolInfo.heading = new string[10];
         toolInfo.heading[(int)Buildings.None]               = "";
-        toolInfo.heading[(int)Buildings.Ballista]           = StructureManager.StructureNames[Buildings.Ballista];
-        toolInfo.heading[(int)Buildings.Catapult]           = StructureManager.StructureNames[Buildings.Catapult];
-        toolInfo.heading[(int)Buildings.Barracks]           = StructureManager.StructureNames[Buildings.Barracks];
-        toolInfo.heading[(int)Buildings.Farm]               = StructureManager.StructureNames[Buildings.Farm];
-        toolInfo.heading[(int)Buildings.Granary]            = StructureManager.StructureNames[Buildings.Granary];
-        toolInfo.heading[(int)Buildings.LumberMill]         = StructureManager.StructureNames[Buildings.LumberMill];
-        toolInfo.heading[(int)Buildings.LumberPile]         = StructureManager.StructureNames[Buildings.LumberPile];
-        toolInfo.heading[(int)Buildings.Mine]               = StructureManager.StructureNames[Buildings.Mine];
-        toolInfo.heading[(int)Buildings.MetalStorage]       = StructureManager.StructureNames[Buildings.MetalStorage];
+        toolInfo.heading[(int)Buildings.Ballista]           = StructureNames.BuildPanelToString(Buildings.Ballista);
+        toolInfo.heading[(int)Buildings.Catapult]           = StructureNames.BuildPanelToString(Buildings.Catapult);
+        toolInfo.heading[(int)Buildings.Barracks]           = StructureNames.BuildPanelToString(Buildings.Barracks);
+        toolInfo.heading[(int)Buildings.Farm]               = StructureNames.BuildPanelToString(Buildings.Farm);
+        toolInfo.heading[(int)Buildings.Granary]            = StructureNames.BuildPanelToString(Buildings.Granary);
+        toolInfo.heading[(int)Buildings.LumberMill]         = StructureNames.BuildPanelToString(Buildings.LumberMill);
+        toolInfo.heading[(int)Buildings.LumberPile]         = StructureNames.BuildPanelToString(Buildings.LumberPile);
+        toolInfo.heading[(int)Buildings.Mine]               = StructureNames.BuildPanelToString(Buildings.Mine);
+        toolInfo.heading[(int)Buildings.MetalStorage]       = StructureNames.BuildPanelToString(Buildings.MetalStorage);
 
         toolInfo.description = new string[10];
         toolInfo.description[(int)Buildings.None]           = "";
