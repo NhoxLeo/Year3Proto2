@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 public class FreezeTower : ProjectileDefenseStructure
 {
-    private const int CostLightningBoltBase = 3;
+    private const int CostIcicleBase = 3;
 
     protected override void Start()
     {
