@@ -145,22 +145,25 @@ public class Soldier : MonoBehaviour
             }
             else
             {
-                // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
-                Vector3 nextPathPoint = path.pathPoints[0];
-                nextPathPoint.y = transform.position.y;
-                float distanceToNextPathPoint = (transform.position - nextPathPoint).magnitude;
-                if (distanceToNextPathPoint < 0.25f)
+                if (path.pathPoints.Count > 0)
                 {
-                    // delete the first element in the path
-                    path.pathPoints.RemoveAt(0);
-                    if (path.pathPoints.Count < 1)
+                    // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
+                    Vector3 nextPathPoint = path.pathPoints[0];
+                    nextPathPoint.y = transform.position.y;
+                    float distanceToNextPathPoint = (transform.position - nextPathPoint).magnitude;
+                    if (distanceToNextPathPoint < 0.25f)
                     {
-                        haveHomePath = false;
+                        // delete the first element in the path
+                        path.pathPoints.RemoveAt(0);
+                        if (path.pathPoints.Count < 1)
+                        {
+                            haveHomePath = false;
+                        }
                     }
+                    Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                    LookAtPosition(newPosition);
+                    transform.position = newPosition;
                 }
-                Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
-                LookAtPosition(newPosition);
-                transform.position = newPosition;
             }
         }
         // else go straight to target
