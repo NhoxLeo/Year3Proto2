@@ -73,7 +73,7 @@ public class Barracks : DefenseStructure
     {
         base.Awake();
         SuperManager superMan = SuperManager.GetInstance();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Barracks];
+        structureName = StructureNames.Barracks;
         soldiers = new List<Soldier>();
         soldierPrefab = Resources.Load("Soldier") as GameObject;
         maxHealth = 200f;

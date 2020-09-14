@@ -9,6 +9,6 @@ public class HillEnvironment : EnvironmentStructure
     {
         base.Start();
         environmentType = EnvironmentType.hill;
-        structureName = "Hills Environment";
+        structureName = StructureNames.MetalEnvironment;
     }
 }

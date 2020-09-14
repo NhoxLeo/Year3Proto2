@@ -129,6 +129,33 @@ public static class StructureNames
     public const string MetalEnvironment = "Hill";
     public const string MetalResource = "Mine";
     public const string MetalStorage = "Metal Storage";
+
+    public static string BuildPanelToString(BuildPanel.Buildings _buildingID)
+    {
+        switch (_buildingID)
+        {
+            case BuildPanel.Buildings.Ballista:
+                return Ballista;
+            case BuildPanel.Buildings.Catapult:
+                return Catapult;
+            case BuildPanel.Buildings.Barracks:
+                return Barracks;
+            case BuildPanel.Buildings.Farm:
+                return FoodResource;
+            case BuildPanel.Buildings.LumberMill:
+                return LumberResource;
+            case BuildPanel.Buildings.Mine:
+                return MetalResource;
+            case BuildPanel.Buildings.Granary:
+                return FoodStorage;
+            case BuildPanel.Buildings.LumberPile:
+                return LumberStorage;
+            default:
+            case BuildPanel.Buildings.None:
+            case BuildPanel.Buildings.MetalStorage:
+                return MetalStorage;
+        }
+    }
 }
 
 [ExecuteInEditMode]
@@ -157,18 +184,6 @@ public class StructureManager : MonoBehaviour
     public bool useSeed = false;
     [HideInInspector]
     public int seed = 0;
-    public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
-    {
-        { BuildPanel.Buildings.Ballista, "Ballista Tower" },
-        { BuildPanel.Buildings.Catapult, "Catapult Tower" },
-        { BuildPanel.Buildings.Barracks, "Barracks" },
-        { BuildPanel.Buildings.Farm, "Farm" },
-        { BuildPanel.Buildings.Granary, "Granary" },
-        { BuildPanel.Buildings.LumberMill, "Lumber Mill" },
-        { BuildPanel.Buildings.LumberPile, "Lumber Pile" },
-        { BuildPanel.Buildings.Mine, "Mine" },
-        { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
-    };
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
@@ -183,15 +198,15 @@ public class StructureManager : MonoBehaviour
     };
     public static Dictionary<string, BuildPanel.Buildings> StructureIDs = new Dictionary<string, BuildPanel.Buildings>
     {
-        { StructureNames[BuildPanel.Buildings.Ballista], BuildPanel.Buildings.Ballista },
-        { StructureNames[BuildPanel.Buildings.Catapult], BuildPanel.Buildings.Catapult },
-        { StructureNames[BuildPanel.Buildings.Barracks], BuildPanel.Buildings.Barracks },
-        { StructureNames[BuildPanel.Buildings.Farm], BuildPanel.Buildings.Farm },
-        { StructureNames[BuildPanel.Buildings.Granary], BuildPanel.Buildings.Granary },
-        { StructureNames[BuildPanel.Buildings.LumberMill], BuildPanel.Buildings.LumberMill },
-        { StructureNames[BuildPanel.Buildings.LumberPile], BuildPanel.Buildings.LumberPile },
-        { StructureNames[BuildPanel.Buildings.Mine], BuildPanel.Buildings.Mine },
-        { StructureNames[BuildPanel.Buildings.MetalStorage], BuildPanel.Buildings.MetalStorage }
+        { StructureNames.Ballista, BuildPanel.Buildings.Ballista },
+        { StructureNames.Catapult, BuildPanel.Buildings.Catapult },
+        { StructureNames.Barracks, BuildPanel.Buildings.Barracks },
+        { StructureNames.FoodResource, BuildPanel.Buildings.Farm },
+        { StructureNames.FoodStorage, BuildPanel.Buildings.Granary },
+        { StructureNames.LumberResource, BuildPanel.Buildings.LumberMill },
+        { StructureNames.LumberStorage, BuildPanel.Buildings.LumberPile },
+        { StructureNames.MetalResource, BuildPanel.Buildings.Mine },
+        { StructureNames.MetalStorage, BuildPanel.Buildings.MetalStorage }
     };
     public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
     {
@@ -207,18 +222,18 @@ public class StructureManager : MonoBehaviour
     };
     public Dictionary<string, ResourceBundle> structureCosts = new Dictionary<string, ResourceBundle>
     {
-        // NAME                                    wC       mC      fC
-        { "Ballista Tower",     new ResourceBundle(150,     50,     0) },
-        { "Catapult Tower",     new ResourceBundle(200,     250,    0) },
-        { "Barracks",           new ResourceBundle(200,     100,    0) },
+        // NAME                                                wC       mC      fC
+        { StructureNames.Ballista,          new ResourceBundle(150,     50,     0) },
+        { StructureNames.Catapult,          new ResourceBundle(200,     250,    0) },
+        { StructureNames.Barracks,          new ResourceBundle(200,     100,    0) },
 
-        { "Farm",               new ResourceBundle(40,      0,      0) },
-        { "Lumber Mill",        new ResourceBundle(60,      20,     0) },
-        { "Mine",               new ResourceBundle(100,     20,     0) },
+        { StructureNames.FoodResource,      new ResourceBundle(40,      0,      0) },
+        { StructureNames.LumberResource,    new ResourceBundle(60,      20,     0) },
+        { StructureNames.MetalResource,     new ResourceBundle(100,     20,     0) },
 
-        { "Granary",            new ResourceBundle(120,     0,      0) },
-        { "Lumber Pile",        new ResourceBundle(120,     0,      0) },
-        { "Metal Storage",      new ResourceBundle(120,     80,     0) }
+        { StructureNames.FoodStorage,       new ResourceBundle(120,     0,      0) },
+        { StructureNames.LumberStorage,     new ResourceBundle(120,     0,      0) },
+        { StructureNames.MetalStorage,      new ResourceBundle(120,     80,     0) }
     };
     private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
     [HideInInspector]
@@ -265,40 +280,24 @@ public class StructureManager : MonoBehaviour
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            // NAME                                                     NAME                                                                       wC       mC      fC
-            { "Longhaus",           new StructureDefinition(Resources.Load("Structures/Longhaus")               as GameObject,  new ResourceBundle(600,     200,    0)) },
+            // NAME                                                                    NAME                                                                    wC       mC      fC
+            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")               as GameObject,  new ResourceBundle(600,     200,    0)) },
 
-            { "Ballista Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower") as GameObject,  new ResourceBundle(150,     50,     0)) },
-            { "Catapult Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower") as GameObject,  new ResourceBundle(200,     250,    0)) },
-            { "Barracks",           new StructureDefinition(Resources.Load("Structures/Defense/Barracks")       as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower") as GameObject,  new ResourceBundle(150,     50,     0)) },
+            { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower") as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")       as GameObject,  new ResourceBundle(200,     250,    0)) },
 
-            { "Farm",               new StructureDefinition(Resources.Load("Structures/Resource/Farm")          as GameObject,  new ResourceBundle(40,      0,      0)) },
-            { "Lumber Mill",        new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")   as GameObject,  new ResourceBundle(60,      20,     0)) },
-            { "Mine",               new StructureDefinition(Resources.Load("Structures/Resource/Mine")          as GameObject,  new ResourceBundle(100,     20,     0)) },
+            { StructureNames.FoodResource,      new StructureDefinition(Resources.Load("Structures/Resource/Farm")          as GameObject,  new ResourceBundle(40,      0,      0)) },
+            { StructureNames.LumberResource,    new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")   as GameObject,  new ResourceBundle(60,      20,     0)) },
+            { StructureNames.MetalResource,     new StructureDefinition(Resources.Load("Structures/Resource/Mine")          as GameObject,  new ResourceBundle(100,     20,     0)) },
 
-            { "Granary",            new StructureDefinition(Resources.Load("Structures/Storage/Granary")        as GameObject,  new ResourceBundle(120,     0,      0)) },
-            { "Lumber Pile",        new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")    as GameObject,  new ResourceBundle(120,     0,      0)) },
-            { "Metal Storage",      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")  as GameObject,  new ResourceBundle(120,     80,     0)) },
+            { StructureNames.FoodStorage,       new StructureDefinition(Resources.Load("Structures/Storage/Granary")        as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { StructureNames.LumberStorage,     new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")    as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { StructureNames.MetalStorage,      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")  as GameObject,  new ResourceBundle(120,     80,     0)) },
 
-            { "Forest Environment", new StructureDefinition(Resources.Load("Environment/Forest")    as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { "Hills Environment",  new StructureDefinition(Resources.Load("Environment/Hills")     as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { "Plains Environment", new StructureDefinition(Resources.Load("Environment/Plains")    as GameObject,  new ResourceBundle(0,       0,      0)) },
-        };
-
-        structureCosts = new Dictionary<string, ResourceBundle>
-        {
-            // NAME                                    wC       mC      fC
-            { "Ballista Tower",     new ResourceBundle(150,     50,     0) },
-            { "Catapult Tower",     new ResourceBundle(200,     250,    0) },
-            { "Barracks",           new ResourceBundle(200,     100,    0) },
-
-            { "Farm",               new ResourceBundle(40,      0,      0) },
-            { "Lumber Mill",        new ResourceBundle(60,      20,     0) },
-            { "Mine",               new ResourceBundle(100,     20,     0) },
-
-            { "Granary",            new ResourceBundle(120,     0,      0) },
-            { "Lumber Pile",        new ResourceBundle(120,     0,      0) },
-            { "Metal Storage",      new ResourceBundle(120,     80,     0) }
+            { StructureNames.LumberEnvironment, new StructureDefinition(Resources.Load("Environment/Forest")                as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Environment/Hills")                 as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Environment/Plains")                as GameObject,  new ResourceBundle(0,       0,      0)) },
         };
     }
 
@@ -769,17 +768,17 @@ public class StructureManager : MonoBehaviour
             {
                 string attachedName = attached.GetStructureName();
                 string structName = structure.GetStructureName();
-                if (attachedName == "Plains Environment" && structName == "Farm")
+                if (attachedName == StructureNames.FoodEnvironment && structName == StructureNames.FoodResource)
                 {
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Food));
                     structure.GetComponent<Farm>().wasPlacedOnPlains = true;
                 }
-                else if (attachedName == "Forest Environment" && structName == "Lumber Mill")
+                else if (attachedName == StructureNames.LumberEnvironment && structName == StructureNames.LumberResource)
                 {
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Wood));
                     structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
                 }
-                else if (attachedName == "Hills Environment" && structName == "Mine")
+                else if (attachedName == StructureNames.MetalEnvironment && structName == StructureNames.MetalResource)
                 {
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Metal));
                     structure.GetComponent<Mine>().wasPlacedOnHills = true;
@@ -799,7 +798,7 @@ public class StructureManager : MonoBehaviour
                 }
                 firstStructurePlaced = true;
             }
-            if (structType == StructureType.Resource || structType == StructureType.Attack)
+            if (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)))
             {
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(structure);
@@ -950,7 +949,7 @@ public class StructureManager : MonoBehaviour
 
     public bool SetBuilding(BuildPanel.Buildings _buildingID)
     {
-        return SetBuilding(StructureNames[_buildingID]);
+        return SetBuilding(StructureNames.BuildPanelToString(_buildingID));
     }
 
     public void SetIsOverUI(bool _isOverUI)
@@ -999,21 +998,21 @@ public class StructureManager : MonoBehaviour
         while (hillsPlaced < hillsTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-            PGRecursiveWander("Hills Environment", tile, ref hillsPlaced, hillsTotal, recursiveHGrowthChance);
+            PGRecursiveWander(StructureNames.MetalEnvironment, tile, ref hillsPlaced, hillsTotal, recursiveHGrowthChance);
         }
 
         int forestPlaced = 0;
         while (forestPlaced < forestTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-            PGRecursiveWander("Forest Environment", tile, ref forestPlaced, forestTotal, recursiveFGrowthChance);
+            PGRecursiveWander(StructureNames.LumberEnvironment, tile, ref forestPlaced, forestTotal, recursiveFGrowthChance);
         }
 
         int plainsPlaced = 0;
         while (plainsPlaced < plainsTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-            PGRecursiveWander("Plains Environment", tile, ref plainsPlaced, plainsTotal, recursivePGrowthChance);
+            PGRecursiveWander(StructureNames.FoodEnvironment, tile, ref plainsPlaced, plainsTotal, recursivePGrowthChance);
         }
     }
 

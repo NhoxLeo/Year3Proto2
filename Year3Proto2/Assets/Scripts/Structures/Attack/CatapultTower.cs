@@ -19,7 +19,7 @@ public class CatapultTower : AttackStructure
     protected override void Awake()
     {
         base.Awake();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
+        structureName = StructureNames.Catapult;
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification)) { health = maxHealth *= 1.5f; }
         maxHealth = 450f;
         health = maxHealth;

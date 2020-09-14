@@ -9,7 +9,7 @@ public class LumberPile : StorageStructure
         base.Awake();
         resourceType = ResourceType.Wood;
         storage = 500;
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberPile];
+        structureName = StructureNames.LumberStorage;
         maxHealth = 200f;
         health = maxHealth;
     }

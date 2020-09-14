@@ -8,7 +8,7 @@ public class Catapult : ProjectileDefenseStructure
     protected override void Start()
     {
         base.Start();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
+        structureName = StructureNames.Catapult;
     }
 
     public override void CheckResearch()

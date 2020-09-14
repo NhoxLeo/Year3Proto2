@@ -22,7 +22,7 @@ public class BallistaTower : AttackStructure
         base.Awake();
         maxHealth = 350f;
         health = maxHealth;
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Ballista];
+        structureName = StructureNames.Ballista;
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
     }
 

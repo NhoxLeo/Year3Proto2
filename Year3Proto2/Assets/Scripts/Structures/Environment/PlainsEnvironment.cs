@@ -9,6 +9,6 @@ public class PlainsEnvironment : EnvironmentStructure
     {
         base.Start();
         environmentType = EnvironmentType.plains;
-        structureName = "Plains Environment";
+        structureName = StructureNames.FoodEnvironment;
     }
 }
