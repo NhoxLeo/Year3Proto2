@@ -34,7 +34,6 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private Image statIcon;                     // Icon shown next to stat value
 
     [Header("Buttons")]
-    //[SerializeField] private EnvInfo repairTooltip;            // Tooltip that appears over repair and destroy buttons
     [SerializeField] private Button repairButton;                // Button for repairing buildings
     [SerializeField] private Button destroyButton;               // Button to destroy buildings
     [SerializeField] private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
@@ -45,14 +44,14 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private RectTransform tooltipTransform;
     [SerializeField] private TMP_Text tooltipHeading;
     [SerializeField] private GameObject costComponent;
-    [SerializeField] private TMP_Text woodCost;
-    [SerializeField] private TMP_Text metalCost;
+    [SerializeField] private TMP_Text woodText;
+    [SerializeField] private TMP_Text metalText;
     [SerializeField] private TMP_Text tooltipDescription;
     private int tooltipMode = -1;
 
     [Header("Settings")]
-    public bool doAutoUpdate;                   // Whether to automatically update info panel
-    public float updateInterval = 0.25f;        // Time between info panel updates
+    public bool doAutoUpdate;                                    // Whether to automatically update info panel
+    public float updateInterval = 0.25f;                         // Time between info panel updates
     private float updateTimer;
 
     private void Start()
@@ -354,8 +353,8 @@ public class BuildingInfo : MonoBehaviour
         if (repairCost.woodCost + repairCost.metalCost != 0)
         {
             costComponent.SetActive(true);
-            woodCost.text = repairCost.woodCost.ToString();
-            metalCost.text = repairCost.metalCost.ToString();
+            woodText.text = repairCost.woodCost.ToString();
+            metalText.text = repairCost.metalCost.ToString();
 
             tooltipDescription.gameObject.SetActive(true);
             tooltipDescription.text = repairButton.interactable ? "" : "Cannot repair while recently damaged";
@@ -379,8 +378,8 @@ public class BuildingInfo : MonoBehaviour
         tooltipHeading.text = "Destroy Building";
 
         costComponent.SetActive(true);
-        woodCost.text = "+" + compensation.woodCost;
-        metalCost.text = "+" + compensation.metalCost;
+        woodText.text = "+" + compensation.woodCost;
+        metalText.text = "+" + compensation.metalCost;
         tooltipDescription.gameObject.SetActive(true);
         tooltipDescription.text = "Villagers will be evacuated";
 
