@@ -39,4 +39,21 @@ public class Catapult : ProjectileDefenseStructure
             boulder.SetTarget(_target);
         }
     }
+
+    public override void CheckLevel()
+    {
+        switch (level)
+        {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+        }
+    }
 }

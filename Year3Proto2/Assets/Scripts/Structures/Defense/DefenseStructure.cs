@@ -3,6 +3,7 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
+    [Range(1, 5)] protected int level = 1;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
     protected Transform target;
@@ -51,6 +52,8 @@ public abstract class DefenseStructure : Structure
     {
         return enemies;
     }
+
+    public abstract void CheckLevel();
 
     public abstract void CheckResearch();
 }
