@@ -143,7 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e73b9fdac6868c249a7a41ba53ca4187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 2176621815727611739}
   puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
     type: 3}
   health: 10
@@ -290,7 +289,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1272463191237899426}
-  - component: {fileID: 1272463191237899429}
+  - component: {fileID: 5160628931547931996}
   m_Layer: 13
   m_Name: StructureTriggerObject
   m_TagString: Untagged
@@ -306,14 +305,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1272463191237899427}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.138, z: 0.032}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4317903546219083560}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1272463191237899429
-BoxCollider:
+--- !u!136 &5160628931547931996
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -322,9 +321,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.20845282, y: 0.31216615, z: 0.18214643}
-  m_Center: {x: -0.0052174926, y: 0.15099564, z: 0.027684033}
+  m_Radius: 0.08
+  m_Height: 0.3
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1528407352235438633
 GameObject:
   m_ObjectHideFlags: 0

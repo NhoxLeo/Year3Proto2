@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-public class FreezeTower : ProjectileDefenseStructure
+﻿using System.Collections.Generic;
+using UnityEngine;
+public class FreezeTower : DefenseStructure
 {
-    private const int CostIcicleBase = 3;
-
     protected override void Start()
     {
         base.Start();
@@ -18,20 +17,6 @@ public class FreezeTower : ProjectileDefenseStructure
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
-        }
-    }
-
-    public override void Launch(Transform _target)
-    {
-        Transform projectile = Instantiate(projectilePrefab, transform);
-        Icicle icicle = projectile.GetComponent<Icicle>();
-        if (icicle)
-        {
-            float durationFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerStunDuration) ? 1.6f : 1.0f;
-
-            // Duration of stun 
-            icicle.SetStunDuration(durationFactor);
-            icicle.SetTarget(_target);
         }
     }
 }
