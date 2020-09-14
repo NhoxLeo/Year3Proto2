@@ -364,6 +364,11 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    public Enemy[] GetEnemies()
+    {
+        return enemies.ToArray();
+    }
+
     public int GetWaveCurrent()
     {
         return waveCounter;

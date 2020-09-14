@@ -102,7 +102,7 @@ public class Airship : MonoBehaviour
                     {
                         airshipState = AirshipState.Deploy;
                         Destroy(pointer.gameObject);
-                        StartCoroutine(Deploy(1.5f));
+                        StartCoroutine(Deploy(0.5f));
                     }
                     break;
             }

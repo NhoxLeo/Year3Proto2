@@ -5,7 +5,7 @@ using UnityEngine;
 
 public abstract class AttackStructure : Structure
 {
-    protected List<GameObject> enemies;
+    protected List<GameObject> enemies = new List<GameObject>();
     protected GameObject target = null;
     protected GameObject puffPrefab;
     protected ResourceBundle attackCost;
@@ -15,12 +15,11 @@ public abstract class AttackStructure : Structure
 
     public List<GameObject> GetEnemies()
     {
-        return enemies ?? (enemies = new List<GameObject>());
+        return enemies;
     }
 
     public void DetectEnemies()
     {
-        GetEnemies();
         SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
         foreach (Enemy enemy in FindObjectsOfType<Enemy>())
         {
@@ -89,15 +88,5 @@ public abstract class AttackStructure : Structure
     {
         base.ShowRangeDisplay(_active);
         attackingRange.GetChild(0).gameObject.SetActive(_active);
-    }
-
-    public override void OnSelected()
-    {
-        base.OnSelected();
-    }
-
-    public override void OnDeselected()
-    {
-        base.OnDeselected();
     }
 }

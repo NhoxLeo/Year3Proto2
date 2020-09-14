@@ -110,6 +110,27 @@ public struct ProceduralGenerationParameters
     public int seed;
 }
 
+public static class StructureNames
+{
+    public const string Longhaus = "Longhaus";
+
+    public const string Barracks = "Barracks";
+    public const string Ballista = "Ballista";
+    public const string Catapult = "Catapult";
+
+    public const string FoodEnvironment = "Field";
+    public const string FoodResource = "Farm";
+    public const string FoodStorage = "Granary";
+
+    public const string LumberEnvironment = "Forest";
+    public const string LumberResource = "Lumber Mill";
+    public const string LumberStorage = "Lumber Pile";
+
+    public const string MetalEnvironment = "Hill";
+    public const string MetalResource = "Mine";
+    public const string MetalStorage = "Metal Storage";
+}
+
 [ExecuteInEditMode]
 public class StructureManager : MonoBehaviour
 {
@@ -239,29 +260,45 @@ public class StructureManager : MonoBehaviour
     {
         return selectedStructure == _structure;
     }
-    
+
     private void DefineDictionaries()
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            // NAME                                                     NAME                                                        wC       mC      fC
-            { "Longhaus",           new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(600,     200,    0)) },
+            // NAME                                                     NAME                                                                       wC       mC      fC
+            { "Longhaus",           new StructureDefinition(Resources.Load("Structures/Longhaus")               as GameObject,  new ResourceBundle(600,     200,    0)) },
 
-            { "Ballista Tower",     new StructureDefinition(Resources.Load("Archer Tower") as GameObject,       new ResourceBundle(150,     50,     0)) },
-            { "Catapult Tower",     new StructureDefinition(Resources.Load("Catapult Tower") as GameObject,     new ResourceBundle(200,     250,    0)) },
-            { "Barracks",           new StructureDefinition(Resources.Load("Barracks") as GameObject,           new ResourceBundle(200,     250,    0)) },
+            { "Ballista Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower") as GameObject,  new ResourceBundle(150,     50,     0)) },
+            { "Catapult Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower") as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { "Barracks",           new StructureDefinition(Resources.Load("Structures/Defense/Barracks")       as GameObject,  new ResourceBundle(200,     250,    0)) },
 
-            { "Farm",               new StructureDefinition(Resources.Load("Farm") as GameObject,               new ResourceBundle(40,      0,      0)) },
-            { "Lumber Mill",        new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(60,      20,     0)) },
-            { "Mine",               new StructureDefinition(Resources.Load("Mine") as GameObject,               new ResourceBundle(100,     20,     0)) },
+            { "Farm",               new StructureDefinition(Resources.Load("Structures/Resource/Farm")          as GameObject,  new ResourceBundle(40,      0,      0)) },
+            { "Lumber Mill",        new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")   as GameObject,  new ResourceBundle(60,      20,     0)) },
+            { "Mine",               new StructureDefinition(Resources.Load("Structures/Resource/Mine")          as GameObject,  new ResourceBundle(100,     20,     0)) },
 
-            { "Granary",            new StructureDefinition(Resources.Load("Granary") as GameObject,            new ResourceBundle(120,     0,      0)) },
-            { "Lumber Pile",        new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,        new ResourceBundle(120,     0,      0)) },
-            { "Metal Storage",      new StructureDefinition(Resources.Load("Metal Storage") as GameObject,      new ResourceBundle(120,     80,     0)) },
+            { "Granary",            new StructureDefinition(Resources.Load("Structures/Storage/Granary")        as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { "Lumber Pile",        new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")    as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { "Metal Storage",      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")  as GameObject,  new ResourceBundle(120,     80,     0)) },
 
-            { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0,       0,      0)) },
-            { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0,       0,      0)) },
-            { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Forest Environment", new StructureDefinition(Resources.Load("Environment/Forest")    as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Hills Environment",  new StructureDefinition(Resources.Load("Environment/Hills")     as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Plains Environment", new StructureDefinition(Resources.Load("Environment/Plains")    as GameObject,  new ResourceBundle(0,       0,      0)) },
+        };
+
+        structureCosts = new Dictionary<string, ResourceBundle>
+        {
+            // NAME                                    wC       mC      fC
+            { "Ballista Tower",     new ResourceBundle(150,     50,     0) },
+            { "Catapult Tower",     new ResourceBundle(200,     250,    0) },
+            { "Barracks",           new ResourceBundle(200,     100,    0) },
+
+            { "Farm",               new ResourceBundle(40,      0,      0) },
+            { "Lumber Mill",        new ResourceBundle(60,      20,     0) },
+            { "Mine",               new ResourceBundle(100,     20,     0) },
+
+            { "Granary",            new ResourceBundle(120,     0,      0) },
+            { "Lumber Pile",        new ResourceBundle(120,     0,      0) },
+            { "Metal Storage",      new ResourceBundle(120,     80,     0) }
         };
     }
 
@@ -590,7 +627,7 @@ public class StructureManager : MonoBehaviour
                     return;
                 }
                 if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
-                { 
+                {
                     if (hitGround.transform.GetComponent<TileBehaviour>().GetPlayable())
                     {
                         tileHighlight.gameObject.SetActive(true);
@@ -624,13 +661,13 @@ public class StructureManager : MonoBehaviour
             TileBehaviour tile = hitGround.transform.GetComponent<TileBehaviour>();
             if (tile.GetPlayable())
             {
-                bool canPlaceHere = false;
+                bool canPlaceHere = true;
                 // If the tile we hit has an attached object...
                 Structure attached = tile.GetAttached();
                 StructureType newStructureType = structure.GetStructureType();
                 if (attached)
                 {
-                    StructureType attachedStructureType = attached.GetStructureType();
+                    canPlaceHere = false;
                     Vector3 hitPos = hitGround.point;
                     hitPos.y = structure.sitHeight;
                     structure.transform.position = hitPos;
@@ -640,46 +677,17 @@ public class StructureManager : MonoBehaviour
                     if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                     if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
 
-                    if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill"))
+                    if (attached.GetStructureType() == StructureType.Environment)
                     {
-                        if (!attached.GetComponent<EnvironmentStructure>().GetExploited())
-                        {
-                            canPlaceHere = true;
-                        }
+                        canPlaceHere = true;
                     }
-                    else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine"))
-                    {
-                        if (!attached.GetComponent<EnvironmentStructure>().GetExploited())
-                        {
-                            canPlaceHere = true;
-                        }
-                    }
-                    else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm"))
-                    {
-                        if (!attached.GetComponent<EnvironmentStructure>().GetExploited())
-                        {
-                            canPlaceHere = true;
-                        }
-                    }
-                    else if (attachedStructureType == StructureType.Environment)
-                    {
-                        if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense || newStructureType == StructureType.Storage)
-                        {
-                            canPlaceHere = true;
-                        }
-                    }
-                }
-                //else { canPlaceHere = hitFogMask; }
-                else
-                {
-                    canPlaceHere = true;
                 }
                 // if the structure can be placed here...
                 if (canPlaceHere)
                 {
-                    if (structure.GetStructureType() == StructureType.Attack)
+                    if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense)
                     {
-                        structure.GetComponent<AttackStructure>().ShowRangeDisplay(true);
+                        structure.ShowRangeDisplay(true);
                     }
 
                     if (attached)
@@ -759,25 +767,22 @@ public class StructureManager : MonoBehaviour
             Instantiate(buildingPuff, structure.transform.position, Quaternion.Euler(-90f, 0f, 0f));
             if (attached)
             {
-                StructureType attachedStructType = attached.GetStructureType();
-                if (attachedStructType == StructureType.Environment && structType == StructureType.Resource)
+                string attachedName = attached.GetStructureName();
+                string structName = structure.GetStructureName();
+                if (attachedName == "Plains Environment" && structName == "Farm")
                 {
-                    messageBox.HideMessage();
-                    switch (structure.GetStructureName())
-                    {
-                        case "Lumber Mill":
-                            GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Wood));
-                            structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
-                            break;
-                        case "Farm":
-                            GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Food));
-                            structure.GetComponent<Farm>().wasPlacedOnPlains = true;
-                            break;
-                        case "Mine":
-                            GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Metal));
-                            structure.GetComponent<Mine>().wasPlacedOnHills = true;
-                            break;
-                    }
+                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Food));
+                    structure.GetComponent<Farm>().wasPlacedOnPlains = true;
+                }
+                else if (attachedName == "Forest Environment" && structName == "Lumber Mill")
+                {
+                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Wood));
+                    structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
+                }
+                else if (attachedName == "Hills Environment" && structName == "Mine")
+                {
+                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Metal));
+                    structure.GetComponent<Mine>().wasPlacedOnHills = true;
                 }
                 Destroy(attached.gameObject);
             }
@@ -971,7 +976,7 @@ public class StructureManager : MonoBehaviour
     public void ProceduralGeneration(bool _useSeed = false, int _seed = 0)
     {
         if (_useSeed) { UnityEngine.Random.InitState(_seed); }
-        
+
         // find our totals
         int forestTotal = UnityEngine.Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
         int hillsTotal = UnityEngine.Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
@@ -1009,134 +1014,6 @@ public class StructureManager : MonoBehaviour
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
             PGRecursiveWander("Plains Environment", tile, ref plainsPlaced, plainsTotal, recursivePGrowthChance);
-        }
-    }
-
-    public void ProceduralGenerationA(int _seed)
-    {
-
-        if (_seed != 0) { UnityEngine.Random.InitState(_seed); }
-
-        // find our totals
-        int forestTotal = UnityEngine.Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
-        int hillsTotal = UnityEngine.Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
-        int plainsTotal = UnityEngine.Random.Range(plainsEnvironmentBounds.x, plainsEnvironmentBounds.y + 1);
-
-        // get all the tiles
-        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
-        PGPlayableTiles = new List<TileBehaviour>();
-        for (int i = 0; i < tiles.Length; i++)
-        {
-            // if the tile is playable and it doesn't have a structure already
-            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
-            {
-                PGPlayableTiles.Add(tiles[i]);
-            }
-        }
-
-        // Generate Forests
-        int forestPlaced = 0;
-        while (forestPlaced < forestTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Forest Environment", tile);
-
-            // update forestPlaced
-            forestPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (forestPlaced == forestTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = tile.GetAdjacentTiles();
-                if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
-                {
-                    TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
-                    if (PGPlayableTiles.Contains(tileI))
-                    {
-                        PGInstatiateEnvironment("Forest Environment", tileI);
-
-                        // update forestPlaced
-                        forestPlaced++;
-                        PGPlayableTiles.Remove(tileI);
-                        if (forestPlaced == forestTotal) { break; }
-                    }
-                }
-            }
-        }
-
-        // Generate Hills
-        int hillsPlaced = 0;
-        while (hillsPlaced < hillsTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Hills Environment", tile);
-
-            // update hillsPlaced
-            hillsPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (hillsPlaced == hillsTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = tile.GetAdjacentTiles();
-                if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
-                {
-                    TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
-                    if (PGPlayableTiles.Contains(tileI))
-                    {
-                        PGInstatiateEnvironment("Hills Environment", tileI);
-
-                        // update hillsPlaced
-                        hillsPlaced++;
-                        PGPlayableTiles.Remove(tileI);
-                        if (hillsPlaced == hillsTotal) { break; }
-                    }
-                }
-            }
-        }
-
-        // Generate Plains
-        int plainsPlaced = 0;
-        while (plainsPlaced < plainsTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Plains Environment", tile);
-
-            // update plainsPlaced
-            plainsPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (plainsPlaced == plainsTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = tile.GetAdjacentTiles();
-                if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
-                {
-                    TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
-                    if (PGPlayableTiles.Contains(tileI))
-                    {
-                        PGInstatiateEnvironment("Plains Environment", tileI);
-
-                        // update plainsPlaced
-                        plainsPlaced++;
-                        PGPlayableTiles.Remove(tileI);
-                        if (plainsPlaced == plainsTotal) { break; }
-                    }
-                }
-            }
         }
     }
 
@@ -1313,24 +1190,24 @@ public class StructureManager : MonoBehaviour
         {
             if (_saveData.structure == "Farm")
             {
-                newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn; 
+                newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn;
             }
-            if (_saveData.structure == "Mine") 
-            { 
-                newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn; 
+            if (_saveData.structure == "Mine")
+            {
+                newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn;
             }
-            if (_saveData.structure == "Lumber Mill") 
-            { 
-                newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn; 
+            if (_saveData.structure == "Lumber Mill")
+            {
+                newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn;
             }
         }
         Barracks barracksComponent = newStructure.gameObject.GetComponent<Barracks>();
-        if (barracksComponent) 
-        { 
-            barracksComponent.SetTimeTrained(_saveData.timeTrained);
+        if (barracksComponent)
+        {
+            //barracksComponent.SetTimeTrained(_saveData.timeTrained);
         }
         if (_saveData.exploited)
-        { 
+        {
             EnvironmentStructure environmentComponent = newStructure.gameObject.GetComponent<EnvironmentStructure>();
             if (environmentComponent)
             {
@@ -1389,6 +1266,15 @@ public class StructureManager : MonoBehaviour
     public Dictionary<int, Structure>.ValueCollection GetPlayerStructures()
     {
         return playerStructureDict.Values;
+    }
+
+    public void OnStructureDestroyed(Structure _structure)
+    {
+        DecreaseStructureCost(_structure.GetStructureName());
+        if (playerStructureDict.ContainsKey(_structure.GetID()))
+        {
+            playerStructureDict.Remove(_structure.GetID());
+        }
     }
 }
 

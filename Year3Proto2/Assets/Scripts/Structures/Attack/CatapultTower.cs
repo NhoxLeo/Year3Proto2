@@ -33,22 +33,22 @@ public class CatapultTower : AttackStructure
         base.Start();
         SetFirerate();
         SuperManager superMan = SuperManager.GetInstance();
-        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) 
-        { 
-            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; 
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange))
+        {
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
         }
-        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) 
-        { 
-            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; 
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange))
+        {
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
         attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);
         if (superMan.GetResearchComplete(SuperManager.CatapultPower))
         {
             boulderDamage *= 1.3f;
         }
-        if (superMan.GetResearchComplete(SuperManager.CatapultSuper)) 
-        { 
-            boulderExplosionRadius *= 1.5f; 
+        if (superMan.GetResearchComplete(SuperManager.CatapultSuper))
+        {
+            boulderExplosionRadius *= 1.5f;
         }
     }
 

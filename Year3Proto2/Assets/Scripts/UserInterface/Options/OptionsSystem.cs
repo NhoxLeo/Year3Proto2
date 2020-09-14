@@ -47,8 +47,9 @@ public class OptionsSystem : MonoBehaviour
 
         optionObjects.Add(InstantiateOption("QUALITY",
             new OptionSwitcherData(0, 0, QualitySettings.names.ToArray(),
-               delegate {
-                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "RESOLUTION");
+               delegate
+               {
+                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "QUALITY");
                    if (optionSwitcher)
                    {
                        OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
@@ -58,6 +59,38 @@ public class OptionsSystem : MonoBehaviour
                }
             ), switcherPrefab, graphics)
         );
+
+        optionObjects.Add(InstantiateOption("TEXTURE_QUALITY",
+            new OptionSwitcherData(0, 0, QualitySettings.names.ToArray(),
+               delegate
+               {
+                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "TEXTURE_QUALITY");
+                   if (optionSwitcher)
+                   {
+                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
+                       string[] names = QualitySettings.names;
+                       QualitySettings.SetQualityLevel(optionSwitcherData.value);
+                   }
+               }
+            ), switcherPrefab, graphics)
+        );
+
+        optionObjects.Add(InstantiateOption("SHADOW_QUALITY",
+            new OptionSwitcherData(0, 0, QualitySettings.names.ToArray(),
+               delegate
+               {
+                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "SHADOW_QUALITY");
+                   if (optionSwitcher)
+                   {
+                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
+                       string[] names = QualitySettings.names;
+                       QualitySettings.SetQualityLevel(optionSwitcherData.value);
+                   }
+               }
+            ), switcherPrefab, graphics)
+        );
+
+
 
         /* 
         [Switchers]

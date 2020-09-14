@@ -1,22 +1,56 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
+    protected ResourceBundle attackCost;
+    protected List<Transform> enemies = new List<Transform>();
+    protected Transform target;
+
+    private Transform attackingRange;
+
+    public void DetectEnemies()
+    {
+        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+            if (distanceFromEnemy <= rangeCollider.radius)
+            {
+                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+            }
+        }
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        attackingRange = transform.Find("Range");
+    }
+
     protected override void Start()
     {
         base.Start();
         structureType = StructureType.Defense;
+        DetectEnemies();
     }
 
-    public override void OnSelected()
+    protected override void Update()
     {
-        base.OnSelected();
+        base.Update();
+        enemies.RemoveAll(enemy => !enemy);
     }
 
-    public override void OnDeselected()
+    public override void ShowRangeDisplay(bool _active)
     {
-        base.OnDeselected();
+        base.ShowRangeDisplay(_active);
+        attackingRange.GetChild(0).gameObject.SetActive(_active);
     }
+
+    public List<Transform> GetEnemies()
+    {
+        return enemies;
+    }
+
+    public abstract void CheckResearch();
 }

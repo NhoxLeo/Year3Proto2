@@ -46,12 +46,21 @@ public abstract class Enemy : MonoBehaviour
     protected float finalSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+
+    // Stun
+    protected bool stunned = false;
+    protected float stunTime = 1.0f;
+    protected float stunCurrentTime = 0.0f;
+
+
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
     protected int observers = 0;
     protected bool hasPath = false;
     protected EnemyPath path;
+    protected float updatePathTimer = 0f;
+    protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
     public abstract void Action();
@@ -67,7 +76,14 @@ public abstract class Enemy : MonoBehaviour
             startTile = null,
             validStructureTypes = structureTypes
         };
+    }
 
+    public void Stun(float _stunDuration)
+    {
+        stunned = true;
+        stunCurrentTime = _stunDuration;
+        animator.SetBool("Attack", false);
+        animator.SetBool("Walk", false);
     }
 
     public virtual void OnKill()
@@ -103,6 +119,16 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (stunned)
+        {
+            stunCurrentTime -= Time.deltaTime;
+            if(stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.SetBool("Walk", true);
+            }
+        }
+
         if (GlobalData.longhausDead)
         {
             if (!delayedDeathCalled)
@@ -124,7 +150,7 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public void RequestNewPath()
+    public bool RequestNewPath()
     {
         // if the spawner returns true, a valid path was found...
         if (PathManager.GetInstance().RequestPath(signature, ref path))
@@ -132,7 +158,9 @@ public abstract class Enemy : MonoBehaviour
             hasPath = true;
             target = path.target;
             enemyState = EnemyState.Walk;
+            return true;
         }
+        return false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -181,7 +209,7 @@ public abstract class Enemy : MonoBehaviour
         Vector3 toTarget = path.pathPoints[0] - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        if (toTarget.magnitude > 0.5f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -191,7 +219,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;
@@ -212,7 +240,7 @@ public abstract class Enemy : MonoBehaviour
         Vector3 toTarget = target.transform.position - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        if (toTarget.magnitude > 0.5f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -222,7 +250,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;
@@ -292,5 +320,14 @@ public abstract class Enemy : MonoBehaviour
     public bool IsBeingObserved()
     {
         return observers > 0;
+    }
+
+    public TileBehaviour GetCurrentTile()
+    {
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            return hit.transform.GetComponent<TileBehaviour>();
+        }
+        return null;
     }
 }
