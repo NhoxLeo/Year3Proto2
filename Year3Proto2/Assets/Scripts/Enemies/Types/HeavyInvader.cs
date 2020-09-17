@@ -2,21 +2,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : HeavyInvader.cs
+// Description  : Inherited class of Enemy
+// Author       : Tjeu Vreeburg, Samuel Fortune
+// Mail         : tjeu.vreeburg@gmail.com
+
 public class HeavyInvader : Enemy
 {
     private bool[] equipment = new bool[4];
 
-    private void Start()
+    private void Awake()
     {
-        EnemyStart();
-        UpdateEquipment();
 
         structureTypes = new List<StructureType>()
         {
-            StructureType.attack,
-            StructureType.storage,
-            StructureType.longhaus
+            StructureType.Attack,
+            StructureType.Storage,
+            StructureType.Longhaus,
+            StructureType.Defense
         };
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        UpdateEquipment();
     }
 
     protected override void LookAtPosition(Vector3 _position)
@@ -28,81 +45,119 @@ public class HeavyInvader : Enemy
 
     private void FixedUpdate()
     {
+        if (stunned) return;
+
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
             {
-                case EnemyState.ACTION:
-                    if (!target)
+                case EnemyState.Action:
+                    if (defending)
                     {
-                        animator.SetBool("Attack", false);
-                        enemyState = EnemyState.IDLE;
+                        Action();
                     }
                     else
                     {
-                        if (needToMoveAway)
+                        if (!target)
                         {
-                            if ((target.transform.position - transform.position).magnitude < 0.5f)
-                            {
-                                Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
-                                LookAtPosition(newPosition);
-                                transform.position = newPosition;
-                            }
-                            else
-                            {
-                                needToMoveAway = false;
-                            }
+                            animator.SetBool("Attack", false);
+                            enemyState = EnemyState.Idle;
                         }
                         else
                         {
-                            if (structureTypes.Contains(target.GetStructureType()))
+                            if (needToMoveAway)
                             {
-                                Action();
+                                if ((target.transform.position - transform.position).magnitude < 0.5f)
+                                {
+                                    Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
+                                    LookAtPosition(newPosition);
+                                    transform.position = newPosition;
+                                }
+                                else
+                                {
+                                    needToMoveAway = false;
+                                    LookAtPosition(target.transform.position);
+                                    animator.SetBool("Attack", true);
+                                }
                             }
                             else
                             {
-                                animator.SetBool("Attack", false);
-                                enemyState = EnemyState.IDLE;
+                                if (structureTypes.Contains(target.GetStructureType()))
+                                {
+                                    Action();
+                                }
+                                else
+                                {
+                                    animator.SetBool("Attack", false);
+                                    enemyState = EnemyState.Idle;
+                                }
                             }
                         }
                     }
                     break;
-                case EnemyState.WALK:
+                case EnemyState.Walk:
                     if (target)
                     {
-                        if (!target.attachedTile)
+                        updatePathTimer += Time.fixedDeltaTime;
+                        if (updatePathTimer >= updatePathDelay)
                         {
-                            if (!Next()) { target = null; }
+                            if (RequestNewPath())
+                            {
+                                updatePathTimer = 0f;
+                            }
+
                         }
-
-                        // get the motion vector for this frame
-                        Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
-                        //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
-                        LookAtPosition(newPosition);
-                        transform.position = newPosition;
-
-                        // if we are close enough to the target, attack the target
-                        if ((target.transform.position - transform.position).magnitude <= 0.6f)
+                        // if the distance from the enemy to the target is greater than 1 unit (one tile), the enemy should follow a path to the target. If they don't have one, they should request a path.
+                        // if the distance is less than 1 unit, go ahead as normal
+                        float distanceToTarget = (transform.position - target.transform.position).magnitude;
+                        
+                        if (distanceToTarget > 1f)
                         {
-                            animator.SetBool("Attack", true);
-                            LookAtPosition(target.transform.position);
-                            enemyState = EnemyState.ACTION;
-                            needToMoveAway = (target.transform.position - transform.position).magnitude < 0.5f;
-                            if (needToMoveAway) { animator.SetBool("Attack", false); }
+                            if (!hasPath)
+                            {
+                                animator.SetBool("Attack", false);
+                                enemyState = EnemyState.Idle;
+                                break;
+                            }
+                            Vector3 newPosition = GetNextPositionPathFollow();
+                            LookAtPosition(newPosition);
+                            transform.position = newPosition;
                         }
+                        else
+                        {
+                            hasPath = false;
 
+                            // get the motion vector for this frame
+                            Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
+                            //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
+                            LookAtPosition(newPosition);
+                            transform.position = newPosition;
+
+                            // if we are close enough to the target, attack the target
+                            if ((target.transform.position - transform.position).magnitude <= 0.6f)
+                            {
+                                animator.SetBool("Attack", true);
+                                LookAtPosition(target.transform.position);
+                                enemyState = EnemyState.Action;
+                                needToMoveAway = (target.transform.position - transform.position).magnitude < 0.5f;
+                                if (needToMoveAway) { animator.SetBool("Attack", false); }
+                            }
+                        }
                     }
                     else
                     {
                         animator.SetBool("Attack", false);
-                        enemyState = EnemyState.IDLE;
+                        enemyState = EnemyState.Idle;
                     }
                     break;
-                case EnemyState.IDLE:
-                    if (!Next()) { target = null; }
-                    if (!target) { Destroy(gameObject); }
+                case EnemyState.Idle:
+                    RequestNewPath();
                     break;
             }
+        }
+        else
+        {
+            action = false;
         }
     }
 
@@ -159,21 +214,38 @@ public class HeavyInvader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect, transform.position, Quaternion.identity);
+        GameObject puff = Instantiate(puffEffect);
+        puff.transform.position = transform.position;
         puff.transform.localScale *= 3f;
     }
 
     public override void Action()
     {
-        if (target.GetHealth() > 0)
+        if (defending)
         {
-            action = true;
+            if (defenseTarget)
+            {
+                if (defenseTarget.GetHealth() > 0)
+                {
+                    LookAtPosition(defenseTarget.transform.position);
+                    action = true;
+                }
+            }
+            else
+            {
+                ForgetSoldier();
+            }
         }
         else
         {
-            animator.SetBool("Attack", false);
-            action = false;
-            enemyState = EnemyState.IDLE;
+            if (target.GetHealth() > 0)
+            {
+                action = true;
+            }
+            else
+            {
+                ForgetSoldier();
+            }
         }
     }
 
@@ -181,7 +253,23 @@ public class HeavyInvader : Enemy
     {
         if (action)
         {
-            target.Damage(damage);
+            if (defending)
+            {
+                if (defenseTarget)
+                {
+                    if (defenseTarget.ApplyDamage(damage))
+                    {
+                        ForgetSoldier();
+                    }
+                }
+            }
+            else
+            {
+                if (target)
+                {
+                    target.Damage(damage);
+                }
+            }
         }
     }
 }

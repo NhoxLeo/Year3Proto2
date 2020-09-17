@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public abstract class StorageStructure : Structure
 {
@@ -10,7 +11,7 @@ public abstract class StorageStructure : Structure
     protected override void Start()
     {
         base.Start();
-        structureType = StructureType.storage;
+        structureType = StructureType.Storage;
     }
 
     public ResourceType GetResourceType()
@@ -20,12 +21,13 @@ public abstract class StorageStructure : Structure
 
     public override void OnPlace()
     {
-        gameMan.CalculateStorageMaximum();
+        base.OnPlace();
+        GameManager.GetInstance().CalculateStorageMaximum();
     }
 
     protected override void OnDestroyed()
     {
         base.OnDestroyed();
-        gameMan.CalculateStorageMaximum();
+        GameManager.GetInstance().CalculateStorageMaximum();
     }
 }

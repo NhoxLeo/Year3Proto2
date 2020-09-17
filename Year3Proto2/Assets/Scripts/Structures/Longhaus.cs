@@ -13,19 +13,13 @@ public class Longhaus : Structure
     [SerializeField]
     static public int metalStorage = 500;
 
-    public float productionTime = 3f;
+    public static float productionTime = 3f;
     protected float remainingTime = 3f;
-
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-        base.Start();
-    }
 
     protected override void Awake()
     {
         base.Awake();
-        structureType = StructureType.longhaus;
+        structureType = StructureType.Longhaus;
         structureName = "Longhaus";
         maxHealth = 400f;
         health = maxHealth;
@@ -34,6 +28,7 @@ public class Longhaus : Structure
     // Update is called once per frame
     protected override void Update()
     {
+        GameManager gameMan = GameManager.GetInstance();
         base.Update();
         if (health > 0f)
         {
@@ -42,10 +37,38 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                gameMan.AddBatch(new ResourceBatch(3, ResourceType.metal));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.wood));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.food));
+                gameMan.AddBatch(new ResourceBatch(3, ResourceType.Metal));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Wood));
+                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Food));
+                gameMan.AddBatch(new ResourceBatch(VillagerManager.GetInstance().GetRationCost(), ResourceType.Food));
             }
+
         }
+
+        if (Input.GetKeyDown(KeyCode.N) && StructureManager.GetInstance().StructureIsSelected(this))
+        {
+            TrainVillager();
+        }
+    }
+
+    public static void TrainVillager()
+    {
+        ResourceBundle cost = new ResourceBundle(0, 0, 100);
+        if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
+        {
+            VillagerManager villMan = VillagerManager.GetInstance();
+            villMan.AddNewVillager();
+            HUDManager.GetInstance().ShowResourceDelta(cost, true);
+            villMan.RedistributeVillagers();
+        }
+    }
+
+    public override Vector3 GetResourceDelta()
+    {
+        Vector3 resourceDelta = base.GetResourceDelta();
+
+        resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec());
+
+        return resourceDelta;
     }
 }

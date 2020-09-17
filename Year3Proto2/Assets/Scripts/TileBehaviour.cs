@@ -3,14 +3,74 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class TileBehaviour : MonoBehaviour
 {
-    [SerializeField] [Tooltip("Determines whether or not the player can place structures on the tile.")]
+    [SerializeField] 
+    [Tooltip("Determines whether or not the player can place structures on the tile.")]
     private bool isPlayable;
-    [SerializeField] [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
+
+
+
+    [SerializeField] 
+
+    [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
+
     private bool isValidSpawnTile;
-    
+
+    private static GameObject cliffFacePrefab = null;
+
+    private static Transform cliffFaceParent = null;
+
+    //Determines whether or not it is being approached by an airship.")]
+    private bool isApproached;
+
+    private int ID;
+    private static int nextID = 0;
+    private static int GenerateID()
+    {
+        return nextID++;
+    }
+
+    public static int GetTileID(TileBehaviour _tile)
+    {
+        return _tile.ID;
+    }
+
+    public JSTileData GenerateJSTileData()
+    {
+        JSTileData tileData = new JSTileData
+        {
+            ID = ID,
+            position = transform.position
+        };
+        tileData.adjacentTiles = new JSTileNeighborContainer();
+        for (int i = 0; i < 4; i++)
+        {
+            if (GetAdjacentTiles().ContainsKey((TileCode)i))
+            {
+                tileData.adjacentTiles[i] = GetAdjacentTiles()[(TileCode)i].ID;
+            }
+            else
+            {
+                tileData.adjacentTiles[i] = -1;
+            }
+        }
+        tileData.diagonalTiles = new JSTileNeighborContainer();
+        for (int i = 0; i < 4; i++)
+        {
+            if (GetDiagonalTiles().ContainsKey(i))
+            {
+                tileData.diagonalTiles[i] = GetDiagonalTiles()[i].ID;
+            }
+            else
+            {
+                tileData.diagonalTiles[i] = -1;
+            }
+        }
+        return tileData;
+    }
+
     public enum TileCode
     { 
         north = 0,
@@ -20,6 +80,7 @@ public class TileBehaviour : MonoBehaviour
     }
 
     private Dictionary<TileCode, TileBehaviour> adjacentTiles;
+    private Dictionary<int, TileBehaviour> diagonalTiles;
 
     private Structure attachedStructure = null;
 
@@ -30,6 +91,95 @@ public class TileBehaviour : MonoBehaviour
             FindAdjacentTiles();
         }
         return adjacentTiles;
+    }
+
+    public Dictionary<int, TileBehaviour> GetDiagonalTiles()
+    {
+        if (diagonalTiles == null)
+        {
+            FindDiagonalTiles();
+        }
+        return diagonalTiles;
+    }
+
+    private void FindDiagonalTiles()
+    {
+        // 0 - NE, 1 - SE, 2 - SW, 3 - NW
+        diagonalTiles = new Dictionary<int, TileBehaviour>();
+
+        Dictionary<TileCode, TileBehaviour> adjacents = GetAdjacentTiles();
+
+        if (adjacents.ContainsKey(TileCode.north))
+        {
+            Dictionary<TileCode, TileBehaviour> northAdjacents = adjacents[TileCode.north].GetAdjacentTiles();
+
+            if (northAdjacents.ContainsKey(TileCode.east))
+            {
+                diagonalTiles.Add(0, northAdjacents[TileCode.east]);
+            }
+
+            if (northAdjacents.ContainsKey(TileCode.west))
+            {
+                diagonalTiles.Add(3, northAdjacents[TileCode.west]);
+            }
+        }
+
+        if (adjacents.ContainsKey(TileCode.south))
+        {
+            Dictionary<TileCode, TileBehaviour> southAdjacents = adjacents[TileCode.south].GetAdjacentTiles();
+
+            if (southAdjacents.ContainsKey(TileCode.east))
+            {
+                diagonalTiles.Add(1, southAdjacents[TileCode.east]);
+            }
+
+            if (southAdjacents.ContainsKey(TileCode.west))
+            {
+                diagonalTiles.Add(2, southAdjacents[TileCode.west]);
+            }
+        }
+
+        if (adjacents.ContainsKey(TileCode.east))
+        {
+            Dictionary<TileCode, TileBehaviour> eastAdjacents = adjacents[TileCode.east].GetAdjacentTiles();
+
+            if (eastAdjacents.ContainsKey(TileCode.north))
+            {
+                if (!diagonalTiles.ContainsKey(0))
+                {
+                    diagonalTiles.Add(0, eastAdjacents[TileCode.north]);
+                }
+            }
+
+            if (eastAdjacents.ContainsKey(TileCode.south))
+            {
+                if (!diagonalTiles.ContainsKey(1))
+                {
+                    diagonalTiles.Add(1, eastAdjacents[TileCode.south]);
+                }
+            }
+        }
+
+        if (adjacents.ContainsKey(TileCode.west))
+        {
+            Dictionary<TileCode, TileBehaviour> westAdjacents = adjacents[TileCode.west].GetAdjacentTiles();
+
+            if (westAdjacents.ContainsKey(TileCode.north))
+            {
+                if (!diagonalTiles.ContainsKey(3))
+                {
+                    diagonalTiles.Add(3, westAdjacents[TileCode.north]);
+                }
+            }
+
+            if (westAdjacents.ContainsKey(TileCode.south))
+            {
+                if (!diagonalTiles.ContainsKey(2))
+                {
+                    diagonalTiles.Add(2, westAdjacents[TileCode.south]);
+                }
+            }
+        }
     }
 
     private void FindAdjacentTiles()
@@ -56,16 +206,19 @@ public class TileBehaviour : MonoBehaviour
         {
             adjacentTiles.Add(TileCode.north, hit.collider.GetComponentInParent<TileBehaviour>());
         }
+
         // East
         if (Physics.Raycast(tileCollider.transform.position, Vector3.right, out hit, .8f, tcLayer))
         {
             adjacentTiles.Add(TileCode.east, hit.collider.GetComponentInParent<TileBehaviour>());
         }
+
         // South
         if (Physics.Raycast(tileCollider.transform.position, Vector3.back, out hit, .8f, tcLayer))
         {
             adjacentTiles.Add(TileCode.south, hit.collider.GetComponentInParent<TileBehaviour>());
         }
+
         // West
         if (Physics.Raycast(tileCollider.transform.position, Vector3.left, out hit, .8f, tcLayer))
         {
@@ -79,6 +232,39 @@ public class TileBehaviour : MonoBehaviour
     void Awake()
     {
         DetectStructure();
+        GetCliffParent();
+        SpawnCliffFaces();
+        ID = GenerateID();
+    }
+
+    private void SpawnCliffFaces()
+    {
+        GetAdjacentTiles();
+        for (int i = 0; i < 4; i++)
+        {
+            if (!adjacentTiles.ContainsKey((TileCode)i))
+            {
+                Instantiate(GetCliffFace(), transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.Euler(0f, 90f + 90f * i, 0f), cliffFaceParent);
+            }
+        }
+    }
+
+    private static GameObject GetCliffFace()
+    {
+        if (!cliffFacePrefab)
+        {
+            cliffFacePrefab = Resources.Load("IslandEdgeCliff1") as GameObject;
+        }
+        return cliffFacePrefab;
+    }
+
+    private static Transform GetCliffParent()
+    {
+        if (!cliffFaceParent)
+        {
+            cliffFaceParent = GameObject.Find("CliffFaces").transform;
+        }
+        return cliffFaceParent;
     }
 
     public Structure GetAttached()
@@ -91,12 +277,15 @@ public class TileBehaviour : MonoBehaviour
         int structLayer = 1 << LayerMask.NameToLayer("Structure");
         if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hit, 1.6f, structLayer))
         {
-            //Debug.DrawLine(transform.position, transform.position + Vector3.up * 1.6f, Color.green, 20.0f);
             Attach(hit.transform.GetComponent<Structure>());
             return true;
         }
-        //Debug.DrawLine(transform.position, transform.position + Vector3.up * 1.6f, Color.red, 20.0f);
         return false;
+    }
+
+    public void SetApproached(bool _isApproached)
+    {
+        isApproached = _isApproached;
     }
 
     public void Attach(Structure _structure)
@@ -128,5 +317,10 @@ public class TileBehaviour : MonoBehaviour
     public bool GetSpawnTile()
     {
         return isValidSpawnTile;
+    }
+
+    public bool GetApproached()
+    {
+        return isApproached;
     }
 }

@@ -1,10 +1,39 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class GlobalData
 {
     public static string curScene;
+    public static bool isLoadingIn = false;
     public static bool isPaused;
     public static bool longhausDead = false;
+
+    public static List<string> loadingHint = new List<string>
+    {
+        "Catapults are efficient at dealing with large groups of enemies",
+        "Ballista Towers are great when dealing with single targets",
+        "Soldiers will target the nearest enemy on the island",
+        "Ballistas and Catapults consume Wood and Metal respectively when attacking",
+        "Try placing your production buildings in a checkerboard pattern",
+        "Production buildings gain bonuses if placed adjecent to their bonus tiles",
+        "Heavy invaders are slower than standard invaders but have more health",
+        "Small invaders are a force to be reckoned with in large groups",
+        //"A thick fog enshrouds the island, restricting vision and construction",
+        "Press the R key to repair all buildings",
+        "The best way of dealing with enemies is to reduce their health to zero",
+        "You can destroy buildings with the red button next to the repair button",
+        "How do Vikings talk to each other? Using Norse Code!",
+        "Production buildings and defensive structures need Villagers to run them",
+        "Use the Villager Priority panel in the bottom-left to prioritise resource production",
+        "Villagers will die if a building they're occupying gets destroyed by invaders",
+        "Your Villagers will starve to death if you run out of food!",
+        "Unallocated Villagers still consume food"//,
+        //"Buildings of a type will cost more to build the more there are"
+    };
+
+    public static string currentLoadingHint = "This is a test loading hint";
 
     public static string NumberToWords(int number)
     {

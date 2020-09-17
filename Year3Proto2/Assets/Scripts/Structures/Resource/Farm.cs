@@ -5,18 +5,34 @@ using UnityEngine;
 public class Farm : ResourceStructure
 {
     public bool wasPlacedOnPlains = false;
+    protected Dictionary<TileBehaviour.TileCode, GameObject> fences;
+    protected Dictionary<TileBehaviour.TileCode, GameObject> closedFences;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
-        if (superMan.CurrentLevelHasModifier(SuperManager.k_iDryFields)) { batchSize = Mathf.CeilToInt(batchSize / 2f); }
+        fences = new Dictionary<TileBehaviour.TileCode, GameObject>
+        {
+            { TileBehaviour.TileCode.north, transform.GetChild(0).gameObject },
+            { TileBehaviour.TileCode.east, transform.GetChild(1).gameObject },
+            { TileBehaviour.TileCode.south, transform.GetChild(2).gameObject },
+            { TileBehaviour.TileCode.west, transform.GetChild(3).gameObject }
+        };
+        closedFences = new Dictionary<TileBehaviour.TileCode, GameObject>
+        {
+            { TileBehaviour.TileCode.north, transform.GetChild(4).gameObject },
+            { TileBehaviour.TileCode.east, transform.GetChild(5).gameObject },
+            { TileBehaviour.TileCode.south, transform.GetChild(6).gameObject },
+            { TileBehaviour.TileCode.west, transform.GetChild(7).gameObject }
+        };
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.DryFields)) { batchSize = Mathf.CeilToInt(batchSize / 2f); }
     }
 
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.food;
+        resourceType = ResourceType.Food;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.Farm];
         health = maxHealth;
     }
@@ -28,5 +44,11 @@ public class Farm : ResourceStructure
         {
             tileBonus++;
         }
+    }
+
+    protected override void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
+    {
+        fences[_side].SetActive(_exploit);
+        closedFences[_side].SetActive(!_exploit);
     }
 }

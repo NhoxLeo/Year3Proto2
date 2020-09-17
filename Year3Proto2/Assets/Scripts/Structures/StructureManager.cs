@@ -1,4 +1,18 @@
-﻿using System.Collections;
+﻿//
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2018 Media Design School.
+//
+// File Name        : StructureManager.cs
+// Description      : Manager object that handles structures and structure related events.
+// Author           : Samuel Fortune
+// Mail             : Samuel.For7933@mediadesign.school.nz
+//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -11,10 +25,17 @@ using UnityEditor.AnimatedValues;
 
 public enum StructManState
 {
-    selecting,
-    selected,
-    moving
+    Selecting,
+    Selected,
+    Moving
 };
+
+public enum Priority
+{
+    Food,
+    Wood,
+    Metal
+}
 
 [Serializable]
 public struct ResourceBundle
@@ -89,23 +110,53 @@ public struct ProceduralGenerationParameters
     public int seed;
 }
 
+public static class StructureNames
+{
+    public const string Longhaus = "Longhaus";
+
+    public const string Barracks = "Barracks";
+    public const string Ballista = "Ballista";
+    public const string Catapult = "Catapult";
+
+    public const string FoodEnvironment = "Field";
+    public const string FoodResource = "Farm";
+    public const string FoodStorage = "Granary";
+
+    public const string LumberEnvironment = "Forest";
+    public const string LumberResource = "Lumber Mill";
+    public const string LumberStorage = "Lumber Pile";
+
+    public const string MetalEnvironment = "Hill";
+    public const string MetalResource = "Mine";
+    public const string MetalStorage = "Metal Storage";
+}
+
 [ExecuteInEditMode]
 public class StructureManager : MonoBehaviour
 {
-    // constants
-    public static string kPathSaveData;
-    public static string kPathPGP;
+    private static StructureManager instance = null;
 
-    // PRE-DEFINED
-    private StructManState structureState = StructManState.selecting;
-    private bool towerPlaced = false;
+    // constants
+    public static string PathSaveData;
+    public static string PathPGP;
+
+    private StructManState structureState = StructManState.Selecting;
+    private bool firstStructurePlaced = false;
     private bool structureFromStore = false;
     private Structure hoveroverStructure = null;
     private Structure selectedStructure = null;
     private Structure structure = null;
     private TileBehaviour structureOldTile = null;
     private float hoveroverTime = 0f;
-
+    private int nextStructureID = 0;
+    public Transform selectedTileHighlight = null;
+    public Transform tileHighlight = null;
+    [HideInInspector]
+    public bool editorGenerated = false;
+    [HideInInspector]
+    public bool useSeed = false;
+    [HideInInspector]
+    public int seed = 0;
     public static Dictionary<BuildPanel.Buildings, string> StructureNames = new Dictionary<BuildPanel.Buildings, string>
     {
         { BuildPanel.Buildings.Ballista, "Ballista Tower" },
@@ -118,8 +169,6 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Mine" },
         { BuildPanel.Buildings.MetalStorage, "Metal Storage" }
     };
-
-
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
@@ -156,8 +205,39 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, 0 },
         { BuildPanel.Buildings.MetalStorage, 0 }
     };
+    public Dictionary<string, ResourceBundle> structureCosts = new Dictionary<string, ResourceBundle>
+    {
+        // NAME                                    wC       mC      fC
+        { "Ballista Tower",     new ResourceBundle(150,     50,     0) },
+        { "Catapult Tower",     new ResourceBundle(200,     250,    0) },
+        { "Barracks",           new ResourceBundle(200,     100,    0) },
 
-    // Defined in window
+        { "Farm",               new ResourceBundle(40,      0,      0) },
+        { "Lumber Mill",        new ResourceBundle(60,      20,     0) },
+        { "Mine",               new ResourceBundle(100,     20,     0) },
+
+        { "Granary",            new ResourceBundle(120,     0,      0) },
+        { "Lumber Pile",        new ResourceBundle(120,     0,      0) },
+        { "Metal Storage",      new ResourceBundle(120,     80,     0) }
+    };
+    private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
+    [HideInInspector]
+    public bool isOverUI = false;
+
+    // defined at runtime
+    public Dictionary<string, StructureDefinition> structureDict;
+    private List<TileBehaviour> PGPlayableTiles;
+    [HideInInspector]
+    public Canvas canvas;
+    [HideInInspector]
+    public GameObject healthBarPrefab;
+    [HideInInspector]
+    public GameObject villagerWidgetPrefab;
+    private BuildPanel panel;
+    private GameObject buildingPuff;
+    private BuildingInfo buildingInfo;
+    private EnvInfo envInfo;
+    private MessageBox messageBox;
     [HideInInspector]
     public Vector2Int plainsEnvironmentBounds;
     [HideInInspector]
@@ -170,65 +250,41 @@ public class StructureManager : MonoBehaviour
     public float recursiveHGrowthChance;
     [HideInInspector]
     public float recursiveFGrowthChance;
-    [HideInInspector]
-    public bool editorGenerated = false;
-    [HideInInspector]
-    public bool useSeed = false;
-    [HideInInspector]
-    public int seed = 0;
-    //public float recursiveGrowthFalloff;
 
-    // Defined in runtime
-    private List<TileBehaviour> PGPlayableTiles;
+    public static StructureManager GetInstance()
+    {
+        return instance;
+    }
 
-    public Transform selectedTileHighlight = null;
-    public Transform tileHighlight = null;
-
-    [HideInInspector]
-    public bool isOverUI = false;
-
-    // DEFINED IN AWAKE
-    public Dictionary<string, StructureDefinition> structureDict;
-    public Dictionary<string, ResourceBundle> structureCosts;
-
-    [HideInInspector]
-    public Canvas canvas;
-    [HideInInspector]
-    public GameObject healthBarPrefab;
-
-    private SuperManager superMan;
-    private HUDManager HUDman;
-    private GameManager gameMan;
-    private BuildPanel panel;
-    private GameObject buildingPuff;
-    private EnemySpawner enemySpawner;
-    private BuildingInfo buildingInfo;
-    private EnvInfo envInfo;
-    private MessageBox messageBox;
+    public bool StructureIsSelected(Structure _structure)
+    {
+        return selectedStructure == _structure;
+    }
 
     private void DefineDictionaries()
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            // NAME                                                     NAME                                                        wC       mC      fC
-            { "Longhaus",           new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(600,     200,    0)) },
+            // NAME                                                     NAME                                                                       wC       mC      fC
+            { "Longhaus",           new StructureDefinition(Resources.Load("Structures/Longhaus")               as GameObject,  new ResourceBundle(600,     200,    0)) },
 
-            { "Ballista Tower",     new StructureDefinition(Resources.Load("Archer Tower") as GameObject,       new ResourceBundle(150,     50,     0)) },
-            { "Catapult Tower",     new StructureDefinition(Resources.Load("Catapult Tower") as GameObject,     new ResourceBundle(200,     250,    0)) },
-            { "Barracks",           new StructureDefinition(Resources.Load("Barracks") as GameObject,           new ResourceBundle(200,     250,    0)) },
+            { "Ballista Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower") as GameObject,  new ResourceBundle(150,     50,     0)) },
+            { "Catapult Tower",     new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower") as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { "Barracks",           new StructureDefinition(Resources.Load("Structures/Defense/Barracks")       as GameObject,  new ResourceBundle(200,     250,    0)) },
 
-            { "Farm",               new StructureDefinition(Resources.Load("Farm") as GameObject,               new ResourceBundle(40,      0,      0)) },
-            { "Lumber Mill",        new StructureDefinition(Resources.Load("Lumber Mill") as GameObject,        new ResourceBundle(60,      20,     0)) },
-            { "Mine",               new StructureDefinition(Resources.Load("Mine") as GameObject,               new ResourceBundle(100,     20,     0)) },
+            { "Farm",               new StructureDefinition(Resources.Load("Structures/Resource/Farm")          as GameObject,  new ResourceBundle(40,      0,      0)) },
+            { "Lumber Mill",        new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")   as GameObject,  new ResourceBundle(60,      20,     0)) },
+            { "Mine",               new StructureDefinition(Resources.Load("Structures/Resource/Mine")          as GameObject,  new ResourceBundle(100,     20,     0)) },
 
-            { "Granary",            new StructureDefinition(Resources.Load("Granary") as GameObject,            new ResourceBundle(120,     0,      0)) },
-            { "Lumber Pile",        new StructureDefinition(Resources.Load("Lumber Pile") as GameObject,        new ResourceBundle(120,     0,      0)) },
-            { "Metal Storage",      new StructureDefinition(Resources.Load("Metal Storage") as GameObject,      new ResourceBundle(120,     80,     0)) },
+            { "Granary",            new StructureDefinition(Resources.Load("Structures/Storage/Granary")        as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { "Lumber Pile",        new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")    as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { "Metal Storage",      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")  as GameObject,  new ResourceBundle(120,     80,     0)) },
 
-            { "Forest Environment", new StructureDefinition(Resources.Load("Forest Environment") as GameObject, new ResourceBundle(0,       0,      0)) },
-            { "Hills Environment",  new StructureDefinition(Resources.Load("HillsEnvironment") as GameObject,   new ResourceBundle(0,       0,      0)) },
-            { "Plains Environment", new StructureDefinition(Resources.Load("PlainsEnvironment") as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Forest Environment", new StructureDefinition(Resources.Load("Environment/Forest")    as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Hills Environment",  new StructureDefinition(Resources.Load("Environment/Hills")     as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { "Plains Environment", new StructureDefinition(Resources.Load("Environment/Plains")    as GameObject,  new ResourceBundle(0,       0,      0)) },
         };
+
         structureCosts = new Dictionary<string, ResourceBundle>
         {
             // NAME                                    wC       mC      fC
@@ -248,36 +304,34 @@ public class StructureManager : MonoBehaviour
 
     private void Awake()
     {
-        kPathSaveData = Application.persistentDataPath + "/saveData.dat";
-        kPathPGP = Application.persistentDataPath + "/PGP.dat";
+        instance = this;
+        PathSaveData = GetSaveDataPath();
+        PathPGP = GetPGPPath();
         DefineDictionaries();
         panel = FindObjectOfType<BuildPanel>();
-        gameMan = FindObjectOfType<GameManager>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         canvas = FindObjectOfType<Canvas>();
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
-        enemySpawner = FindObjectOfType<EnemySpawner>();
-        HUDman = FindObjectOfType<HUDManager>();
-        superMan = SuperManager.GetInstance();
         healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
+        villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         GlobalData.longhausDead = false;
     }
 
     private void OnApplicationQuit()
     {
-        superMan.SaveCurrentMatch();
+        SuperManager.GetInstance().SaveCurrentMatch();
     }
 
     public static string GetSaveDataPath()
     {
-        return kPathSaveData ?? (kPathSaveData = Application.persistentDataPath + "/saveData.dat");
+        return PathSaveData ?? (PathSaveData = Application.persistentDataPath + "/saveData.dat");
     }
 
     public static string GetPGPPath()
     {
-        return kPathPGP ?? (kPathPGP = Application.persistentDataPath + "/PGP.dat");
+        return PathPGP ?? (PathPGP = Application.persistentDataPath + "/PGP.dat");
     }
 
     public static Structure FindStructureAtPosition(Vector3 _position)
@@ -290,6 +344,34 @@ public class StructureManager : MonoBehaviour
         return returnStructure;
     }
 
+    public static TileBehaviour FindTileAtPosition(int _posX, int _posZ)
+    {
+        TileBehaviour result = null;
+        Vector3 position = new Vector3
+        {
+            x = _posX,
+            y = 0f,
+            z = _posZ
+        };
+        if (Physics.Raycast(position + Vector3.up, Vector3.down, out RaycastHit hit, 2f, LayerMask.GetMask("Ground")))
+        {
+            result = hit.collider.gameObject.GetComponent<TileBehaviour>();
+        }
+        return result;
+    }
+
+    public Structure FindStructureWithID(int _ID)
+    {
+        if (playerStructureDict.ContainsKey(_ID))
+        {
+            return playerStructureDict[_ID];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     private void Start()
     {
 #if UNITY_EDITOR
@@ -299,7 +381,7 @@ public class StructureManager : MonoBehaviour
         LoadPGPFromFile();
         if (Application.isPlaying)
         {
-            if (!superMan.LoadCurrentMatch())
+            if (!SuperManager.GetInstance().LoadCurrentMatch())
             {
                 // if there is no current match
                 editorGenerated = false;
@@ -324,9 +406,9 @@ public class StructureManager : MonoBehaviour
         // try to access file
         BinaryFormatter bf = new BinaryFormatter();
         // if we found the file...
-        if (System.IO.File.Exists(kPathPGP))
+        if (System.IO.File.Exists(GetPGPPath()))
         {
-            System.IO.FileStream file = System.IO.File.Open(kPathPGP, System.IO.FileMode.Open);
+            System.IO.FileStream file = System.IO.File.Open(PathPGP, System.IO.FileMode.Open);
             ProceduralGenerationParameters PGP = (ProceduralGenerationParameters)bf.Deserialize(file);
             hillsEnvironmentBounds = PGP.hillsParameters;
             recursiveHGrowthChance = PGP.hillsParameters.z;
@@ -341,7 +423,7 @@ public class StructureManager : MonoBehaviour
         else
         {
             // if we can't access the file, we'll make one with default parameters
-            System.IO.FileStream file = System.IO.File.Create(kPathPGP);
+            System.IO.FileStream file = System.IO.File.Create(PathPGP);
             // File does not exist, load defaults and save
             ProceduralGenerationParameters PGP = GetPGPHardPreset(0);
             hillsEnvironmentBounds = PGP.hillsParameters;
@@ -359,398 +441,393 @@ public class StructureManager : MonoBehaviour
 
     private void Update()
     {
-        if (Application.isPlaying)
+        if (!Application.isPlaying)
         {
-            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            return;
+        }
 
-            envInfo.SetVisibility(false);
-            if (!isOverUI)
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        envInfo.SetVisibility(false);
+        if (!isOverUI)
+        {
+            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+            switch (structureState)
             {
-                if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                switch (structureState)
-                {
-                    case StructManState.selecting:
-                        if (!Input.GetMouseButton(1))
-                        {
-                            if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
-                            {
-                                Structure hitStructure = hit.transform.GetComponent<Structure>();
-                                // If the hit transform has a structure component... (SHOULD ALWAYS)
-                                if (hitStructure)
-                                {
-                                    if (hitStructure.attachedTile.GetPlayable())
-                                    {
-                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                        Vector3 highlightpos = hit.transform.position;
-                                        highlightpos.y = 0.501f;
-                                        tileHighlight.position = highlightpos;
-
-                                        PlayerMouseOver(hitStructure);
-
-                                        if (Input.GetMouseButtonDown(0))
-                                        {
-                                            SelectStructure(hitStructure);
-                                            structureState = StructManState.selected;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                        envInfo.SetVisibility(false);
-                                    }
-                                }
-                            }
-                            else if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
-                            {
-                                if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
-                                {
-                                    if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                    Vector3 highlightpos = hit.transform.position;
-                                    highlightpos.y = 0.501f;
-                                    tileHighlight.position = highlightpos;
-                                }
-                                else
-                                {
-                                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                }
-                            }
-                            else
-                            {
-                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                hoveroverStructure = null;
-                                hoveroverTime = 0f;
-                            }
-                        }
-                        else
-                        {
-                            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                            hoveroverStructure = null;
-                            hoveroverTime = 0f;
-                        }
-                        break;
-                    case StructManState.selected:
-                        if (!selectedStructure)
-                        {
-                            DeselectStructure();
-                            structureState = StructManState.selecting;
-                            break;
-                        }
-
-                        StructureType selectedStructType = selectedStructure.GetStructureType();
-                        if (Input.GetKeyDown(KeyCode.Delete) &&
-                            selectedStructType != StructureType.environment &&
-                            selectedStructType != StructureType.longhaus)
-                        {
-                            selectedStructure.Damage(selectedStructure.GetHealth());
-                            DeselectStructure();
-                            structureState = StructManState.selecting;
-                            break;
-                        }
-                        else
-                        {
-                            Vector3 highlightpos = selectedStructure.transform.position;
-                            highlightpos.y = 0.501f;
-                            selectedTileHighlight.position = highlightpos;
-
-                            if (!Input.GetMouseButton(1))
-                            {
-                                if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
-                                {
-                                    Structure hitStructure = hit.transform.GetComponent<Structure>();
-                                    if (hitStructure.attachedTile.GetPlayable())
-                                    {
-                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                        highlightpos = hit.transform.position;
-                                        highlightpos.y = 0.501f;
-                                        tileHighlight.position = highlightpos;
-
-                                        PlayerMouseOver(hitStructure);
-                                    }
-                                    else
-                                    {
-                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                    }
-                                }
-                                else if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
-                                {
-                                    if (hit.transform.GetComponent<TileBehaviour>().GetPlayable())
-                                    {
-                                        if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                        highlightpos = hit.transform.position;
-                                        highlightpos.y = 0.501f;
-                                        tileHighlight.position = highlightpos;
-                                    }
-                                    else
-                                    {
-                                        if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                    }
-                                }
-                                else
-                                {
-                                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                    hoveroverStructure = null;
-                                    hoveroverTime = 0f;
-                                }
-
-                                // If the player clicks the LMB...
-                                if (Input.GetMouseButtonDown(0))
-                                {
-                                    // If the player has clicked on a structure...
-                                    if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
-                                    {
-                                        Structure hitStructure = hit.transform.GetComponent<Structure>();
-                                        // If the hit transform has a structure component... (SHOULD ALWAYS)
-                                        if (hitStructure)
-                                        {
-                                            if (hitStructure != selectedStructure)
-                                            {
-                                                if (hitStructure.attachedTile.GetPlayable())
-                                                {
-                                                    SelectStructure(hitStructure);
-                                                }
-                                            }
-                                        }
-                                        else // The hit transform hasn't got a structure component
-                                        {
-                                            Debug.LogError(hit.transform.ToString() + " is on the structure layer, but it doesn't have a structure component.");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        DeselectStructure();
-                                        structureState = StructManState.selecting;
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                hoveroverStructure = null;
-                                hoveroverTime = 0f;
-                            }
-                        }
-                        break;
-                    case StructManState.moving:
-                        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-                        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
-                        {
-                            if (structure.transform != null)
-                            {
-                                // If we hit a tile...
-                                if (hit.collider.name.Contains("Tile"))
-                                {
-                                    TileBehaviour tile = hit.transform.GetComponent<TileBehaviour>();
-                                    if (tile)
-                                    {
-                                        if (tile.GetPlayable())
-                                        {
-                                            bool canPlaceHere = false;
-                                            // If the tile we hit has an attached object...
-                                            Structure attached = tile.GetAttached();
-                                            StructureType newStructureType = structure.GetStructureType();
-                                            if (attached)
-                                            {
-                                                StructureType attachedStructureType = attached.GetStructureType();
-                                                Vector3 hitPos = hit.point;
-                                                hitPos.y = structure.sitHeight;
-                                                structure.transform.position = hitPos;
-
-                                                structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
-                                                if (structure.IsStructure("Barracks"))
-                                                {
-                                                    structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.red);
-                                                }
-
-                                                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                                                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-
-                                                if (attached.IsStructure("Forest Environment") && structure.IsStructure("Lumber Mill")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Hills Environment") && structure.IsStructure("Mine")) { canPlaceHere = true; }
-                                                else if (attached.IsStructure("Plains Environment") && structure.IsStructure("Farm")) { canPlaceHere = true; }
-                                                else if (attachedStructureType == StructureType.environment)
-                                                {
-                                                    if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
-                                                    {
-                                                        canPlaceHere = true;
-                                                    }
-                                                }
-                                            }
-                                            else { canPlaceHere = true; }
-                                            // if the structure can be placed here...
-                                            if (canPlaceHere)
-                                            {
-                                                if (structure.GetStructureType() == StructureType.attack)
-                                                {
-                                                    structure.GetComponent<AttackStructure>().ShowRangeDisplay(true);
-                                                }
-
-                                                if (attached)
-                                                {
-                                                    StructureType attachedStructureType = attached.GetStructureType();
-                                                    if (attachedStructureType == StructureType.environment)
-                                                    {
-                                                        if (newStructureType == StructureType.resource)
-                                                        {
-                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
-                                                        }
-                                                        else if (newStructureType == StructureType.attack || newStructureType == StructureType.defense || newStructureType == StructureType.storage)
-                                                        {
-                                                            structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.yellow);
-                                                            if (structure.IsStructure("Barracks"))
-                                                            {
-                                                                structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.yellow);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else // the tile can be placed on, and has no attached structure
-                                                {
-                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.green);
-                                                    if (structure.IsStructure("Barracks"))
-                                                    {
-                                                        structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.green);
-                                                    }
-                                                }
-
-                                                // If player cannot afford the structure, set to red.
-                                                if (!gameMan.playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
-                                                {
-                                                    structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.red);
-                                                    if (structure.IsStructure("Barracks"))
-                                                    {
-                                                        structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.red);
-                                                    }
-                                                }
-
-                                                Vector3 structPos = hit.transform.position;
-                                                structPos.y = structure.sitHeight;
-                                                structure.transform.position = structPos;
-
-                                                Vector3 highlightPos = structPos;
-                                                highlightPos.y = 0.501f;
-                                                tileHighlight.position = highlightPos;
-                                                selectedTileHighlight.position = highlightPos;
-
-                                                if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-                                                //if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
-
-                                                // If the user clicked the LMB...
-                                                if (Input.GetMouseButtonDown(0))
-                                                {
-                                                    if ((structureFromStore && BuyBuilding()) || !structureFromStore)
-                                                    {
-                                                        GameManager.CreateAudioEffect("build", structure.transform.position);
-                                                        structure.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
-                                                        if (structure.IsStructure("Barracks"))
-                                                        {
-                                                            structure.GetComponent<MeshRenderer>().materials[1].SetColor("_BaseColor", Color.white);
-                                                        }
-                                                        // Attach the structure to the tile and vica versa
-                                                        if (attached) { attached.attachedTile.Detach(); }
-                                                        tile.Attach(structure);
-                                                        structure.OnPlace();
-
-                                                        Instantiate(buildingPuff, structure.transform.position, Quaternion.Euler(-90f, 0f, 0f));
-                                                        if (attached)
-                                                        {
-                                                            StructureType attachedStructType = attached.GetStructureType();
-                                                            StructureType structType = structure.GetStructureType();
-                                                            if (attachedStructType == StructureType.environment && structType == StructureType.resource)
-                                                            {
-                                                                Destroy(attached.gameObject);
-                                                                messageBox.HideMessage();
-                                                                switch (structure.GetStructureName())
-                                                                {
-                                                                    case "Lumber Mill":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.wood));
-                                                                        structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
-                                                                        break;
-                                                                    case "Farm":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.food));
-                                                                        structure.GetComponent<Farm>().wasPlacedOnPlains = true;
-                                                                        break;
-                                                                    case "Mine":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.metal));
-                                                                        structure.GetComponent<Mine>().wasPlacedOnHills = true;
-                                                                        break;
-                                                                }
-                                                            }
-                                                            else if (attachedStructType == StructureType.environment && (structType == StructureType.attack || structType == StructureType.storage))
-                                                            {
-                                                                switch (attached.GetStructureName())
-                                                                {
-                                                                    case "Forest Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.wood));
-                                                                        break;
-                                                                    case "Hill Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.metal));
-                                                                        break;
-                                                                    case "Plains Environment":
-                                                                        gameMan.playerResources.AddBatch(new ResourceBatch(50, ResourceType.food));
-                                                                        break;
-                                                                }
-                                                                Destroy(attached.gameObject);
-                                                                messageBox.HideMessage();
-                                                            }
-                                                        }
-                                                        gameMan.OnStructurePlace();
-                                                        if (structureFromStore)
-                                                        {
-                                                            panel.UINoneSelected();
-                                                            panel.ResetBuildingSelected();
-                                                        }
-                                                        if (!towerPlaced)
-                                                        {
-                                                            if (!enemySpawner.IsSpawning())
-                                                            {
-                                                                enemySpawner.ToggleSpawning();
-                                                            }
-                                                            towerPlaced = true;
-                                                        }
-                                                        SelectStructure(structure);
-                                                        structureState = StructManState.selected;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                        if (Input.GetMouseButtonDown(1))
-                        {
-                            ResetBuilding();
-                            panel.ResetBuildingSelected();
-                            if (structureFromStore)
-                            {
-                                DeselectStructure();
-                                structureState = StructManState.selecting;
-                            }
-                            else
-                            {
-                                SelectStructure(structure);
-                                structureState = StructManState.selected;
-                            }
-                            messageBox.HideMessage();
-                        }
-                        break;
-                }
-            }
-            if (isOverUI)
-            {
-                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                HideBuilding();
-            }
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                gameMan.repairAll = true;
-                gameMan.RepairAll();
+                case StructManState.Selecting:
+                    UpdateSelecting(mouseRay);
+                    break;
+                case StructManState.Selected:
+                    UpdateSelected(mouseRay);
+                    break;
+                case StructManState.Moving:
+                    UpdateMoving(mouseRay);
+                    break;
             }
         }
+        if (isOverUI)
+        {
+            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+            HideBuilding();
+        }
+
+    }
+
+    private void UpdateSelecting(Ray _mouseRay)
+    {
+        // if the right mouse button isn't being held down...
+        if (!Input.GetMouseButton(1))
+        {
+            // if the player is hovering over a structure...
+            if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitStructure, Mathf.Infinity, LayerMask.GetMask("Structure")))
+            {
+                Structure hitStructureComponent = hitStructure.transform.GetComponent<Structure>();
+
+                // If the structure is attached to a playable tile...
+                if (hitStructureComponent.attachedTile.GetPlayable())
+                {
+                    // turn on the tile highlight.
+                    tileHighlight.gameObject.SetActive(true);
+
+                    // move the highlight to the position the player is hovering over.
+                    Vector3 highlightpos = hitStructure.transform.position;
+                    highlightpos.y = 0.501f;
+                    tileHighlight.position = highlightpos;
+
+                    // Respond to the fact that the player's hovering over the structure.
+                    PlayerMouseOver(hitStructureComponent);
+
+                    // If the player clicks the LMB...
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        // Select that structure.
+                        SelectStructure(hitStructureComponent);
+                    }
+                }
+                else // the structure isn't attached to a playable tile...
+                {
+                    // turn off the tile highlight.
+                    tileHighlight.gameObject.SetActive(false);
+                    // hide the environment info panel.
+                    envInfo.SetVisibility(false);
+                }
+            }
+            // if the player is hovering over a tile...
+            else if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
+            {
+                // if the tile they hit is playable...
+                if (hitGround.transform.GetComponent<TileBehaviour>().GetPlayable())
+                {
+                    // turn on the tile highlight.
+                    tileHighlight.gameObject.SetActive(true);
+
+                    // move the highlight to the position the player is hovering over.
+                    Vector3 highlightpos = hitGround.transform.position;
+                    highlightpos.y = 0.501f;
+                    tileHighlight.position = highlightpos;
+                }
+                else
+                {
+                    // turn off the tile highlight.
+                    tileHighlight.gameObject.SetActive(false);
+                }
+                // report no hover-over-ing
+                PlayerMouseOver(null);
+            }
+            else
+            {
+                // turn off the tile highlight.
+                tileHighlight.gameObject.SetActive(false);
+
+                // report no hover-over-ing
+                PlayerMouseOver(null);
+            }
+        }
+        else
+        {
+            // turn off the tile highlight.
+            tileHighlight.gameObject.SetActive(false);
+
+            // report no hover-over-ing
+            PlayerMouseOver(null);
+        }
+    }
+
+    private void UpdateSelected(Ray _mouseRay)
+    {
+        // if there isn't a structure selected...
+        if (!selectedStructure)
+        {
+            // formally switch to another state.
+            DeselectStructure();
+            // stop short
+            return;
+        }
+
+        // If the player presses the delete key...
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            StructureType selectedStructType = selectedStructure.GetStructureType();
+
+            // if the structure type can be deleted...
+            if (selectedStructType != StructureType.Environment && selectedStructType != StructureType.Longhaus)
+            {
+                // destroy the building
+                DestroySelectedBuilding();
+                return;
+            }
+        }
+
+        Vector3 highlightpos = selectedStructure.transform.position;
+        highlightpos.y = 0.501f;
+        selectedTileHighlight.position = highlightpos;
+
+        if (!Input.GetMouseButton(1))
+        {
+            if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitStructure, Mathf.Infinity, LayerMask.GetMask("Structure")))
+            {
+                Structure hitStructureComponent = hitStructure.transform.GetComponent<Structure>();
+                if (hitStructureComponent.attachedTile.GetPlayable())
+                {
+                    tileHighlight.gameObject.SetActive(true);
+
+                    highlightpos = hitStructure.transform.position;
+                    highlightpos.y = 0.501f;
+                    tileHighlight.position = highlightpos;
+
+                    // If the player clicks the LMB...
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        if (hitStructureComponent != selectedStructure)
+                        {
+                            if (hitStructureComponent.attachedTile.GetPlayable())
+                            {
+                                SelectStructure(hitStructureComponent);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        PlayerMouseOver(hitStructureComponent);
+                    }
+                }
+                else
+                {
+                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                }
+            }
+            else
+            {
+                PlayerMouseOver(null);
+                // If the player clicks the LMB...
+                if (Input.GetMouseButtonDown(0))
+                {
+                    DeselectStructure();
+                    return;
+                }
+                if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
+                {
+                    if (hitGround.transform.GetComponent<TileBehaviour>().GetPlayable())
+                    {
+                        tileHighlight.gameObject.SetActive(true);
+                        highlightpos = hitGround.transform.position;
+                        highlightpos.y = 0.501f;
+                        tileHighlight.position = highlightpos;
+                    }
+                    else
+                    {
+                        tileHighlight.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    tileHighlight.gameObject.SetActive(false);
+                }
+            }
+        }
+        else
+        {
+            tileHighlight.gameObject.SetActive(false);
+            PlayerMouseOver(null);
+        }
+    }
+
+    private void UpdateMoving(Ray _mouseRay)
+    {
+        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+        if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            TileBehaviour tile = hitGround.transform.GetComponent<TileBehaviour>();
+            if (tile.GetPlayable())
+            {
+                bool canPlaceHere = true;
+                // If the tile we hit has an attached object...
+                Structure attached = tile.GetAttached();
+                StructureType newStructureType = structure.GetStructureType();
+                if (attached)
+                {
+                    canPlaceHere = false;
+                    Vector3 hitPos = hitGround.point;
+                    hitPos.y = structure.sitHeight;
+                    structure.transform.position = hitPos;
+
+                    SetStructureColour(Color.red);
+
+                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                    if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+
+                    if (attached.GetStructureType() == StructureType.Environment)
+                    {
+                        canPlaceHere = true;
+                    }
+                }
+                // if the structure can be placed here...
+                if (canPlaceHere)
+                {
+                    if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense)
+                    {
+                        structure.ShowRangeDisplay(true);
+                    }
+
+                    if (attached)
+                    {
+                        StructureType attachedStructureType = attached.GetStructureType();
+                        if (attachedStructureType == StructureType.Environment)
+                        {
+                            if (newStructureType == StructureType.Resource)
+                            {
+                                SetStructureColour(Color.green);
+                            }
+                            else if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense || newStructureType == StructureType.Storage)
+                            {
+                                SetStructureColour(Color.yellow);
+                            }
+                        }
+                    }
+                    else // the tile can be placed on, and has no attached structure
+                    {
+                        SetStructureColour(Color.green);
+                    }
+
+                    // If player cannot afford the structure, set to red.
+                    if (!GameManager.GetInstance().playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
+                    {
+                        SetStructureColour(Color.red);
+                    }
+
+                    Vector3 structPos = hitGround.transform.position;
+                    structPos.y = structure.sitHeight;
+                    structure.transform.position = structPos;
+
+                    Vector3 highlightPos = structPos;
+                    highlightPos.y = 0.501f;
+                    tileHighlight.position = highlightPos;
+                    selectedTileHighlight.position = highlightPos;
+
+                    tileHighlight.gameObject.SetActive(true);
+
+                    // If the user clicked the LMB...
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        AttemptPlaceStructure(tile);
+                    }
+                }
+            }
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            ResetBuilding();
+            panel.ResetBuildingSelected();
+            if (structureFromStore)
+            {
+                DeselectStructure();
+            }
+            else
+            {
+                SelectStructure(structure);
+            }
+            messageBox.HideMessage();
+        }
+    }
+
+    public void AttemptPlaceStructure(TileBehaviour _tile)
+    {
+        Structure attached = _tile.GetAttached();
+        StructureType structType = structure.GetStructureType();
+        if ((structureFromStore && BuyBuilding()) || !structureFromStore)
+        {
+            GameManager.CreateAudioEffect("build", structure.transform.position);
+            SetStructureColour(Color.white);
+            // Attach the structure to the tile and vica versa
+            if (attached) { attached.attachedTile.Detach(); }
+            _tile.Attach(structure);
+            structure.SetID(GetNewID());
+            structure.OnPlace();
+            Instantiate(buildingPuff, structure.transform.position, Quaternion.Euler(-90f, 0f, 0f));
+            if (attached)
+            {
+                string attachedName = attached.GetStructureName();
+                string structName = structure.GetStructureName();
+                if (attachedName == "Plains Environment" && structName == "Farm")
+                {
+                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Food));
+                    structure.GetComponent<Farm>().wasPlacedOnPlains = true;
+                }
+                else if (attachedName == "Forest Environment" && structName == "Lumber Mill")
+                {
+                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Wood));
+                    structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
+                }
+                else if (attachedName == "Hills Environment" && structName == "Mine")
+                {
+                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Metal));
+                    structure.GetComponent<Mine>().wasPlacedOnHills = true;
+                }
+                Destroy(attached.gameObject);
+            }
+            if (structureFromStore)
+            {
+                panel.UINoneSelected();
+                panel.ResetBuildingSelected();
+            }
+            if (!firstStructurePlaced)
+            {
+                if (!EnemyManager.GetInstance().GetSpawning())
+                {
+                    EnemyManager.GetInstance().SetSpawning(true);
+                }
+                firstStructurePlaced = true;
+            }
+            if (structType == StructureType.Resource || structType == StructureType.Attack)
+            {
+                VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
+                villagerAllocation.SetTarget(structure);
+                structure.SetAllocationWidget(villagerAllocation);
+            }
+            playerStructureDict.Add(structure.GetID(), structure);
+            GameManager.GetInstance().OnStructurePlaced();
+            PathManager.GetInstance().OnStructurePlaced();
+            VillagerManager.GetInstance().RedistributeVillagers();
+            SelectStructure(structure);
+            if (structType == StructureType.Resource || structType == StructureType.Attack)
+            {
+                structure.RefreshWidget();
+                structure.SetWidgetVisibility(true);
+            }
+        }
+    }
+
+    public void DestroySelectedBuilding()
+    {
+        selectedStructure.DeallocateAll();
+        float health = selectedStructure.GetHealth();
+        float maxHealth = selectedStructure.GetMaxHealth();
+        selectedStructure.Damage(health);
+        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structureCosts[selectedStructure.GetStructureName()]);
+        GameManager.GetInstance().playerResources.AddResourceBundle(compensation);
+        HUDManager.GetInstance().ShowResourceDelta(compensation, false);
+        DeselectStructure();
     }
 
     public bool BuyBuilding()
@@ -758,10 +835,10 @@ public class StructureManager : MonoBehaviour
         if (structure && structureFromStore)
         {
             ResourceBundle cost = structureCosts[structure.GetStructureName()];
-            if (gameMan.playerResources.AttemptPurchase(cost))
+            if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
             {
                 IncreaseStructureCost(structure.GetStructureName());
-                HUDman.ShowResourceDelta(cost, true);
+                HUDManager.GetInstance().ShowResourceDelta(cost, true);
                 return true;
             }
             ShowMessage("You can't afford that!", 1.5f);
@@ -789,10 +866,13 @@ public class StructureManager : MonoBehaviour
 
     private Vector3 CalculateStructureCost(string _structureName)
     {
-        float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.k_iSnoballPrices) ? 2f : 4f;
-        Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
-        structureCosts[_structureName] = new ResourceBundle(newCost);
-        return newCost;
+        //float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SnoballPrices))
+        {
+            Vector3 newCost = (4f + structureCounts[StructureIDs[_structureName]]) / 4f * (Vector3)structureDict[_structureName].originalCost;
+            structureCosts[_structureName] = new ResourceBundle(newCost);
+        }
+        return structureCosts[_structureName];
     }
 
     public void DeselectStructure()
@@ -804,13 +884,14 @@ public class StructureManager : MonoBehaviour
             selectedStructure = null;
         }
         buildingInfo.showPanel = false;
+        structureState = StructManState.Selecting;
     }
 
     public void ResetBuilding()
     {
         if (structure)
         {
-            if (structureState == StructManState.moving)
+            if (structureState == StructManState.Moving)
             {
                 if (structureFromStore)
                 {
@@ -825,7 +906,7 @@ public class StructureManager : MonoBehaviour
                     structureOldTile.Attach(structure);
                     structureOldTile = null;
                 }
-                structureState = StructManState.selected;
+                structureState = StructManState.Selected;
             }
         }
     }
@@ -833,11 +914,12 @@ public class StructureManager : MonoBehaviour
     public void SelectStructure(Structure _structure)
     {
         DeselectStructure();
-        selectedStructure = _structure;
 
+        selectedStructure = _structure;
+        structureState = StructManState.Selected;
         selectedStructure.OnSelected();
 
-        if (!selectedTileHighlight.gameObject.activeSelf) selectedTileHighlight.gameObject.SetActive(true);
+        selectedTileHighlight.gameObject.SetActive(true);
 
         Vector3 highlightpos = selectedStructure.attachedTile.transform.position;
         highlightpos.y = 0.501f;
@@ -849,15 +931,15 @@ public class StructureManager : MonoBehaviour
 
     public bool SetBuilding(string _building)
     {
-        if (structureState != StructManState.moving)
+        if (structureState != StructManState.Moving)
         {
             DeselectStructure();
+            // Put the manager back into moving mode.
+            structureState = StructManState.Moving;
             structureFromStore = true;
             GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab);
             structureInstance.transform.position = Vector3.down * 10f;
             structure = structureInstance.GetComponent<Structure>();
-            // Put the manager back into moving mode.
-            structureState = StructManState.moving;
             if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
             selectedStructure = null;
             buildingInfo.showPanel = false;
@@ -876,10 +958,25 @@ public class StructureManager : MonoBehaviour
         isOverUI = _isOverUI;
     }
 
+    public void SetNextStructureID(int _ID)
+    {
+        nextStructureID = _ID;
+    }
+
+    public int GetNextStructureID()
+    {
+        return nextStructureID;
+    }
+
+    public int GetNewID()
+    {
+        return nextStructureID++;
+    }
+
     public void ProceduralGeneration(bool _useSeed = false, int _seed = 0)
     {
         if (_useSeed) { UnityEngine.Random.InitState(_seed); }
-        
+
         // find our totals
         int forestTotal = UnityEngine.Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
         int hillsTotal = UnityEngine.Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
@@ -920,119 +1017,11 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    public void ProceduralGenerationA(int _seed)
+    private void SetStructureColour(Color _colour)
     {
-
-        if (_seed != 0) { UnityEngine.Random.InitState(_seed); }
-
-        // find our totals
-        int forestTotal = UnityEngine.Random.Range(forestEnvironmentBounds.x, forestEnvironmentBounds.y + 1);
-        int hillsTotal = UnityEngine.Random.Range(hillsEnvironmentBounds.x, hillsEnvironmentBounds.y + 1);
-        int plainsTotal = UnityEngine.Random.Range(plainsEnvironmentBounds.x, plainsEnvironmentBounds.y + 1);
-
-        // get all the tiles
-        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
-        PGPlayableTiles = new List<TileBehaviour>();
-        for (int i = 0; i < tiles.Length; i++)
+        foreach (Material mat in structure.GetComponent<MeshRenderer>().materials)
         {
-            // if the tile is playable and it doesn't have a structure already
-            if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
-            {
-                PGPlayableTiles.Add(tiles[i]);
-            }
-        }
-
-        // Generate Forests
-        int forestPlaced = 0;
-        while (forestPlaced < forestTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Forest Environment", tile);
-
-            // update forestPlaced
-            forestPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (forestPlaced == forestTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
-                {
-                    PGInstatiateEnvironment("Forest Environment", tileI);
-
-                    // update forestPlaced
-                    forestPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (forestPlaced == forestTotal) { break; }
-                }
-            }
-        }
-
-        // Generate Hills
-        int hillsPlaced = 0;
-        while (hillsPlaced < hillsTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Hills Environment", tile);
-
-            // update hillsPlaced
-            hillsPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (hillsPlaced == hillsTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
-                {
-                    PGInstatiateEnvironment("Hills Environment", tileI);
-
-                    // update hillsPlaced
-                    hillsPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (hillsPlaced == hillsTotal) { break; }
-                }
-            }
-        }
-
-        // Generate Plains
-        int plainsPlaced = 0;
-        while (plainsPlaced < plainsTotal)
-        {
-            if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-            TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
-
-            PGInstatiateEnvironment("Plains Environment", tile);
-
-            // update plainsPlaced
-            plainsPlaced++;
-            PGPlayableTiles.Remove(tile);
-            if (plainsPlaced == plainsTotal) { break; }
-
-            // now try the tiles around it
-            for (int i = 0; i < 4; i++)
-            {
-                TileBehaviour tileI = tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
-                if (PGPlayableTiles.Count == 0) { Debug.LogError("PG: Ran out of tiles, try lower values for \"Plains Environemnt Bounds\" and the other environment types."); }
-                if (PGPlayableTiles.Contains(tileI))
-                {
-                    PGInstatiateEnvironment("Plains Environment", tileI);
-
-                    // update plainsPlaced
-                    plainsPlaced++;
-                    PGPlayableTiles.Remove(tileI);
-                    if (plainsPlaced == plainsTotal) { break; }
-                }
-            }
+            mat.SetColor("_BaseColor", _colour);
         }
     }
 
@@ -1056,12 +1045,17 @@ public class StructureManager : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             if (_placed == _max) { break; }
-            TileBehaviour tileI = _tile.GetAdjacentTiles()[(TileBehaviour.TileCode)i];
-            if (PGPlayableTiles.Contains(tileI))
+
+            Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = _tile.GetAdjacentTiles();
+            if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
             {
-                if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
+                TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
+                if (PGPlayableTiles.Contains(tileI))
                 {
-                    PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance);
+                    if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
+                    {
+                        PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance);
+                    }
                 }
             }
         }
@@ -1088,7 +1082,7 @@ public class StructureManager : MonoBehaviour
 
     private void HideBuilding()
     {
-        if (structure && structureState == StructManState.moving)
+        if (structure && structureState == StructManState.Moving)
         {
             structure.transform.position = Vector3.down * 10f;
         }
@@ -1096,6 +1090,11 @@ public class StructureManager : MonoBehaviour
 
     private void PlayerMouseOver(Structure _structure)
     {
+        if (!_structure)
+        {
+            hoveroverStructure = null;
+            hoveroverTime = 0f;
+        }
         if (!hoveroverStructure)
         {
             hoveroverStructure = _structure;
@@ -1148,7 +1147,7 @@ public class StructureManager : MonoBehaviour
             case "Lumber Pile":
                 envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
                 break;
-            case "Metal Storehouse":
+            case "Metal Storage":
                 envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
                 break;
             case "Ballista Tower":
@@ -1166,7 +1165,7 @@ public class StructureManager : MonoBehaviour
 
     private void ShowMessage(string _message, float _duration)
     {
-        if (gameMan.tutorialDone)
+        if (GameManager.GetInstance().tutorialDone)
         {
             messageBox.ShowMessage(_message, _duration);
         }
@@ -1185,17 +1184,51 @@ public class StructureManager : MonoBehaviour
             Debug.LogError("No tile at _saveData.position, failed to load.");
             return;
         }
-        newStructure.SetFoodAllocation(_saveData.foodAllocation);
+        newStructure.SetAllocated(_saveData.villagers);
         ResourceStructure resourceStructComp = newStructure.gameObject.GetComponent<ResourceStructure>();
-        if (resourceStructComp != null)
+        if (resourceStructComp)
         {
-            if (_saveData.structure == "Farm") { newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn; }
-            if (_saveData.structure == "Mine") { newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn; }
-            if (_saveData.structure == "Lumber Mill") { newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn; }
+            if (_saveData.structure == "Farm")
+            {
+                newStructure.gameObject.GetComponent<Farm>().wasPlacedOnPlains = _saveData.wasPlacedOn;
+            }
+            if (_saveData.structure == "Mine")
+            {
+                newStructure.gameObject.GetComponent<Mine>().wasPlacedOnHills = _saveData.wasPlacedOn;
+            }
+            if (_saveData.structure == "Lumber Mill")
+            {
+                newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn;
+            }
+        }
+        Barracks barracksComponent = newStructure.gameObject.GetComponent<Barracks>();
+        if (barracksComponent)
+        {
+            //barracksComponent.SetTimeTrained(_saveData.timeTrained);
+        }
+        if (_saveData.exploited)
+        {
+            EnvironmentStructure environmentComponent = newStructure.gameObject.GetComponent<EnvironmentStructure>();
+            if (environmentComponent)
+            {
+                environmentComponent.SetExploited(true);
+                environmentComponent.SetExploiterID(_saveData.exploiterID);
+            }
         }
         newStructure.isPlaced = true;
         newStructure.SetHealth(_saveData.health);
         newStructure.fromSaveData = true;
+        newStructure.SetID(_saveData.ID);
+        if (newStructure.GetStructureType() != StructureType.Environment)
+        {
+            playerStructureDict.Add(_saveData.ID, newStructure);
+            if (newStructure.GetStructureType() == StructureType.Resource)
+            {
+                VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
+                villagerAllocation.SetTarget(newStructure);
+                newStructure.SetAllocationWidget(villagerAllocation);
+            }
+        }
     }
 
     private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
@@ -1213,9 +1246,9 @@ public class StructureManager : MonoBehaviour
         switch (_preset)
         {
             case 0:
-                pgp.hillsParameters = new SuperManager.SaveVector3(60f, 80f, 0.5f);
-                pgp.forestParameters = new SuperManager.SaveVector3(60f, 80f, 0.3f);
-                pgp.plainsParameters = new SuperManager.SaveVector3(60f, 80f, 0.3f);
+                pgp.hillsParameters = new SuperManager.SaveVector3(55f, 70f, 0.25f);
+                pgp.forestParameters = new SuperManager.SaveVector3(80f, 90f, 0.3f);
+                pgp.plainsParameters = new SuperManager.SaveVector3(85f, 100f, 0.3f);
                 pgp.seed = 0;
                 pgp.useSeed = false;
                 break;
@@ -1225,6 +1258,24 @@ public class StructureManager : MonoBehaviour
         return pgp;
     }
 
+    public int GetPlayerStructureCount()
+    {
+        return playerStructureDict.Count;
+    }
+
+    public Dictionary<int, Structure>.ValueCollection GetPlayerStructures()
+    {
+        return playerStructureDict.Values;
+    }
+
+    public void OnStructureDestroyed(Structure _structure)
+    {
+        DecreaseStructureCost(_structure.GetStructureName());
+        if (playerStructureDict.ContainsKey(_structure.GetID()))
+        {
+            playerStructureDict.Remove(_structure.GetID());
+        }
+    }
 }
 
 #if UNITY_EDITOR

@@ -1,65 +1,87 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BuildingInfo : MonoBehaviour
 {
     public bool showPanel;
-    private RectTransform rTrans;
-    private Tooltip tool;
+    [SerializeField] private UIAnimator infoPanel;
+    [SerializeField] private UIAnimator actionPanel;
+    private Vector3 actionPanelPos;
     private BuildPanel buildPanel;
+    private StructureManager structMan;
 
-    public GameObject targetBuilding;
-    public string buildingName;
+    private GameObject targetBuilding;
+    private Structure targetStructure;
+    private string buildingName;
 
-    public Sprite defenceSprite;
-    public Sprite foodSprite;
-    public Sprite woodSprite;
-    public Sprite metalSprite;
-    public Sprite emptySprite;
+    [Header("Sprites")]
+    [SerializeField] private Sprite defenceSprite;
+    [SerializeField] private Sprite villagerSprite;
+    [SerializeField] private Sprite foodSprite;
+    [SerializeField] private Sprite woodSprite;
+    [SerializeField] private Sprite metalSprite;
+    [SerializeField] private Sprite emptySprite;
+    [SerializeField] private Sprite destroySprite;
+    [SerializeField] private Sprite minimizeSprite;
 
-    private TMP_Text headingText;               // Text showing name of building
-    private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
-    private TMP_Text statValueText;             // Text showing value of stat
-    private TMP_Text statInfoText;              // Additional info shown next to stat value
-    private Image statIcon;                     // Icon shown next to stat value
-    private GameObject foodComponent;           // Section for food allocation
-    private TMP_Text foodValueText;             // Text showing current food allocation
-    private Button repairButton;                // Button for repairing buildings
+    [Header("Text")]
+    [SerializeField] private TMP_Text headingTextFloating;       // Text showing name of building
+    [SerializeField] private TMP_Text headingText;               // Text showing name of building
+    [SerializeField] private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
+    [SerializeField] private TMP_Text statValueText;             // Text showing value of stat
+    [SerializeField] private TMP_Text statInfoText;              // Additional info shown next to stat value
+    [SerializeField] private Image statIcon;                     // Icon shown next to stat value
 
+    [Header("Buttons")]
+    //[SerializeField] private EnvInfo repairTooltip;            // Tooltip that appears over repair and destroy buttons
+    [SerializeField] private Button repairButton;                // Button for repairing buildings
+    [SerializeField] private Button destroyButton;               // Button to destroy buildings
+    [SerializeField] private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
+    [SerializeField] private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
+    [SerializeField] private Tooltip trainVillagerButton;        // Button to train a new villager for the Longhaus
+
+    [Header("Tooltip")]                                          // Repair and Destroy tooltips
+    [SerializeField] private RectTransform tooltipTransform;
+    [SerializeField] private TMP_Text tooltipHeading;
+    [SerializeField] private GameObject costComponent;
+    [SerializeField] private TMP_Text woodCost;
+    [SerializeField] private TMP_Text metalCost;
+    [SerializeField] private TMP_Text tooltipDescription;
+    private int tooltipMode = -1;
+
+    [Header("Settings")]
     public bool doAutoUpdate;                   // Whether to automatically update info panel
-    public float updateInterval = 0.25f;         // Time between info panel updates
+    public float updateInterval = 0.25f;        // Time between info panel updates
     private float updateTimer;
 
-    void Start()
+    private void Start()
     {
-        rTrans = GetComponent<RectTransform>();
-        tool = GetComponent<Tooltip>();
         buildPanel = FindObjectOfType<BuildPanel>();
+        structMan = FindObjectOfType<StructureManager>();
+        buildingName = "Building Name";
 
-        headingText = transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
-        statHeadingText = transform.Find("PanelMask/Stat/StatHeading").GetComponent<TMP_Text>();
-        statValueText = transform.Find("PanelMask/Stat/StatValue").GetComponent<TMP_Text>();
-        statInfoText = transform.Find("PanelMask/Stat/StatValue/StatInfo").GetComponent<TMP_Text>();
-        statIcon = transform.Find("PanelMask/Stat/StatIcon").GetComponent<Image>();
+        statInfoText.text = "";
 
-        foodComponent = transform.Find("PanelMask/Allocation").gameObject;
-        foodValueText = transform.Find("PanelMask/Allocation/FoodBox/FoodValue").GetComponent<TMP_Text>();
-        repairButton = transform.Find("PanelMask/RepairButton").GetComponent<Button>();
-        statInfoText.text = "";
-        updateTimer = updateInterval;
-    }
-    void LateUpdate()
+        updateTimer = updateInterval;
+
+    }
+
+    private void LateUpdate()
     {
-        tool.showTooltip = showPanel;
+        infoPanel.SetVisibility(showPanel);
+        actionPanel.SetVisibility(showPanel);
 
         if (targetBuilding != null)
         {
-            headingText.text = buildingName;
-            // Auto update info
+            headingText.text = buildingName;
+            headingTextFloating.text = buildingName;
+
+            // Auto update info
             if (showPanel && doAutoUpdate)
             {
-                updateTimer -= Time.deltaTime;
+                updateTimer -= Time.deltaTime;
+
                 if (updateTimer <= 0.0f)
                 {
                     SetInfo();
@@ -77,142 +99,187 @@ public class BuildingInfo : MonoBehaviour
         {
             string newHeading = headingText.text.Remove(headingText.text.IndexOf(env), env.Length);
             headingText.text = newHeading;
+            headingTextFloating.text = newHeading;
         }
 
-        //SetPosition();
+        SetPosition();
+
+        if (!showPanel && showDestroyConfirm)
+        {
+            showDestroyConfirm = false;
+            destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+            destroyButtonConfirm.showTooltip = showDestroyConfirm;
+        }
+        
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            targetBuilding.GetComponent<Structure>().Damage(50.0f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            targetBuilding.GetComponent<Structure>().Damage(-50.0f);
+        }
     }
 
     public void SetInfo()
     {
-        repairButton.interactable = false;
+        repairButton.gameObject.SetActive(true);
+        repairButton.interactable = false;
+        destroyButton.gameObject.SetActive(false);
+        trainVillagerButton.showTooltip = false;
+
         if (targetBuilding == null)
         {
             return;
-        }
+        }
+
         switch (buildingName)
         {
             case "Ballista Tower":
-                foodComponent.SetActive(true);
-                BallistaTower archer = targetBuilding.GetComponent<BallistaTower>();
+                Ballista ballista = targetBuilding.GetComponent<Ballista>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = archer.fireRate.ToString("F");
+                statValueText.text = ballista.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
-                foodValueText.text = archer.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                //foodValueText.text = ballista.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
-                repairButton.interactable = archer.CanBeRepaired();
-                break;
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = ballista.CanBeRepaired();
+                break;
+
             case "Catapult Tower":
-                foodComponent.SetActive(true);
-                CatapultTower catapult = targetBuilding.GetComponent<CatapultTower>();
+                Catapult catapult = targetBuilding.GetComponent<Catapult>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
-                statValueText.text = catapult.fireRate.ToString("F");
+                statValueText.text = catapult.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
-                foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                //foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = catapult.CanBeRepaired();
-                break;
+                break;
+
             case "Barracks":
-                foodComponent.SetActive(true);
                 Barracks barracks = targetBuilding.GetComponent<Barracks>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "To Be Implemented"; // TODO
-                statValueText.text = "To Be Implemented";
-                statInfoText.text = "To Be Implemented";
-                foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                statHeadingText.text = "Troop Capacity";
+                //statValueText.text = barracks.GetTroopCapacity().ToString("0");
+                statInfoText.text = "units";
+                //foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = barracks.CanBeRepaired();
-                break;
+                break;
+
 
             case "Farm":
-                foodComponent.SetActive(false);
                 Farm farm = targetBuilding.GetComponent<Farm>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Production Rate";
                 statValueText.text = farm.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + farm.productionTime.ToString("0") + "s";
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = farm.CanBeRepaired();
-                break;
+                break;
+
             case "Granary":
-                foodComponent.SetActive(false);
                 Granary granary = targetBuilding.GetComponent<Granary>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = granary.storage.ToString();
-                statInfoText.text = "";
+                statInfoText.text = "";
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = granary.CanBeRepaired();
-                break;
+                break;
+
             case "Lumber Mill":
-                foodComponent.SetActive(true);
                 LumberMill mill = targetBuilding.GetComponent<LumberMill>();
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
-                foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+                //foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mill.CanBeRepaired();
-                break;
+                break;
+
             case "Lumber Pile":
-                foodComponent.SetActive(false);
                 LumberPile pile = targetBuilding.GetComponent<LumberPile>();
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = pile.storage.ToString();
-                statInfoText.text = "";
+                statInfoText.text = "";
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = pile.CanBeRepaired();
-                break;
+                break;
+
             case "Mine":
-                foodComponent.SetActive(true);
                 Mine mine = targetBuilding.GetComponent<Mine>();
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mine.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mine.productionTime.ToString("0") + "s";
-                foodValueText.text = mine.GetFoodAllocation().ToString("0") + "/" + Structure.GetFoodAllocationMax().ToString("0");
+
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mine.CanBeRepaired();
-                break;
+                break;
+
             case "Metal Storage":
-                foodComponent.SetActive(false);
                 MetalStorage metStore = targetBuilding.GetComponent<MetalStorage>();
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Storage Capacity";
                 statValueText.text = metStore.storage.ToString();
                 statInfoText.text = "";
 
+                destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = metStore.CanBeRepaired();
-                break;
-            case "Longhaus":                foodComponent.SetActive(false);
+                break;
+
+            case "Longhaus":
                 Longhaus haus = targetBuilding.GetComponent<Longhaus>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Your home base";
-                statValueText.text = "Protect me!";                statInfoText.text = "";
+                statValueText.text = "Protect me!";
+                statInfoText.text = "";
+
+                trainVillagerButton.showTooltip = true;
                 repairButton.interactable = haus.CanBeRepaired();
-                break;
+                break;
+
             case "Forest Environment":
-                foodComponent.SetActive(false);
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Lumber Mills";
                 statInfoText.text = "";
-                break;
+
+                repairButton.gameObject.SetActive(false);
+                break;
+
             case "Hills Environment":
-                foodComponent.SetActive(false);
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Mines";
                 statInfoText.text = "";
-                break;
+
+                repairButton.gameObject.SetActive(false);
+                break;
+
             case "Plains Environment":
-                foodComponent.SetActive(false);
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Farms";
                 statInfoText.text = "";
-                break;
+
+                repairButton.gameObject.SetActive(false);
+                break;
+
             default:
-                foodComponent.SetActive(false);
                 statIcon.sprite = emptySprite;
                 statHeadingText.text = "Unknown Stat";
                 statValueText.text = "???";
@@ -220,81 +287,144 @@ public class BuildingInfo : MonoBehaviour
                 break;
         }
 
-        tool.SetHeight(foodComponent.activeSelf ? 272.0f : 182.0f);
+        switch (tooltipMode)
+        {
+            case -1:
+                tooltipDescription.gameObject.SetActive(false);
+                break;
+
+            case 0:
+                FetchRepairInfo();
+                break;
+            case 1:
+                FetchCompensationInfo();
+                break;
+        }
     }
 
     private void SetPosition()
     {
         if (targetBuilding == null)
-            return;
-        // Position info panel near target building
-        Vector3 pos = Camera.main.WorldToScreenPoint(targetBuilding.transform.position);
-        transform.position = pos;
-        // Adjust position of info panel if near edge of bounds
-        float xPivot = -0.25f;
-        float yPivot = 0.5f;
-        if (transform.localPosition.y < -220f)
-        {
-            xPivot = 0.5f;
-            yPivot = -0.3f;
-        }
-        if (transform.localPosition.x > 576.0f)
-        {
-            xPivot = 1.25f;
-        }
-        // Smooth Lerping motion
-        float dt = Time.unscaledDeltaTime;
-        Vector2 pivot = new Vector2(Mathf.Lerp(rTrans.pivot.x, xPivot, dt * 10.0f), Mathf.Lerp(rTrans.pivot.y, yPivot, dt * 10.0f));
-        rTrans.pivot = pivot;
+            return;
 
-        // Close info panel if out of bounds or covering build panel
-        if (transform.localPosition.x < -930.0f || transform.localPosition.x > 930.0f)
-        {
-            showPanel = false;
-        }
-        if (buildPanel.showPanel && transform.localPosition.y < -420.0f)
-        {
-            showPanel = false;
-        }
-        else if (transform.localPosition.y < -520.0f)
-        {
-            showPanel = false;
-        }
+        // Position action panel near target building
+        Vector3 pos = Camera.main.WorldToScreenPoint(targetBuilding.transform.position);
+        actionPanel.transform.position = pos;
     }
 
     public void SetTargetBuilding(GameObject building, string name)
     {
         targetBuilding = building;
-        buildingName = name;
+        targetStructure = targetBuilding.GetComponent<Structure>();
+        buildingName = name;
+
+        if (infoPanel.showElement)
+        {
+            infoPanel.Pulse();
+            actionPanel.Pulse();
+        }
+
+        showDestroyConfirm = false;
+        destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+        destroyButtonConfirm.showTooltip = showDestroyConfirm;
+
         SetInfo();
     }
 
-    public void AllocateFood(int amount)
+    public void SetTooptipMode(int _mode)
     {
-        if (targetBuilding == null)
-            return;
-
-        Structure structure = targetBuilding.GetComponent<Structure>();
-        if (amount > 0) { structure.IncreaseFoodAllocation(); }
-        else { structure.DecreaseFoodAllocation(); }
-
-        SetInfo();
+        tooltipMode = +_mode;
     }
+
+    private void RefreshTooltip()
+    {
+        if (tooltipDescription.text == "")
+        {
+            tooltipDescription.gameObject.SetActive(false);
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipTransform);
+    }
+
+    public void FetchRepairInfo()
+    {
+        tooltipHeading.text = "Repair (R: Mass Repair)";
+        ResourceBundle repairCost = targetStructure.RepairCost();
+
+        if (repairCost.woodCost + repairCost.metalCost != 0)
+        {
+            costComponent.SetActive(true);
+            woodCost.text = repairCost.woodCost.ToString();
+            metalCost.text = repairCost.metalCost.ToString();
+
+            tooltipDescription.gameObject.SetActive(true);
+            tooltipDescription.text = repairButton.interactable ? "" : "Cannot repair while recently damaged";
+        }
+        else
+        {
+            costComponent.SetActive(false);
+            tooltipDescription.gameObject.SetActive(true);
+            tooltipDescription.text = "Building is at full health";
+        }
+
+        RefreshTooltip();
+    }
+
+    public void FetchCompensationInfo()
+    {
+        float health = targetStructure.GetHealth();
+        float maxHealth = targetStructure.GetMaxHealth();
+        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structMan.structureCosts[targetStructure.GetStructureName()]);
+
+        tooltipHeading.text = "Destroy Building";
+
+        costComponent.SetActive(true);
+        woodCost.text = "+" + compensation.woodCost;
+        metalCost.text = "+" + compensation.metalCost;
+        tooltipDescription.gameObject.SetActive(true);
+        tooltipDescription.text = "Villagers will be evacuated";
+
+        RefreshTooltip();
+    }
+
+
 
     public void RepairBuilding()
     {
         if (targetBuilding == null)
             return;
 
-        Structure targetStructure = targetBuilding.GetComponent<Structure>();
-        //ResourceBundle repairCost = targetStructure.RepairCost();
-        targetStructure.Repair();
+        targetStructure.Repair();
+
         SetInfo();
     }
-   
+
+    public void DestroyBuilding()
+    {
+        FindObjectOfType<StructureManager>().DestroySelectedBuilding();
+    }
+
+    public void ToggleDestroyConfirm()
+    {
+        showDestroyConfirm = !showDestroyConfirm;
+        destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+        destroyButtonConfirm.showTooltip = showDestroyConfirm;
+    }
+
+    public void HideDestroyConfirm()
+    {
+        showDestroyConfirm = false;
+        destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
+        destroyButtonConfirm.showTooltip = showDestroyConfirm;
+    }
+
+    public void TrainVillager()
+    {
+        Longhaus.TrainVillager();
+    }
+
     public void SetVisibility(bool visible)
     {
         showPanel = visible;
     }
-
 }

@@ -42,6 +42,8 @@ public class ResearchScreen : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1.0f;
+
         superMan = SuperManager.GetInstance();
         RPCounter = transform.Find("RPCounter").GetComponent<TMP_Text>();
         cardPanel = transform.Find("BuildingCards");
@@ -50,6 +52,7 @@ public class ResearchScreen : MonoBehaviour
         InitializeCards();
     }
 
+    
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
@@ -64,6 +67,7 @@ public class ResearchScreen : MonoBehaviour
             UpdateRPCounter();
         }
     }
+    
 
     private void InitializeCards()
     {

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using TMPro;
 
 public class SceneSwitcher : MonoBehaviour
 {
@@ -14,17 +15,26 @@ public class SceneSwitcher : MonoBehaviour
     private bool isSwitching = false;
     private float fadeTimeCur = 0.0f;
 
+    public float loadTime = 2.0f;
+    private CanvasGroup loadingCanvas;
+    public GameObject loadingScreen;
+    private GameObject loadingIcon;
+    private TMP_Text loadingHint;
+
     public AudioClip clickSound;
     public AudioClip toolSound;
 
     void Awake()
     {
         canvas = fadePanel.GetComponent<CanvasGroup>();
+        loadingCanvas = loadingScreen.GetComponent<CanvasGroup>();
         curScene = SceneManager.GetActiveScene().name;
         GlobalData.curScene = curScene;
         Debug.Log("Current scene: " + curScene);
         clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
         //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
+
+
     }
 
     void Start()
@@ -38,9 +48,19 @@ public class SceneSwitcher : MonoBehaviour
         {
             fadePanel = GameObject.Find("FadePanel(Clone)");
         }
-        fadePanel.SetActive(true);
+        fadePanel.SetActive(!GlobalData.isLoadingIn);
+        if (fadePanel.activeSelf) { Invoke("ExitFade", fadeInDelay); }
 
-        Invoke("ExitFade", fadeInDelay);
+        loadingIcon = loadingScreen.transform.Find("LoadingIcon").gameObject;
+        loadingIcon.SetActive(GlobalData.isLoadingIn);
+        loadingHint = loadingScreen.transform.Find("HintText").GetComponent<TMP_Text>();
+        loadingHint.text = GlobalData.currentLoadingHint;
+        loadingScreen.SetActive(GlobalData.isLoadingIn);
+        if (loadingScreen.activeSelf) 
+        { 
+            Invoke("EndLoad", loadTime);
+            loadingScreen.GetComponent<UIAnimator>().SetVisibility(true);
+        }
     }
 
     void Update()
@@ -59,7 +79,14 @@ public class SceneSwitcher : MonoBehaviour
         {
             if (targetScene == "")
             {
-                ExitFade();
+                if (GlobalData.isLoadingIn)
+                {
+                    EndLoad();
+                }
+                else
+                {
+                    ExitFade();
+                }
             }
 
             if (targetScene == "Quit")
@@ -74,11 +101,22 @@ public class SceneSwitcher : MonoBehaviour
 
             isSwitching = false;
         }
+
+        loadingIcon.transform.Rotate(0.0f, 0.0f, -270.0f * Time.smoothDeltaTime, Space.Self);
     }
 
     public void SceneSwitch(string scene)
     {
         StartFade();
+        targetScene = scene;
+        GlobalData.isLoadingIn = false;
+    }
+
+
+    public void SceneSwitchLoad(string scene)
+    {
+        GlobalData.isLoadingIn = true;
+        BeginLoad();
         targetScene = scene;
     }
 
@@ -87,6 +125,8 @@ public class SceneSwitcher : MonoBehaviour
     {
         if (!isSwitching && !isFading)
         {
+            canvas.alpha = 0.0f;
+            fadePanel.SetActive(!GlobalData.isLoadingIn);
             canvas.DOFade(1.0f, fadeTime).SetEase(Ease.InOutSine);
 
             isSwitching = true;
@@ -109,6 +149,56 @@ public class SceneSwitcher : MonoBehaviour
         isSwitching = false;
         fadeTimeCur = fadeTime;
         canvas.DOFade(0.0f, fadeTime).SetEase(Ease.InOutSine);
+    }
+
+    private void BeginLoad()
+    {
+        if (!isSwitching && !isFading)
+        {
+            loadingCanvas.alpha = 0.0f;
+            loadingScreen.SetActive(GlobalData.isLoadingIn);
+            UIAnimator loadingAnimator = loadingScreen.GetComponent<UIAnimator>();
+            loadingAnimator.EntranceInitialize();
+            loadingAnimator.SetVisibility(true);
+            //loadingCanvas.interactable = true;
+            //loadingCanvas.blocksRaycasts = true;
+            loadingIcon.SetActive(false);
+            isSwitching = true;
+            fadeTimeCur = 0.45f;
+
+            loadingHint.text = SelectLoadingHint();
+        }
+
+        AudioSource source = GetComponent<AudioSource>();
+
+        if (source != null)
+        {
+            source.clip = clickSound;
+            source.Play();
+        }
+    }
+
+    private void EndLoad()
+    {
+        isFading = true;
+        isSwitching = false;
+        fadeTimeCur = fadeTime;
+        loadingScreen.GetComponent<UIAnimator>().SetVisibility(false);
+        //loadingCanvas.DOFade(0.0f, 0.45f).SetEase(Ease.InOutSine);
+        //loadingCanvas.interactable = false;
+        //loadingCanvas.blocksRaycasts = false;
+        GlobalData.isLoadingIn = false;
+    }
+
+    private string SelectLoadingHint()
+    {
+        string hint = GlobalData.currentLoadingHint;
+        while (hint == GlobalData.currentLoadingHint)
+        {
+            hint = GlobalData.loadingHint[Random.Range(0, GlobalData.loadingHint.Count)];
+        }
+        GlobalData.currentLoadingHint = hint;
+        return hint;
     }
 
     public void QuitGame()

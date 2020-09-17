@@ -15,7 +15,7 @@ public class LumberMill : ResourceStructure
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.wood;
+        resourceType = ResourceType.Wood;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberMill];
         health = maxHealth;
     }
@@ -27,5 +27,10 @@ public class LumberMill : ResourceStructure
         {
             tileBonus++;
         }
+    }
+
+    protected override void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
+    {
+        // intentionally does nothing, but must be implemented for the compiler
     }
 }

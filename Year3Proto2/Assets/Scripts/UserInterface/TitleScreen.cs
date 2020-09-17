@@ -18,6 +18,8 @@ public class TitleScreen : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1.0f;
+
         GetComponent<Tooltip>().showTooltip = true;
 
         gameLogo = transform.Find("GameLogo").gameObject;
@@ -34,7 +36,7 @@ public class TitleScreen : MonoBehaviour
         buttonRes = transform.Find("ButtonResearch").gameObject;
         buttonRes.transform.localScale = new Vector3(0, 0, 0);
 
-        buttonCred = transform.Find("ButtonCredits").gameObject;
+        buttonCred = transform.Find("ButtonOptions").gameObject;
         buttonCred.transform.localScale = new Vector3(0, 0, 0);
 
         buttonExit = transform.Find("ButtonExit").gameObject;
@@ -75,11 +77,26 @@ public class TitleScreen : MonoBehaviour
         Debug.Log(SuperManager.GetInstance().currentLevel);
     }
 
+    /*
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
         {
             titleSequence.Complete();
+        }
+    }
+    */
+
+    public void PlayButton()
+    {
+        SuperManager superMan = SuperManager.GetInstance();
+        if (!superMan.GetSavedMatch().match)
+        {
+            superMan.PlayLevel(0);
+        }
+        else
+        {
+            superMan.PlayLevel(superMan.GetSavedMatch().levelID);
         }
     }
 }

@@ -28,20 +28,21 @@ public struct PlayerResources
     {
         switch (_batch.type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 rWood += _batch.amount;
                 if (rWood > rWoodMax) { rWood = rWoodMax; }
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 rMetal += _batch.amount;
                 if (rMetal > rMetalMax) { rMetal = rMetalMax; }
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 rFood += _batch.amount;
                 if (rFood > rFoodMax) { rFood = rFoodMax; }
                 if (rFood < 0)
                 {
-                    //lose condition
+                    VillagerManager.GetInstance().AddStarveTicks(-rFood);
+                    rFood = 0;
                 }
                 break;
         }
@@ -68,23 +69,30 @@ public struct PlayerResources
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 rWood -= _deduction;
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 rMetal -= _deduction;
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 rFood -= _deduction;
                 break;
         }
     }
 
-    public void DeductResource(ResourceBundle _bundle)
+    public void DeductResourceBundle(ResourceBundle _bundle)
     {
         rWood -= _bundle.woodCost;
         rMetal -= _bundle.metalCost;
         rFood -= _bundle.foodCost;
+    }
+
+    public void AddResourceBundle(ResourceBundle _bundle)
+    {
+        rWood += _bundle.woodCost;
+        rMetal += _bundle.metalCost;
+        rFood += _bundle.foodCost;
     }
 
     public int Get(ResourceType _type)
@@ -92,13 +100,13 @@ public struct PlayerResources
         int value = 0;
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 value = rWood;
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 value = rMetal;
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 value = rFood;
                 break;
         }
@@ -109,11 +117,11 @@ public struct PlayerResources
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 return rWoodMax;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 return rMetalMax;
-            case ResourceType.food:
+            case ResourceType.Food:
                 return rFoodMax;
             default:
                 break;
@@ -125,28 +133,29 @@ public struct PlayerResources
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 return (rWood == rWoodMax);
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 return (rMetal == rMetalMax);
-            case ResourceType.food:
+            case ResourceType.Food:
                 return (rFood == rFoodMax);
             default:
                 break;
         }
         return false;
     }
+
     public void SetMaximum(ResourceType _type, int _newMax)
     {
         switch (_type)
         {
-            case ResourceType.wood:
+            case ResourceType.Wood:
                 rWoodMax = _newMax;
                 break;
-            case ResourceType.metal:
+            case ResourceType.Metal:
                 rMetalMax = _newMax;
                 break;
-            case ResourceType.food:
+            case ResourceType.Food:
                 rFoodMax = _newMax;
                 break;
         }
@@ -171,14 +180,20 @@ public class ResourceBatch
         age += _time;
     }
 }
+
 public class GameManager : MonoBehaviour
 {
+    private static GameManager instance = null;
+
+    [HideInInspector]
     public PlayerResources playerResources;
+    [HideInInspector]
     public bool tutorialDone = false;
     private static Dictionary<string, AudioClip> audioClips;
     private float batchMaxAge = 3.0f;
     private bool gameover = false;
-    private bool victory = false;
+    [HideInInspector]
+    public bool victory = false;
     private float gameoverTimer = 5.0f;
     private List<ResourceBatch> recentBatches;
     private float tutorialAMessageTimer = 5.0f;
@@ -189,64 +204,25 @@ public class GameManager : MonoBehaviour
     private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private MessageBox messageBox;
-    private SuperManager superMan;
     private HUDManager HUDMan;
-    private EnemySpawner enemySpawner;
-    private StructureManager structMan;
     private BuildPanel buildPanel;
+    [HideInInspector]
     public bool repairMessage = false;
+    [HideInInspector]
     public bool longhausDead;
+    [HideInInspector]
     public bool repairAll = false;
     private float volumeFull;
     private float panelRefreshTimer = 0.0f;
     private float panelRefreshCooldown = 0.5f;
-    int RecentFood
+    [HideInInspector]
+    public bool gameAlreadyWon = false;
+
+    public static GameManager GetInstance()
     {
-        get
-        {
-            int runningTotal = 0;
-            foreach (ResourceBatch batch in recentBatches)
-            {
-                if (batch.type == ResourceType.food)
-                {
-                    runningTotal += batch.amount;
-                }
-            }
-            return runningTotal;
-        }
+        return instance;
     }
 
-    int RecentMetal
-    {
-        get
-        {
-            int runningTotal = 0;
-            foreach (ResourceBatch batch in recentBatches)
-            {
-                if (batch.type == ResourceType.metal)
-                {
-                    runningTotal += batch.amount;
-                }
-            }
-            return runningTotal;
-        }
-    }
-
-    int RecentWood
-    {
-        get
-        {
-            int runningTotal = 0;
-            foreach (ResourceBatch batch in recentBatches)
-            {
-                if (batch.type == ResourceType.wood)
-                {
-                    runningTotal += batch.amount;
-                }
-            }
-            return runningTotal;
-        }
-    }
     public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
@@ -288,40 +264,39 @@ public class GameManager : MonoBehaviour
             {
                 switch (storageStructure.GetResourceType())
                 {
-                    case ResourceType.wood:
+                    case ResourceType.Wood:
                         newWoodMax += storageStructure.storage;
                         break;
-                    case ResourceType.metal:
+                    case ResourceType.Metal:
                         newMetalMax += storageStructure.storage;
                         break;
-                    case ResourceType.food:
+                    case ResourceType.Food:
                         newFoodMax += storageStructure.storage;
                         break;
                 }
             }
         }
 
-        playerResources.SetMaximum(ResourceType.wood, newWoodMax);
-        playerResources.SetMaximum(ResourceType.metal, newMetalMax);
-        playerResources.SetMaximum(ResourceType.food, newFoodMax);
+        playerResources.SetMaximum(ResourceType.Wood, newWoodMax);
+        playerResources.SetMaximum(ResourceType.Metal, newMetalMax);
+        playerResources.SetMaximum(ResourceType.Food, newFoodMax);
     }
 
-    public float GetFoodVelocity(int _seconds)
+
+    // wood metal food
+    public Vector3 GetResourceVelocity()
     {
-        return RecentFood * _seconds / batchMaxAge;
+        Vector3 resourceVelocity = Vector3.zero;
+
+        foreach (Structure structure in FindObjectsOfType<Structure>())
+        {
+            resourceVelocity += structure.GetResourceDelta();
+        }
+
+        return resourceVelocity;
     }
 
-    public float GetMetalVelocity(int _seconds)
-    {
-        return RecentMetal * _seconds / batchMaxAge;
-    }
-
-    public float GetWoodVelocity(int _seconds)
-    {
-        return RecentWood * _seconds / batchMaxAge;
-    }
-
-    public void OnStructurePlace()
+    public void OnStructurePlaced()
     {
         CalculateStorageMaximum();
 
@@ -334,7 +309,7 @@ public class GameManager : MonoBehaviour
         Enemy[] enemies = FindObjectsOfType<Enemy>();
         foreach (Enemy enemy in enemies)
         {
-            enemy.Next();
+            enemy.SetState(EnemyState.Idle);
         }
     }
 
@@ -347,7 +322,7 @@ public class GameManager : MonoBehaviour
         Structure[] structures = FindObjectsOfType<Structure>();
         foreach (Structure structure in structures)
         {
-            if (structure.GetStructureType() != StructureType.environment)
+            if (structure.GetStructureType() != StructureType.Environment)
             {
                 ResourceBundle repairCost = structure.RepairCost();
                 bool repaired = structure.Repair(true);
@@ -392,6 +367,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         audioClips = new Dictionary<string, AudioClip>
         {
             { "horn", Resources.Load("Audio/SFX/sfxHorn") as AudioClip },
@@ -406,27 +382,45 @@ public class GameManager : MonoBehaviour
             { "UIclick2", Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip },
             { "UIclick3", Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip },
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
+            { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
         };
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        SuperManager superMan = SuperManager.GetInstance();
         playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
         recentBatches = new List<ResourceBatch>();
         messageBox = FindObjectOfType<MessageBox>();
         HUDMan = FindObjectOfType<HUDManager>();
-        superMan = SuperManager.GetInstance();
-        structMan = GetComponent<StructureManager>();
-        enemySpawner = FindObjectOfType<EnemySpawner>();
         buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
+        {
+            Soldier.SetMaxHealth(1.5f * Soldier.GetMaxHealth());
+        }
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
+        {
+            Soldier.SetDamage(1.3f * Soldier.GetDamage());
+        }
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
+        {
+            Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            repairAll = true;
+            RepairAll();
+        }
+
         List<ResourceBatch> batchesToRemove = new List<ResourceBatch>();
         for (int i = 0; i < recentBatches.Count; i++)
         {
@@ -476,20 +470,26 @@ public class GameManager : MonoBehaviour
         {
             panelRefreshTimer = panelRefreshCooldown;
             // do refresh
-            for (int i = 1; i <= 8; i++)
+            for (int i = 1; i <= 9; i++)
             {
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
                 {
-                    if (!superMan.GetResearchComplete(SuperManager.k_iCatapult))
+                    if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
                     {
                         continue;
                     }
                 }
                 if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Barracks)
                 {
-                    continue;
+                    if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Barracks))
+                    {
+                        continue;
+                    }
                 }
-                buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerResources.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
+                ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]];
+                bool playerCanAfford = playerResources.CanAfford(cost);
+                Color colour = playerCanAfford ? Color.white : buildPanel.cannotAfford;
+                buildPanel.SetButtonColour((BuildPanel.Buildings)i, colour);
             }
         }
 
@@ -503,11 +503,11 @@ public class GameManager : MonoBehaviour
                 GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
             }
-            else if (WinConditionIsMet())
+            else if (WinConditionIsMet() && !SuperManager.GetInstance().GetSavedMatch().matchWon)
             {
                 gameover = true;
                 victory = true;
-                superMan.OnLevelComplete();
+                SuperManager.GetInstance().OnLevelComplete();
                 messageBox.ShowMessage("You Win!", 5f);
                 GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("win", Vector3.zero, 1f, false);
@@ -549,37 +549,36 @@ public class GameManager : MonoBehaviour
 
     public void SaveMatch()
     {
-        superMan.SaveCurrentMatch();
+        SuperManager.GetInstance().SaveCurrentMatch();
     }
 
     public void OnRestart()
     {
-        superMan.ClearCurrentMatch();
+        SuperManager.GetInstance().ClearCurrentMatch();
     }
 
     public bool WinConditionIsMet()
     {
-        int winCondition = superMan.GetCurrentWinCondition();
-        switch (winCondition)
+        switch (SuperManager.GetInstance().GetCurrentWinCondition())
         {
-            case SuperManager.k_iAccumulate:
-                return playerResources.Get(ResourceType.metal) >= 1500 && playerResources.Get(ResourceType.food) >= 1500 && playerResources.Get(ResourceType.wood) >= 1500;
-            case SuperManager.k_iAccumulateII:
-                return playerResources.Get(ResourceType.metal) >= 2500 && playerResources.Get(ResourceType.food) >= 2500 && playerResources.Get(ResourceType.wood) >= 2500;
-            case SuperManager.k_iAccumulateIII:
-                return playerResources.Get(ResourceType.metal) >= 7500 && playerResources.Get(ResourceType.food) >= 7500 && playerResources.Get(ResourceType.wood) >= 7500;
-            case SuperManager.k_iSlaughter:
-                return enemySpawner.GetKillCount() > 300;
-            case SuperManager.k_iSlaughterII:
-                return enemySpawner.GetKillCount() > 800;
-            case SuperManager.k_iSlaughterIII:
-                return enemySpawner.GetKillCount() > 2000;
-            case SuperManager.k_iSurvive:
-                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
-            case SuperManager.k_iSurviveII:
-                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
-            case SuperManager.k_iSurviveIII:
-                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.EnemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
+            case SuperManager.Accumulate:
+                return playerResources.Get(ResourceType.Metal) >= 1500 && playerResources.Get(ResourceType.Food) >= 1500 && playerResources.Get(ResourceType.Wood) >= 1500;
+            case SuperManager.AccumulateII:
+                return playerResources.Get(ResourceType.Metal) >= 2500 && playerResources.Get(ResourceType.Food) >= 2500 && playerResources.Get(ResourceType.Wood) >= 2500;
+            case SuperManager.AccumulateIII:
+                return playerResources.Get(ResourceType.Metal) >= 7500 && playerResources.Get(ResourceType.Food) >= 7500 && playerResources.Get(ResourceType.Wood) >= 7500;
+            case SuperManager.Slaughter:
+                return EnemyManager.GetInstance().GetEnemiesKilled() > 300;
+            case SuperManager.SlaughterII:
+                return EnemyManager.GetInstance().GetEnemiesKilled() > 800;
+            case SuperManager.SlaughterIII:
+                return EnemyManager.GetInstance().GetEnemiesKilled() > 2000;
+            case SuperManager.Survive:
+                return EnemyManager.GetInstance().GetWaveCurrent() == 25 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 25;
+            case SuperManager.SurviveII:
+                return EnemyManager.GetInstance().GetWaveCurrent() == 50 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 50;
+            case SuperManager.SurviveIII:
+                return EnemyManager.GetInstance().GetWaveCurrent() == 100 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 100;
             default:
                 break;
         }

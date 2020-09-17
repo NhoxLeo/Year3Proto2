@@ -4,16 +4,10 @@ using UnityEngine;
 
 public class LumberPile : StorageStructure
 {
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-        base.Start();
-    }
-
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.wood;
+        resourceType = ResourceType.Wood;
         storage = 500;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.LumberPile];
         maxHealth = 200f;

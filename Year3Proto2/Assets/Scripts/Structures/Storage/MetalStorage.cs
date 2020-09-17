@@ -4,16 +4,10 @@ using UnityEngine;
 
 public class MetalStorage : StorageStructure
 {
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-        base.Start();
-    }
-
     protected override void Awake()
     {
         base.Awake();
-        resourceType = ResourceType.metal;
+        resourceType = ResourceType.Metal;
         storage = 500;
         structureName = StructureManager.StructureNames[BuildPanel.Buildings.MetalStorage];
         maxHealth = 200f;

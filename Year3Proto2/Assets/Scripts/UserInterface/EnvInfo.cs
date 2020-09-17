@@ -14,16 +14,25 @@ public class EnvInfo : MonoBehaviour
     void Start()
     {
         rTrans = GetComponent<RectTransform>();
-        tool = GetComponent<Tooltip>();
-        tool.SetInteractable(false);
-        textbox = transform.Find("PanelMask/Description").GetComponent<TMP_Text>();
+        DefineTool();
+        DefineTextBox();
     }
 
+    void DefineTool()
+    {
+        tool = GetComponent<Tooltip>();
+        tool.SetInteractable(false);
+    }
+
+    void DefineTextBox()
+    {
+        textbox = transform.Find("PanelMask/Description").GetComponent<TMP_Text>();
+    }
 
     void Update()
     {
         tool.showTooltip = showInfo;
-
+        /*
         if (Input.GetKeyDown(KeyCode.P))
         {
             ShowInfo("this is a test tooltip");
@@ -33,6 +42,7 @@ public class EnvInfo : MonoBehaviour
         {
             showInfo = !showInfo;
         }
+        */
     }
 
     private void LateUpdate()
@@ -66,10 +76,13 @@ public class EnvInfo : MonoBehaviour
     {
         if (!textbox)
         {
-            //Debug.LogError("textbox implicit bool cast returned false");
-            return;
+            DefineTextBox();
         }
         textbox.text = info;
+        if (!tool)
+        {
+            DefineTool();
+        }
         tool.SetHeight(tool.height);
     }
 
