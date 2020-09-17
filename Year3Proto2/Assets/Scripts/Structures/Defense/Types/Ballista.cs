@@ -6,17 +6,19 @@ public class Ballista : ProjectileDefenseStructure
 
     private const int CostArrowBase = 4;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Ballista];
+        base.Awake();
+        maxHealth = 350f;
+        health = maxHealth;
+        structureName = StructureNames.Ballista;
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
     }
 
     public override void CheckResearch()
     {
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
 
         bool efficiencyUpgrade = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaEfficiency);
         int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
@@ -26,7 +28,6 @@ public class Ballista : ProjectileDefenseStructure
     protected override void Update()
     {
         base.Update();
-
         if (target)
         {
             Vector3 difference = ballista.position - target.position;
@@ -51,6 +52,16 @@ public class Ballista : ProjectileDefenseStructure
             arrow.Pierce = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper);
             arrow.SetDamage(arrow.GetDamage() * damageFactor);
             arrow.SetTarget(_target);
+        }
+    }
+
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+        projectileRate = allocatedVillagers * 0.5f;
+        if (allocatedVillagers != 0)
+        {
+            projectileDelay = 1f / projectileRate;
         }
     }
 }

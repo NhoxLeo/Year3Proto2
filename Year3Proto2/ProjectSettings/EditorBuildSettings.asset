@@ -17,4 +17,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SamDev.unity
     guid: c6d1683955e4d8a43930635d08eafccb
+  - enabled: 1
+    path: Assets/Scenes/Level 2.unity
+    guid: 1594a00dd15eaf948879a4a5a03df6ed
+  - enabled: 1
+    path: Assets/Scenes/Level 3.unity
+    guid: 27fb6a75a51608f4da6cdc2d15959d07
+  - enabled: 1
+    path: Assets/Scenes/Level 4.unity
+    guid: 10fc2912acd523e4483911d2a2b2e65b
   m_configObjects: {}

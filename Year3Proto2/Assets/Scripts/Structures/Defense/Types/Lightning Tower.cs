@@ -4,11 +4,6 @@ public class LightningTower : ProjectileDefenseStructure
 {
     [SerializeField] private int projectileAmount = 3;
 
-    public override void CheckResearch()
-    {
-        throw new System.NotImplementedException();
-    }
-
     public override void Launch(Transform _target)
     {
         Transform projectile = Instantiate(projectilePrefab, transform);

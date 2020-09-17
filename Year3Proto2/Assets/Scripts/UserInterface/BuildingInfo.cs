@@ -93,14 +93,6 @@ public class BuildingInfo : MonoBehaviour
             showPanel = false;
         }
 
-        string env = "Environment";
-        if (buildingName.Contains(env))
-        {
-            string newHeading = headingText.text.Remove(headingText.text.IndexOf(env), env.Length);
-            headingText.text = newHeading;
-            headingTextFloating.text = newHeading;
-        }
-
         SetPosition();
 
         if (!showPanel && showDestroyConfirm)
@@ -113,12 +105,12 @@ public class BuildingInfo : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            targetBuilding.GetComponent<Structure>().Damage(50.0f);
+            targetStructure.Damage(50.0f);
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            targetBuilding.GetComponent<Structure>().Damage(-50.0f);
+            targetStructure.Damage(-50.0f);
         }
     }
 
@@ -136,7 +128,7 @@ public class BuildingInfo : MonoBehaviour
 
         switch (buildingName)
         {
-            case "Ballista Tower":
+            case StructureNames.Ballista:
                 Ballista ballista = targetBuilding.GetComponent<Ballista>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
@@ -148,7 +140,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = ballista.CanBeRepaired();
                 break;
 
-            case "Catapult Tower":
+            case StructureNames.Catapult:
                 Catapult catapult = targetBuilding.GetComponent<Catapult>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Fire Rate";
@@ -160,7 +152,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = catapult.CanBeRepaired();
                 break;
 
-            case "Barracks":
+            case StructureNames.Barracks:
                 Barracks barracks = targetBuilding.GetComponent<Barracks>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Troop Capacity";
@@ -173,7 +165,7 @@ public class BuildingInfo : MonoBehaviour
                 break;
 
 
-            case "Farm":
+            case StructureNames.FoodResource:
                 Farm farm = targetBuilding.GetComponent<Farm>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Production Rate";
@@ -184,7 +176,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = farm.CanBeRepaired();
                 break;
 
-            case "Granary":
+            case StructureNames.FoodStorage:
                 Granary granary = targetBuilding.GetComponent<Granary>();
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Storage Capacity";
@@ -195,7 +187,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = granary.CanBeRepaired();
                 break;
 
-            case "Lumber Mill":
+            case StructureNames.LumberResource:
                 LumberMill mill = targetBuilding.GetComponent<LumberMill>();
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Production Rate";
@@ -207,7 +199,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = mill.CanBeRepaired();
                 break;
 
-            case "Lumber Pile":
+            case StructureNames.LumberStorage:
                 LumberPile pile = targetBuilding.GetComponent<LumberPile>();
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Storage Capacity";
@@ -218,7 +210,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = pile.CanBeRepaired();
                 break;
 
-            case "Mine":
+            case StructureNames.MetalResource:
                 Mine mine = targetBuilding.GetComponent<Mine>();
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Production Rate";
@@ -229,7 +221,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = mine.CanBeRepaired();
                 break;
 
-            case "Metal Storage":
+            case StructureNames.MetalStorage:
                 MetalStorage metStore = targetBuilding.GetComponent<MetalStorage>();
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Storage Capacity";
@@ -240,7 +232,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = metStore.CanBeRepaired();
                 break;
 
-            case "Longhaus":
+            case StructureNames.Longhaus:
                 Longhaus haus = targetBuilding.GetComponent<Longhaus>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Your home base";
@@ -251,7 +243,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = haus.CanBeRepaired();
                 break;
 
-            case "Forest Environment":
+            case StructureNames.LumberEnvironment:
                 statIcon.sprite = woodSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Lumber Mills";
@@ -260,7 +252,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.gameObject.SetActive(false);
                 break;
 
-            case "Hills Environment":
+            case StructureNames.MetalEnvironment:
                 statIcon.sprite = metalSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Mines";
@@ -269,7 +261,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.gameObject.SetActive(false);
                 break;
 
-            case "Plains Environment":
+            case StructureNames.FoodEnvironment:
                 statIcon.sprite = foodSprite;
                 statHeadingText.text = "Bonus Building Type";
                 statValueText.text = "Farms";
