@@ -39,13 +39,13 @@ public class LevelEndscreen : MonoBehaviour
     {
         List<MapScreen.Level> levels = new List<MapScreen.Level>();
         superMan.GetLevelData(ref levels);
+        int currentLevel = superMan.GetCurrentLevel();
+        transform.Find("Victory/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[currentLevel].victoryTitle;
+        transform.Find("Victory/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[currentLevel].victoryDescription;
+        transform.Find("Victory/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[currentLevel].victoryValue.ToString();
 
-        transform.Find("Victory/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryTitle;
-        transform.Find("Victory/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryDescription;
-        transform.Find("Victory/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
-
-        transform.Find("Victory/ModBonus").GetComponent<TMP_Text>().text = "+" + levels[superMan.currentLevel].GetTotalCoefficient() * 100 + "%";
-        transform.Find("Victory/Reward").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].reward.ToString();
+        transform.Find("Victory/ModBonus").GetComponent<TMP_Text>().text = "+" + levels[currentLevel].GetTotalCoefficient() * 100 + "%";
+        transform.Find("Victory/Reward").GetComponent<TMP_Text>().text = levels[currentLevel].reward.ToString();
     }
 
     public void ShowVictoryScreen()

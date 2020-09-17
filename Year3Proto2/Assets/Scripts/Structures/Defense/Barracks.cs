@@ -154,8 +154,4 @@ public class Barracks : DefenseStructure
 
         soldiers.Add(newSoldier);
     }
-    public override void CheckResearch()
-    {
-        throw new System.NotImplementedException();
-    }
 }

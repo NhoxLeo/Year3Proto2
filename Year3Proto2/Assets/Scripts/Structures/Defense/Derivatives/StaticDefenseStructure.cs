@@ -4,9 +4,4 @@
     {
         base.Start();
     }
-
-    public override void CheckResearch()
-    {
-        throw new System.NotImplementedException();
-    }
 }

@@ -142,10 +142,10 @@ public class HUDManager : MonoBehaviour
         List<MapScreen.Level> levels = new List<MapScreen.Level>();
         SuperManager superMan = SuperManager.GetInstance();
         superMan.GetLevelData(ref levels);
-
-        transform.Find("ResourceBar/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryTitle;
-        transform.Find("ResourceBar/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryDescription;
-        transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
+        int currentLevel = superMan.GetCurrentLevel();
+        transform.Find("ResourceBar/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[currentLevel].victoryTitle;
+        transform.Find("ResourceBar/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[currentLevel].victoryDescription;
+        transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[currentLevel].victoryValue.ToString();
     }
 
     public void RefreshResources()

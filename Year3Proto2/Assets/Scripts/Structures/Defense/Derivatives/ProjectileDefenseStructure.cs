@@ -8,14 +8,14 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
     [SerializeField] protected Transform projectileLocation;
     [SerializeField] private int projectileAmount;
     [SerializeField] private float projectileTime;
-    [SerializeField] private float projectileDelay;
-    [SerializeField] private float projectileRate;
-    [SerializeField] private float projectileRateFactor;
+    [SerializeField] protected float projectileDelay;
+    [SerializeField] protected float projectileRate;
+    [SerializeField] protected float projectileRateFactor;
 
     protected override void Update()
     {
         base.Update();
-        if (attachedTile && enemies.Count > 0)
+        if (attachedTile && enemies.Count > 0 && allocatedVillagers != 0)
         {
             projectileTime += Time.deltaTime;
             if (projectileTime >= projectileDelay && GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
@@ -26,8 +26,6 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
                 });
    
                 projectileTime = 0.0f;
-                projectileRate = allocatedVillagers * projectileRateFactor + projectileDelay;
-                projectileDelay = projectileRate;
             }
         }
     }
