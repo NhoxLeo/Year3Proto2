@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class Catapult : ProjectileDefenseStructure
 {
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         structureName = StructureNames.Catapult;
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification)) { health = maxHealth *= 1.5f; }
+        maxHealth = 450f;
+        health = maxHealth;
     }
 
     public override void CheckResearch()
@@ -37,6 +40,16 @@ public class Catapult : ProjectileDefenseStructure
             boulder.ExplosionRadius = boulder.ExplosionRadius * explosionFactor;
             boulder.SetDamage(boulder.GetDamage() * damageFactor);
             boulder.SetTarget(_target);
+        }
+    }
+
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+        projectileRate = allocatedVillagers * 0.167f;
+        if (allocatedVillagers != 0)
+        {
+            projectileDelay = 1f / projectileRate;
         }
     }
 }

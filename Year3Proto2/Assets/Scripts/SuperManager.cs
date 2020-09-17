@@ -28,14 +28,6 @@ public class SuperManager : MonoBehaviour
     public const int SurviveII = 7;
     public const int SurviveIII = 8;
 
-    // FREEZE TOWER
-    public const int FreezeTower = 0;
-    public const int FreezeTowerRange = 1;
-    public const int FreezeTowerStunDuration = 1;
-    public const int FreezeTowerFortification = 3;
-    public const int FreezeTowerEfficiency = 4;
-    public const int FreezeTowerSuper = 5;
-
     // TODO REFACTOR NUMBERS
 
     // BALLISTA
@@ -61,6 +53,14 @@ public class SuperManager : MonoBehaviour
     public const int BarracksSoldierSpeed = 15;
     public const int BarracksFortification = 16;
     public const int BarracksSuper = 17;
+
+    // FREEZE TOWER
+    public const int FreezeTower = 18;
+    public const int FreezeTowerRange = 19;
+    public const int FreezeTowerStunDuration = 20;
+    public const int FreezeTowerFortification = 21;
+    public const int FreezeTowerEfficiency = 22;
+    public const int FreezeTowerSuper = 23;
 
     [Serializable]
     public struct SaveQuaternion
@@ -471,7 +471,22 @@ public class SuperManager : MonoBehaviour
         instance = GetComponent<SuperManager>();
         DontDestroyOnLoad(gameObject);
         DataInitialization();
-        currentLevel = 0;
+        string sceneName = SceneManager.GetActiveScene().name;
+        switch (sceneName)
+        {
+            case "Level 2":
+                currentLevel = 1;
+                break;
+            case "Level 3":
+                currentLevel = 2;
+                break;
+            case "Level 4":
+                currentLevel = 3;
+                break;
+            default:
+                currentLevel = 0;
+                break;
+        }
         if (startMaxed) { StartNewGame(false); }
         else { ReadGameData(); }
     }
@@ -486,20 +501,23 @@ public class SuperManager : MonoBehaviour
             {
                 WipeReloadScene(false);
             }
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                startMaxed = true;
-                WipeReloadScene(true);
-            }
             // Press M
             if (Input.GetKeyDown(KeyCode.M))
             {
-                if(GameManager.GetInstance())
+                if (GameManager.GetInstance())
                 {
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
                 }
+            }
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                startMaxed = true;
+                WipeReloadScene(true);
             }
         }
     }

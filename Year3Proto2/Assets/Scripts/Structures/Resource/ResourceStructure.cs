@@ -168,7 +168,10 @@ public abstract class ResourceStructure : Structure
         }
     }
 
-    protected abstract void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit);
+    protected virtual void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
+    {
+
+    }
 
     public override void OnSelected()
     {
@@ -226,9 +229,9 @@ public abstract class ResourceStructure : Structure
         return tileBonus;
     }
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         structureType = StructureType.Resource;
         tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
     }

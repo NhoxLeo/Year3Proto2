@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class PlainsEnvironment : EnvironmentStructure
 {
-    // Start is called before the first frame update
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         environmentType = EnvironmentType.plains;
         structureName = StructureNames.FoodEnvironment;
     }

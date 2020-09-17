@@ -1076,7 +1076,7 @@ public class StructureManager : MonoBehaviour
         Vector3 structPos = _tile.transform.position;
         structPos.y = structure.sitHeight;
         structure.transform.position = structPos;
-
+        structure.SetID(GetNewID());
         _tile.Attach(structure);
     }
 
