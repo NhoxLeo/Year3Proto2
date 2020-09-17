@@ -50,6 +50,8 @@ public class BuildPanel : MonoBehaviour
     private TMP_Text buildTipHeading;
     private SuperManager superMan;
 
+    public BuildingButton hoveredButton;
+
     [Serializable]
     public struct TooltipInfo
     {
@@ -92,31 +94,31 @@ public class BuildPanel : MonoBehaviour
         switch (_button)
         {
             case Buildings.Ballista:
-                transform.Find("PanelMask/IconArcher").GetComponent<Image>().color = _colour;
+                transform.Find("Content/DefenceBuildings/IconArcher").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Catapult:
-                transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = _colour;
+                transform.Find("Content/DefenceBuildings/IconCatapult").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Barracks:
-                transform.Find("PanelMask/IconBarracks").GetComponent<Image>().color = _colour;
+                transform.Find("Content/DefenceBuildings/IconBarracks").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Farm:
-                transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
+                transform.Find("Content/ResourceBuildings/IconFarm").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Granary:
-                transform.Find("PanelMask/IconSilo").GetComponent<Image>().color = _colour;
+                transform.Find("Content/ResourceBuildings/IconSilo").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.LumberMill:
-                transform.Find("PanelMask/IconLumberMill").GetComponent<Image>().color = _colour;
+                transform.Find("Content/ResourceBuildings/IconLumberMill").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.LumberPile:
-                transform.Find("PanelMask/IconLumberPile").GetComponent<Image>().color = _colour;
+                transform.Find("Content/ResourceBuildings/IconLumberPile").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Mine:
-                transform.Find("PanelMask/IconMine").GetComponent<Image>().color = _colour;
+                transform.Find("Content/ResourceBuildings/IconMine").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.MetalStorage:
-                transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = _colour;
+                transform.Find("Content/ResourceBuildings/IconOreStorage").GetComponent<Image>().color = _colour;
                 break;
             default:
                 break;

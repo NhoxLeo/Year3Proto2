@@ -30,7 +30,7 @@ public class BuildingButton : MonoBehaviour
     public void SetInfo(BuildPanel.Buildings _buildings)
     {
         buildings = _buildings;
-        buildingName = StructureManager.StructureNames[buildings];
+        //buildingName = StructureManager.StructureNames[buildings];
         description = StructureManager.StructureDescriptions[buildings];
 
         FindIcon(buildingName);
@@ -43,7 +43,7 @@ public class BuildingButton : MonoBehaviour
 
     public void SetHoveredBuilding()
     {
-
+        buildPanel.tooltipSelected = buildings;
     }
 
     private Sprite FindIcon(string _name)
