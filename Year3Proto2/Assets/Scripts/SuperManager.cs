@@ -305,7 +305,7 @@ public class SuperManager : MonoBehaviour
     public static List<LevelDefinition> levelDefinitions;
     public static List<ModifierDefinition> modDefinitions;
     public static List<WinConditionDefinition> winConditionDefinitions;
-    public int currentLevel;
+    private int currentLevel;
     [SerializeField]
     private bool startMaxed;
 
@@ -314,11 +314,32 @@ public class SuperManager : MonoBehaviour
         return instance;
     }
 
+    public int GetCurrentLevel()
+    {
+        return currentLevel;
+    }
+
     public void PlayLevel(int _level)
     {
         currentLevel = _level;
         if (_level != saveData.currentMatch.levelID) { ClearCurrentMatch(); }
-        FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
+        switch (_level)
+        {
+            case 0:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
+                break;
+            case 1:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("Level 2");
+                break;
+            case 2:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("Level 3");
+                break;
+            case 3:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("Level 4");
+                break;
+            default:
+                break;
+        }
     }
 
     // populates _levelData with the levels
@@ -451,7 +472,7 @@ public class SuperManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         DataInitialization();
         currentLevel = 0;
-        if (startMaxed) { StartNewGame(); }
+        if (startMaxed) { StartNewGame(false); }
         else { ReadGameData(); }
     }
 
@@ -463,7 +484,12 @@ public class SuperManager : MonoBehaviour
             // Press D
             if (Input.GetKeyDown(KeyCode.D))
             {
-                WipeReloadScene();
+                WipeReloadScene(false);
+            }
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                startMaxed = true;
+                WipeReloadScene(true);
             }
             // Press M
             if (Input.GetKeyDown(KeyCode.M))
@@ -478,13 +504,13 @@ public class SuperManager : MonoBehaviour
         }
     }
 
-    private void WipeReloadScene()
+    private void WipeReloadScene(bool _override)
     {
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
             File.Delete(StructureManager.GetSaveDataPath());
         }
-        ReadGameData();
+        StartNewGame(_override);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -505,9 +531,12 @@ public class SuperManager : MonoBehaviour
         {
             return false;
         }
+        if (currentLevel != _matchData.levelID)
+        {
+            return false;
+        }
 
         // easy stuff
-        currentLevel = _matchData.levelID;
         GameManager.GetInstance().repairAll = _matchData.repairAll;
         GameManager.GetInstance().repairMessage = _matchData.repairMessage;
         GameManager.GetInstance().tutorialDone = _matchData.tutorialDone;
@@ -751,7 +780,7 @@ public class SuperManager : MonoBehaviour
         else
         {
             Debug.LogWarning("CheckData returns false, saveData appears corrupt. Calling WipeReloadScene...");
-            WipeReloadScene();
+            WipeReloadScene(false);
         }
         Debug.Log("RestoreSaveData ends...");
     }
@@ -838,7 +867,7 @@ public class SuperManager : MonoBehaviour
         else
         {
             // File does not exist, start new game
-            StartNewGame();
+            StartNewGame(false);
         }
     }
 
@@ -854,9 +883,9 @@ public class SuperManager : MonoBehaviour
         WriteGameData();
     }
 
-    private void StartNewGame()
+    private void StartNewGame(bool _override)
     {
-        if (!Application.isEditor)
+        if (!Application.isEditor && !_override)
         {
             startMaxed = false;
         }
@@ -885,7 +914,7 @@ public class SuperManager : MonoBehaviour
 
     public void ResetSaveData()
     {
-        StartNewGame();
+        StartNewGame(false);
     }
 
     public void SetShowTutorial(bool _showTutorial)
