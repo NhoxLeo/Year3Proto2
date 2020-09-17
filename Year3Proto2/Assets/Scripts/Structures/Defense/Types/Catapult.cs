@@ -7,10 +7,13 @@ public class Catapult : ProjectileDefenseStructure
 {
     private const int BoulderMetalCost = 8;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         structureName = StructureNames.Catapult;
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification)) { health = maxHealth *= 1.5f; }
+        maxHealth = 450f;
+        health = maxHealth;
     }
 
     public override void CheckResearch()
@@ -59,6 +62,15 @@ public class Catapult : ProjectileDefenseStructure
                 break;
             case 5:
                 break;
+              }
+            }
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+        projectileRate = allocatedVillagers * 0.167f;
+        if (allocatedVillagers != 0)
+        {
+            projectileDelay = 1f / projectileRate;
         }
     }
 }

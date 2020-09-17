@@ -372,6 +372,7 @@ public class StructureManager : MonoBehaviour
 
     private void Start()
     {
+        SuperManager superMan = SuperManager.GetInstance();
 #if UNITY_EDITOR
         // before we start, lets get rid of any NON PG clones
         ProceduralGenerationWindow.ClearClones(true);
@@ -379,7 +380,7 @@ public class StructureManager : MonoBehaviour
         LoadPGPFromFile();
         if (Application.isPlaying)
         {
-            if (!SuperManager.GetInstance().LoadCurrentMatch())
+            if (!superMan.LoadCurrentMatch())
             {
                 // if there is no current match
                 editorGenerated = false;
@@ -1074,7 +1075,7 @@ public class StructureManager : MonoBehaviour
         Vector3 structPos = _tile.transform.position;
         structPos.y = structure.sitHeight;
         structure.transform.position = structPos;
-
+        structure.SetID(GetNewID());
         _tile.Attach(structure);
     }
 
