@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Catapult : ProjectileDefenseStructure
 {
+    private const int BoulderMetalCost = 8;
+
     protected override void Start()
     {
         base.Start();
@@ -13,13 +15,16 @@ public class Catapult : ProjectileDefenseStructure
 
     public override void CheckResearch()
     {
-        attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);
-
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultRange))
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
+
+        bool efficiencyUpgrade = SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultEfficiency);
+        int metalCost = efficiencyUpgrade ? (BoulderMetalCost / 2) : BoulderMetalCost;
+        attackCost = new ResourceBundle(0, metalCost, 0);
+
     }
 
     public override void Launch(Transform _target)

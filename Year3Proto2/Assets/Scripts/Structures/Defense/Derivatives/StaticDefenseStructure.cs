@@ -1,4 +1,4 @@
-﻿public class StaticDefenseStructure : DefenseStructure
+﻿public abstract class StaticDefenseStructure : DefenseStructure
 {
     protected override void Start()
     {

@@ -1,4 +1,6 @@
-﻿public class ShockWaveTower : DefenseStructure
+﻿using UnityEngine;
+
+public class ShockWaveTower : ParticleDefenseStructure
 {
     protected override void Start()
     {
@@ -31,6 +33,18 @@
                 break;
             case 5:
                 break;
+        }
+    }
+
+    public override void OnParticleHit(Transform _target)
+    {
+        //Possible shockwave damage and stun.
+        //Maybe a way to repulse them backwards...
+
+        Rigidbody body = _target.GetComponent<Rigidbody>();
+        if(body)
+        {
+            body.AddForce(-transform.forward * 10.0f);
         }
     }
 }

@@ -65,7 +65,7 @@ public class BuildPanel : MonoBehaviour
     {
         yPos = transform.localPosition.y;
         canvas = GetComponent<CanvasGroup>();
-        structMan = FindObjectOfType<StructureManager>();
+        structMan = StructureManager.GetInstance();
         superMan = SuperManager.GetInstance();
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;

@@ -1,16 +1,30 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FreezeTowerCannon : MonoBehaviour
 {
-    // Particle System Serialization.
-    [SerializeField] private LayerMask targetMask;
+    // TODO:
+    // Eyes changing color. (Material change)
+
+    [Header("Attributes")]
     [SerializeField] private float viewRadius = 5.0f;
-    [Range(0,360)] [SerializeField] private float viewAngle = 60.0f;
+    [SerializeField] private float damage = 0.02f;
+    [Range(0, 360)] [SerializeField] private float viewAngle = 60.0f;
+    [SerializeField] private LayerMask targetMask;
+    [SerializeField] private Material material;
+    [SerializeField] private ParticleSystem particle;
+
+    private List<Transform> targets = new List<Transform>();
 
     private void Start()
     {
         StartCoroutine(FindTargets(3.0f));
+    }
+
+    private void Update()
+    {
+        material.color = targets.Count > 0 ? Color.red : Color.white; 
     }
 
     IEnumerator FindTargets(float delay)
@@ -18,6 +32,7 @@ public class FreezeTowerCannon : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(delay);
+            targets.Clear();
 
             Collider[] transforms = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
             for (int i = 0; i < transforms.Length; i++)
@@ -26,7 +41,7 @@ public class FreezeTowerCannon : MonoBehaviour
                 Vector3 direction = (target.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
                 {
-                    //Found target.
+                    targets.Add(target);
                 }
             }
         }

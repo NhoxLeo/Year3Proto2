@@ -4,7 +4,8 @@ public class Ballista : ProjectileDefenseStructure
 {
     [SerializeField] private Transform ballista;
 
-    private const int CostArrowBase = 4;
+    private const int ArrowWoodCost = 4;
+    private const int ArrowMetalCost = 2;
 
     protected override void Start()
     {
@@ -19,8 +20,10 @@ public class Ballista : ProjectileDefenseStructure
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
 
         bool efficiencyUpgrade = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaEfficiency);
-        int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
-        attackCost = new ResourceBundle(woodCost, 0, 0);
+        int woodCost = efficiencyUpgrade ? (ArrowWoodCost / 2) : ArrowWoodCost;
+        int metalCost = efficiencyUpgrade ? (ArrowMetalCost / 2) : ArrowMetalCost;
+
+        attackCost = new ResourceBundle(woodCost, metalCost, 0);
     }
 
     protected override void Update()

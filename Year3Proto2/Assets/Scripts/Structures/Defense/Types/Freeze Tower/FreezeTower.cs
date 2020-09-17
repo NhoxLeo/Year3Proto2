@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-public class FreezeTower : DefenseStructure
+﻿public class FreezeTower : DefenseStructure
 {
     protected override void Start()
     {
         base.Start();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
+        structureName = StructureManager.StructureDescriptions[BuildPanel.Buildings.Catapult];
     }
 
     public override void CheckResearch()
