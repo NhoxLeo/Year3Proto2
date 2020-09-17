@@ -18,7 +18,7 @@ public class ForestEnvironment : EnvironmentStructure
     {
         base.Start();
         environmentType = EnvironmentType.forest;
-        structureName = "Forest Environment";
+        structureName = StructureNames.LumberEnvironment;
     }
 
     protected override void Update()

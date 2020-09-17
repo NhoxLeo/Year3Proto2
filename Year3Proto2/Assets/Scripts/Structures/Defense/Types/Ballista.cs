@@ -9,7 +9,7 @@ public class Ballista : ProjectileDefenseStructure
     protected override void Start()
     {
         base.Start();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Ballista];
+        structureName = StructureNames.Ballista;
     }
 
     public override void CheckResearch()

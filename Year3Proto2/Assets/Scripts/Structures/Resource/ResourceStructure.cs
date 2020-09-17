@@ -88,14 +88,14 @@ public abstract class ResourceStructure : Structure
             tileHighlights.Clear();
         }
 
-        string adjStructType = "Forest Environment";
+        string adjStructType = StructureNames.LumberEnvironment;
         switch (resourceType)
         {
             case ResourceType.Metal:
-                adjStructType = "Hills Environment";
+                adjStructType = StructureNames.MetalEnvironment;
                 break;
             case ResourceType.Food:
-                adjStructType = "Plains Environment";
+                adjStructType = StructureNames.FoodEnvironment;
                 break;
             default:
                 break;
