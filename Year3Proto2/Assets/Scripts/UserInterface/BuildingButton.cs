@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class BuildingButton : MonoBehaviour
@@ -16,15 +14,12 @@ public class BuildingButton : MonoBehaviour
     [SerializeField] private BuildPanel buildPanel;
     private Image thumb;
 
-    void Start()
+    private void Start()
     {
-        
     }
 
-
-    void Update()
+    private void Update()
     {
-        
     }
 
     public void SetInfo(BuildPanel.Buildings _buildings)
@@ -38,12 +33,24 @@ public class BuildingButton : MonoBehaviour
 
     public void SetSelectedBuilding()
     {
-
+        buildPanel.SelectBuilding((int)buildings);
     }
 
     public void SetHoveredBuilding()
     {
-        buildPanel.tooltipSelected = buildings;
+        if (buildPanel == null) { return; }
+
+        //buildPanel.tooltipSelected = buildings;
+        //if (buildings != BuildPanel.Buildings.None)
+        //{
+        //    buildPanel.hoveredButton = this;
+        //}
+        //else
+        //{
+        //    buildPanel.hoveredButton = null;
+        //}
+
+        buildPanel.SetTooltip((int)buildings);
     }
 
     private Sprite FindIcon(string _name)

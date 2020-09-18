@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using DG.Tweening;
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
-using TMPro;
 
 public class BuildPanel : MonoBehaviour
 {
     public bool showPanel = true;
     private bool panelShown = true;
+
     [SerializeField]
     public Color cannotAfford;
+
     public Sprite lockedBuilding;
 
     private CanvasGroup canvas;
@@ -58,12 +58,12 @@ public class BuildPanel : MonoBehaviour
         public string[] heading;
         public string[] description;
         public Vector2[] cost;
-
     }
+
     [SerializeField]
     private TooltipInfo toolInfo;
 
-    void Start()
+    private void Start()
     {
         yPos = transform.localPosition.y;
         canvas = GetComponent<CanvasGroup>();
@@ -94,40 +94,48 @@ public class BuildPanel : MonoBehaviour
         switch (_button)
         {
             case Buildings.Ballista:
-                transform.Find("Content/DefenceBuildings/IconArcher").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/DefenceBuildings/IconArcher").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Catapult:
-                transform.Find("Content/DefenceBuildings/IconCatapult").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Barracks:
-                transform.Find("Content/DefenceBuildings/IconBarracks").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Farm:
-                transform.Find("Content/ResourceBuildings/IconFarm").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconFarm").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Granary:
-                transform.Find("Content/ResourceBuildings/IconSilo").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconSilo").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.LumberMill:
-                transform.Find("Content/ResourceBuildings/IconLumberMill").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconLumberMill").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.LumberPile:
-                transform.Find("Content/ResourceBuildings/IconLumberPile").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconLumberPile").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Mine:
-                transform.Find("Content/ResourceBuildings/IconMine").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconMine").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.MetalStorage:
-                transform.Find("Content/ResourceBuildings/IconOreStorage").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconOreStorage").GetComponent<Image>().color = _colour;
                 break;
+
             default:
                 break;
         }
     }
 
-    void Update()
+    private void Update()
     {
-
         if (tooltipSelected == Buildings.None)
         {
             tooltipTimer += Time.unscaledDeltaTime;
@@ -186,28 +194,28 @@ public class BuildPanel : MonoBehaviour
     private void GetInfo()
     {
         toolInfo.heading = new string[10];
-        toolInfo.heading[(int)Buildings.None]               = "";
-        toolInfo.heading[(int)Buildings.Ballista]           = StructureNames.BuildPanelToString(Buildings.Ballista);
-        toolInfo.heading[(int)Buildings.Catapult]           = StructureNames.BuildPanelToString(Buildings.Catapult);
-        toolInfo.heading[(int)Buildings.Barracks]           = StructureNames.BuildPanelToString(Buildings.Barracks);
-        toolInfo.heading[(int)Buildings.Farm]               = StructureNames.BuildPanelToString(Buildings.Farm);
-        toolInfo.heading[(int)Buildings.Granary]            = StructureNames.BuildPanelToString(Buildings.Granary);
-        toolInfo.heading[(int)Buildings.LumberMill]         = StructureNames.BuildPanelToString(Buildings.LumberMill);
-        toolInfo.heading[(int)Buildings.LumberPile]         = StructureNames.BuildPanelToString(Buildings.LumberPile);
-        toolInfo.heading[(int)Buildings.Mine]               = StructureNames.BuildPanelToString(Buildings.Mine);
-        toolInfo.heading[(int)Buildings.MetalStorage]       = StructureNames.BuildPanelToString(Buildings.MetalStorage);
+        toolInfo.heading[(int)Buildings.None] = "";
+        toolInfo.heading[(int)Buildings.Ballista] = StructureNames.BuildPanelToString(Buildings.Ballista);
+        toolInfo.heading[(int)Buildings.Catapult] = StructureNames.BuildPanelToString(Buildings.Catapult);
+        toolInfo.heading[(int)Buildings.Barracks] = StructureNames.BuildPanelToString(Buildings.Barracks);
+        toolInfo.heading[(int)Buildings.Farm] = StructureNames.BuildPanelToString(Buildings.Farm);
+        toolInfo.heading[(int)Buildings.Granary] = StructureNames.BuildPanelToString(Buildings.Granary);
+        toolInfo.heading[(int)Buildings.LumberMill] = StructureNames.BuildPanelToString(Buildings.LumberMill);
+        toolInfo.heading[(int)Buildings.LumberPile] = StructureNames.BuildPanelToString(Buildings.LumberPile);
+        toolInfo.heading[(int)Buildings.Mine] = StructureNames.BuildPanelToString(Buildings.Mine);
+        toolInfo.heading[(int)Buildings.MetalStorage] = StructureNames.BuildPanelToString(Buildings.MetalStorage);
 
         toolInfo.description = new string[10];
-        toolInfo.description[(int)Buildings.None]           = "";
-        toolInfo.description[(int)Buildings.Ballista]       = StructureManager.StructureDescriptions[Buildings.Ballista];
-        toolInfo.description[(int)Buildings.Catapult]       = StructureManager.StructureDescriptions[Buildings.Catapult];
-        toolInfo.description[(int)Buildings.Barracks]       = StructureManager.StructureDescriptions[Buildings.Barracks];
-        toolInfo.description[(int)Buildings.Farm]           = StructureManager.StructureDescriptions[Buildings.Farm];
-        toolInfo.description[(int)Buildings.Granary]        = StructureManager.StructureDescriptions[Buildings.Granary];
-        toolInfo.description[(int)Buildings.LumberMill]     = StructureManager.StructureDescriptions[Buildings.LumberMill];
-        toolInfo.description[(int)Buildings.LumberPile]     = StructureManager.StructureDescriptions[Buildings.LumberPile];
-        toolInfo.description[(int)Buildings.Mine]           = StructureManager.StructureDescriptions[Buildings.Mine];
-        toolInfo.description[(int)Buildings.MetalStorage]   = StructureManager.StructureDescriptions[Buildings.MetalStorage];
+        toolInfo.description[(int)Buildings.None] = "";
+        toolInfo.description[(int)Buildings.Ballista] = StructureManager.StructureDescriptions[Buildings.Ballista];
+        toolInfo.description[(int)Buildings.Catapult] = StructureManager.StructureDescriptions[Buildings.Catapult];
+        toolInfo.description[(int)Buildings.Barracks] = StructureManager.StructureDescriptions[Buildings.Barracks];
+        toolInfo.description[(int)Buildings.Farm] = StructureManager.StructureDescriptions[Buildings.Farm];
+        toolInfo.description[(int)Buildings.Granary] = StructureManager.StructureDescriptions[Buildings.Granary];
+        toolInfo.description[(int)Buildings.LumberMill] = StructureManager.StructureDescriptions[Buildings.LumberMill];
+        toolInfo.description[(int)Buildings.LumberPile] = StructureManager.StructureDescriptions[Buildings.LumberPile];
+        toolInfo.description[(int)Buildings.Mine] = StructureManager.StructureDescriptions[Buildings.Mine];
+        toolInfo.description[(int)Buildings.MetalStorage] = StructureManager.StructureDescriptions[Buildings.MetalStorage];
     }
 
     public void SetTooltip(int tool)
@@ -235,9 +243,8 @@ public class BuildPanel : MonoBehaviour
             metalCostText.text = metalCost.ToString();
 
             metalCostText.gameObject.SetActive((metalCost > 0));
-            
 
-            float targetPos = transform.Find("PanelMask").GetChild(tool + 5).transform.localPosition.x;
+            float targetPos = hoveredButton.transform.localPosition.x;
             if (tooltipTimer > 0.15f)
             {
                 tooltipBox.transform.DOLocalMoveX(targetPos, 0.0f);
@@ -246,7 +253,6 @@ public class BuildPanel : MonoBehaviour
             {
                 tooltipBox.transform.DOLocalMoveX(targetPos, 0.15f).SetEase(Ease.OutQuint);
             }
-
         }
     }
 
@@ -293,7 +299,6 @@ public class BuildPanel : MonoBehaviour
                 buildingSelected = Buildings.None;
             }
         }
-
     }
 
     public void UINoneSelected()
