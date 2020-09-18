@@ -598,7 +598,7 @@ public class PathManager : MonoBehaviour
         }
     }
 
-    public void OnStructurePlaced()
+    public void ClearPaths()
     {
         calculatedPaths.Clear();
         lastPathsClearTime = Time.realtimeSinceStartup;

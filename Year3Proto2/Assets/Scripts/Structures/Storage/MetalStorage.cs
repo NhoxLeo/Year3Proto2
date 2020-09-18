@@ -9,7 +9,7 @@ public class MetalStorage : StorageStructure
         base.Awake();
         resourceType = ResourceType.Metal;
         storage = 500;
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.MetalStorage];
+        structureName = StructureNames.MetalStorage;
         maxHealth = 200f;
         health = maxHealth;
     }

@@ -10,15 +10,9 @@ public class ForestEnvironment : EnvironmentStructure
     protected override void Awake()
     {
         base.Awake();
-        meshRenderer = GetComponent<MeshRenderer>();
-    }
-
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-        base.Start();
         environmentType = EnvironmentType.forest;
-        structureName = "Forest Environment";
+        structureName = StructureNames.LumberEnvironment;
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     protected override void Update()

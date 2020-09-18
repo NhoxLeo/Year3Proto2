@@ -472,24 +472,25 @@ public class GameManager : MonoBehaviour
             // do refresh
             for (int i = 1; i <= 9; i++)
             {
-                if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
+                BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
+                if (buildingI == BuildPanel.Buildings.Catapult)
                 {
                     if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
                     {
                         continue;
                     }
                 }
-                if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Barracks)
+                if (buildingI == BuildPanel.Buildings.Barracks)
                 {
                     if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Barracks))
                     {
                         continue;
                     }
                 }
-                ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]];
+                ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
                 bool playerCanAfford = playerResources.CanAfford(cost);
                 Color colour = playerCanAfford ? Color.white : buildPanel.cannotAfford;
-                buildPanel.SetButtonColour((BuildPanel.Buildings)i, colour);
+                buildPanel.SetButtonColour(buildingI, colour);
             }
         }
 

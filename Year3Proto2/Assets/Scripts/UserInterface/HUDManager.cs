@@ -142,10 +142,10 @@ public class HUDManager : MonoBehaviour
         List<MapScreen.Level> levels = new List<MapScreen.Level>();
         SuperManager superMan = SuperManager.GetInstance();
         superMan.GetLevelData(ref levels);
-
-        transform.Find("ResourceBar/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryTitle;
-        transform.Find("ResourceBar/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryDescription;
-        transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
+        int currentLevel = superMan.GetCurrentLevel();
+        transform.Find("ResourceBar/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[currentLevel].victoryTitle;
+        transform.Find("ResourceBar/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[currentLevel].victoryDescription;
+        transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[currentLevel].victoryValue.ToString();
     }
 
     public void RefreshResources()
@@ -159,7 +159,7 @@ public class HUDManager : MonoBehaviour
 
         float foodVel = velocity.z;
         string foodVelDP = AddSign(Mathf.Round(foodVel));
-        foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + "/s)";
+        foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + ")";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Food))
         {
@@ -168,7 +168,7 @@ public class HUDManager : MonoBehaviour
 
         float woodVel = velocity.x;
         string woodVelDP = AddSign(Mathf.Round(woodVel));
-        woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + "/s)";
+        woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + ")";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Wood))
         {
@@ -177,7 +177,7 @@ public class HUDManager : MonoBehaviour
 
         float metalVel = velocity.y;
         string metalVelDP = AddSign(Mathf.Round(metalVel));
-        metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + "/s)";
+        metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + ")";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Metal))
         {

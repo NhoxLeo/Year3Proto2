@@ -25,14 +25,15 @@ public abstract class DefenseStructure : Structure
     protected override void Awake()
     {
         base.Awake();
+        structureType = StructureType.Defense;
         attackingRange = transform.Find("Range");
     }
 
     protected override void Start()
     {
         base.Start();
-        structureType = StructureType.Defense;
         DetectEnemies();
+        CheckResearch();
     }
 
     protected override void Update()
@@ -52,5 +53,8 @@ public abstract class DefenseStructure : Structure
         return enemies;
     }
 
-    public abstract void CheckResearch();
+    public virtual void CheckResearch()
+    {
+
+    }
 }

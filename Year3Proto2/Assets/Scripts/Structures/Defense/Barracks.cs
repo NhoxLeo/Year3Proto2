@@ -73,7 +73,7 @@ public class Barracks : DefenseStructure
     {
         base.Awake();
         SuperManager superMan = SuperManager.GetInstance();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Barracks];
+        structureName = StructureNames.Barracks;
         soldiers = new List<Soldier>();
         soldierPrefab = Resources.Load("Soldier") as GameObject;
         maxHealth = 200f;
@@ -153,9 +153,5 @@ public class Barracks : DefenseStructure
         }
 
         soldiers.Add(newSoldier);
-    }
-    public override void CheckResearch()
-    {
-        throw new System.NotImplementedException();
     }
 }

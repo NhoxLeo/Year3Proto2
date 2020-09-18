@@ -6,7 +6,6 @@ public class FreezeTower : ProjectileDefenseStructure
     protected override void Start()
     {
         base.Start();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
     }
 
     public override void CheckResearch()

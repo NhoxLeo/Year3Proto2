@@ -95,6 +95,7 @@ public abstract class Structure : MonoBehaviour
         {
             villMan.MarkVillagersAsManAlloc(_villagers);
         }
+        OnAllocation();
         RefreshWidget();
     }
 
@@ -282,6 +283,7 @@ public abstract class Structure : MonoBehaviour
                 enemy.SetTargetNull();
             }
         }
+        PathManager.GetInstance().ClearPaths();
     }
 
     public bool Repair(bool _mass = false)
@@ -379,6 +381,11 @@ public abstract class Structure : MonoBehaviour
     public virtual void ShowRangeDisplay(bool _active)
     {
         spottingRange.GetChild(0).gameObject.SetActive(_active);
+    }
+
+    public virtual void OnAllocation()
+    {
+
     }
 }
 
