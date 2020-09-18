@@ -35,12 +35,12 @@ public class BuildPanel : MonoBehaviour
     }
 
     public Buildings tooltipSelected;
-    private GameObject tooltipBox;
-    private Tooltip tooltip;
-    private TMP_Text tooltipHeading;
-    private TMP_Text tooltipDescription;
-    private TMP_Text woodCostText;
-    private TMP_Text metalCostText;
+    [SerializeField] private GameObject tooltipBox;
+    [SerializeField] private Tooltip tooltip;
+    [SerializeField] private TMP_Text tooltipHeading;
+    [SerializeField] private TMP_Text tooltipDescription;
+    [SerializeField] private TMP_Text woodCostText;
+    [SerializeField] private TMP_Text metalCostText;
     private float tooltipTimer;
 
     public Buildings buildingSelected;
@@ -67,7 +67,7 @@ public class BuildPanel : MonoBehaviour
     {
         yPos = transform.localPosition.y;
         canvas = GetComponent<CanvasGroup>();
-        structMan = FindObjectOfType<StructureManager>();
+        structMan = StructureManager.GetInstance();
         superMan = SuperManager.GetInstance();
 
         tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
@@ -222,8 +222,8 @@ public class BuildPanel : MonoBehaviour
     {
         tooltipSelected = (Buildings)tool;
 
-        if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
-        if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
+        //if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
+        //if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
 
         if (tooltipSelected == Buildings.None)
         {

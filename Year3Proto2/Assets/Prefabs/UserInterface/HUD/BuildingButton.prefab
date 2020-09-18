@@ -188,7 +188,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 1011640286856449186}
-          m_MethodName: SetHoveredBuilding
+          m_MethodName: SetHoverNone
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

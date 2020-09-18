@@ -36,22 +36,29 @@ public class BuildingButton : MonoBehaviour
         buildPanel.SelectBuilding((int)buildings);
     }
 
+
     public void SetHoveredBuilding()
     {
         if (buildPanel == null) { return; }
 
         //buildPanel.tooltipSelected = buildings;
-        //if (buildings != BuildPanel.Buildings.None)
-        //{
-        //    buildPanel.hoveredButton = this;
-        //}
-        //else
-        //{
-        //    buildPanel.hoveredButton = null;
-        //}
+        if (buildings != BuildPanel.Buildings.None)
+        {
+            buildPanel.hoveredButton = this;
+        }
+        else
+        {
+            buildPanel.hoveredButton = null;
+        }
 
         buildPanel.SetTooltip((int)buildings);
     }
+
+    public void SetHoverNone()
+    {
+        buildPanel.SetTooltip(0);
+    }
+
 
     private Sprite FindIcon(string _name)
     {
