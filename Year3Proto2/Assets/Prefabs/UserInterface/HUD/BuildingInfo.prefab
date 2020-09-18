@@ -1217,7 +1217,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2542908414330327177}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -2213,8 +2213,8 @@ MonoBehaviour:
   tooltipTransform: {fileID: 3423048170752512865}
   tooltipHeading: {fileID: 1060708849689921089}
   costComponent: {fileID: 660843792707232636}
-  woodCost: {fileID: 3450007047984504597}
-  metalCost: {fileID: 9177086927640341787}
+  woodText: {fileID: 3450007047984504597}
+  metalText: {fileID: 9177086927640341787}
   tooltipDescription: {fileID: 4150027405401169793}
   doAutoUpdate: 1
   updateInterval: 1
