@@ -2,13 +2,10 @@
 
 public class ShockWaveTower : ParticleDefenseStructure
 {
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
-    }
+        base.Awake();
 
-    public override void CheckResearch()
-    {
         attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerEfficiency) ? 4 : 8, 0);
 
         // Freeze Range
@@ -16,23 +13,6 @@ public class ShockWaveTower : ParticleDefenseStructure
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
-        }
-    }
-
-    public override void CheckLevel()
-    {
-        switch (level)
-        {
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
         }
     }
 

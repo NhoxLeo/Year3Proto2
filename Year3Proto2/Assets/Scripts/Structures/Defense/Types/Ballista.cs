@@ -4,26 +4,30 @@ public class Ballista : ProjectileDefenseStructure
 {
     [SerializeField] private Transform ballista;
 
-    private const int MetelCost = 1;
+    private const int MetalCost = 2;
+    private const float MaxHealth = 350;
 
     protected override void Awake()
     {
         base.Awake();
-        maxHealth = 350.0f;
+
+        maxHealth = MaxHealth;
         health = maxHealth;
+
         structureName = StructureNames.Ballista;
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
-    }
 
-    public override void CheckResearch()
-    {
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
+        if(SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification))
+        {
+            health = maxHealth *= 1.5f;
+        }
 
-        bool efficiencyUpgrade = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaEfficiency);
-        int metalCost = efficiencyUpgrade ? (MetelCost / 2) : MetelCost;
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange))
+        {
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+        }
 
-        attackCost = new ResourceBundle(0, metalCost, 0);
+        attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
     }
 
     protected override void Update()
@@ -51,27 +55,11 @@ public class Ballista : ProjectileDefenseStructure
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
 
             arrow.Pierce = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper);
-            arrow.SetDamage(arrow.GetDamage() * damageFactor);
+            arrow.SetDamage(arrow.GetDamage() * damageFactor * level);
             arrow.SetTarget(_target);
         }
     }
 
-    public override void CheckLevel()
-    {
-        switch (level)
-        {
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-        }
-      }
 
     public override void OnAllocation()
     {
