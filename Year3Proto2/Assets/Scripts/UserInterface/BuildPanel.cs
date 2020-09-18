@@ -41,10 +41,9 @@ public class BuildPanel : MonoBehaviour
     [SerializeField] private TMP_Text tooltipDescription;
     [SerializeField] private TMP_Text woodCostText;
     [SerializeField] private TMP_Text metalCostText;
-    private float tooltipTimer;
+    public float tooltipTimer;
 
     public Buildings buildingSelected;
-    private GameObject buildIndicator;
     private GameObject buildTipBox;
     private Tooltip buildTip;
     private TMP_Text buildTipHeading;
@@ -63,30 +62,21 @@ public class BuildPanel : MonoBehaviour
     [SerializeField]
     private TooltipInfo toolInfo;
 
-    private void Start()
+    void Start()
     {
+        GetInfo();
+
         yPos = transform.localPosition.y;
-        canvas = GetComponent<CanvasGroup>();
         structMan = StructureManager.GetInstance();
         superMan = SuperManager.GetInstance();
 
-        tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
-        tooltip = tooltipBox.GetComponent<Tooltip>();
-        tooltipHeading = transform.Find("BuildPanelTooltip/PanelMask/Heading").GetComponent<TMP_Text>();
-        tooltipDescription = transform.Find("BuildPanelTooltip/PanelMask/Description").GetComponent<TMP_Text>();
-        woodCostText = transform.Find("BuildPanelTooltip/PanelMask/CostValueWood").GetComponent<TMP_Text>();
-        metalCostText = transform.Find("BuildPanelTooltip/PanelMask/CostValueMetal").GetComponent<TMP_Text>();
-
-        buildIndicator = transform.Find("PanelMask/BuildingIndicator").gameObject;
-        buildIndicator.SetActive(false);
         buildTipBox = GameObject.Find("SelectedBuilding");
         buildTip = buildTipBox.GetComponent<Tooltip>();
         buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
-        GetInfo();
 
-        if (!superMan.GetResearchComplete(SuperManager.Catapult)) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
-        if (!superMan.GetResearchComplete(SuperManager.Barracks)) { transform.Find("PanelMask/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.Catapult)) { transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.Barracks)) { transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -222,8 +212,8 @@ public class BuildPanel : MonoBehaviour
     {
         tooltipSelected = (Buildings)tool;
 
-        //if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
-        //if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
+        if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
+        if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
 
         if (tooltipSelected == Buildings.None)
         {
@@ -282,14 +272,6 @@ public class BuildPanel : MonoBehaviour
             structMan.ResetBuilding();
             if (structMan.SetBuilding(buildingSelected))
             {
-                buildIndicator.SetActive(true);
-                buildIndicator.transform.DOKill(true);
-                buildIndicator.transform.DOPunchScale(new Vector3(0.25f, 0.25f, 0.0f), 0.15f, 1, 0.5f);
-                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 5).transform.localPosition;
-                Vector2 indiPos = buildIndicator.transform.localPosition;
-                indiPos.x = targetPos.x;
-                buildIndicator.transform.localPosition = indiPos;
-
                 buildTip.showTooltip = true;
                 buildTip.PulseTip();
                 buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
@@ -303,7 +285,7 @@ public class BuildPanel : MonoBehaviour
 
     public void UINoneSelected()
     {
-        buildIndicator.SetActive(false);
+        //buildIndicator.SetActive(false);
 
         buildTip.showTooltip = false;
     }
