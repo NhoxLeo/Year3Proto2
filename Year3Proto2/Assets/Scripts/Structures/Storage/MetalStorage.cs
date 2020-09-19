@@ -9,13 +9,8 @@ public class MetalStorage : StorageStructure
         base.Awake();
         resourceType = ResourceType.Metal;
         storage = 500;
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.MetalStorage];
+        structureName = StructureNames.MetalStorage;
         maxHealth = 200f;
         health = maxHealth;
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        Debug.LogError("Food Allocation should not be called for " + structureName);
     }
 }

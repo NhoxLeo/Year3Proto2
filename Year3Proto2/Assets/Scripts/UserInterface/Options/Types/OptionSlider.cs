@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 // Bachelor of Software Engineering
@@ -13,62 +14,33 @@ using UnityEngine.UI;
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
-public class OptionSlider : OptionObject, OptionData<float>
+public class OptionSliderData : OptionData
 {
-    private float data;
+    public float defaultValue;
+    public float value;
+}
 
-    /**************************************
-    * Name of the Function: Deserialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: Float
-    * @Return: void
-    ***************************************/
-    public void Deserialise(float _data)
+public class OptionSlider : OptionObject, OptionDataBase
+{
+    [SerializeField] private OptionSliderData data;
+
+    public override void Deserialize()
     {
-        data = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetFloat(key) : _data;
+        data.value = PlayerPrefs.GetFloat(key, data.defaultValue);
     }
 
-    /**************************************
-    * Name of the Function: UpdateValue
-    * @Author: Tjeu Vreeburg
-    * @Parameter: Slider
-    * @Return: void
-    ***************************************/
-    public void UpdateValue(Slider slider)
-    {
-        data = slider.value;
-    }
-
-    /**************************************
-    * Name of the Function: GetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: float
-    ***************************************/
-    public float GetData()
+    public override OptionData GetData()
     {
         return data;
     }
 
-    /**************************************
-    * Name of the Function: Serialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    public void Serialise()
+    public override void Serialize()
     {
-        PlayerPrefs.SetFloat(key, data);
+        PlayerPrefs.SetFloat(key, data.value);
     }
 
-    /**************************************
-    * Name of the Function: SetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: float
-    * @Return: void
-    ***************************************/
-    public void SetData(float _data)
+    public override void SetData(OptionData _data)
     {
-        data = _data;
+        data = (OptionSliderData) _data;
     }
 }

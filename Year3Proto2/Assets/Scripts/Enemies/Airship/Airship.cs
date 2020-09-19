@@ -45,7 +45,6 @@ public class Airship : MonoBehaviour
     private float distance = float.MaxValue;
 
     private AirshipState airshipState;
-    private EnemySpawner enemySpawner;
 
     /**************************************
     * Name of the Function: Update
@@ -103,7 +102,7 @@ public class Airship : MonoBehaviour
                     {
                         airshipState = AirshipState.Deploy;
                         Destroy(pointer.gameObject);
-                        StartCoroutine(Deploy(1.5f));
+                        StartCoroutine(Deploy(0.5f));
                     }
                     break;
             }
@@ -132,16 +131,14 @@ public class Airship : MonoBehaviour
             if(invader)
             {
                 invader.SetScale(Random.Range(0.8f, 1.5f));
-                invader.spawner = enemySpawner;
-                enemySpawner.RecordNewEnemy(invader);
+                EnemyManager.GetInstance().RecordNewEnemy(invader);
             }
 
             HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
             if (heavyInvader)
             {
                 heavyInvader.Randomize();
-                heavyInvader.spawner = enemySpawner;
-                enemySpawner.RecordNewEnemy(heavyInvader);
+                EnemyManager.GetInstance().RecordNewEnemy(heavyInvader);
             }
 
 
@@ -262,10 +259,5 @@ public class Airship : MonoBehaviour
         });
 
         return target;
-    }
-
-    public void SetSpawner(EnemySpawner _enemySpawner)
-    {
-        enemySpawner = _enemySpawner;
     }
 }

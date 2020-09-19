@@ -1,5 +1,6 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
+using TMPro;
+using System.Linq;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -13,9 +14,10 @@ using UnityEngine;
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
-public class OptionObject : MonoBehaviour
+public abstract class OptionObject : MonoBehaviour
 {
     [SerializeField] protected string key;
+    [SerializeField] private TMP_Text displayName; 
 
     /**************************************
     * Name of the Function: Start
@@ -23,9 +25,11 @@ public class OptionObject : MonoBehaviour
     * @Parameter: n/a
     * @Return: void
     ***************************************/
-    private void Start()
+    public void SetKey(string _key)
     {
-        key = transform.name.ToUpper();
+        transform.name = _key;
+        key = _key;
+        displayName.text = _key.Substring(0, 1).ToUpper() + _key.Substring(1).ToLower();
     }
 
     /**************************************
@@ -38,4 +42,9 @@ public class OptionObject : MonoBehaviour
     {
         return key;
     }
+
+    public abstract OptionData GetData();
+    public abstract void SetData(OptionData _data);
+    public abstract void Deserialize();
+    public abstract void Serialize();
 }

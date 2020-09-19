@@ -1,38 +1,78 @@
-﻿using System.Collections;
+﻿//
+// Bachelor of Creative Technologies
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name        : VillagerPriority.cs
+// Description      : Controls the display and functionality of the Villager Priority Panel
+// Author           : David Morris
+// Mail             : David.Mor7851@mediadesign.school.nz
+//
+
 using System.Collections.Generic;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 
 public class VillagerPriority : MonoBehaviour
 {
     public bool showPanel = false;
     private bool panelShown = false;
+    public bool reorderCards = false;
 
-    private GameObject check;
-    private Transform panel;
-    private float panelYinitial;
-    private Transform toggleButton;
-    private float toggleButtonXinitial;
-    private StructureManager structMan;
+    [Header("Panel Window Controls")]
+    [SerializeField] private Transform panel;
 
+    [SerializeField] private Transform toggleButton;
     [SerializeField] private Sprite minimizeSprite;
     [SerializeField] private Sprite expandSprite;
 
-    void Start()
-    {
-        check = transform.Find("VillagerPriorityPanel/Check").gameObject;
-        check.GetComponent<CanvasGroup>().alpha = 0.0f;
+    [Header("Resource Priority Text")]
+    [SerializeField] private TMP_Text foodText;
+    [SerializeField] private TMP_Text woodText;
+    [SerializeField] private TMP_Text metalText;
 
-        panel = transform.Find("VillagerPriorityPanel");
+    [Header("Resource Priority Cards")]
+    [SerializeField] private GameObject foodCard;
+    [SerializeField] private GameObject woodCard;
+    [SerializeField] private GameObject metalCard;
+
+    [SerializeField] private int foodPriority = 0;
+    [SerializeField] private int woodPriority = 1;
+    [SerializeField] private int metalPriority = 2;
+
+    private List<float> posSlot;
+
+    public string draggedCard;
+    private bool dragging;
+    public bool useDragOffset;
+    private Vector3 dragPotentialStart;
+    private Vector3 dragOffset;
+
+    private float panelYinitial;
+
+    private void Start()
+    {
         panelYinitial = panel.localPosition.y;
-        toggleButton = transform.Find("VillagerPriorityPanel/TogglePanelButton");
-        toggleButtonXinitial = toggleButton.localPosition.x;
-        structMan = FindObjectOfType<StructureManager>();
+
+        // Set Text
+        foodText.text = (foodPriority + 1).ToString() + ".";
+        woodText.text = (woodPriority + 1).ToString() + ".";
+        metalText.text = (metalPriority + 1).ToString() + ".";
+
+        posSlot = new List<float>
+        {
+            foodCard.transform.localPosition.x,
+            woodCard.transform.localPosition.x,
+            metalCard.transform.localPosition.x
+        };
     }
 
-
-    void Update()
+    private void Update()
     {
         if (showPanel && !panelShown)
         {
@@ -47,6 +87,73 @@ public class VillagerPriority : MonoBehaviour
         }
     }
 
+    private void OnGUI()
+    {
+        if (dragging && reorderCards)
+        {
+            switch (draggedCard)
+            {
+                case "Food":
+                    foodCard.transform.position = Input.mousePosition + dragOffset;
+                    foodCard.transform.SetAsLastSibling();
+                    break;
+
+                case "Wood":
+                    woodCard.transform.position = Input.mousePosition + dragOffset;
+                    woodCard.transform.SetAsLastSibling();
+                    break;
+
+                case "Metal":
+                    metalCard.transform.position = Input.mousePosition + dragOffset;
+                    metalCard.transform.SetAsLastSibling();
+                    break;
+            }
+
+
+            // Food
+            if (foodCard.transform.localPosition.x < woodCard.transform.localPosition.x && foodPriority >= woodPriority)
+            {
+                foodPriority = woodPriority;
+                woodPriority = foodPriority + 1;
+                SetCards();
+            }
+            if (foodCard.transform.localPosition.x < metalCard.transform.localPosition.x && foodPriority >= metalPriority)
+            {
+                foodPriority = metalPriority;
+                metalPriority = foodPriority + 1;
+                SetCards();
+            }
+
+            // Wood
+            if (woodCard.transform.localPosition.x < foodCard.transform.localPosition.x && woodPriority >= foodPriority)
+            {
+                woodPriority = foodPriority;
+                foodPriority = woodPriority + 1;
+                SetCards();
+            }
+            if (woodCard.transform.localPosition.x < metalCard.transform.localPosition.x && woodPriority >= metalPriority)
+            {
+                woodPriority = metalPriority;
+                metalPriority = woodPriority + 1;
+                SetCards();
+            }
+
+            // Metal
+            if (metalCard.transform.localPosition.x < foodCard.transform.localPosition.x && metalPriority >= foodPriority)
+            {
+                metalPriority = foodPriority;
+                foodPriority = metalPriority + 1;
+                SetCards();
+            }
+            if (metalCard.transform.localPosition.x < woodCard.transform.localPosition.x && metalPriority >= woodPriority)
+            {
+                metalPriority = woodPriority;
+                woodPriority = metalPriority + 1;
+                SetCards();
+            }
+        }
+    }
+
     public void TogglePanel()
     {
         showPanel = !showPanel;
@@ -55,7 +162,6 @@ public class VillagerPriority : MonoBehaviour
     private void ShowPanel()
     {
         panel.DOLocalMoveY(panelYinitial + 125.0f, 0.4f).SetEase(Ease.OutQuint);
-        //toggleButton.DOLocalMoveX(toggleButtonXinitial + 231.0f - 66.0f, 0.4f).SetEase(Ease.OutQuint);
         toggleButton.transform.Rotate(new Vector3(0, 0, -180));
         toggleButton.GetComponent<Image>().sprite = minimizeSprite;
     }
@@ -63,47 +169,132 @@ public class VillagerPriority : MonoBehaviour
     private void HidePanel()
     {
         panel.DOLocalMoveY(panelYinitial, 0.4f).SetEase(Ease.OutQuint);
-        //toggleButton.DOLocalMoveX(toggleButtonXinitial, 0.4f).SetEase(Ease.OutQuint);
         toggleButton.transform.Rotate(new Vector3(0, 0, 180));
         toggleButton.GetComponent<Image>().sprite = expandSprite;
     }
 
     public void Prioritize(string _type)
     {
-        CanvasGroup checkCanvas = check.GetComponent<CanvasGroup>();
-        checkCanvas.DOKill();
-        checkCanvas.alpha = 1.0f;
-        switch (_type)
+        if (!dragging)
         {
-            case "Food":
-                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(0).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Food);
-                break;
+            switch (_type)
+            {
+                case "Food":
+                    if (foodPriority > 0)
+                    {
+                        foodPriority--;
+                        if (woodPriority == foodPriority) { woodPriority++; }
+                        if (metalPriority == foodPriority) { metalPriority++; }
+                    }
+                    foodCard.transform.SetAsLastSibling();
+                    break;
 
-            case "Wood":
-                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(1).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Wood);
-                break;
+                case "Wood":
+                    if (woodPriority > 0)
+                    {
+                        woodPriority--;
+                        if (foodPriority == woodPriority) { foodPriority++; }
+                        if (metalPriority == woodPriority) { metalPriority++; }
+                    }
+                    woodCard.transform.SetAsLastSibling();
+                    break;
 
-            case "Metal":
-                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(2).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Metal);
-                break;
-
-            case "Defence":
-                check.transform.DOLocalMoveX(transform.Find("VillagerPriorityPanel/Content").GetChild(3).transform.localPosition.x, 0.0f);
-                structMan.SetPriority(Priority.Defensive);
-                break;
-
-            default:
-                break;
+                case "Metal":
+                    if (metalPriority > 0)
+                    {
+                        metalPriority--;
+                        if (foodPriority == metalPriority) { foodPriority++; }
+                        if (woodPriority == metalPriority) { woodPriority++; }
+                    }
+                    metalCard.transform.SetAsLastSibling();
+                    break;
+            }
         }
 
-        //check.GetComponent<CanvasGroup>().DOFade(0.0f, 2.0f).SetEase(Ease.InQuint);
+        SetCards();
+        ApplyPriority();
     }
 
-    public void HideCheck()
+    private void SetCards()
     {
-        check.GetComponent<CanvasGroup>().alpha = 0.0f;
+        // Set Text
+        foodText.text = (foodPriority + 1).ToString() + ".";
+        woodText.text = (woodPriority + 1).ToString() + ".";
+        metalText.text = (metalPriority + 1).ToString() + ".";
+
+        // Tween cards to correct position
+        if (reorderCards)
+        {
+            if (draggedCard != "Food")
+            {
+                foodCard.transform.DOLocalMove(new Vector2(posSlot[foodPriority], 0.0f), 0.4f).SetEase(Ease.OutQuint);
+            }
+
+            if (draggedCard != "Wood")
+            {
+                woodCard.transform.DOLocalMove(new Vector2(posSlot[woodPriority], 0.0f), 0.4f).SetEase(Ease.OutQuint);
+            }
+
+            if (draggedCard != "Metal")
+            {
+                metalCard.transform.DOLocalMove(new Vector2(posSlot[metalPriority], 0.0f), 0.4f).SetEase(Ease.OutQuint);
+            }
+        }
     }
+
+    public void StartPotantialDrag()
+    {
+        dragPotentialStart = Input.mousePosition;
+    }
+
+    public void DragCard(string _type)
+    {
+        draggedCard = _type;
+        dragging = true;
+
+        if (useDragOffset)
+        {
+            switch (draggedCard)
+            {
+                case "Food":
+                    dragOffset = foodCard.transform.position - dragPotentialStart;
+                    break;
+
+                case "Wood":
+                    dragOffset = woodCard.transform.position - dragPotentialStart;
+                    break;
+
+                case "Metal":
+                    dragOffset = metalCard.transform.position - dragPotentialStart;
+                    break;
+            }
+        }
+        else
+        {
+            dragOffset = Vector3.zero;
+        }
+
+        Debug.Log("Dragging " + _type);
+    }
+
+    public void ReleaseCard(string _type)
+    {
+        dragging = false;
+        draggedCard = "";
+
+        SetCards();
+        ApplyPriority();
+
+    }
+
+    private void ApplyPriority()
+    {
+        // Apply priority in StructureManager
+        // >>> SAM <<<
+
+        VillagerManager.GetInstance().SetPriorities(foodPriority, woodPriority, metalPriority);
+
+    }
+
+
 }
