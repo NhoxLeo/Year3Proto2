@@ -804,7 +804,8 @@ public class StructureManager : MonoBehaviour
                 }
                 firstStructurePlaced = true;
             }
-            if (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)))
+            bool villWidget = (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)));
+            if (villWidget)
             {
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(structure);
@@ -815,7 +816,7 @@ public class StructureManager : MonoBehaviour
             PathManager.GetInstance().ClearPaths();
             VillagerManager.GetInstance().RedistributeVillagers();
             SelectStructure(structure);
-            if (structType == StructureType.Resource || structType == StructureType.Attack)
+            if (villWidget)
             {
                 structure.RefreshWidget();
                 structure.SetWidgetVisibility(true);
