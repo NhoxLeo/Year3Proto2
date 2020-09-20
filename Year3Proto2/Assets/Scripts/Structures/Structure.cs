@@ -281,7 +281,7 @@ public abstract class Structure : MonoBehaviour
         {
             if (this == enemy.GetTarget())
             {
-                enemy.SetTargetNull();
+                enemy.SetTarget(null);
             }
         }
         PathManager.GetInstance().ClearPaths();
