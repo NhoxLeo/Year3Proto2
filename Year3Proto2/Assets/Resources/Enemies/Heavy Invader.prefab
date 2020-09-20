@@ -120,7 +120,7 @@ Transform:
   m_GameObject: {fileID: 988293539997631803}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.4, y: 1.4, z: 1.4}
   m_Children:
   - {fileID: 1272463191237899426}
   - {fileID: 2975018384619784735}
@@ -143,7 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e73b9fdac6868c249a7a41ba53ca4187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 2176621815727611739}
   puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
     type: 3}
   health: 10
