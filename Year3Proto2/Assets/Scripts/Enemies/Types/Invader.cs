@@ -10,7 +10,6 @@ public class Invader : Enemy
     {
         structureTypes = new List<StructureType>()
         {
-            StructureType.Attack,
             StructureType.Resource,
             StructureType.Storage,
             StructureType.Longhaus,
