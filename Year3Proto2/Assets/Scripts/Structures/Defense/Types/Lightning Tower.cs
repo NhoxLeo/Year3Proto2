@@ -1,20 +1,48 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class LightningTower : ProjectileDefenseStructure
+public class LightningTower : DefenseStructure
 {
-    [SerializeField] private int projectileAmount = 3;
+    [Header("Lightning Tower")]
+    [SerializeField] private Transform lightning;
+    [SerializeField] private float lightningAmount;
+    [SerializeField] private float lightningDelay = 1.0f;
 
-    public override void Launch(Transform _target)
+    private float time;
+
+    protected override void Start()
     {
-        Transform projectile = Instantiate(projectilePrefab, transform);
-        Icicle icicle = projectile.GetComponent<Icicle>();
-        if (icicle)
-        {
-            float durationFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerStunDuration) ? 1.6f : 1.0f;
+        base.Start();
+        time = lightningDelay;
+    }
 
-            // Duration of stun 
-            icicle.SetStunDuration(durationFactor);
-            icicle.SetTarget(_target);
+    protected override void Update()
+    {
+        base.Update();
+
+        time -= Time.deltaTime;
+        if(time <= 0.0f)
+        {
+            time = lightningDelay;
+            StartCoroutine(Strike(0.5f));
         }
+    }
+
+    IEnumerator Strike(float seconds)
+    {
+        List<Transform> enemies = GetEnemies();
+        for (int i = 0; i < lightningAmount; i++)
+        {
+            yield return new WaitForSeconds(seconds);
+            Transform transform = enemies[i];
+            Enemy enemy = transform.GetComponent<Enemy>();
+            if(enemy)
+            {
+                //Lightning 
+            }
+        }
+
+        yield return null;
     }
 }

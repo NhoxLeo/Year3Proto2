@@ -156,7 +156,7 @@ public class BuildingInfo : MonoBehaviour
                 Barracks barracks = targetBuilding.GetComponent<Barracks>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Troop Capacity";
-                //statValueText.text = barracks.GetTroopCapacity().ToString("0");
+                statValueText.text = barracks.GetTroopCapacity().ToString("0");
                 statInfoText.text = "units";
                 //foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 

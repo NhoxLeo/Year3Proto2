@@ -109,11 +109,8 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     public void SpawnAirship(Transform[] transforms)
     {
-        Vector3 location = new Vector3(Mathf.Sin(Random.Range(0.0f, 180f)) * distance, 0.0f, Mathf.Cos(Random.Range(0.0f, 180f)) * distance)
-        {
-            y = 0.0f
-        };
-        //Vector3 location = new Vector3(-1f * distance, 0.0f, Mathf.Cos(angle) * distance);
+        Vector3 location = new Vector3(Mathf.Sin(Random.Range(0.0f, 180f)) * distance, 0.0f, Mathf.Cos(Random.Range(0.0f, 180f)) * distance);
+
         Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();

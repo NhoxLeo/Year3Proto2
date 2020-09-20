@@ -937,7 +937,10 @@ MonoBehaviour:
     - {x: 0, y: 0}
     - {x: 150, y: 50}
     - {x: 200, y: 250}
-    - {x: 200, y: 200}
+    - {x: 200, y: 100}
+    - {x: 200, y: 50}
+    - {x: 300, y: 250}
+    - {x: 250, y: 100}
     - {x: 40, y: 0}
     - {x: 60, y: 20}
     - {x: 100, y: 20}
@@ -2497,7 +2500,7 @@ PrefabInstance:
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: buildings
-      value: 7
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
@@ -2640,6 +2643,11 @@ PrefabInstance:
       propertyPath: buildPanel
       value: 
       objectReference: {fileID: 4627403923247531344}
+    - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: buildings
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2774,7 +2782,7 @@ PrefabInstance:
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: buildings
-      value: 4
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
@@ -2915,7 +2923,7 @@ PrefabInstance:
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: buildings
-      value: 9
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
@@ -3202,7 +3210,7 @@ PrefabInstance:
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: buildings
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
@@ -3348,7 +3356,7 @@ PrefabInstance:
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: buildings
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
@@ -3777,6 +3785,11 @@ PrefabInstance:
       propertyPath: buildPanel
       value: 
       objectReference: {fileID: 4627403923247531344}
+    - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: buildings
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3913,6 +3926,11 @@ PrefabInstance:
       propertyPath: buildPanel
       value: 
       objectReference: {fileID: 4627403923247531344}
+    - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
+        type: 3}
+      propertyPath: buildings
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4116252649543155870, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4047,7 +4065,7 @@ PrefabInstance:
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}
       propertyPath: buildings
-      value: 8
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 1011640286856449186, guid: e1cb9e5d89b44f3418864b80f25a279e,
         type: 3}

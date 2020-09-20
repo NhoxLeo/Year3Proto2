@@ -641,9 +641,6 @@ public class PathManager : MonoBehaviour
             Structure[] structures = { };
             switch (_signature.validStructureTypes[i])
             {
-                case StructureType.Attack:
-                    structures = FindObjectsOfType<AttackStructure>();
-                    break;
                 case StructureType.Defense:
                     structures = FindObjectsOfType<DefenseStructure>();
                     break;

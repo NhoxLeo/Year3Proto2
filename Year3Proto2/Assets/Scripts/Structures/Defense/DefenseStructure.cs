@@ -3,14 +3,26 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
+    [Range(1, 5)] protected int level = 1;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
     protected Transform target;
 
     private Transform attackingRange;
+    private Transform spottingRange = null;
 
-    public void DetectEnemies()
+    protected override void Awake()
     {
+        base.Awake();
+        structureType = StructureType.Defense;
+        attackingRange = transform.Find("Range");
+        spottingRange = transform.Find("SpottingRange");
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+
         SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
         foreach (Enemy enemy in FindObjectsOfType<Enemy>())
         {
@@ -22,20 +34,6 @@ public abstract class DefenseStructure : Structure
         }
     }
 
-    protected override void Awake()
-    {
-        base.Awake();
-        structureType = StructureType.Defense;
-        attackingRange = transform.Find("Range");
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        DetectEnemies();
-        CheckResearch();
-    }
-
     protected override void Update()
     {
         base.Update();
@@ -45,16 +43,12 @@ public abstract class DefenseStructure : Structure
     public override void ShowRangeDisplay(bool _active)
     {
         base.ShowRangeDisplay(_active);
+        spottingRange.GetChild(0).gameObject.SetActive(_active);
         attackingRange.GetChild(0).gameObject.SetActive(_active);
     }
 
     public List<Transform> GetEnemies()
     {
         return enemies;
-    }
-
-    public virtual void CheckResearch()
-    {
-
     }
 }

@@ -129,10 +129,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedTile: {fileID: 0}
-  displayName: 
+  displayName: Ballista
   icon: {fileID: 0}
   isPlaced: 0
-  sitHeight: 0.5
+  sitHeight: 0.57
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0

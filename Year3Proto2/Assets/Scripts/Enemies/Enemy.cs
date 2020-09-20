@@ -63,6 +63,8 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
+    private float halfSpeed;
+
     public abstract void Action();
 
     protected virtual void Start()
@@ -70,12 +72,19 @@ public abstract class Enemy : MonoBehaviour
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        halfSpeed = finalSpeed * 0.5f;
+
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         signature = new EnemyPathSignature()
         {
             startTile = null,
             validStructureTypes = structureTypes
         };
+    }
+
+    public void Slow(bool enabled)
+    {
+        finalSpeed = enabled ? halfSpeed : finalSpeed;
     }
 
     public void Stun(float _stunDuration)
@@ -119,15 +128,6 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (stunned)
-        {
-            stunCurrentTime -= Time.deltaTime;
-            if(stunTime <= 0.0f)
-            {
-                stunned = false;
-                animator.SetBool("Walk", true);
-            }
-        }
 
         if (GlobalData.longhausDead)
         {
@@ -141,6 +141,17 @@ public abstract class Enemy : MonoBehaviour
             {
                 Damage(health);
             }
+        }
+
+        if (stunned)
+        {
+            stunCurrentTime -= Time.deltaTime;
+            if (stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.SetBool("Walk", true);
+            }
+            return;
         }
 
         // update signature
