@@ -114,6 +114,7 @@ public abstract class Structure : MonoBehaviour
             manualAllocation = false;
             allocatedVillagers += 1;
             RefreshWidget();
+            OnAllocation();
             villMan.OnVillagerAllocated();
         }
     }
@@ -141,12 +142,14 @@ public abstract class Structure : MonoBehaviour
     public virtual void SetAllocated(int _allocated)
     {
         allocatedVillagers = _allocated;
+        OnAllocation();
     }
 
     public virtual void DeallocateAll()
     {
         VillagerManager.GetInstance().ReturnVillagers(allocatedVillagers);
         allocatedVillagers = 0;
+        OnAllocation();
         RefreshWidget();
     }
 
