@@ -3,25 +3,13 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
+    [Range(1, 5)] protected int level = 1;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
     protected Transform target;
 
     private Transform attackingRange;
     private Transform spottingRange = null;
-
-    public void DetectEnemies()
-    {
-        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
-        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
-        {
-            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
-            if (distanceFromEnemy <= rangeCollider.radius)
-            {
-                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
-            }
-        }
-    }
 
     protected override void Awake()
     {
@@ -34,8 +22,16 @@ public abstract class DefenseStructure : Structure
     protected override void Start()
     {
         base.Start();
-        DetectEnemies();
-        CheckResearch();
+
+        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+            if (distanceFromEnemy <= rangeCollider.radius)
+            {
+                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+            }
+        }
     }
 
     protected override void Update()
@@ -54,10 +50,5 @@ public abstract class DefenseStructure : Structure
     public List<Transform> GetEnemies()
     {
         return enemies;
-    }
-
-    public virtual void CheckResearch()
-    {
-
     }
 }

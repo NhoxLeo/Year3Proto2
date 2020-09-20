@@ -128,3 +128,6 @@ MonoBehaviour:
   speed: 0.5
   distanceOffset: 0
   ground: 1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 9216
