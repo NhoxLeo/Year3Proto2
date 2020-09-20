@@ -685,21 +685,26 @@ public class StructureManager : MonoBehaviour
                 // if the structure can be placed here...
                 if (canPlaceHere)
                 {
-                    if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense)
+                    if (newStructureType == StructureType.Defense)
                     {
                         structure.ShowRangeDisplay(true);
                     }
 
                     if (attached)
                     {
-                        StructureType attachedStructureType = attached.GetStructureType();
-                        if (attachedStructureType == StructureType.Environment)
+                        if (attached.GetStructureType() == StructureType.Environment)
                         {
-                            if (newStructureType == StructureType.Resource)
+                            string attachedName = attached.GetStructureName();
+                            string structureName = structure.GetStructureName();
+                            // determine if the structure is in synergy with attached structure
+                            bool resourceGain = (attachedName == StructureNames.FoodEnvironment && structureName == StructureNames.FoodResource)
+                                || (attachedName == StructureNames.LumberEnvironment && structureName == StructureNames.LumberResource)
+                                || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
+                            if (resourceGain)
                             {
                                 SetStructureColour(Color.green);
                             }
-                            else if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense || newStructureType == StructureType.Storage)
+                            else
                             {
                                 SetStructureColour(Color.yellow);
                             }
@@ -799,7 +804,8 @@ public class StructureManager : MonoBehaviour
                 }
                 firstStructurePlaced = true;
             }
-            if (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)))
+            bool villWidget = (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)));
+            if (villWidget)
             {
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(structure);
@@ -810,7 +816,7 @@ public class StructureManager : MonoBehaviour
             PathManager.GetInstance().ClearPaths();
             VillagerManager.GetInstance().RedistributeVillagers();
             SelectStructure(structure);
-            if (structType == StructureType.Resource || structType == StructureType.Attack)
+            if (villWidget)
             {
                 structure.RefreshWidget();
                 structure.SetWidgetVisibility(true);
@@ -1111,56 +1117,8 @@ public class StructureManager : MonoBehaviour
         }
         if (hoveroverTime > 1.0f)
         {
-            SetHoverInfo(_structure);
+            envInfo.SetInfoByStructure(_structure);
         }
-    }
-
-    private void SetHoverInfo(Structure _structure)
-    {
-        envInfo.SetVisibility(true);
-        switch (_structure.GetStructureName())
-        {
-            case "Longhaus":
-                envInfo.ShowInfo("The Longhaus is your base of operations, protect it at all costs! The Longhaus generates a small amount of wood & food and an even smaller amount of metal.");
-                break;
-            case "Forest Environment":
-                envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
-                break;
-            case "Hills Environment":
-                envInfo.ShowInfo("Placing a Mine on this tile will destroy the hill, and provide a bonus to the Mine. Placing a Mine adjacent to this tile with provide a bonus to the Mine.");
-                break;
-            case "Plains Environment":
-                envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
-                break;
-            case "Farm":
-                envInfo.ShowInfo("The Farm generates Food. It gains a bonus from all plains tiles surrounding it, and an additional bonus if placed on a plains tile.");
-                break;
-            case "Lumber Mill":
-                envInfo.ShowInfo("The Lumber Mill generates Wood. It gains a bonus from all forest tiles surrounding it, and an additional bonus if placed on a forest tile.");
-                break;
-            case "Mine":
-                envInfo.ShowInfo("The Mine generates Metal. It gains a bonus from all hill tiles surrounding it, and an additional bonus if placed on a hill tile.");
-                break;
-            case "Granary":
-                envInfo.ShowInfo("The Granary stores Food. If it is broken, you will lose the additional capacity it gives you, and any excess Food you have will be lost.");
-                break;
-            case "Lumber Pile":
-                envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
-                break;
-            case "Metal Storage":
-                envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
-                break;
-            case "Ballista Tower":
-                envInfo.ShowInfo("The Ballista Tower fires bolts at enemy units.");
-                break;
-            case "Catapult Tower":
-                envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
-                break;
-            case "Barracks":
-                envInfo.ShowInfo("The Barracks spawns soldiers which attack enemy units automatically.");
-                break;
-        }
-
     }
 
     private void ShowMessage(string _message, float _duration)
