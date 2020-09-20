@@ -21,7 +21,7 @@ public class FreezeTowerCannon : MonoBehaviour
     private void Start()
     {
         time = interval;
-        particle.Pause();
+        particle.Stop();
     }
 
     private void Update()
@@ -66,7 +66,7 @@ public class FreezeTowerCannon : MonoBehaviour
                 particle.Play();
             } else
             {
-                particle.Pause();
+                particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
 
             //material.color = targets.Count > 0 ? Color.red : Color.white;
