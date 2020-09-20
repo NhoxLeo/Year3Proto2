@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using DG.Tweening;
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
-using TMPro;
 
 public class BuildPanel : MonoBehaviour
 {
     public bool showPanel = true;
     private bool panelShown = true;
+
     [SerializeField]
     public Color cannotAfford;
+
     public Sprite lockedBuilding;
 
     private CanvasGroup canvas;
@@ -38,20 +38,21 @@ public class BuildPanel : MonoBehaviour
     }
 
     public Buildings tooltipSelected;
-    private GameObject tooltipBox;
-    private Tooltip tooltip;
-    private TMP_Text tooltipHeading;
-    private TMP_Text tooltipDescription;
-    private TMP_Text woodCostText;
-    private TMP_Text metalCostText;
-    private float tooltipTimer;
+    [SerializeField] private GameObject tooltipBox;
+    [SerializeField] private Tooltip tooltip;
+    [SerializeField] private TMP_Text tooltipHeading;
+    [SerializeField] private TMP_Text tooltipDescription;
+    [SerializeField] private TMP_Text woodCostText;
+    [SerializeField] private TMP_Text metalCostText;
+    public float tooltipTimer;
 
     public Buildings buildingSelected;
-    private GameObject buildIndicator;
     private GameObject buildTipBox;
     private Tooltip buildTip;
     private TMP_Text buildTipHeading;
     private SuperManager superMan;
+
+    public BuildingButton hoveredButton;
 
     [Serializable]
     public struct TooltipInfo
@@ -59,35 +60,26 @@ public class BuildPanel : MonoBehaviour
         public string[] heading;
         public string[] description;
         public Vector2[] cost;
-
     }
+
     [SerializeField]
     private TooltipInfo toolInfo;
 
     void Start()
     {
+        GetInfo();
+
         yPos = transform.localPosition.y;
-        canvas = GetComponent<CanvasGroup>();
         structMan = StructureManager.GetInstance();
         superMan = SuperManager.GetInstance();
 
-        tooltipBox = transform.Find("BuildPanelTooltip").gameObject;
-        tooltip = tooltipBox.GetComponent<Tooltip>();
-        tooltipHeading = transform.Find("BuildPanelTooltip/PanelMask/Heading").GetComponent<TMP_Text>();
-        tooltipDescription = transform.Find("BuildPanelTooltip/PanelMask/Description").GetComponent<TMP_Text>();
-        woodCostText = transform.Find("BuildPanelTooltip/PanelMask/CostValueWood").GetComponent<TMP_Text>();
-        metalCostText = transform.Find("BuildPanelTooltip/PanelMask/CostValueMetal").GetComponent<TMP_Text>();
-
-        buildIndicator = transform.Find("PanelMask/BuildingIndicator").gameObject;
-        buildIndicator.SetActive(false);
         buildTipBox = GameObject.Find("SelectedBuilding");
         buildTip = buildTipBox.GetComponent<Tooltip>();
         buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
-        GetInfo();
 
-        if (!superMan.GetResearchComplete(SuperManager.Catapult)) { transform.Find("PanelMask/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
-        if (!superMan.GetResearchComplete(SuperManager.Barracks)) { transform.Find("PanelMask/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.Catapult)) { transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.Barracks)) { transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -95,13 +87,15 @@ public class BuildPanel : MonoBehaviour
         switch (_button)
         {
             case Buildings.Ballista:
-                transform.Find("PanelMask/IconArcher").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/DefenceBuildings/IconArcher").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Catapult:
-                transform.Find("PanelMask/IconCatapult").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Barracks:
-                transform.Find("PanelMask/IconBarracks").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.FreezeTower:
                 transform.Find("PanelMask/IconFreezeTower").GetComponent<Image>().color = _colour;
@@ -113,31 +107,36 @@ public class BuildPanel : MonoBehaviour
                 transform.Find("PanelMask/IconLightningTower").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Farm:
-                transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconFarm").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Granary:
-                transform.Find("PanelMask/IconSilo").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconSilo").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.LumberMill:
-                transform.Find("PanelMask/IconLumberMill").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconLumberMill").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.LumberPile:
-                transform.Find("PanelMask/IconLumberPile").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconLumberPile").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.Mine:
-                transform.Find("PanelMask/IconMine").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconMine").GetComponent<Image>().color = _colour;
                 break;
+
             case Buildings.MetalStorage:
-                transform.Find("PanelMask/IconOreStorage").GetComponent<Image>().color = _colour;
+                transform.Find("PanelMask/Content/ResourceBuildings/IconOreStorage").GetComponent<Image>().color = _colour;
                 break;
+
             default:
                 break;
         }
     }
 
-    void Update()
+    private void Update()
     {
-
         if (tooltipSelected == Buildings.None)
         {
             tooltipTimer += Time.unscaledDeltaTime;
@@ -210,7 +209,7 @@ public class BuildPanel : MonoBehaviour
         toolInfo.heading[(int)Buildings.Mine]               = StructureNames.BuildPanelToString(Buildings.Mine);
         toolInfo.heading[(int)Buildings.MetalStorage]       = StructureNames.BuildPanelToString(Buildings.MetalStorage);
 
-        toolInfo.description = new string[10];
+        toolInfo.description = new string[13];
         toolInfo.description[(int)Buildings.None]           = "";
         toolInfo.description[(int)Buildings.Ballista]       = StructureManager.StructureDescriptions[Buildings.Ballista];
         toolInfo.description[(int)Buildings.Catapult]       = StructureManager.StructureDescriptions[Buildings.Catapult];
@@ -251,9 +250,8 @@ public class BuildPanel : MonoBehaviour
             metalCostText.text = metalCost.ToString();
 
             metalCostText.gameObject.SetActive((metalCost > 0));
-            
 
-            float targetPos = transform.Find("PanelMask").GetChild(tool + 5).transform.localPosition.x;
+            float targetPos = hoveredButton.transform.localPosition.x;
             if (tooltipTimer > 0.15f)
             {
                 tooltipBox.transform.DOLocalMoveX(targetPos, 0.0f);
@@ -262,7 +260,6 @@ public class BuildPanel : MonoBehaviour
             {
                 tooltipBox.transform.DOLocalMoveX(targetPos, 0.15f).SetEase(Ease.OutQuint);
             }
-
         }
     }
 
@@ -292,14 +289,6 @@ public class BuildPanel : MonoBehaviour
             structMan.ResetBuilding();
             if (structMan.SetBuilding(buildingSelected))
             {
-                buildIndicator.SetActive(true);
-                buildIndicator.transform.DOKill(true);
-                buildIndicator.transform.DOPunchScale(new Vector3(0.25f, 0.25f, 0.0f), 0.15f, 1, 0.5f);
-                Vector2 targetPos = transform.Find("PanelMask").GetChild(buildingType + 5).transform.localPosition;
-                Vector2 indiPos = buildIndicator.transform.localPosition;
-                indiPos.x = targetPos.x;
-                buildIndicator.transform.localPosition = indiPos;
-
                 buildTip.showTooltip = true;
                 buildTip.PulseTip();
                 buildTipHeading.text = toolInfo.heading[(int)buildingSelected];
@@ -309,12 +298,11 @@ public class BuildPanel : MonoBehaviour
                 buildingSelected = Buildings.None;
             }
         }
-
     }
 
     public void UINoneSelected()
     {
-        buildIndicator.SetActive(false);
+        //buildIndicator.SetActive(false);
 
         buildTip.showTooltip = false;
     }
