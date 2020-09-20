@@ -18,6 +18,12 @@ public class FreezeTowerCannon : MonoBehaviour
     private const float interval = 3.0f;
     private float time = 0.0f;
 
+    private void Start()
+    {
+        time = interval;
+        particle.Pause();
+    }
+
     private void Update()
     {
         time -= Time.deltaTime;
@@ -55,7 +61,15 @@ public class FreezeTowerCannon : MonoBehaviour
                 }
             }
 
-            material.color = targets.Count > 0 ? Color.red : Color.white;
+            if(targets.Count > 0)
+            {
+                particle.Play();
+            } else
+            {
+                particle.Pause();
+            }
+
+            //material.color = targets.Count > 0 ? Color.red : Color.white;
         }
     }
 
