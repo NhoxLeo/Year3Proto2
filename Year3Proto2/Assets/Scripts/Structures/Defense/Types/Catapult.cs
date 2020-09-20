@@ -1,28 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public class Catapult : ProjectileDefenseStructure
 {
+    private const int MetalCost = 4;
+    private const float MaxHealth = 450.0f;
+
     protected override void Awake()
     {
         base.Awake();
         structureName = StructureNames.Catapult;
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification)) { health = maxHealth *= 1.5f; }
-        maxHealth = 450f;
+        maxHealth = MaxHealth;
         health = maxHealth;
-    }
 
-    public override void CheckResearch()
-    {
-        attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification))
+        {
+            health = maxHealth *= 1.5f;
+        }
 
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultRange))
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
+
+        attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost, 0);
     }
 
     public override void Launch(Transform _target)
@@ -38,7 +40,7 @@ public class Catapult : ProjectileDefenseStructure
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultPower) ? 1.3f : 1.0f;
 
             boulder.ExplosionRadius = boulder.ExplosionRadius * explosionFactor;
-            boulder.SetDamage(boulder.GetDamage() * damageFactor);
+            boulder.SetDamage(boulder.GetDamage() * damageFactor * level);
             boulder.SetTarget(_target);
         }
     }

@@ -78,6 +78,12 @@ public abstract class Enemy : MonoBehaviour
         };
     }
 
+    public void Slow(bool enabled)
+    {
+        Debug.Log("Slowing enemy");
+        finalSpeed = enabled ? 0.2f : finalSpeed;
+    }
+
     public void Stun(float _stunDuration)
     {
         stunned = true;
@@ -119,15 +125,6 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (stunned)
-        {
-            stunCurrentTime -= Time.deltaTime;
-            if(stunTime <= 0.0f)
-            {
-                stunned = false;
-                animator.SetBool("Walk", true);
-            }
-        }
 
         if (GlobalData.longhausDead)
         {
@@ -141,6 +138,17 @@ public abstract class Enemy : MonoBehaviour
             {
                 Damage(health);
             }
+        }
+
+        if (stunned)
+        {
+            stunCurrentTime -= Time.deltaTime;
+            if (stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.SetBool("Walk", true);
+            }
+            return;
         }
 
         // update signature
