@@ -63,6 +63,8 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
+    private float halfSpeed;
+
     public abstract void Action();
 
     protected virtual void Start()
@@ -70,6 +72,8 @@ public abstract class Enemy : MonoBehaviour
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        halfSpeed = finalSpeed * 0.5f;
+
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         signature = new EnemyPathSignature()
         {
@@ -80,7 +84,7 @@ public abstract class Enemy : MonoBehaviour
 
     public void Slow(bool enabled)
     {
-        finalSpeed = enabled ? 0.2f : finalSpeed;
+        finalSpeed = enabled ? halfSpeed : finalSpeed;
     }
 
     public void Stun(float _stunDuration)

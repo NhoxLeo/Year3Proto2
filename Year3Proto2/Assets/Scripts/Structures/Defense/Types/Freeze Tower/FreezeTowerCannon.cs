@@ -66,7 +66,7 @@ public class FreezeTowerCannon : MonoBehaviour
                 particle.Play();
             } else
             {
-                particle.Stop();
+                particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
 
             //material.color = targets.Count > 0 ? Color.red : Color.white;
