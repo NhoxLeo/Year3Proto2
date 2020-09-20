@@ -685,21 +685,26 @@ public class StructureManager : MonoBehaviour
                 // if the structure can be placed here...
                 if (canPlaceHere)
                 {
-                    if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense)
+                    if (newStructureType == StructureType.Defense)
                     {
                         structure.ShowRangeDisplay(true);
                     }
 
                     if (attached)
                     {
-                        StructureType attachedStructureType = attached.GetStructureType();
-                        if (attachedStructureType == StructureType.Environment)
+                        if (attached.GetStructureType() == StructureType.Environment)
                         {
-                            if (newStructureType == StructureType.Resource)
+                            string attachedName = attached.GetStructureName();
+                            string structureName = structure.GetStructureName();
+                            // determine if the structure is in synergy with attached structure
+                            bool resourceGain = (attachedName == StructureNames.FoodEnvironment && structureName == StructureNames.FoodResource)
+                                || (attachedName == StructureNames.LumberEnvironment && structureName == StructureNames.LumberResource)
+                                || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
+                            if (resourceGain)
                             {
                                 SetStructureColour(Color.green);
                             }
-                            else if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense || newStructureType == StructureType.Storage)
+                            else
                             {
                                 SetStructureColour(Color.yellow);
                             }
