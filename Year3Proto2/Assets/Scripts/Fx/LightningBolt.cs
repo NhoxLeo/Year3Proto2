@@ -24,9 +24,10 @@ public class LightningBolt : MonoBehaviour
 
     public void Fire(Transform _target)
     {
+        target = _target;
+
         if (target != null)
         {
-            target = _target;
             transform.LookAt(target);
 
             Vector3 scale = transform.localScale;
