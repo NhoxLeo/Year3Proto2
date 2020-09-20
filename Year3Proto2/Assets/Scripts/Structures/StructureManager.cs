@@ -116,6 +116,9 @@ public static class StructureNames
     public const string Barracks = "Barracks";
     public const string Ballista = "Ballista";
     public const string Catapult = "Catapult";
+    public const string FreezeTower = "Freeze Tower";
+    public const string ShockwaveTower = "Shockwave Tower";
+    public const string LightningTower = "Lightning Tower";
 
     public const string FoodEnvironment = "Field";
     public const string FoodResource = "Farm";
@@ -139,6 +142,12 @@ public static class StructureNames
                 return Catapult;
             case BuildPanel.Buildings.Barracks:
                 return Barracks;
+            case BuildPanel.Buildings.FreezeTower:
+                return FreezeTower;
+            case BuildPanel.Buildings.ShockwaveTower:
+                return ShockwaveTower;
+            case BuildPanel.Buildings.LigtningTower:
+                return LightningTower;
             case BuildPanel.Buildings.Farm:
                 return FoodResource;
             case BuildPanel.Buildings.LumberMill:
@@ -188,6 +197,9 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
         { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
         { BuildPanel.Buildings.Barracks, "Spawns soldiers, who automatically attack enemies." },
+        { BuildPanel.Buildings.FreezeTower, "Sprays enemies with ice to slow them down." },
+        { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
+        { BuildPanel.Buildings.LigtningTower, "Casts lightning on targeted enemies." },
         { BuildPanel.Buildings.Farm, "Collects Food from nearby plains tiles. Bonus if constructed on plains." },
         { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
         { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
@@ -200,6 +212,9 @@ public class StructureManager : MonoBehaviour
         { StructureNames.Ballista, BuildPanel.Buildings.Ballista },
         { StructureNames.Catapult, BuildPanel.Buildings.Catapult },
         { StructureNames.Barracks, BuildPanel.Buildings.Barracks },
+        { StructureNames.FreezeTower, BuildPanel.Buildings.FreezeTower },
+        { StructureNames.ShockwaveTower, BuildPanel.Buildings.ShockwaveTower },
+        { StructureNames.LightningTower, BuildPanel.Buildings.LigtningTower },
         { StructureNames.FoodResource, BuildPanel.Buildings.Farm },
         { StructureNames.FoodStorage, BuildPanel.Buildings.Granary },
         { StructureNames.LumberResource, BuildPanel.Buildings.LumberMill },
@@ -212,6 +227,9 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Ballista, 0 },
         { BuildPanel.Buildings.Catapult, 0 },
         { BuildPanel.Buildings.Barracks, 0 },
+        { BuildPanel.Buildings.FreezeTower, 0 },
+        { BuildPanel.Buildings.ShockwaveTower, 0 },
+        { BuildPanel.Buildings.LigtningTower, 0 },
         { BuildPanel.Buildings.Farm, 0 },
         { BuildPanel.Buildings.Granary, 0 },
         { BuildPanel.Buildings.LumberMill, 0 },
@@ -225,6 +243,9 @@ public class StructureManager : MonoBehaviour
         { StructureNames.Ballista,          new ResourceBundle(150,     50,     0) },
         { StructureNames.Catapult,          new ResourceBundle(200,     250,    0) },
         { StructureNames.Barracks,          new ResourceBundle(200,     100,    0) },
+        { StructureNames.FreezeTower,       new ResourceBundle(200,     50,     0) },
+        { StructureNames.ShockwaveTower,    new ResourceBundle(300,     250,    0) },
+        { StructureNames.LightningTower,    new ResourceBundle(250,     100,    0) },
 
         { StructureNames.FoodResource,      new ResourceBundle(40,      0,      0) },
         { StructureNames.LumberResource,    new ResourceBundle(60,      20,     0) },
@@ -280,23 +301,27 @@ public class StructureManager : MonoBehaviour
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                                    NAME                                                                    wC       mC      fC
-            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")               as GameObject,  new ResourceBundle(600,     200,    0)) },
+            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(600,     200,    0)) },
 
-            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower") as GameObject,  new ResourceBundle(150,     50,     0)) },
-            { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower") as GameObject,  new ResourceBundle(200,     250,    0)) },
-            { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")       as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(150,     50,     0)) },
+            { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower")     as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.ShockwaveTower,    new StructureDefinition(Resources.Load("Structures/Defense/Shockwave Tower")    as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.LightningTower,    new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")    as GameObject,  new ResourceBundle(200,     250,    0)) },
 
-            { StructureNames.FoodResource,      new StructureDefinition(Resources.Load("Structures/Resource/Farm")          as GameObject,  new ResourceBundle(40,      0,      0)) },
-            { StructureNames.LumberResource,    new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")   as GameObject,  new ResourceBundle(60,      20,     0)) },
-            { StructureNames.MetalResource,     new StructureDefinition(Resources.Load("Structures/Resource/Mine")          as GameObject,  new ResourceBundle(100,     20,     0)) },
 
-            { StructureNames.FoodStorage,       new StructureDefinition(Resources.Load("Structures/Storage/Granary")        as GameObject,  new ResourceBundle(120,     0,      0)) },
-            { StructureNames.LumberStorage,     new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")    as GameObject,  new ResourceBundle(120,     0,      0)) },
-            { StructureNames.MetalStorage,      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")  as GameObject,  new ResourceBundle(120,     80,     0)) },
+            { StructureNames.FoodResource,      new StructureDefinition(Resources.Load("Structures/Resource/Farm")              as GameObject,  new ResourceBundle(40,      0,      0)) },
+            { StructureNames.LumberResource,    new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")       as GameObject,  new ResourceBundle(60,      20,     0)) },
+            { StructureNames.MetalResource,     new StructureDefinition(Resources.Load("Structures/Resource/Mine")              as GameObject,  new ResourceBundle(100,     20,     0)) },
 
-            { StructureNames.LumberEnvironment, new StructureDefinition(Resources.Load("Environment/Forest")                as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Environment/Hills")                 as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Environment/Plains")                as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.FoodStorage,       new StructureDefinition(Resources.Load("Structures/Storage/Granary")            as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { StructureNames.LumberStorage,     new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")        as GameObject,  new ResourceBundle(120,     0,      0)) },
+            { StructureNames.MetalStorage,      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")      as GameObject,  new ResourceBundle(120,     80,     0)) },
+
+            { StructureNames.LumberEnvironment, new StructureDefinition(Resources.Load("Environment/Forest")                    as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Environment/Hills")                     as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Environment/Plains")                    as GameObject,  new ResourceBundle(0,       0,      0)) },
         };
     }
 
@@ -1157,6 +1182,15 @@ public class StructureManager : MonoBehaviour
                 break;
             case "Barracks":
                 envInfo.ShowInfo("The Barracks spawns soldiers which attack enemy units automatically.");
+                break;
+            case "Freeze Tower":
+                envInfo.ShowInfo("The Freeze Tower sprays snow at enemies to slow them.");
+                break;
+            case "Shockwave Tower":
+                envInfo.ShowInfo("The Shockwave Tower creates a shockwave to repulse enemies.");
+                break;
+            case "Lightning Tower":
+                envInfo.ShowInfo("The Lightning Tower casts lightning bolts from the sky onto players.");
                 break;
         }
 

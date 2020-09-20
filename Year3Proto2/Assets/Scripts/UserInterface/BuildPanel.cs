@@ -26,6 +26,9 @@ public class BuildPanel : MonoBehaviour
         Ballista,
         Catapult,
         Barracks,
+        FreezeTower,
+        LigtningTower,
+        ShockwaveTower,
         Farm,
         LumberMill,
         Mine,
@@ -99,6 +102,15 @@ public class BuildPanel : MonoBehaviour
                 break;
             case Buildings.Barracks:
                 transform.Find("PanelMask/IconBarracks").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.FreezeTower:
+                transform.Find("PanelMask/IconFreezeTower").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.ShockwaveTower:
+                transform.Find("PanelMask/IconShockwaveTower").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LigtningTower:
+                transform.Find("PanelMask/IconLightningTower").GetComponent<Image>().color = _colour;
                 break;
             case Buildings.Farm:
                 transform.Find("PanelMask/IconFarm").GetComponent<Image>().color = _colour;
@@ -183,11 +195,14 @@ public class BuildPanel : MonoBehaviour
 
     private void GetInfo()
     {
-        toolInfo.heading = new string[10];
+        toolInfo.heading = new string[13];
         toolInfo.heading[(int)Buildings.None]               = "";
         toolInfo.heading[(int)Buildings.Ballista]           = StructureNames.BuildPanelToString(Buildings.Ballista);
         toolInfo.heading[(int)Buildings.Catapult]           = StructureNames.BuildPanelToString(Buildings.Catapult);
         toolInfo.heading[(int)Buildings.Barracks]           = StructureNames.BuildPanelToString(Buildings.Barracks);
+        toolInfo.heading[(int)Buildings.FreezeTower]        = StructureNames.BuildPanelToString(Buildings.FreezeTower);
+        toolInfo.heading[(int)Buildings.ShockwaveTower]     = StructureNames.BuildPanelToString(Buildings.ShockwaveTower);
+        toolInfo.heading[(int)Buildings.LigtningTower]      = StructureNames.BuildPanelToString(Buildings.LigtningTower);
         toolInfo.heading[(int)Buildings.Farm]               = StructureNames.BuildPanelToString(Buildings.Farm);
         toolInfo.heading[(int)Buildings.Granary]            = StructureNames.BuildPanelToString(Buildings.Granary);
         toolInfo.heading[(int)Buildings.LumberMill]         = StructureNames.BuildPanelToString(Buildings.LumberMill);
@@ -200,6 +215,9 @@ public class BuildPanel : MonoBehaviour
         toolInfo.description[(int)Buildings.Ballista]       = StructureManager.StructureDescriptions[Buildings.Ballista];
         toolInfo.description[(int)Buildings.Catapult]       = StructureManager.StructureDescriptions[Buildings.Catapult];
         toolInfo.description[(int)Buildings.Barracks]       = StructureManager.StructureDescriptions[Buildings.Barracks];
+        toolInfo.heading[(int)Buildings.FreezeTower]        = StructureManager.StructureDescriptions[Buildings.FreezeTower];
+        toolInfo.heading[(int)Buildings.ShockwaveTower]     = StructureManager.StructureDescriptions[Buildings.ShockwaveTower];
+        toolInfo.heading[(int)Buildings.LigtningTower]      = StructureManager.StructureDescriptions[Buildings.LigtningTower];
         toolInfo.description[(int)Buildings.Farm]           = StructureManager.StructureDescriptions[Buildings.Farm];
         toolInfo.description[(int)Buildings.Granary]        = StructureManager.StructureDescriptions[Buildings.Granary];
         toolInfo.description[(int)Buildings.LumberMill]     = StructureManager.StructureDescriptions[Buildings.LumberMill];
