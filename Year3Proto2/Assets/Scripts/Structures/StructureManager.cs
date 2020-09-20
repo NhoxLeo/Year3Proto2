@@ -192,6 +192,7 @@ public class StructureManager : MonoBehaviour
     public bool useSeed = false;
     [HideInInspector]
     public int seed = 0;
+
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
@@ -207,6 +208,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, "Collects Metal from nearby rocky hill tiles. Bonus if constructed on hills." },
         { BuildPanel.Buildings.MetalStorage, "Increases maximum Metal storage capacity." }
     };
+
     public static Dictionary<string, BuildPanel.Buildings> StructureIDs = new Dictionary<string, BuildPanel.Buildings>
     {
         { StructureNames.Ballista, BuildPanel.Buildings.Ballista },

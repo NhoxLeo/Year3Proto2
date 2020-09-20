@@ -12,24 +12,19 @@ public class FreezeTowerCannon : MonoBehaviour
     [SerializeField] private Material material;
     [SerializeField] private ParticleSystem particle;
 
-    private List<Transform> previousTargets = new List<Transform>();
-    private List<Transform> targets = new List<Transform>();
+    private List<Enemy> previousTargets = new List<Enemy>();
+    private readonly List<Enemy> targets = new List<Enemy>();
 
-    private void Start()
-    {
-        StartCoroutine(FindTargets(3.0f));
-    }
+    private const float interval = 3.0f;
+    private float time = 0.0f;
 
     private void Update()
     {
-        material.color = targets.Count > 0 ? Color.red : Color.white;
-    }
-
-    IEnumerator FindTargets(float delay)
-    {
-        while (true)
+        time -= Time.deltaTime;
+        if(time <= 0.0f)
         {
-            yield return new WaitForSeconds(delay);
+            time = interval;
+
             previousTargets = targets;
 
             targets.Clear();
@@ -41,23 +36,26 @@ public class FreezeTowerCannon : MonoBehaviour
                 Vector3 direction = (target.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
                 {
-                    targets.Add(target);
+                    Enemy enemy = target.GetComponent<Enemy>();
+                    if (enemy)
+                    {
+                        enemy.Slow(true);
+                        targets.Add(enemy);
+                    }
                 }
             }
 
             previousTargets.RemoveAll(target => !target);
-            for(int i = 0; i < previousTargets.Count; i++)
+            for (int i = 0; i < previousTargets.Count; i++)
             {
-                Transform target = previousTargets[i];
+                Enemy target = previousTargets[i];
                 if (!targets.Contains(target))
                 {
-                    Enemy enemy = target.GetComponent<Enemy>();
-                    if (enemy)
-                    {
-                        //remove enemy effects
-                    }
+                    target.Slow(false);
                 }
             }
+
+            material.color = targets.Count > 0 ? Color.red : Color.white;
         }
     }
 
