@@ -80,7 +80,6 @@ public abstract class Enemy : MonoBehaviour
 
     public void Slow(bool enabled)
     {
-        Debug.Log("Slowing enemy");
         finalSpeed = enabled ? 0.2f : finalSpeed;
     }
 
