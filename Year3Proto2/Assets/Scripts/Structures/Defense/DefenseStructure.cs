@@ -9,12 +9,14 @@ public abstract class DefenseStructure : Structure
     protected Transform target;
 
     private Transform attackingRange;
+    private Transform spottingRange = null;
 
     protected override void Awake()
     {
         base.Awake();
         structureType = StructureType.Defense;
         attackingRange = transform.Find("Range");
+        spottingRange = transform.Find("SpottingRange");
     }
 
     protected override void Start()
@@ -41,6 +43,7 @@ public abstract class DefenseStructure : Structure
     public override void ShowRangeDisplay(bool _active)
     {
         base.ShowRangeDisplay(_active);
+        spottingRange.GetChild(0).gameObject.SetActive(_active);
         attackingRange.GetChild(0).gameObject.SetActive(_active);
     }
 

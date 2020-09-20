@@ -711,21 +711,26 @@ public class StructureManager : MonoBehaviour
                 // if the structure can be placed here...
                 if (canPlaceHere)
                 {
-                    if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense)
+                    if (newStructureType == StructureType.Defense)
                     {
                         structure.ShowRangeDisplay(true);
                     }
 
                     if (attached)
                     {
-                        StructureType attachedStructureType = attached.GetStructureType();
-                        if (attachedStructureType == StructureType.Environment)
+                        if (attached.GetStructureType() == StructureType.Environment)
                         {
-                            if (newStructureType == StructureType.Resource)
+                            string attachedName = attached.GetStructureName();
+                            string structureName = structure.GetStructureName();
+                            // determine if the structure is in synergy with attached structure
+                            bool resourceGain = (attachedName == StructureNames.FoodEnvironment && structureName == StructureNames.FoodResource)
+                                || (attachedName == StructureNames.LumberEnvironment && structureName == StructureNames.LumberResource)
+                                || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
+                            if (resourceGain)
                             {
                                 SetStructureColour(Color.green);
                             }
-                            else if (newStructureType == StructureType.Attack || newStructureType == StructureType.Defense || newStructureType == StructureType.Storage)
+                            else
                             {
                                 SetStructureColour(Color.yellow);
                             }
@@ -825,7 +830,8 @@ public class StructureManager : MonoBehaviour
                 }
                 firstStructurePlaced = true;
             }
-            if (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)))
+            bool villWidget = (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)));
+            if (villWidget)
             {
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(structure);
@@ -836,7 +842,7 @@ public class StructureManager : MonoBehaviour
             PathManager.GetInstance().ClearPaths();
             VillagerManager.GetInstance().RedistributeVillagers();
             SelectStructure(structure);
-            if (structType == StructureType.Resource || structType == StructureType.Attack)
+            if (villWidget)
             {
                 structure.RefreshWidget();
                 structure.SetWidgetVisibility(true);
@@ -1137,7 +1143,7 @@ public class StructureManager : MonoBehaviour
         }
         if (hoveroverTime > 1.0f)
         {
-            SetHoverInfo(_structure);
+            envInfo.SetInfoByStructure(_structure);
         }
     }
 

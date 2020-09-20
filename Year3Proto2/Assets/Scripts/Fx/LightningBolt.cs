@@ -24,6 +24,8 @@ public class LightningBolt : MonoBehaviour
 
     public void Fire(Transform _target)
     {
+        target = _target;
+
         if (target != null)
         {
             transform.LookAt(target);
