@@ -26,6 +26,7 @@ public class LightningBolt : MonoBehaviour
     {
         if (target != null)
         {
+            target = _target;
             transform.LookAt(target);
 
             Vector3 scale = transform.localScale;
