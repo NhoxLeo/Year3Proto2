@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     public const string Version = "0.9.0b";
+    public static bool DevMode = false;
     // CONSTANTS
     public const int NoRequirement = -1;
 
@@ -500,20 +501,23 @@ public class SuperManager : MonoBehaviour
             {
                 WipeReloadScene(false);
             }
-            // Press S
-            if (Input.GetKeyDown(KeyCode.S))
+            if (DevMode)
             {
-                startMaxed = true;
-                WipeReloadScene(true);
-            }
-            // Press M
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                if (GameManager.GetInstance())
+                // Press S
+                if (Input.GetKeyDown(KeyCode.S))
                 {
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    startMaxed = true;
+                    WipeReloadScene(true);
+                }
+                // Press M
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    if (GameManager.GetInstance())
+                    {
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    }
                 }
             }
         }

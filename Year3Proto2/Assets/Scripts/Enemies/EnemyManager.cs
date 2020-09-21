@@ -210,14 +210,17 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     private void Update()
     {
-        if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
+        if (SuperManager.DevMode)
         {
-            if (tokens < 10f)
+            if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
             {
-                tokens = 10f;
+                if (tokens < 10f)
+                {
+                    tokens = 10f;
+                }
+                spawning = true;
+                time = 0f;
             }
-            spawning = true;
-            time = 0f;
         }
         if (spawning)
         {
