@@ -6,7 +6,6 @@ using DG.Tweening;
 public class Barracks : DefenseStructure
 {
     private GameObject soldierPrefab;
-    private GameObject puffEffect;
     private int maxSoldiers = 3;
     [HideInInspector]
     public List<Soldier> soldiers;
@@ -28,12 +27,6 @@ public class Barracks : DefenseStructure
         return maxSoldiers;
     }
 
-    private void EnableFogMask()
-    {
-        transform.GetChild(0).gameObject.SetActive(true);
-        transform.GetChild(0).DOScale(Vector3.one * 3.0f, 1.0f).SetEase(Ease.OutQuint);
-    }
-
     private void UpdateCapacity()
     {
         //maxSoldiers = allocatedVillagers;
@@ -43,11 +36,11 @@ public class Barracks : DefenseStructure
         {
             if (i >= maxSoldiers)
             {
-                soldiers[i].returnHome = true;
+                soldiers[i].SetReturnHome(true);
             }
             else
             {
-                soldiers[i].returnHome = false;
+                soldiers[i].SetReturnHome(false);
             }
         }
     }
@@ -56,45 +49,17 @@ public class Barracks : DefenseStructure
     {
         foreach (Soldier soldier in soldiers)
         {
-            soldier.healRate = _healRate;
+            soldier.SetHealRate(_healRate);
         }
-    }
-
-    public override void SetFoodAllocation(int _newFoodAllocation)
-    {
-        base.SetFoodAllocation(_newFoodAllocation);
-        UpdateCapacity();
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        foreach (Barracks barracks in FindObjectsOfType<Barracks>())
-        {
-            barracks.SetFoodAllocation(_allocation);
-        }
-    }
-
-    public override void AllocateVillager()
-    {
-        base.AllocateVillager();
-        UpdateCapacity();
-    }
-
-    public override void DeallocateVillager()
-    {
-        base.DeallocateVillager();
-        UpdateCapacity();
     }
 
     public override void OnPlace()
     {
         base.OnPlace();
-        //EnableFogMask();
         Barracks[] barracks = FindObjectsOfType<Barracks>();
         if (barracks.Length >= 2)
         {
             Barracks other = (barracks[0] == this) ? barracks[1] : barracks[0];
-            SetFoodAllocation(other.foodAllocation);
         }
     }
 
@@ -107,8 +72,8 @@ public class Barracks : DefenseStructure
     protected override void Awake()
     {
         base.Awake();
-        superMan = SuperManager.GetInstance();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Barracks];
+        SuperManager superMan = SuperManager.GetInstance();
+        structureName = StructureNames.Barracks;
         soldiers = new List<Soldier>();
         soldierPrefab = Resources.Load("Soldier") as GameObject;
         maxHealth = 200f;
@@ -123,7 +88,6 @@ public class Barracks : DefenseStructure
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
         }
-        puffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
     }
 
     protected override void Update()
@@ -145,31 +109,21 @@ public class Barracks : DefenseStructure
 
     private void SpawnSoldier()
     {
+        SuperManager superMan = SuperManager.GetInstance();
         Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
-        newSoldier.barracksID = ID;
-        newSoldier.home = this;
+        newSoldier.SetBarracksID(ID);
+        newSoldier.SetHome(this);
         //float vectorSampler = Random.Range(0f, 1f);
         //newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
         newSoldier.transform.position = transform.position + (transform.right * Random.Range(-0.1f, 0.1f)) + (transform.forward * Random.Range(-0.1f, 0.1f));
-        newSoldier.puffEffect = puffEffect;
 
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
-        {
-            newSoldier.damage *= 1.3f;
-        }
         if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
         {
             newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
-            newSoldier.maxHealth *= 1.5f;
-            newSoldier.health = newSoldier.maxHealth;
         }
         else
         {
             newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
-        {
-            newSoldier.movementSpeed *= 1.3f;
         }
 
         soldiers.Add(newSoldier);
@@ -179,32 +133,23 @@ public class Barracks : DefenseStructure
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
     {
+        SuperManager superMan = SuperManager.GetInstance();
         Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
-        newSoldier.barracksID = ID;
-        newSoldier.home = this;
-        newSoldier.puffEffect = puffEffect;
+        newSoldier.SetBarracksID(ID);
+        newSoldier.SetHome(this);
         newSoldier.transform.position = _saveData.position;
         newSoldier.transform.rotation = _saveData.orientation;
-        newSoldier.state = _saveData.state;
-        newSoldier.health = _saveData.health;
-        newSoldier.returnHome = _saveData.returnHome;
+        newSoldier.SetState(_saveData.state);
+        newSoldier.SetHealth(_saveData.health);
+        newSoldier.SetReturnHome(_saveData.returnHome);
 
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
-        {
-            newSoldier.damage *= 1.3f;
-        }
         if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
         {
             newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
-            newSoldier.maxHealth *= 1.5f;
         }
         else
         {
             newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
-        {
-            newSoldier.movementSpeed *= 1.3f;
         }
 
         soldiers.Add(newSoldier);

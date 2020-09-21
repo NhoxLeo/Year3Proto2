@@ -9,13 +9,8 @@ public class Granary : StorageStructure
         base.Awake();
         resourceType = ResourceType.Food;
         storage = 500;
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Granary];
+        structureName = StructureNames.FoodStorage;
         maxHealth = 200f;
         health = maxHealth;
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        Debug.LogError("Food Allocation should not be called for " + structureName);
     }
 }

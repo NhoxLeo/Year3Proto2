@@ -46,14 +46,24 @@ public abstract class Enemy : MonoBehaviour
     protected float finalSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+
+    // Stun
+    protected bool stunned = false;
+    protected float stunTime = 1.0f;
+    protected float stunCurrentTime = 0.0f;
+
+
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
     protected int observers = 0;
     protected bool hasPath = false;
-    protected EnemySpawner.EnemyPath path;
-    public EnemySpawner spawner;
-    private EnemySpawner.EnemyPathSignature signature;
+    protected EnemyPath path;
+    protected float updatePathTimer = 0f;
+    protected float updatePathDelay = 1.5f;
+    private EnemyPathSignature signature;
+
+    private float halfSpeed;
 
     public abstract void Action();
 
@@ -62,18 +72,32 @@ public abstract class Enemy : MonoBehaviour
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        halfSpeed = finalSpeed * 0.5f;
+
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
-        signature = new EnemySpawner.EnemyPathSignature()
+        signature = new EnemyPathSignature()
         {
             startTile = null,
             validStructureTypes = structureTypes
         };
+    }
 
+    public void Slow(bool enabled)
+    {
+        finalSpeed = enabled ? halfSpeed : finalSpeed;
+    }
+
+    public void Stun(float _stunDuration)
+    {
+        stunned = true;
+        stunCurrentTime = _stunDuration;
+        animator.SetBool("Attack", false);
+        animator.SetBool("Walk", false);
     }
 
     public virtual void OnKill()
     {
-        spawner.OnEnemyDeath(this);
+        EnemyManager.GetInstance().OnEnemyDeath(this);
     }
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)
@@ -104,6 +128,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
+
         if (GlobalData.longhausDead)
         {
             if (!delayedDeathCalled)
@@ -118,6 +143,17 @@ public abstract class Enemy : MonoBehaviour
             }
         }
 
+        if (stunned)
+        {
+            stunCurrentTime -= Time.deltaTime;
+            if (stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.SetBool("Walk", true);
+            }
+            return;
+        }
+
         // update signature
         if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
         {
@@ -125,33 +161,17 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public bool Next()
-    {
-        // get a path
-        path = spawner.GetPath(transform.position, structureTypes);
-        bool foundPath = path.pathPoints != new List<Vector3>();
-        bool targetFound = path.target != null;
-        if (!foundPath && !targetFound)
-        {
-            // couldn't find a path
-            return false;
-        }
-        hasPath = true;
-
-        target = path.target;
-        enemyState = EnemyState.Walk;
-        return true;
-    }
-
-    public void RequestNewPath()
+    public bool RequestNewPath()
     {
         // if the spawner returns true, a valid path was found...
-        if (spawner.RequestPath(signature, ref path))
+        if (PathManager.GetInstance().RequestPath(signature, ref path))
         {
             hasPath = true;
             target = path.target;
             enemyState = EnemyState.Walk;
+            return true;
         }
+        return false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -200,7 +220,7 @@ public abstract class Enemy : MonoBehaviour
         Vector3 toTarget = path.pathPoints[0] - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        if (toTarget.magnitude > 0.5f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -210,7 +230,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;
@@ -231,7 +251,7 @@ public abstract class Enemy : MonoBehaviour
         Vector3 toTarget = target.transform.position - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        if (toTarget.magnitude > 0.5f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -241,7 +261,7 @@ public abstract class Enemy : MonoBehaviour
                     enemyWasNull = true;
                     continue;
                 }
-                // get a vector pointing from them to me, indicating a direction for this enemy to push 
+                // get a vector pointing from them to me, indicating a direction for this enemy to push
                 Vector3 enemyToThis = transform.position - enemy.transform.position;
                 enemyToThis.y = 0f;
                 float inverseMag = 1f / enemyToThis.magnitude;
@@ -311,5 +331,14 @@ public abstract class Enemy : MonoBehaviour
     public bool IsBeingObserved()
     {
         return observers > 0;
+    }
+
+    public TileBehaviour GetCurrentTile()
+    {
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            return hit.transform.GetComponent<TileBehaviour>();
+        }
+        return null;
     }
 }

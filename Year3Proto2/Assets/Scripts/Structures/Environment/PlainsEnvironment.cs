@@ -4,16 +4,10 @@ using UnityEngine;
 
 public class PlainsEnvironment : EnvironmentStructure
 {
-    // Start is called before the first frame update
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         environmentType = EnvironmentType.plains;
-        structureName = "Plains Environment";
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        Debug.LogError("Food Allocation should not be called for " + structureName);
+        structureName = StructureNames.FoodEnvironment;
     }
 }

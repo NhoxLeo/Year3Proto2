@@ -67,8 +67,6 @@ public class CameraController : MonoBehaviour
 
     private Vector2 lastFrameMousePos;
 
-    private StructureManager structMan;
-
     void Start()
     {
         float quarterPi = Mathf.Deg2Rad * 45.0f;
@@ -78,7 +76,6 @@ public class CameraController : MonoBehaviour
         west = Vector3.RotateTowards(Vector3.forward, Vector3.left, quarterPi, 5f).normalized;
         cameraZoomMidPoint = transform.position;
         lastFrameMousePos = Vector2.zero;
-        structMan = FindObjectOfType<StructureManager>();
     }
 
     void Update()
@@ -92,7 +89,7 @@ public class CameraController : MonoBehaviour
         float scrollMoveBonus = 1f + (-scrollOffset + 10f) * 0.15f;
 
         Vector2 mp = Input.mousePosition;
-        float mouseMult = (structMan.isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
+        float mouseMult = (StructureManager.GetInstance().isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
 
         float movementCoeff = Time.deltaTime * sensitivity * scrollMoveBonus;
 

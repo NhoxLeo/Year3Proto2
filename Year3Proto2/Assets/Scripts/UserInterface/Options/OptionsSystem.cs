@@ -1,7 +1,6 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 
 // Bachelor of Software Engineering
@@ -30,6 +29,7 @@ public class OptionsSystem : MonoBehaviour
     private List<OptionObject> optionObjects = new List<OptionObject>();
     private void Awake()
     {
+        Debug.Log("Quality Setting: " + QualitySettings.GetQualityLevel());
         optionObjects.Add(InstantiateOption("RESOLUTION",
             new OptionSwitcherData(0, 0, Screen.resolutions.Select(o => o.ToString()).ToArray(),
                 delegate
@@ -47,13 +47,42 @@ public class OptionsSystem : MonoBehaviour
 
         optionObjects.Add(InstantiateOption("QUALITY",
             new OptionSwitcherData(0, 0, QualitySettings.names.ToArray(),
-               delegate {
-                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "RESOLUTION");
+               delegate
+               {
+                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "QUALITY");
                    if (optionSwitcher)
                    {
                        OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
-                       string[] names = QualitySettings.names;
                        QualitySettings.SetQualityLevel(optionSwitcherData.value);
+                   }
+               }
+            ), switcherPrefab, graphics)
+        );
+
+        optionObjects.Add(InstantiateOption("TEXTURE_QUALITY",
+            new OptionSwitcherData(0, 0, new string[] { "High", "Medium", "Low" },
+               delegate
+               {
+                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "TEXTURE_QUALITY");
+                   if (optionSwitcher)
+                   {
+                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
+                       QualitySettings.masterTextureLimit = optionSwitcherData.value;
+                   }
+               }
+            ), switcherPrefab, graphics)
+        );
+
+        optionObjects.Add(InstantiateOption("SHADOW_QUALITY",
+            new OptionSwitcherData(0, 0, Enum.GetNames(typeof(ShadowResolution)),
+               delegate
+               {
+  
+                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "SHADOW_QUALITY");
+                   if (optionSwitcher)
+                   {
+                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
+                       QualitySettings.shadowResolution = (ShadowResolution)Enum.ToObject(typeof(ShadowResolution), (byte)optionSwitcherData.value);
                    }
                }
             ), switcherPrefab, graphics)

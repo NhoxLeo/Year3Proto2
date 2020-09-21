@@ -4,16 +4,31 @@ using UnityEngine;
 
 public class ForestEnvironment : EnvironmentStructure
 {
-    // Start is called before the first frame update
-    protected override void Start()
+    private bool exploitedState = false;
+    private MeshRenderer meshRenderer;
+
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         environmentType = EnvironmentType.forest;
-        structureName = "Forest Environment";
+        structureName = StructureNames.LumberEnvironment;
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    public override void SetFoodAllocationGlobal(int _allocation)
+    protected override void Update()
     {
-        Debug.LogError("Food Allocation should not be called for " + structureName);
+        base.Update();
+        if (exploited && !exploitedState)
+        {
+            transform.GetChild(0).gameObject.SetActive(true);
+            meshRenderer.enabled = false;
+            exploitedState = true;
+        }
+        if (!exploited && exploitedState)
+        {
+            transform.GetChild(0).gameObject.SetActive(false);
+            meshRenderer.enabled = true;
+            exploitedState = false;
+        }
     }
 }

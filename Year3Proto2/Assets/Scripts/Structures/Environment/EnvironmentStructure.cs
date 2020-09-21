@@ -16,9 +16,9 @@ public abstract class EnvironmentStructure : Structure
     protected bool exploited = false;
     protected int exploiterID = -1;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         structureType = StructureType.Environment;
     }
 

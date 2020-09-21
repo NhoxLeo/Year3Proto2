@@ -1,26 +1,54 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
+    [Range(1, 5)] protected int level = 1;
+    protected ResourceBundle attackCost;
+    protected List<Transform> enemies = new List<Transform>();
+    protected Transform target;
+
+    private Transform attackingRange;
+    private Transform spottingRange = null;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        structureType = StructureType.Defense;
+        attackingRange = transform.Find("Range");
+        spottingRange = transform.Find("SpottingRange");
+    }
+
     protected override void Start()
     {
         base.Start();
-        structureType = StructureType.Defense;
-        villagerAllocation = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
-        villagerAllocation.SetTarget(this);
+
+        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+            if (distanceFromEnemy <= rangeCollider.radius)
+            {
+                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+            }
+        }
     }
 
-    public override void OnSelected()
+    protected override void Update()
     {
-        base.OnSelected();
-        //FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
+        base.Update();
+        enemies.RemoveAll(enemy => !enemy);
     }
 
-    public override void OnDeselected()
+    public override void ShowRangeDisplay(bool _active)
     {
-        base.OnDeselected();
-        //FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
+        base.ShowRangeDisplay(_active);
+        spottingRange.GetChild(0).gameObject.SetActive(_active);
+        attackingRange.GetChild(0).gameObject.SetActive(_active);
+    }
+
+    public List<Transform> GetEnemies()
+    {
+        return enemies;
     }
 }

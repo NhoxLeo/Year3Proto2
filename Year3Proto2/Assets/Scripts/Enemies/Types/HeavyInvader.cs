@@ -23,7 +23,6 @@ public class HeavyInvader : Enemy
 
         structureTypes = new List<StructureType>()
         {
-            StructureType.Attack,
             StructureType.Storage,
             StructureType.Longhaus,
             StructureType.Defense
@@ -45,6 +44,8 @@ public class HeavyInvader : Enemy
 
     private void FixedUpdate()
     {
+        if (stunned) return;
+
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -96,6 +97,15 @@ public class HeavyInvader : Enemy
                 case EnemyState.Walk:
                     if (target)
                     {
+                        updatePathTimer += Time.fixedDeltaTime;
+                        if (updatePathTimer >= updatePathDelay)
+                        {
+                            if (RequestNewPath())
+                            {
+                                updatePathTimer = 0f;
+                            }
+
+                        }
                         // if the distance from the enemy to the target is greater than 1 unit (one tile), the enemy should follow a path to the target. If they don't have one, they should request a path.
                         // if the distance is less than 1 unit, go ahead as normal
                         float distanceToTarget = (transform.position - target.transform.position).magnitude;
@@ -195,9 +205,9 @@ public class HeavyInvader : Enemy
         lowPoly.GetChild(3).GetComponent<SkinnedMeshRenderer>().enabled = equipment[2];
         lowPoly.GetChild(4).GetComponent<SkinnedMeshRenderer>().enabled = equipment[3];
         health = 65f;
-        finalSpeed = 0.25f;
-        if (equipment[2]) { health += 10f; finalSpeed -= 0.03f; }
-        if (equipment[3]) { health += 5f; finalSpeed -= 0.015f; }
+        finalSpeed = 0.35f;
+        if (equipment[2]) { health += 10f; finalSpeed -= 0.035f; }
+        if (equipment[3]) { health += 5f; finalSpeed -= 0.0175f; }
     }
 
     public override void OnKill()
@@ -214,7 +224,7 @@ public class HeavyInvader : Enemy
         {
             if (defenseTarget)
             {
-                if (defenseTarget.health > 0)
+                if (defenseTarget.GetHealth() > 0)
                 {
                     LookAtPosition(defenseTarget.transform.position);
                     action = true;
@@ -246,7 +256,7 @@ public class HeavyInvader : Enemy
             {
                 if (defenseTarget)
                 {
-                    if (defenseTarget.Damage(damage))
+                    if (defenseTarget.ApplyDamage(damage))
                     {
                         ForgetSoldier();
                     }
