@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BoulderBehaviour : MonoBehaviour
 {
@@ -12,7 +10,6 @@ public class BoulderBehaviour : MonoBehaviour
     public float explosionRadius = 0.5f;
     private float arcFactor = 0.60f;
     private float distanceTravelled = 0f;
-    public GameObject puffEffect;
 
     // Start is called before the first frame update
     void Start()

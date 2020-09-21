@@ -20,4 +20,9 @@ public class Icicle : PhysicalProjectile
     {
         stunDuration = _stunDuration;
     }
+
+    protected override void OnGroundHit()
+    {
+
+    }
 }

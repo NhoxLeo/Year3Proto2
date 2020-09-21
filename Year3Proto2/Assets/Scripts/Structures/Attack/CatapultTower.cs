@@ -87,7 +87,6 @@ public class CatapultTower : AttackStructure
         boulderBehaviour.target = target.transform.position;
         boulderBehaviour.damage = boulderDamage;
         boulderBehaviour.speed = boulderSpeed;
-        boulderBehaviour.puffEffect = puffPrefab;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
         GameManager.CreateAudioEffect("catapultFire", transform.position);
     }

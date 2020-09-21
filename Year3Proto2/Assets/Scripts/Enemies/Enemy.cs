@@ -44,6 +44,7 @@ public abstract class Enemy : MonoBehaviour
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     protected bool needToMoveAway;
     protected float finalSpeed = 0.0f;
+    protected float currentSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
 
@@ -63,7 +64,6 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
-    private float currentSpeed;
 
     public abstract void Action();
 
@@ -84,7 +84,7 @@ public abstract class Enemy : MonoBehaviour
 
     public void Slow(bool enabled)
     {
-        currentSpeed = enabled ? finalSpeed / 0.2f : finalSpeed;
+        currentSpeed = enabled ? 0.2f : finalSpeed;
     }
 
     public void Stun(float _stunDuration)

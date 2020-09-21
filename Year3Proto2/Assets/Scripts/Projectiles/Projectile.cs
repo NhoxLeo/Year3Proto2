@@ -28,7 +28,7 @@ public abstract class Projectile : MonoBehaviour
         damage = _damage;
     }
 
-    public void SetTarget(Transform _target)
+    public virtual void SetTarget(Transform _target)
     {
         target = _target;
         Destination = target.position;
