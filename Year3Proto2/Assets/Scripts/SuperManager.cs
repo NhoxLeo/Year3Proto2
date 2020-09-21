@@ -500,7 +500,6 @@ public class SuperManager : MonoBehaviour
             {
                 WipeReloadScene(false);
             }
-            /*
             // Press S
             if (Input.GetKeyDown(KeyCode.S))
             {
@@ -517,7 +516,6 @@ public class SuperManager : MonoBehaviour
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
                 }
             }
-            */
         }
     }
 
