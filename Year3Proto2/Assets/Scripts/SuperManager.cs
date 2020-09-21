@@ -349,13 +349,13 @@ public class SuperManager : MonoBehaviour
         // ID, Name, Description
         new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
         new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
-        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
+        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 5000 of each resource."),
         new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
         new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
         new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
-        new WinConditionDefinition(Survive, "Survive", "Defend against 25 waves."),
-        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 50 waves."),
-        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 100 waves."),
+        new WinConditionDefinition(Survive, "Survive", "Defend against 10 waves."),
+        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 15 waves."),
+        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 20 waves."),
     };
     private int currentLevel;
     [SerializeField]
