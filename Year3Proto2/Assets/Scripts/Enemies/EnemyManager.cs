@@ -111,6 +111,15 @@ public class EnemyManager : MonoBehaviour
         // Level 1
         new EnemyLevelSetting(0, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(0, 5, EnemyNames.HeavyInvader, 1),
+        // Level 1
+        new EnemyLevelSetting(1, 1, EnemyNames.Invader, 1),
+        new EnemyLevelSetting(1, 1, EnemyNames.HeavyInvader, 1),
+        // Level 1
+        new EnemyLevelSetting(2, 1, EnemyNames.Invader, 1),
+        new EnemyLevelSetting(2, 1, EnemyNames.HeavyInvader, 1),
+        // Level 1
+        new EnemyLevelSetting(3, 1, EnemyNames.Invader, 1),
+        new EnemyLevelSetting(3, 1, EnemyNames.HeavyInvader, 1),
     };
 
     private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
@@ -210,14 +219,17 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     private void Update()
     {
-        if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
+        if (SuperManager.DevMode)
         {
-            if (tokens < 10f)
+            if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
             {
-                tokens = 10f;
+                if (tokens < 10f)
+                {
+                    tokens = 10f;
+                }
+                spawning = true;
+                time = 0f;
             }
-            spawning = true;
-            time = 0f;
         }
         if (spawning)
         {

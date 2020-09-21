@@ -8,7 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.0b";
+    public const string Version = "0.9.1.2b";
+    public static bool DevMode = true;
     // CONSTANTS
     public const int NoRequirement = -1;
 
@@ -348,13 +349,13 @@ public class SuperManager : MonoBehaviour
         // ID, Name, Description
         new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
         new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
-        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
+        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 5000 of each resource."),
         new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
         new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
         new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
-        new WinConditionDefinition(Survive, "Survive", "Defend against 25 waves."),
-        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 50 waves."),
-        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 100 waves."),
+        new WinConditionDefinition(Survive, "Survive", "Defend against 10 waves."),
+        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 15 waves."),
+        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 20 waves."),
     };
     private int currentLevel;
     [SerializeField]
@@ -500,20 +501,23 @@ public class SuperManager : MonoBehaviour
             {
                 WipeReloadScene(false);
             }
-            // Press S
-            if (Input.GetKeyDown(KeyCode.S))
+            if (DevMode)
             {
-                startMaxed = true;
-                WipeReloadScene(true);
-            }
-            // Press M
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                if (GameManager.GetInstance())
+                // Press S
+                if (Input.GetKeyDown(KeyCode.S))
                 {
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    startMaxed = true;
+                    WipeReloadScene(true);
+                }
+                // Press M
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    if (GameManager.GetInstance())
+                    {
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    }
                 }
             }
         }

@@ -567,7 +567,9 @@ public class GameManager : MonoBehaviour
 
     public void OnRestart()
     {
-        SuperManager.GetInstance().ClearCurrentMatch();
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.ClearCurrentMatch();
+        superMan.PlayLevel(superMan.GetCurrentLevel());
     }
 
     public bool WinConditionIsMet()
@@ -579,7 +581,7 @@ public class GameManager : MonoBehaviour
             case SuperManager.AccumulateII:
                 return playerResources.Get(ResourceType.Metal) >= 2500 && playerResources.Get(ResourceType.Food) >= 2500 && playerResources.Get(ResourceType.Wood) >= 2500;
             case SuperManager.AccumulateIII:
-                return playerResources.Get(ResourceType.Metal) >= 7500 && playerResources.Get(ResourceType.Food) >= 7500 && playerResources.Get(ResourceType.Wood) >= 7500;
+                return playerResources.Get(ResourceType.Metal) >= 5000 && playerResources.Get(ResourceType.Food) >= 5000 && playerResources.Get(ResourceType.Wood) >= 5000;
             case SuperManager.Slaughter:
                 return EnemyManager.GetInstance().GetEnemiesKilled() > 300;
             case SuperManager.SlaughterII:
@@ -587,11 +589,11 @@ public class GameManager : MonoBehaviour
             case SuperManager.SlaughterIII:
                 return EnemyManager.GetInstance().GetEnemiesKilled() > 2000;
             case SuperManager.Survive:
-                return EnemyManager.GetInstance().GetWaveCurrent() == 25 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 25;
+                return (EnemyManager.GetInstance().GetWaveCurrent() == 10 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 10;
             case SuperManager.SurviveII:
-                return EnemyManager.GetInstance().GetWaveCurrent() == 50 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 50;
+                return (EnemyManager.GetInstance().GetWaveCurrent() == 15 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 15;
             case SuperManager.SurviveIII:
-                return EnemyManager.GetInstance().GetWaveCurrent() == 100 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 100;
+                return (EnemyManager.GetInstance().GetWaveCurrent() == 25 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 25;
             default:
                 break;
         }
