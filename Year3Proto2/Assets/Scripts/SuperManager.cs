@@ -483,13 +483,19 @@ public class SuperManager : MonoBehaviour
 
     private void Update()
     {
-        // Hold control
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+        // Hold both mouse buttons
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
             // Press D
             if (Input.GetKeyDown(KeyCode.D))
             {
                 WipeReloadScene(false);
+            }
+            // Press S
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                startMaxed = true;
+                WipeReloadScene(true);
             }
             // Press M
             if (Input.GetKeyDown(KeyCode.M))
@@ -500,14 +506,6 @@ public class SuperManager : MonoBehaviour
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
                 }
-            }
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                startMaxed = true;
-                WipeReloadScene(true);
             }
         }
     }

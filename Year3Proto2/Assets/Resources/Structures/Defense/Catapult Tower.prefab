@@ -363,6 +363,9 @@ MonoBehaviour:
   projectileDelay: 5
   projectileRate: 0
   projectileRateFactor: 0.33
+  boulder: {fileID: 3151625167024170116, guid: 2f2d89cd2313f7d4b82200f467619bb7, type: 3}
+  boulderDamage: 5
+  boulderExplosionRadius: 0.25
 --- !u!1 &1921419247907477422
 GameObject:
   m_ObjectHideFlags: 0

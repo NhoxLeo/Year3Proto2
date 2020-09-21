@@ -146,7 +146,7 @@ public static class StructureNames
                 return FreezeTower;
             case BuildPanel.Buildings.ShockwaveTower:
                 return ShockwaveTower;
-            case BuildPanel.Buildings.LigtningTower:
+            case BuildPanel.Buildings.LightningTower:
                 return LightningTower;
             case BuildPanel.Buildings.Farm:
                 return FoodResource;
@@ -200,7 +200,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Barracks, "Spawns soldiers, who automatically attack enemies." },
         { BuildPanel.Buildings.FreezeTower, "Sprays enemies with ice to slow them down." },
         { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
-        { BuildPanel.Buildings.LigtningTower, "Casts lightning on targeted enemies." },
+        { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies." },
         { BuildPanel.Buildings.Farm, "Collects Food from nearby plains tiles. Bonus if constructed on plains." },
         { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
         { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
@@ -216,7 +216,7 @@ public class StructureManager : MonoBehaviour
         { StructureNames.Barracks, BuildPanel.Buildings.Barracks },
         { StructureNames.FreezeTower, BuildPanel.Buildings.FreezeTower },
         { StructureNames.ShockwaveTower, BuildPanel.Buildings.ShockwaveTower },
-        { StructureNames.LightningTower, BuildPanel.Buildings.LigtningTower },
+        { StructureNames.LightningTower, BuildPanel.Buildings.LightningTower },
         { StructureNames.FoodResource, BuildPanel.Buildings.Farm },
         { StructureNames.FoodStorage, BuildPanel.Buildings.Granary },
         { StructureNames.LumberResource, BuildPanel.Buildings.LumberMill },
@@ -231,7 +231,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Barracks, 0 },
         { BuildPanel.Buildings.FreezeTower, 0 },
         { BuildPanel.Buildings.ShockwaveTower, 0 },
-        { BuildPanel.Buildings.LigtningTower, 0 },
+        { BuildPanel.Buildings.LightningTower, 0 },
         { BuildPanel.Buildings.Farm, 0 },
         { BuildPanel.Buildings.Granary, 0 },
         { BuildPanel.Buildings.LumberMill, 0 },
