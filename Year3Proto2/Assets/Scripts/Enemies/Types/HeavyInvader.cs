@@ -68,7 +68,7 @@ public class HeavyInvader : Enemy
                             {
                                 if ((target.transform.position - transform.position).magnitude < 0.5f)
                                 {
-                                    Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
+                                    Vector3 newPosition = transform.position - (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                                     LookAtPosition(newPosition);
                                     transform.position = newPosition;
                                 }
@@ -127,7 +127,7 @@ public class HeavyInvader : Enemy
                             hasPath = false;
 
                             // get the motion vector for this frame
-                            Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
+                            Vector3 newPosition = transform.position + (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                             //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
                             LookAtPosition(newPosition);
                             transform.position = newPosition;

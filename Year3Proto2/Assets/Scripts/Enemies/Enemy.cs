@@ -245,13 +245,13 @@ public abstract class Enemy : MonoBehaviour
         return finalMotionVector.normalized * currentSpeed;
     }
 
-    protected Vector3 GetMotionVector()
+    protected Vector3 GetAvoidingMotionVector()
     {
         // Get the vector between this enemy and the target
         Vector3 toTarget = target.transform.position - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 0.5f)
+        if (toTarget.magnitude > 0.85f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -275,6 +275,8 @@ public abstract class Enemy : MonoBehaviour
         }
         return finalMotionVector.normalized * currentSpeed;
     }
+
+
 
     public Structure GetTarget()
     {

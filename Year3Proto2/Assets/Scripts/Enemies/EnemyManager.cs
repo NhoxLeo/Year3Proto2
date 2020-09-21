@@ -212,6 +212,10 @@ public class EnemyManager : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
         {
+            if (tokens < 10f)
+            {
+                tokens = 10f;
+            }
             spawning = true;
             time = 0f;
         }
@@ -263,26 +267,14 @@ public class EnemyManager : MonoBehaviour
         List<Transform[]> enemiesInAirships = new List<Transform[]>();
         Transform[] currentBatch = new Transform[enemiesPerAirship];
 
-        // When there are only enough enemies for one airship.
-        if(enemies.Length < enemiesPerAirship)
-        {
-            for (int i = 0; i < enemies.Length; i++)
-            {
-                currentBatch[i] = enemies[i];
-            }
-            enemiesInAirships.Add(currentBatch);
-            return enemiesInAirships;
-        }
-
-        // When there are more enemies to dedicate per airship.
         for (int i = 0; i < enemies.Length; i++)
         {
-            if ((i % enemiesPerAirship) == 0)
+            currentBatch[i % enemiesPerAirship] = enemies[i];
+            if (((i + 1) % enemiesPerAirship) == 0)
             {
                 enemiesInAirships.Add(currentBatch);
                 currentBatch = new Transform[enemiesPerAirship];
             }
-            currentBatch[i % enemiesPerAirship] = enemies[i];
         }
         return enemiesInAirships;
     }
