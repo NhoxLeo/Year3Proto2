@@ -3,6 +3,7 @@ using UnityEngine;
 
 public abstract class Projectile : MonoBehaviour
 {
+    [Header("Attributes")]
     [SerializeField] private float destroyInSeconds = 3.0f;
     [SerializeField] protected float damage = 10.0f;
     [SerializeField] protected float speed = 1.0f;

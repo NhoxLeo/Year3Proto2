@@ -182,7 +182,7 @@ public abstract class Structure : MonoBehaviour
         if (structureType == StructureType.Defense)
         {
             DefenseStructure defenseStructure = GetComponent<DefenseStructure>();
-            if (defenseStructure.GetEnemies().Count == 0) defenseStructure.DetectEnemies();
+            //if (defenseStructure.GetEnemies().Count == 0) defenseStructure.DetectEnemies();
         }
 
         if (health <= 0f)

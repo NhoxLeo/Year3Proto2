@@ -26,6 +26,9 @@ public class BuildPanel : MonoBehaviour
         Ballista,
         Catapult,
         Barracks,
+        FreezeTower,
+        ShockwaveTower,
+        LigtningTower,
         Farm,
         LumberMill,
         Mine,
@@ -94,7 +97,15 @@ public class BuildPanel : MonoBehaviour
             case Buildings.Barracks:
                 transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().color = _colour;
                 break;
-
+            case Buildings.FreezeTower:
+                transform.Find("PanelMask/Content/DefenceBuildings/IconFreeze").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.ShockwaveTower:
+                transform.Find("PanelMask/Content/DefenceBuildings/IconShockwave").GetComponent<Image>().color = _colour;
+                break;
+            case Buildings.LigtningTower:
+                transform.Find("PanelMask/Content/DefenceBuildings/IconLightning").GetComponent<Image>().color = _colour;
+                break;
             case Buildings.Farm:
                 transform.Find("PanelMask/Content/ResourceBuildings/IconFarm").GetComponent<Image>().color = _colour;
                 break;
@@ -183,29 +194,52 @@ public class BuildPanel : MonoBehaviour
 
     private void GetInfo()
     {
-        toolInfo.heading = new string[10];
-        toolInfo.heading[(int)Buildings.None] = "";
-        toolInfo.heading[(int)Buildings.Ballista] = StructureNames.BuildPanelToString(Buildings.Ballista);
-        toolInfo.heading[(int)Buildings.Catapult] = StructureNames.BuildPanelToString(Buildings.Catapult);
-        toolInfo.heading[(int)Buildings.Barracks] = StructureNames.BuildPanelToString(Buildings.Barracks);
-        toolInfo.heading[(int)Buildings.Farm] = StructureNames.BuildPanelToString(Buildings.Farm);
-        toolInfo.heading[(int)Buildings.Granary] = StructureNames.BuildPanelToString(Buildings.Granary);
-        toolInfo.heading[(int)Buildings.LumberMill] = StructureNames.BuildPanelToString(Buildings.LumberMill);
-        toolInfo.heading[(int)Buildings.LumberPile] = StructureNames.BuildPanelToString(Buildings.LumberPile);
-        toolInfo.heading[(int)Buildings.Mine] = StructureNames.BuildPanelToString(Buildings.Mine);
-        toolInfo.heading[(int)Buildings.MetalStorage] = StructureNames.BuildPanelToString(Buildings.MetalStorage);
+        toolInfo.heading = new string[13];
+        toolInfo.heading[(int)Buildings.None]               = "";
+        toolInfo.heading[(int)Buildings.Ballista]           = StructureNames.BuildPanelToString(Buildings.Ballista);
+        toolInfo.heading[(int)Buildings.Catapult]           = StructureNames.BuildPanelToString(Buildings.Catapult);
+        toolInfo.heading[(int)Buildings.Barracks]           = StructureNames.BuildPanelToString(Buildings.Barracks);
+        toolInfo.heading[(int)Buildings.FreezeTower]        = StructureNames.BuildPanelToString(Buildings.FreezeTower);
+        toolInfo.heading[(int)Buildings.ShockwaveTower]     = StructureNames.BuildPanelToString(Buildings.ShockwaveTower);
+        toolInfo.heading[(int)Buildings.LigtningTower]      = StructureNames.BuildPanelToString(Buildings.LigtningTower);
+        toolInfo.heading[(int)Buildings.Farm]               = StructureNames.BuildPanelToString(Buildings.Farm);
+        toolInfo.heading[(int)Buildings.Granary]            = StructureNames.BuildPanelToString(Buildings.Granary);
+        toolInfo.heading[(int)Buildings.LumberMill]         = StructureNames.BuildPanelToString(Buildings.LumberMill);
+        toolInfo.heading[(int)Buildings.LumberPile]         = StructureNames.BuildPanelToString(Buildings.LumberPile);
+        toolInfo.heading[(int)Buildings.Mine]               = StructureNames.BuildPanelToString(Buildings.Mine);
+        toolInfo.heading[(int)Buildings.MetalStorage]       = StructureNames.BuildPanelToString(Buildings.MetalStorage);
 
-        toolInfo.description = new string[10];
-        toolInfo.description[(int)Buildings.None] = "";
-        toolInfo.description[(int)Buildings.Ballista] = StructureManager.StructureDescriptions[Buildings.Ballista];
-        toolInfo.description[(int)Buildings.Catapult] = StructureManager.StructureDescriptions[Buildings.Catapult];
-        toolInfo.description[(int)Buildings.Barracks] = StructureManager.StructureDescriptions[Buildings.Barracks];
-        toolInfo.description[(int)Buildings.Farm] = StructureManager.StructureDescriptions[Buildings.Farm];
-        toolInfo.description[(int)Buildings.Granary] = StructureManager.StructureDescriptions[Buildings.Granary];
-        toolInfo.description[(int)Buildings.LumberMill] = StructureManager.StructureDescriptions[Buildings.LumberMill];
-        toolInfo.description[(int)Buildings.LumberPile] = StructureManager.StructureDescriptions[Buildings.LumberPile];
-        toolInfo.description[(int)Buildings.Mine] = StructureManager.StructureDescriptions[Buildings.Mine];
-        toolInfo.description[(int)Buildings.MetalStorage] = StructureManager.StructureDescriptions[Buildings.MetalStorage];
+        toolInfo.description = new string[13];
+        toolInfo.description[(int)Buildings.None]           = "";
+        toolInfo.description[(int)Buildings.Ballista]       = StructureManager.StructureDescriptions[Buildings.Ballista];
+        toolInfo.description[(int)Buildings.Catapult]       = StructureManager.StructureDescriptions[Buildings.Catapult];
+        toolInfo.description[(int)Buildings.Barracks]       = StructureManager.StructureDescriptions[Buildings.Barracks];
+        toolInfo.description[(int)Buildings.FreezeTower]    = StructureManager.StructureDescriptions[Buildings.FreezeTower];
+        toolInfo.description[(int)Buildings.ShockwaveTower] = StructureManager.StructureDescriptions[Buildings.ShockwaveTower];
+        toolInfo.description[(int)Buildings.LigtningTower]  = StructureManager.StructureDescriptions[Buildings.LigtningTower];
+        toolInfo.description[(int)Buildings.Farm]           = StructureManager.StructureDescriptions[Buildings.Farm];
+        toolInfo.description[(int)Buildings.Granary]        = StructureManager.StructureDescriptions[Buildings.Granary];
+        toolInfo.description[(int)Buildings.LumberMill]     = StructureManager.StructureDescriptions[Buildings.LumberMill];
+        toolInfo.description[(int)Buildings.LumberPile]     = StructureManager.StructureDescriptions[Buildings.LumberPile];
+        toolInfo.description[(int)Buildings.Mine]           = StructureManager.StructureDescriptions[Buildings.Mine];
+        toolInfo.description[(int)Buildings.MetalStorage]   = StructureManager.StructureDescriptions[Buildings.MetalStorage];
+
+        /*
+        toolInfo.cost = new Vector2[13];
+        toolInfo.cost[(int)Buildings.None] = Vector2.zero;
+        toolInfo.cost[(int)Buildings.Ballista] = StructureManager.GetInstance().structureCosts[Buildings.Ballista];
+        toolInfo.cost[(int)Buildings.Catapult] = StructureManager.StructureDescriptions[Buildings.Catapult];
+        toolInfo.cost[(int)Buildings.Barracks] = StructureManager.StructureDescriptions[Buildings.Barracks];
+        toolInfo.cost[(int)Buildings.FreezeTower] = StructureManager.StructureDescriptions[Buildings.FreezeTower];
+        toolInfo.cost[(int)Buildings.ShockwaveTower] = StructureManager.StructureDescriptions[Buildings.ShockwaveTower];
+        toolInfo.cost[(int)Buildings.LigtningTower] = StructureManager.StructureDescriptions[Buildings.LigtningTower];
+        toolInfo.cost[(int)Buildings.Farm] = StructureManager.StructureDescriptions[Buildings.Farm];
+        toolInfo.cost[(int)Buildings.Granary] = StructureManager.StructureDescriptions[Buildings.Granary];
+        toolInfo.cost[(int)Buildings.LumberMill] = StructureManager.StructureDescriptions[Buildings.LumberMill];
+        toolInfo.cost[(int)Buildings.LumberPile] = StructureManager.StructureDescriptions[Buildings.LumberPile];
+        toolInfo.cost[(int)Buildings.Mine] = StructureManager.StructureDescriptions[Buildings.Mine];
+        toolInfo.cost[(int)Buildings.MetalStorage] = StructureManager.StructureDescriptions[Buildings.MetalStorage];
+        */
     }
 
     public void SetTooltip(int tool)
