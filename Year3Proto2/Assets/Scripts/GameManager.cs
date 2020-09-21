@@ -567,7 +567,9 @@ public class GameManager : MonoBehaviour
 
     public void OnRestart()
     {
-        SuperManager.GetInstance().ClearCurrentMatch();
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.ClearCurrentMatch();
+        superMan.PlayLevel(superMan.GetCurrentLevel());
     }
 
     public bool WinConditionIsMet()
