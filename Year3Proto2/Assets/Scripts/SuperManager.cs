@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.1.1b";
+    public const string Version = "0.9.1.2b";
     public static bool DevMode = false;
     // CONSTANTS
     public const int NoRequirement = -1;
