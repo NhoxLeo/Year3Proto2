@@ -204,10 +204,13 @@ public class HeavyInvader : Enemy
         lowPoly.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = equipment[1];
         lowPoly.GetChild(3).GetComponent<SkinnedMeshRenderer>().enabled = equipment[2];
         lowPoly.GetChild(4).GetComponent<SkinnedMeshRenderer>().enabled = equipment[3];
+
         health = 65f;
         finalSpeed = 0.35f;
-        if (equipment[2]) { health += 10f; finalSpeed -= 0.035f; }
-        if (equipment[3]) { health += 5f; finalSpeed -= 0.0175f; }
+        currentSpeed = finalSpeed;
+
+        if (equipment[2]) { health += 10f; currentSpeed -= 0.035f; }
+        if (equipment[3]) { health += 5f; currentSpeed -= 0.0175f; }
     }
 
     public override void OnKill()

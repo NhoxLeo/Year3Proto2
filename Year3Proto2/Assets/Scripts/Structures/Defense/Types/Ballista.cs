@@ -48,7 +48,7 @@ public class Ballista : ProjectileDefenseStructure
         Vector3 position = transform.position;
         position.y = 1.25f;
 
-        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity, transform);
+        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity);
         Arrow arrow = projectile.GetComponent<Arrow>();
         if (arrow)
         {

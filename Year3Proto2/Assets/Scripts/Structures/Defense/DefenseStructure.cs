@@ -6,7 +6,6 @@ public abstract class DefenseStructure : Structure
     [Range(1, 5)] protected int level = 1;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
-    protected Transform target;
 
     private Transform attackingRange;
     private Transform spottingRange = null;

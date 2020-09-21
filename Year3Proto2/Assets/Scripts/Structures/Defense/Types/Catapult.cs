@@ -32,7 +32,7 @@ public class Catapult : ProjectileDefenseStructure
         Vector3 position = transform.position;
         position.y = 1.5f;
 
-        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity, transform);
+        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity);
         Boulder boulder = projectile.GetComponent<Boulder>();
         if (boulder)
         {
