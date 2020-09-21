@@ -145,6 +145,8 @@ MonoBehaviour:
   projectileRate: 0
   projectileRateFactor: 0
   ballista: {fileID: 716604386358114530}
+  arrowPrefab: {fileID: 1147110280109721153, guid: 2d84c91535cfd2747988038d60f7ad23,
+    type: 3}
 --- !u!1 &2103619290846169069
 GameObject:
   m_ObjectHideFlags: 0

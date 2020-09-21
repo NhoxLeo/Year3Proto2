@@ -470,7 +470,7 @@ public class GameManager : MonoBehaviour
         {
             panelRefreshTimer = panelRefreshCooldown;
             // do refresh
-            for (int i = 1; i <= 9; i++)
+            for (int i = 1; i <= 12; i++)
             {
                 BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
                 if (buildingI == BuildPanel.Buildings.Catapult)
@@ -486,6 +486,18 @@ public class GameManager : MonoBehaviour
                     {
                         continue;
                     }
+                }
+                if (buildingI == BuildPanel.Buildings.FreezeTower)
+                {
+                    continue;
+                }
+                if (buildingI == BuildPanel.Buildings.ShockwaveTower)
+                {
+                    continue;
+                }
+                if (buildingI == BuildPanel.Buildings.LightningTower)
+                {
+                    continue;
                 }
                 ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
                 bool playerCanAfford = playerResources.CanAfford(cost);

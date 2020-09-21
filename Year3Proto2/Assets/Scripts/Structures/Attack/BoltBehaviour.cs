@@ -5,18 +5,16 @@ public class BoltBehaviour : MonoBehaviour
     private Transform target;
     private float damage;
     private float speed;
-    private GameObject puffEffect;
     private bool pierce;
     private Vector3 endPosition;
     private bool endPositionReached = false;
     private bool damageDealt = false;
 
-    public void Initialize(Transform _target, float _damage, float _speed, GameObject _puffEffect, bool _pierce)
+    public void Initialize(Transform _target, float _damage, float _speed, bool _pierce)
     {
         target = _target;
         damage = _damage;
         speed = _speed;
-        puffEffect = _puffEffect;
         pierce = _pierce;
     }
 

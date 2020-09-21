@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
+    public const string Version = "0.9.0b";
     // CONSTANTS
     public const int NoRequirement = -1;
 
@@ -225,6 +226,7 @@ public class SuperManager : MonoBehaviour
         public int researchPoints;
         public MatchSaveData currentMatch;
         public bool showTutorial;
+        public string gameVersion;
     }
 
     [Serializable]
@@ -301,10 +303,59 @@ public class SuperManager : MonoBehaviour
 
     private static SuperManager instance = null;
     private GameSaveData saveData;
-    public static List<ResearchElementDefinition> researchDefinitions;
-    public static List<LevelDefinition> levelDefinitions;
-    public static List<ModifierDefinition> modDefinitions;
-    public static List<WinConditionDefinition> winConditionDefinitions;
+    public static List<ResearchElementDefinition> researchDefinitions = new List<ResearchElementDefinition>()
+    {
+        // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
+        new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
+        new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
+        new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
+
+        new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
+        new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
+
+        new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns enemy soldiers, which automatically chase down enemies.", 300),
+        new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
+        new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
+        new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
+    };
+    public static List<LevelDefinition> levelDefinitions = new List<LevelDefinition>()
+    {
+        // ID, ID requirement, Win Condition, Modifiers, Base Reward
+        new LevelDefinition(0, NoRequirement, Accumulate, new List<int>(), 500),
+        new LevelDefinition(1, 0, Survive, new List<int>(){ SnoballPrices, SwiftFootwork }, 750),
+        new LevelDefinition(2, 1, SurviveII, new List<int>(){ DryFields, PoorTimber }, 1000),
+        new LevelDefinition(3, 2, AccumulateIII, new List<int>(){ SnoballPrices, DryFields, PoorTimber }, 1500)
+    };
+    public static List<ModifierDefinition> modDefinitions = new List<ModifierDefinition>()
+    { 
+        // ID, Name, Description, Coefficient
+        new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
+        new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
+        new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
+        new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
+    };
+    public static List<WinConditionDefinition> winConditionDefinitions = new List<WinConditionDefinition>()
+    { 
+        // ID, Name, Description
+        new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
+        new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
+        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
+        new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
+        new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
+        new WinConditionDefinition(Survive, "Survive", "Defend against 25 waves."),
+        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 50 waves."),
+        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 100 waves."),
+    };
     private int currentLevel;
     [SerializeField]
     private bool startMaxed;
@@ -403,64 +454,6 @@ public class SuperManager : MonoBehaviour
         return levelDefinitions[currentLevel].winCond;
     }
 
-    void DataInitialization()
-    {
-        researchDefinitions = new List<ResearchElementDefinition>()
-        {
-            // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
-            new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
-            new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
-            new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
-
-            new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
-            new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
-            new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
-
-            new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns enemy soldiers, which automatically chase down enemies.", 300),
-            new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
-            new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
-            new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
-        };
-        levelDefinitions = new List<LevelDefinition>()
-        {
-            // ID, ID requirement, Win Condition, Modifiers, Base Reward
-            new LevelDefinition(0, NoRequirement, Accumulate, new List<int>(), 500),
-            new LevelDefinition(1, 0, Survive, new List<int>(){ SnoballPrices, SwiftFootwork }, 750),
-            new LevelDefinition(2, 1, SurviveII, new List<int>(){ DryFields, PoorTimber }, 1000),
-            new LevelDefinition(3, 2, AccumulateIII, new List<int>(){ SnoballPrices, DryFields, PoorTimber }, 1500)
-        };
-        modDefinitions = new List<ModifierDefinition>()
-        { 
-            // ID, Name, Description, Coefficient
-            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
-            new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
-            new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
-            new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
-        };
-        winConditionDefinitions = new List<WinConditionDefinition>()
-        { 
-            // ID, Name, Description
-            new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
-            new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
-            new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
-            new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
-            new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
-            new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
-            new WinConditionDefinition(Survive, "Survive", "Defend against 25 waves."),
-            new WinConditionDefinition(SurviveII, "Survive II", "Defend against 50 waves."),
-            new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 100 waves."),
-        };
-
-    }
-
     void Awake()
     {
         if (instance)
@@ -470,7 +463,6 @@ public class SuperManager : MonoBehaviour
         }
         instance = GetComponent<SuperManager>();
         DontDestroyOnLoad(gameObject);
-        DataInitialization();
         string sceneName = SceneManager.GetActiveScene().name;
         switch (sceneName)
         {
@@ -489,17 +481,30 @@ public class SuperManager : MonoBehaviour
         }
         if (startMaxed) { StartNewGame(false); }
         else { ReadGameData(); }
+
+        if (saveData.gameVersion != Version)
+        {
+            ClearCurrentMatch();
+        }
+
+        saveData.gameVersion = Version;
     }
 
     private void Update()
     {
-        // Hold control
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+        // Hold both mouse buttons
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
             // Press D
             if (Input.GetKeyDown(KeyCode.D))
             {
                 WipeReloadScene(false);
+            }
+            // Press S
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                startMaxed = true;
+                WipeReloadScene(true);
             }
             // Press M
             if (Input.GetKeyDown(KeyCode.M))
@@ -512,17 +517,9 @@ public class SuperManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKey(KeyCode.D))
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                startMaxed = true;
-                WipeReloadScene(true);
-            }
-        }
     }
 
-    private void WipeReloadScene(bool _override)
+        private void WipeReloadScene(bool _override)
     {
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
