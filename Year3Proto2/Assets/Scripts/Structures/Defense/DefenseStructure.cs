@@ -49,6 +49,7 @@ public abstract class DefenseStructure : Structure
 
     public List<Transform> GetEnemies()
     {
+        enemies.RemoveAll(enemy => !enemy);
         return enemies;
     }
 }

@@ -10,11 +10,64 @@ using System.Collections.Generic;
 //
 // (c) 2020 Media Design School.
 //
-// File Name    : EnemyWaveSystem.cs
-// Description  : Dedicates waves of enemies to airships.
-// Author       : Tjeu Vreeburg 
+// File Name    : EnemyManager.cs
+// Description  : Dedicates waves of enemies to airships, amongst other responsibilites.
+// Author       : Tjeu Vreeburg, Samuel Fortune
 // Mail         : tjeu.vreeburg@gmail.com
 //
+
+public struct EnemyLevelSetting
+{
+    public string enemy;
+    public int enemyLevel;
+    public int level;
+    public int wave;
+    public EnemyLevelSetting(int _level, int _wave, string _enemy, int _enemyLevel)
+    {
+        enemy = _enemy;
+        enemyLevel = _enemyLevel;
+        level = _level;
+        wave = _wave;
+    }
+}
+
+public static class EnemyNames
+{
+    public static string Invader = "Invader";
+    public static string HeavyInvader = "Heavy Invader";
+    //public static string FlyingInvader = "Flying Invader";
+    //public static string ExplosiveInvader = "Petard";
+}
+
+
+public struct EnemyDefinition
+{
+    public float spawnChance;
+    public int tokenCost;
+    private GameObject prefab;
+
+    public EnemyDefinition(float _spawnChance, int _tokenCost)
+    {
+        spawnChance = _spawnChance;
+        tokenCost = _tokenCost;
+        prefab = null;
+    }
+
+    public void SetPrefab(GameObject _prefab)
+    {
+        prefab = _prefab;
+    }
+
+    public GameObject GetPrefab()
+    {
+        return prefab;
+    }
+
+    public bool AffordedBy(int _remainingTokens)
+    {
+        return tokenCost <= _remainingTokens;
+    }
+}
 
 public class EnemyManager : MonoBehaviour
 {
@@ -42,12 +95,25 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float distance = 0.0f;
 
     private MessageBox messageBox;
-    private const int InvaderTokenCost = 1;
-    private const int HeavyInvaderTokenCost = 4;
 
-    private List<Enemy> enemies = new List<Enemy>();
+    private readonly List<Enemy> enemies = new List<Enemy>();
     private int enemiesKilled = 0;
     private int waveCounter = 0;
+
+    public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
+    {
+        { EnemyNames.Invader, new EnemyDefinition(1.0f, 1) },
+        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) }
+    };
+
+    private readonly List<EnemyLevelSetting> levelSettings = new List<EnemyLevelSetting>
+    {
+        // Level 1
+        new EnemyLevelSetting(0, 1, EnemyNames.Invader, 1),
+        new EnemyLevelSetting(0, 5, EnemyNames.HeavyInvader, 1),
+    };
+
+    private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
 
     public static EnemyManager GetInstance()
     {
@@ -57,6 +123,20 @@ public class EnemyManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        List<string> keys = new List<string>();
+
+        foreach (string key in Enemies.Keys)
+        {
+            keys.Add(key);
+        }
+
+        foreach (string key in keys)
+        {
+            EnemyDefinition temp = Enemies[key];
+            temp.SetPrefab(Resources.Load("Enemies/" + key) as GameObject);
+            Enemies[key] = temp;
+            currentSettings.Add(key, (false, 0));
+        }
     }
 
     /**************************************
@@ -75,6 +155,7 @@ public class EnemyManager : MonoBehaviour
             if (distance > this.distance) this.distance = distance;
         }
         distance = Mathf.Sqrt(distance) + radiusOffset;
+
     }
 
     /**************************************
@@ -123,7 +204,7 @@ public class EnemyManager : MonoBehaviour
 
     /**************************************
     * Name of the Function: Update
-    * @Author: Tjeu Vreeburg
+    * @Author: Tjeu Vreeburg, Samuel Fortune
     * @Parameter: n/a
     * @Return: void
     ***************************************/
@@ -140,6 +221,9 @@ public class EnemyManager : MonoBehaviour
             if (time <= 0f)
             {
                 waveCounter++;
+
+                UpdateSpawnSettings();
+
                 time = Random.Range(timeVariance.x, timeVariance.y);
 
                 float enemiesToSpawn = tokens * (1f + GetWeightage());
@@ -205,41 +289,84 @@ public class EnemyManager : MonoBehaviour
 
     /**************************************
     * Name of the Function: DedicateEnemies
-    * @Author: Tjeu Vreeburg
+    * @Author: Tjeu Vreeburg, Samuel Fortune
     * @Parameter: Integer
     * @Return: Transform Array
     ***************************************/
     private Transform[] DedicateEnemies(int _enemiesLeftTokens)
     {
+        int tokensLeft = _enemiesLeftTokens;
         List<Transform> enemies = new List<Transform>();
 
-        // spend 1 tokens to get an Invader, or (25% chance) try to spend 4 to get a Heavy Invader
-        int tokensLeft = _enemiesLeftTokens;
-        while (tokensLeft > InvaderTokenCost) // while the system can still afford an Invader
+        List<EnemyDefinition> enemiesThisWave = new List<EnemyDefinition>();
+
+        foreach (string key in Enemies.Keys)
         {
-            if (tokensLeft >= HeavyInvaderTokenCost)
+            bool canSpawnEnemy = currentSettings[key].Item1;
+            if (canSpawnEnemy)
             {
-                if (Random.Range(0.0f, 1.0f) > 0.75f)
+                enemiesThisWave.Add(Enemies[key]);
+            }
+        }
+
+        EnemyDefinition cheapestEnemy = enemiesThisWave[0];
+        if (enemiesThisWave.Count > 1)
+        {
+            foreach (EnemyDefinition definition in enemiesThisWave)
+            {
+                if (definition.tokenCost < cheapestEnemy.tokenCost)
                 {
-                    enemies.Add(enemyPrefabs[1]);
-                    tokensLeft -= HeavyInvaderTokenCost;
-                }
-                else
-                {
-                    enemies.Add(enemyPrefabs[0]);
-                    tokensLeft -= InvaderTokenCost;
+                    cheapestEnemy = definition;
                 }
             }
-            else
+        }
+        
+        while (tokensLeft >= cheapestEnemy.tokenCost) // while the system can still afford an enemy
+        {
+            // define randomMax
+            float randomMax = cheapestEnemy.spawnChance;
+
+            foreach (EnemyDefinition enemy in enemiesThisWave)
             {
-                enemies.Add(enemyPrefabs[0]);
-                tokensLeft -= InvaderTokenCost;
+                bool canAffordEnemy = enemy.AffordedBy(tokensLeft);
+                if (canAffordEnemy)
+                {
+                    randomMax += enemy.spawnChance;
+                }
+            }
+
+            // define spawnNumber
+            float spawnNumber = Random.Range(0f, randomMax);
+            bool enemySpawned = false;
+            foreach (EnemyDefinition enemy in enemiesThisWave)
+            {
+                bool canAffordEnemy = enemy.AffordedBy(tokensLeft);
+                if (canAffordEnemy)
+                {
+                    spawnNumber -= enemy.spawnChance;
+                    if (spawnNumber <= 0f)
+                    {
+                        enemies.Add(enemy.GetPrefab().transform);
+                        tokensLeft -= enemy.tokenCost;
+                        enemySpawned = true;
+                        break;
+                    }
+                }
+            }
+            if (enemySpawned)
+            {
+                continue;
+            }
+
+            spawnNumber -= cheapestEnemy.spawnChance;
+            if (spawnNumber <= 0f)
+            {
+                enemies.Add(cheapestEnemy.GetPrefab().transform);
+                tokensLeft -= cheapestEnemy.tokenCost;
             }
         }
         return enemies.ToArray();
     }
-
-
 
     /**************************************
     * Name of the Function: GetWeightage
@@ -384,5 +511,19 @@ public class EnemyManager : MonoBehaviour
     public void SetTime(float _time)
     {
         time = _time;
+    }
+
+    private void UpdateSpawnSettings()
+    {
+        foreach (EnemyLevelSetting setting in levelSettings)
+        {
+            if (setting.level == SuperManager.GetInstance().GetCurrentLevel())
+            {
+                if (setting.wave == waveCounter)
+                {
+                    currentSettings[setting.enemy] = (setting.enemyLevel != 0, setting.enemyLevel);
+                }
+            }
+        }
     }
 }

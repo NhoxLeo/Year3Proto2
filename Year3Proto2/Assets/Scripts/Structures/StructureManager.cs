@@ -321,9 +321,9 @@ public class StructureManager : MonoBehaviour
             { StructureNames.LumberStorage,     new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")        as GameObject,  new ResourceBundle(120,     0,      0)) },
             { StructureNames.MetalStorage,      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")      as GameObject,  new ResourceBundle(120,     80,     0)) },
 
-            { StructureNames.LumberEnvironment, new StructureDefinition(Resources.Load("Environment/Forest")                    as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Environment/Hills")                     as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Environment/Plains")                    as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.LumberEnvironment, new StructureDefinition(Resources.Load("Structures/Environment/Forest")         as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Structures/Environment/Hills")          as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Structures/Environment/Plains")         as GameObject,  new ResourceBundle(0,       0,      0)) },
         };
     }
 
