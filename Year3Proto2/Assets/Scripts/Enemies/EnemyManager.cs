@@ -111,6 +111,15 @@ public class EnemyManager : MonoBehaviour
         // Level 1
         new EnemyLevelSetting(0, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(0, 5, EnemyNames.HeavyInvader, 1),
+        // Level 1
+        new EnemyLevelSetting(1, 1, EnemyNames.Invader, 1),
+        new EnemyLevelSetting(1, 1, EnemyNames.HeavyInvader, 1),
+        // Level 1
+        new EnemyLevelSetting(2, 1, EnemyNames.Invader, 1),
+        new EnemyLevelSetting(2, 1, EnemyNames.HeavyInvader, 1),
+        // Level 1
+        new EnemyLevelSetting(3, 1, EnemyNames.Invader, 1),
+        new EnemyLevelSetting(3, 1, EnemyNames.HeavyInvader, 1),
     };
 
     private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
