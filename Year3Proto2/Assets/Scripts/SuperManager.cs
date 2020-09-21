@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
+    public const string Version = "0.9.0b";
     // CONSTANTS
     public const int NoRequirement = -1;
 
@@ -225,6 +226,7 @@ public class SuperManager : MonoBehaviour
         public int researchPoints;
         public MatchSaveData currentMatch;
         public bool showTutorial;
+        public string gameVersion;
     }
 
     [Serializable]
@@ -479,6 +481,13 @@ public class SuperManager : MonoBehaviour
         }
         if (startMaxed) { StartNewGame(false); }
         else { ReadGameData(); }
+
+        if (saveData.gameVersion != Version)
+        {
+            ClearCurrentMatch();
+        }
+
+        saveData.gameVersion = Version;
     }
 
     private void Update()
@@ -491,6 +500,7 @@ public class SuperManager : MonoBehaviour
             {
                 WipeReloadScene(false);
             }
+            /*
             // Press S
             if (Input.GetKeyDown(KeyCode.S))
             {
@@ -507,10 +517,11 @@ public class SuperManager : MonoBehaviour
                     GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
                 }
             }
+            */
         }
     }
 
-    private void WipeReloadScene(bool _override)
+        private void WipeReloadScene(bool _override)
     {
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
