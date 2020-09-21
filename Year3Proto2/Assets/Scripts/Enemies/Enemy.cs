@@ -44,6 +44,7 @@ public abstract class Enemy : MonoBehaviour
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     protected bool needToMoveAway;
     protected float finalSpeed = 0.0f;
+    protected float currentSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
 
@@ -63,7 +64,6 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
-    private float halfSpeed;
 
     public abstract void Action();
 
@@ -72,7 +72,7 @@ public abstract class Enemy : MonoBehaviour
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
-        halfSpeed = finalSpeed * 0.5f;
+        currentSpeed = finalSpeed;
 
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         signature = new EnemyPathSignature()
@@ -84,7 +84,7 @@ public abstract class Enemy : MonoBehaviour
 
     public void Slow(bool enabled)
     {
-        finalSpeed = enabled ? halfSpeed : finalSpeed;
+        currentSpeed = enabled ? 0.2f : finalSpeed;
     }
 
     public void Stun(float _stunDuration)
@@ -242,16 +242,16 @@ public abstract class Enemy : MonoBehaviour
                 enemiesInArea.RemoveAll(enemy => !enemy);
             }
         }
-        return finalMotionVector.normalized * finalSpeed;
+        return finalMotionVector.normalized * currentSpeed;
     }
 
-    protected Vector3 GetMotionVector()
+    protected Vector3 GetAvoidingMotionVector()
     {
         // Get the vector between this enemy and the target
         Vector3 toTarget = target.transform.position - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 0.5f)
+        if (toTarget.magnitude > 0.85f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -273,8 +273,10 @@ public abstract class Enemy : MonoBehaviour
                 enemiesInArea.RemoveAll(enemy => !enemy);
             }
         }
-        return finalMotionVector.normalized * finalSpeed;
+        return finalMotionVector.normalized * currentSpeed;
     }
+
+
 
     public Structure GetTarget()
     {
