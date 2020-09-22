@@ -59,10 +59,26 @@ public class SuperManager : MonoBehaviour
     // FREEZE TOWER
     public const int FreezeTower = 18;
     public const int FreezeTowerRange = 19;
-    public const int FreezeTowerStunDuration = 20;
+    public const int FreezeTowerSlowEffect = 20;
     public const int FreezeTowerFortification = 21;
     public const int FreezeTowerEfficiency = 22;
     public const int FreezeTowerSuper = 23;
+
+    // LIGHTNING TOWER
+    public const int LightningTower = 24;
+    public const int LightningTowerRange = 25;
+    public const int LightningTowerBoltAmount = 26;
+    public const int LightningTowerFortification = 27;
+    public const int LightningTowerEfficiency = 28;
+    public const int LightningTowerSuper = 29;
+
+    // SHOCKWAVE TOWER
+    public const int ShockwaveTower = 30;
+    public const int ShockwaveTowerRange = 31;
+    public const int ShockwaveTowerStunDuration = 32;
+    public const int ShockwaveTowerFortification = 33;
+    public const int ShockwaveTowerEfficiency = 34;
+    public const int ShockwaveTowerSuper = 35;
 
     [Serializable]
     public struct SaveQuaternion
@@ -330,6 +346,36 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
         new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
+
+        new ResearchElementDefinition(FreezeTower, NoRequirement, "Freeze Tower", "The Freeze Tower slows down enemies making it easier for other turrets to hit them.", 300),
+        new ResearchElementDefinition(FreezeTowerRange, FreezeTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(FreezeTowerSlowEffect, FreezeTower, "Slow Effect", "Slows Enemies by 30%.", 200),
+        new ResearchElementDefinition(FreezeTowerFortification, FreezeTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(FreezeTowerEfficiency, FreezeTower, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(FreezeTowerSuper, FreezeTower, "Blizzard", "Frost effect damages enemies because of the cold.", 500, true),
+
+        new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
+        new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(LightningTowerBoltAmount, LightningTower, "Bolt Amount", "Increased lightning bolts to 5.", 200),
+        new ResearchElementDefinition(LightningTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Thunder Wave", "Sparks that fly off deal damage to surrounding enemies.", 500, true),
+
+        /*
+    public const int ShockwaveTower = 30;
+    public const int ShockwaveTowerRange = 31;
+    public const int ShockwaveTowerStunDuration = 32;
+    public const int ShockwaveTowerFortification = 33;
+    public const int ShockwaveTowerEfficiency = 34;
+    public const int ShockwaveTowerSuper = 35;
+         */
+
+        new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
+        new ResearchElementDefinition(ShockwaveTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerStunDuration, LightningTower, "Bolt Amount", "Increased lightning bolts to 5.", 200),
+        new ResearchElementDefinition(ShockwaveTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerEfficiency, LightningTower, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerSuper, LightningTower, "Thunder Wave", "Sparks that fly off deal damage to surrounding enemies.", 500, true),
     };
     public static List<LevelDefinition> levelDefinitions = new List<LevelDefinition>()
     {
