@@ -660,6 +660,7 @@ public class SuperManager : MonoBehaviour
             wave = EnemyManager.GetInstance().GetWaveCurrent(),
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
+            flyingInvaders = new List<EnemySaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),

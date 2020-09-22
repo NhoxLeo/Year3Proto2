@@ -133,6 +133,10 @@ public class HUDManager : MonoBehaviour
         int waveCurrent = enemyMan.GetWaveCurrent();
         bool waveSurvived = enemyMan.GetWaveSurvived(waveCurrent);
         int wavesSurvived = waveSurvived ? waveCurrent : waveCurrent - 1;
+        if (wavesSurvived < 0)
+        {
+            wavesSurvived = 0;
+        }
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }
