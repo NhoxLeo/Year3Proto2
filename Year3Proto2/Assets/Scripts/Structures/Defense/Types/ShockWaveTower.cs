@@ -41,10 +41,7 @@ public class ShockWaveTower : DefenseStructure
                 Instantiate(particle, transform.position, particle.rotation);
                 enemies.ForEach(transform => {
                     Enemy enemy = transform.GetComponent<Enemy>();
-                    if(enemy)
-                    {
-                        enemy.Stun();
-                    }
+                    if(enemy) enemy.Stun();
                 });
             }
         }

@@ -81,8 +81,9 @@ public class LightningTower : DefenseStructure
 
     private void StrikeEnemy(Transform _target)
     {
+        // Location to be updated by random crystal location.
         Vector3 location = transform.position;
-        location.y = 1.5f;
+        location.y = 1.5f; 
         LightningBolt lightningBolt = Instantiate(lightning, location, Quaternion.identity);
         lightningBolt.Fire(_target);
     }

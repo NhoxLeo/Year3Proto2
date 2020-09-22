@@ -54,6 +54,9 @@ public abstract class Enemy : MonoBehaviour
     protected float stunDuration = 1.2f;
     protected float stunTime = 0.0f;
 
+    // Slow
+    private int slowCount = 0;
+
     private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
@@ -64,8 +67,6 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathTimer = 0f;
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
-
-    private int slowCount = 0;
 
     public abstract void Action();
 
@@ -99,13 +100,13 @@ public abstract class Enemy : MonoBehaviour
         stunTime = stunDuration;
     }
 
-    public void Slow(bool _newSlow)
+    public void Slow(bool _newSlow, float _slowAmount)
     {
         if (_newSlow)
         {
             if (slowCount == 0)
             {
-                currentSpeed = finalSpeed * 0.5f;
+                currentSpeed = finalSpeed *= _slowAmount;
                 if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
                 {
                     float attackSpeed = 0.5f * animator.GetFloat("AttackSpeed");

@@ -6,18 +6,40 @@ public class FreezeTowerCannon : MonoBehaviour
 {
     [Header("Attributes")]
     [SerializeField] private float viewRadius = 5.0f;
-    [SerializeField] private float damage = 0.02f;
+    [SerializeField] private float damageDelay = 1.2f;
     [Range(0, 360)] [SerializeField] private float viewAngle = 60.0f;
     [SerializeField] private LayerMask targetMask;
     [SerializeField] private Material material;
     [SerializeField] private ParticleSystem particle;
 
+    private float time;
     private readonly List<Transform> targets = new List<Transform>();
+
+    // Research 
+    private float slowAmount = 1.0f;
+    private bool damageEnemies = false;
 
     private void Start()
     {
         particle.Stop();
     }
+
+    private void Update()
+    {
+        if(targets.Count > 0 && damageEnemies)
+        {
+            time -= Time.deltaTime;
+            if (time <= 0.0f)
+            {
+                targets.ForEach(target =>
+                {
+                    Enemy enemy = target.GetComponent<Enemy>();
+                    if(enemy) enemy.Damage(0.8f);
+                });
+                time = damageDelay;
+            }
+        }
+    } 
 
     private void OnTriggerEnter(Collider other)
     {
@@ -30,7 +52,7 @@ public class FreezeTowerCannon : MonoBehaviour
                 Enemy enemy = other.GetComponent<Enemy>();
                 if (enemy)
                 {
-                    enemy.Slow(true);
+                    enemy.Slow(true, slowAmount);
                     targets.Add(other.transform);
                 }
             }
@@ -50,7 +72,7 @@ public class FreezeTowerCannon : MonoBehaviour
                 Enemy enemy = other.GetComponent<Enemy>();
                 if (enemy)
                 {
-                    enemy.Slow(false);
+                    enemy.Slow(false, slowAmount);
                     targets.Remove(other.transform);
                 }
             }
@@ -80,6 +102,12 @@ public class FreezeTowerCannon : MonoBehaviour
 
         Gizmos.DrawLine(transform.position, lineA);
         Gizmos.DrawLine(transform.position, lineB);
+    }
+
+    public void Setup(float _slowPercentage, bool _damageEnemies)
+    {
+        slowAmount = _slowPercentage;
+        damageEnemies = _damageEnemies;
     }
 
     public List<Transform> GetTargets()
