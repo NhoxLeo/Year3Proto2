@@ -30,8 +30,6 @@ public class SuperManager : MonoBehaviour
     public const int SurviveII = 7;
     public const int SurviveIII = 8;
 
-    // TODO REFACTOR NUMBERS
-
     // BALLISTA
     public const int Ballista = 0;
     public const int BallistaRange = 1;
@@ -351,31 +349,22 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(FreezeTowerRange, FreezeTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(FreezeTowerSlowEffect, FreezeTower, "Slow Effect", "Slows Enemies by 30%.", 200),
         new ResearchElementDefinition(FreezeTowerFortification, FreezeTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(FreezeTowerEfficiency, FreezeTower, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(FreezeTowerEfficiency, FreezeTower, "Efficiency", "Freezing cost reduced by 50%.", 200),
         new ResearchElementDefinition(FreezeTowerSuper, FreezeTower, "Blizzard", "Frost effect damages enemies because of the cold.", 500, true),
 
         new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
         new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(LightningTowerBoltAmount, LightningTower, "Bolt Amount", "Increased lightning bolts to 5.", 200),
         new ResearchElementDefinition(LightningTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "Efficiency", "Lightning bolt cost reduced by 50%.", 200),
         new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Thunder Wave", "Sparks that fly off deal damage to surrounding enemies.", 500, true),
 
-        /*
-    public const int ShockwaveTower = 30;
-    public const int ShockwaveTowerRange = 31;
-    public const int ShockwaveTowerStunDuration = 32;
-    public const int ShockwaveTowerFortification = 33;
-    public const int ShockwaveTowerEfficiency = 34;
-    public const int ShockwaveTowerSuper = 35;
-         */
-
         new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
-        new ResearchElementDefinition(ShockwaveTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerStunDuration, LightningTower, "Bolt Amount", "Increased lightning bolts to 5.", 200),
-        new ResearchElementDefinition(ShockwaveTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerEfficiency, LightningTower, "Efficiency", "Boulder cost reduced by 50%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerSuper, LightningTower, "Thunder Wave", "Sparks that fly off deal damage to surrounding enemies.", 500, true),
+        new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
+        new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "Efficiency", "Shockwave cost reduced by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Shockwave towers deal damage based on how far the enemy is from the tower.", 500, true),
     };
     public static List<LevelDefinition> levelDefinitions = new List<LevelDefinition>()
     {
