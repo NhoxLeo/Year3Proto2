@@ -6,6 +6,7 @@ public abstract class DefenseStructure : Structure
     [Range(1, 5)] protected int level = 1;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
+    protected List<string> targetableEnemies = new List<string>();
 
     private Transform attackingRange;
     private Transform spottingRange = null;
@@ -50,5 +51,10 @@ public abstract class DefenseStructure : Structure
     {
         enemies.RemoveAll(enemy => !enemy);
         return enemies;
+    }
+
+    public List<string> GetTargetableEnemies()
+    {
+        return targetableEnemies;
     }
 }

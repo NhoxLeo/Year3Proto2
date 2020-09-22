@@ -40,6 +40,10 @@ public class Catapult : ProjectileDefenseStructure
         }
 
         attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
     }
 
     public override void Launch(Transform _target)

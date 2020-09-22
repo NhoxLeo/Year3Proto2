@@ -17,9 +17,10 @@ public class HeavyInvader : Enemy
 {
     private bool[] equipment = new bool[4];
 
-    private void Awake()
+    protected override void Awake()
     {
-
+        base.Awake();
+        enemyName = EnemyNames.HeavyInvader;
         structureTypes = new List<StructureType>()
         {
             StructureType.Storage,
@@ -36,7 +37,7 @@ public class HeavyInvader : Enemy
 
     protected override void LookAtPosition(Vector3 _position)
     {
-        transform.LookAt(_position);
+        base.LookAtPosition(_position);
         // fixing animation problems
         transform.right = -transform.forward;
     }
@@ -82,6 +83,10 @@ public class HeavyInvader : Enemy
                             {
                                 if (structureTypes.Contains(target.GetStructureType()))
                                 {
+                                    if (!animator.GetBool("Attack"))
+                                    {
+                                        animator.SetBool("Attack", true);
+                                    }
                                     Action();
                                 }
                                 else
@@ -216,9 +221,9 @@ public class HeavyInvader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
-        puff.transform.localScale *= 3f;
+        puff.transform.localScale *= 5f;
     }
 
     public override void Action()

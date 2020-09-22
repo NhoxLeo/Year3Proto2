@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.1.2b";
+    public const string Version = "0.9.3.1b";
     public static bool DevMode = true;
     // CONSTANTS
     public const int NoRequirement = -1;
@@ -138,6 +138,7 @@ public class SuperManager : MonoBehaviour
         public SaveQuaternion orientation;
         public SaveVector3 targetPosition;
         public EnemyState state;
+        public int enemyWave;
     }
 
     [Serializable]
@@ -199,6 +200,8 @@ public class SuperManager : MonoBehaviour
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
         public List<HeavyInvaderSaveData> heavyInvaders;
+        public List<EnemySaveData> flyingInvaders;
+        public List<EnemySaveData> petards;
         public List<SoldierSaveData> soldiers;
         public int enemiesKilled;
         public float spawnTime;
@@ -607,6 +610,18 @@ public class SuperManager : MonoBehaviour
             EnemyManager.GetInstance().LoadHeavyInvader(saveData);
         }
 
+        // flying invaders
+        foreach (EnemySaveData saveData in _matchData.flyingInvaders)
+        {
+            EnemyManager.GetInstance().LoadFlyingInvader(saveData);
+        }
+
+        // petards
+        foreach (EnemySaveData saveData in _matchData.petards)
+        {
+            EnemyManager.GetInstance().LoadPetard(saveData);
+        }
+
         // soldiers
         Barracks[] allBarracks = FindObjectsOfType<Barracks>();
         foreach (SoldierSaveData saveData in _matchData.soldiers)
@@ -652,6 +667,8 @@ public class SuperManager : MonoBehaviour
             wave = EnemyManager.GetInstance().GetWaveCurrent(),
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
+            flyingInvaders = new List<EnemySaveData>(),
+            petards = new List<EnemySaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
@@ -677,7 +694,8 @@ public class SuperManager : MonoBehaviour
                     position = new SaveVector3(invader.transform.position),
                     orientation = new SaveQuaternion(invader.transform.rotation),
                     targetPosition = new SaveVector3(invader.GetTarget().transform.position),
-                    state = invader.GetState()
+                    state = invader.GetState(),
+                    enemyWave = invader.GetSpawnWave()
                 },
                 scale = invader.GetScale(),
             };
@@ -695,11 +713,42 @@ public class SuperManager : MonoBehaviour
                     position = new SaveVector3(heavy.transform.position),
                     orientation = new SaveQuaternion(heavy.transform.rotation),
                     targetPosition = new SaveVector3(heavy.GetTarget().transform.position),
-                    state = heavy.GetState()
+                    state = heavy.GetState(),
+                    enemyWave = heavy.GetSpawnWave()
                 },
                 equipment = heavy.GetEquipment()
             };
             save.heavyInvaders.Add(saveData);
+        }
+        
+        // flying
+        foreach (FlyingInvader flying in FindObjectsOfType<FlyingInvader>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = flying.health,
+                position = new SaveVector3(flying.transform.position),
+                orientation = new SaveQuaternion(flying.transform.rotation),
+                targetPosition = new SaveVector3(flying.GetTarget().transform.position),
+                state = flying.GetState(),
+                enemyWave = flying.GetSpawnWave()
+            };
+            save.flyingInvaders.Add(saveData);
+        }
+
+        // petards
+        foreach (Petard petard in FindObjectsOfType<Petard>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = petard.health,
+                position = new SaveVector3(petard.transform.position),
+                orientation = new SaveQuaternion(petard.transform.rotation),
+                targetPosition = new SaveVector3(petard.GetTarget().transform.position),
+                state = petard.GetState(),
+                enemyWave = petard.GetSpawnWave()
+            };
+            save.petards.Add(saveData);
         }
 
         // soldiers

@@ -28,7 +28,7 @@ public abstract class Enemy : MonoBehaviour
     protected float scale = 0.0f;
 
     [HideInInspector]
-    public GameObject puffEffect;
+    protected static GameObject PuffEffect;
     [HideInInspector]
     public float health = 10.0f;
     [HideInInspector]
@@ -48,12 +48,15 @@ public abstract class Enemy : MonoBehaviour
     protected float currentSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+    [HideInInspector]
+    public string enemyName;
 
     // Stun
     protected bool stunned = false;
     protected float stunDuration = 1.2f;
     protected float stunTime = 0.0f;
 
+    private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
@@ -66,6 +69,14 @@ public abstract class Enemy : MonoBehaviour
 
 
     public abstract void Action();
+
+    protected virtual void Awake()
+    {
+        if (!PuffEffect)
+        {
+            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+        }
+    }
 
     protected virtual void Start()
     {
@@ -103,28 +114,32 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)
     {
-        enemyState = EnemyState.Action;
-        defenseTarget = _soldier;
-        defending = true;
-        animator.SetBool("Attack", true);
-        action = true;
-        LookAtPosition(_soldier.transform.position);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            enemyState = EnemyState.Action;
+            defenseTarget = _soldier;
+            defending = true;
+            animator.SetBool("Attack", true);
+            action = true;
+            LookAtPosition(_soldier.transform.position);
+        }
     }
 
     public void ForgetSoldier()
     {
-        defenseTarget = null;
-        defending = false;
-        action = false;
-        enemyState = EnemyState.Idle;
-        animator.SetBool("Attack", false);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            defenseTarget = null;
+            defending = false;
+            action = false;
+            enemyState = EnemyState.Idle;
+            animator.SetBool("Attack", false);
+        }
     }
 
     protected virtual void LookAtPosition(Vector3 _position)
     {
         transform.LookAt(_position);
-        // fixing animation problems
-        transform.right = transform.forward;
     }
 
     protected virtual void Update()
@@ -346,5 +361,15 @@ public abstract class Enemy : MonoBehaviour
             return hit.transform.GetComponent<TileBehaviour>();
         }
         return null;
+    }
+
+    public void SetSpawnWave(int _wave)
+    {
+        spawnWave = _wave;
+    }
+
+    public int GetSpawnWave()
+    {
+        return spawnWave;
     }
 }
