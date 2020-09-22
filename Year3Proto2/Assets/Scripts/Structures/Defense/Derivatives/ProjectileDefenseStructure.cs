@@ -12,6 +12,8 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
     [SerializeField] protected float projectileRate;
     [SerializeField] protected float projectileRateFactor;
 
+    protected Transform target;
+
     protected override void Update()
     {
         base.Update();
@@ -24,7 +26,6 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
                     Launch(target);
                     this.target = target;
                 });
-   
                 projectileTime = 0.0f;
             }
         }

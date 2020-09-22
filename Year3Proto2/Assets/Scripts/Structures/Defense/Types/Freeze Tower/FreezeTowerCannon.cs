@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class FreezeTowerCannon : MonoBehaviour
@@ -12,8 +11,8 @@ public class FreezeTowerCannon : MonoBehaviour
     [SerializeField] private Material material;
     [SerializeField] private ParticleSystem particle;
 
-    private List<Enemy> previousTargets = new List<Enemy>();
-    private readonly List<Enemy> targets = new List<Enemy>();
+    private List<Transform> previousTargets = new List<Transform>();
+    private readonly List<Transform> targets = new List<Transform>();
 
     private const float interval = 3.0f;
     private float time = 0.0f;
@@ -46,7 +45,7 @@ public class FreezeTowerCannon : MonoBehaviour
                     if (enemy)
                     {
                         enemy.Slow(true);
-                        targets.Add(enemy);
+                        targets.Add(target);
                     }
                 }
             }
@@ -54,10 +53,11 @@ public class FreezeTowerCannon : MonoBehaviour
             previousTargets.RemoveAll(target => !target);
             for (int i = 0; i < previousTargets.Count; i++)
             {
-                Enemy target = previousTargets[i];
-                if (!targets.Contains(target))
+                Transform target = previousTargets[i];
+                Enemy enemy = target.GetComponent<Enemy>();
+                if(enemy)
                 {
-                    target.Slow(false);
+                    enemy.Slow(false);
                 }
             }
 

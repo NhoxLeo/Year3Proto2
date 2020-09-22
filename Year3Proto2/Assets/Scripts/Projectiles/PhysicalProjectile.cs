@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class PhysicalProjectile : Projectile
 {
+    private const float Ground = 0.51f;
+
     protected Vector3 endPosition;
     protected bool reachedDestination = false;
 
@@ -20,6 +22,14 @@ public abstract class PhysicalProjectile : Projectile
         float distance = heading.magnitude;
 
         OnDisplacement(heading, direction, distance);
+
+        if(transform.position.y <= Ground) OnGroundHit();
+    }
+
+    public override void SetTarget(Transform _target)
+    {
+        base.SetTarget(_target);
+        endPosition = _target.position;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -36,4 +46,5 @@ public abstract class PhysicalProjectile : Projectile
 
     protected abstract void OnDisplacement(Vector3 _heading, Vector3 _direction, float distance);
     protected abstract void OnDestination(Vector3 _location);
+    protected abstract void OnGroundHit();
 }

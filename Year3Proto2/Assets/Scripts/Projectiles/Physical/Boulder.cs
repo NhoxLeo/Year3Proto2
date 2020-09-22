@@ -15,6 +15,7 @@ public class Boulder : PhysicalProjectile
         base.Start();
         ExplosionRadius = 0.8f;
         current = origin = transform.position;
+        endPosition = target.position;
     }
 
     private void OnDrawGizmos()
@@ -23,7 +24,7 @@ public class Boulder : PhysicalProjectile
     }
 
     protected override void OnDisplacement(Vector3 _heading, Vector3 _direction, float _distance)
-    {
+    { 
         current += _direction * speed * Time.deltaTime;
         distanceTravelled += speed * Time.deltaTime;
 
@@ -33,6 +34,11 @@ public class Boulder : PhysicalProjectile
     }
 
     protected override void OnDestination(Vector3 _location)
+    {
+
+    }
+
+    protected override void OnGroundHit()
     {
         RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, ExplosionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
         GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
