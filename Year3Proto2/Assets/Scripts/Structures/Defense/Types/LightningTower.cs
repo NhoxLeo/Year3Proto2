@@ -50,7 +50,8 @@ public class LightningTower : DefenseStructure
         float enemyAmount = enemies.Count >= lightningAmount ? lightningAmount : enemies.Count;
         for (int i = 0; i < enemyAmount; i++)
         {
-            if (i > enemies.Count) break;
+            if (enemies[i] == null) break;
+
             yield return new WaitForSeconds(seconds);
             Transform transform = enemies[i];
             Enemy enemy = transform.GetComponent<Enemy>();
