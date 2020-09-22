@@ -162,7 +162,8 @@ public class Petard : Enemy
                         continue;
                     }
                     float damageToThisStructure = explosionDamage * (transform.position - structure.transform.position).magnitude / explosionRadius;
-                    structure.Damage(damageToThisStructure);
+                    float clamped = Mathf.Clamp(damageToThisStructure, explosionDamage * 0.3f, explosionDamage);
+                    structure.Damage(clamped);
                 }
             }
             GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
