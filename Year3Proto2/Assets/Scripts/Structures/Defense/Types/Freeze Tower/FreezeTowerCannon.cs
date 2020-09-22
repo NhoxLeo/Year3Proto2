@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FreezeTowerCannon : MonoBehaviour
@@ -11,65 +12,53 @@ public class FreezeTowerCannon : MonoBehaviour
     [SerializeField] private Material material;
     [SerializeField] private ParticleSystem particle;
 
-    private List<Transform> previousTargets = new List<Transform>();
     private readonly List<Transform> targets = new List<Transform>();
-
-    private const float interval = 3.0f;
-    private float time = 0.0f;
 
     private void Start()
     {
-        time = interval;
         particle.Stop();
     }
 
-    private void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        time -= Time.deltaTime;
-        if(time <= 0.0f)
+        if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
         {
-            time = interval;
-
-            previousTargets = targets;
-
-            targets.Clear();
-
-            Collider[] transforms = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
-            for (int i = 0; i < transforms.Length; i++)
+            Vector3 direction = (other.transform.position - transform.position).normalized;
+            // If transform is inside angle based on snow cannons transform
+            if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
             {
-                Transform target = transforms[i].transform;
-                Vector3 direction = (target.position - transform.position).normalized;
-                if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
+                Enemy enemy = other.GetComponent<Enemy>();
+                if (enemy)
                 {
-                    Enemy enemy = target.GetComponent<Enemy>();
-                    if (enemy)
-                    {
-                        enemy.Slow(true);
-                        targets.Add(target);
-                    }
+                    enemy.Slow(true);
+                    targets.Add(other.transform);
                 }
             }
+        }
+        if (targets.Count > 0)
+        {
+            particle.Play();
+        }
+    }
 
-            previousTargets.RemoveAll(target => !target);
-            for (int i = 0; i < previousTargets.Count; i++)
+    private void OnTriggerExit(Collider other)
+    {
+        if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
+        {
+            if (targets.Contains(other.transform))
             {
-                Transform target = previousTargets[i];
-                Enemy enemy = target.GetComponent<Enemy>();
-                if(enemy)
+                Enemy enemy = other.GetComponent<Enemy>();
+                if (enemy)
                 {
                     enemy.Slow(false);
+                    targets.Remove(other.transform);
                 }
             }
+        }
 
-            if(targets.Count > 0)
-            {
-                particle.Play();
-            } else
-            {
-                particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            }
-
-            //material.color = targets.Count > 0 ? Color.red : Color.white;
+        if (targets.Count < 0)
+        {
+            particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
         }
     }
 
@@ -91,5 +80,10 @@ public class FreezeTowerCannon : MonoBehaviour
 
         Gizmos.DrawLine(transform.position, lineA);
         Gizmos.DrawLine(transform.position, lineB);
+    }
+
+    public List<Transform> GetTargets()
+    {
+        return targets;
     }
 }

@@ -1,18 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LightningBolt : MonoBehaviour
 {
     public Transform target;
     [SerializeField] private ParticleSystem lightningBolt;
     [SerializeField] private ParticleSystem sparks;
-
-    void Start()
-    {
-        
-    }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -36,6 +29,20 @@ public class LightningBolt : MonoBehaviour
 
             lightningBolt.Emit(1);
             sparks.Emit(10);
+
+            Enemy enemy = target.GetComponent<Enemy>();
+            if(enemy)
+            {
+                Petard pet = enemy.GetComponent<Petard>();
+                if (pet)
+                {
+                    pet.SetOffBarrel();
+                }
+                else
+                {
+                    enemy.Damage(10.0f);
+                }
+            }
         }
     }
 }

@@ -80,9 +80,9 @@ public class BuildPanel : MonoBehaviour
 
         if (!superMan.GetResearchComplete(SuperManager.Catapult)) { transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
         if (!superMan.GetResearchComplete(SuperManager.Barracks)) { transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
-        transform.Find("PanelMask/Content/DefenceBuildings/IconFreeze").GetComponent<Image>().sprite = lockedBuilding;
-        transform.Find("PanelMask/Content/DefenceBuildings/IconShockwave").GetComponent<Image>().sprite = lockedBuilding;
-        transform.Find("PanelMask/Content/DefenceBuildings/IconLightning").GetComponent<Image>().sprite = lockedBuilding;
+        //transform.Find("PanelMask/Content/DefenceBuildings/IconFreeze").GetComponent<Image>().sprite = lockedBuilding;
+        //transform.Find("PanelMask/Content/DefenceBuildings/IconShockwave").GetComponent<Image>().sprite = lockedBuilding;
+        //transform.Find("PanelMask/Content/DefenceBuildings/IconLightning").GetComponent<Image>().sprite = lockedBuilding;
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -92,11 +92,9 @@ public class BuildPanel : MonoBehaviour
             case Buildings.Ballista:
                 transform.Find("PanelMask/Content/DefenceBuildings/IconArcher").GetComponent<Image>().color = _colour;
                 break;
-
             case Buildings.Catapult:
                 transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().color = _colour;
                 break;
-
             case Buildings.Barracks:
                 transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().color = _colour;
                 break;
@@ -112,27 +110,21 @@ public class BuildPanel : MonoBehaviour
             case Buildings.Farm:
                 transform.Find("PanelMask/Content/ResourceBuildings/IconFarm").GetComponent<Image>().color = _colour;
                 break;
-
             case Buildings.Granary:
                 transform.Find("PanelMask/Content/ResourceBuildings/IconSilo").GetComponent<Image>().color = _colour;
                 break;
-
             case Buildings.LumberMill:
                 transform.Find("PanelMask/Content/ResourceBuildings/IconLumberMill").GetComponent<Image>().color = _colour;
                 break;
-
             case Buildings.LumberPile:
                 transform.Find("PanelMask/Content/ResourceBuildings/IconLumberPile").GetComponent<Image>().color = _colour;
                 break;
-
             case Buildings.Mine:
                 transform.Find("PanelMask/Content/ResourceBuildings/IconMine").GetComponent<Image>().color = _colour;
                 break;
-
             case Buildings.MetalStorage:
                 transform.Find("PanelMask/Content/ResourceBuildings/IconOreStorage").GetComponent<Image>().color = _colour;
                 break;
-
             default:
                 break;
         }
@@ -251,9 +243,9 @@ public class BuildPanel : MonoBehaviour
 
         if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
         if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
-        if (tooltipSelected == Buildings.FreezeTower) { return; }
-        if (tooltipSelected == Buildings.ShockwaveTower) { return; }
-        if (tooltipSelected == Buildings.LightningTower) { return; }
+        //if (tooltipSelected == Buildings.FreezeTower) { return; }
+        //if (tooltipSelected == Buildings.ShockwaveTower) { return; }
+        //if (tooltipSelected == Buildings.LightningTower) { return; }
 
         if (tooltipSelected == Buildings.None)
         {
@@ -290,9 +282,9 @@ public class BuildPanel : MonoBehaviour
     {
         if ((Buildings)buildingType == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
         if ((Buildings)buildingType == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
-        if ((Buildings)buildingType == Buildings.FreezeTower) { return; }
-        if ((Buildings)buildingType == Buildings.ShockwaveTower) { return; }
-        if ((Buildings)buildingType == Buildings.LightningTower) { return; }
+        //if ((Buildings)buildingType == Buildings.FreezeTower) { return; }
+        //if ((Buildings)buildingType == Buildings.ShockwaveTower) { return; }
+        //if ((Buildings)buildingType == Buildings.LightningTower) { return; }
 
         if ((Buildings)buildingType == buildingSelected)
         {

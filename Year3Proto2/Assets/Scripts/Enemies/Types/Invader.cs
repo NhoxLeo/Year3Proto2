@@ -29,7 +29,6 @@ public class Invader : Enemy
     private void FixedUpdate()
     {
         if (stunned) return;
-
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -158,6 +157,8 @@ public class Invader : Enemy
         damage = _scale * 2.0f;
         health = _scale * 10f;
         finalSpeed = 0.4f + ((1f / _scale) / 10.0f);
+
+        currentSpeed = finalSpeed;
 
         if (!animator) { animator = GetComponent<Animator>(); }
 

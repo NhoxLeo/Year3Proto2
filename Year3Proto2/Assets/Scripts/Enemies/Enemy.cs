@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 
 [Serializable]
@@ -52,8 +51,8 @@ public abstract class Enemy : MonoBehaviour
 
     // Stun
     protected bool stunned = false;
-    protected float stunTime = 1.0f;
-    protected float stunCurrentTime = 0.0f;
+    protected float stunDuration = 1.2f;
+    protected float stunTime = 0.0f;
 
     private int spawnWave;
     protected Rigidbody body;
@@ -66,6 +65,7 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
+    private int slowCount = 0;
 
     public abstract void Action();
 
@@ -92,17 +92,42 @@ public abstract class Enemy : MonoBehaviour
         };
     }
 
-    public void Slow(bool enabled)
+    public void Stun()
     {
-        currentSpeed = enabled ? 0.2f : finalSpeed;
+        animator.enabled = false;
+        stunned = true;
+        stunTime = stunDuration;
     }
 
-    public void Stun(float _stunDuration)
+    public void Slow(bool _newSlow)
     {
-        stunned = true;
-        stunCurrentTime = _stunDuration;
-        animator.SetBool("Attack", false);
-        animator.SetBool("Walk", false);
+        if (_newSlow)
+        {
+            if (slowCount == 0)
+            {
+                currentSpeed = finalSpeed * 0.5f;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    float attackSpeed = 0.5f * animator.GetFloat("AttackSpeed");
+                    animator.SetFloat("AttackSpeed", attackSpeed);
+                }
+            }
+            slowCount++;
+        }
+        else
+        {
+            if (slowCount == 1)
+            {
+                currentSpeed = finalSpeed;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    float attackSpeed = 2f * animator.GetFloat("AttackSpeed");
+                    animator.SetFloat("AttackSpeed", attackSpeed);
+                }
+            }
+            slowCount--;
+        }
+
     }
 
     public virtual void OnKill()
@@ -142,6 +167,16 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
+        if(stunned)
+        {
+            stunTime -= Time.deltaTime;
+            if (stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.enabled = true;
+            }
+        }
+
         if (GlobalData.longhausDead)
         {
             if (!delayedDeathCalled)
@@ -154,17 +189,6 @@ public abstract class Enemy : MonoBehaviour
             {
                 Damage(health);
             }
-        }
-
-        if (stunned)
-        {
-            stunCurrentTime -= Time.deltaTime;
-            if (stunTime <= 0.0f)
-            {
-                stunned = false;
-                animator.SetBool("Walk", true);
-            }
-            return;
         }
 
         // update signature

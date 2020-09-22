@@ -384,7 +384,7 @@ public class GameManager : MonoBehaviour
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
             { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
             { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
-        };
+        };
     }
 
     // Start is called before the first frame update
@@ -557,10 +557,8 @@ public class GameManager : MonoBehaviour
                     switchingScene = true;
                 }
             }
-            
         }
-    }
-
+    }
     public void SaveMatch()
     {
         SuperManager.GetInstance().SaveCurrentMatch();

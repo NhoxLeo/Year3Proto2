@@ -7,7 +7,6 @@ public class Icicle : PhysicalProjectile
     protected override void OnDestination(Vector3 _location)
     {
         Enemy enemy = target.GetComponent<Enemy>();
-        if(enemy) enemy.Stun(stunDuration);
     }
 
     protected override void OnDisplacement(Vector3 _heading, Vector3 _direction, float distance)

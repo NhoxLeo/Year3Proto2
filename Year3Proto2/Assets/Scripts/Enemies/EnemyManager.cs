@@ -260,7 +260,8 @@ public class EnemyManager : MonoBehaviour
         }
         foreach (Transform transform in flyingInvaders)
         {
-            Vector3 location = new Vector3(Mathf.Sin(Random.Range(0.0f, 180f)) * distance, 2.0f, Mathf.Cos(Random.Range(0.0f, 180f)) * distance);
+            float random = Random.Range(-180.0f, 180f);
+            Vector3 location = new Vector3(Mathf.Sin(random) * distance * 0.75f, 0.0f, Mathf.Cos(random) * distance * 0.75f);
 
             Enemy enemy = Instantiate(transform.gameObject, location, Quaternion.identity).GetComponent<Enemy>();
             enemy.SetSpawnWave(waveCounter);
