@@ -118,6 +118,7 @@ public class Airship : MonoBehaviour
     
     private IEnumerator Deploy(float seconds)
     {
+        GameManager.CreateAudioEffect("horn", transform.position, 0.5f);
         WaitForSeconds wait = new WaitForSeconds(seconds);
         List<Vector3> spawnPoints = GenerateSpawnPoints();
         for (int i = 0; i < transforms.Length; i++)
@@ -125,28 +126,26 @@ public class Airship : MonoBehaviour
             if (!transforms[i]) break;
 
             Transform instantiatedTransform = Instantiate(transforms[i], spawnPoints[i], Quaternion.identity);
+            Enemy enemy = instantiatedTransform.GetComponent<Enemy>();
+            EnemyManager.GetInstance().RecordNewEnemy(enemy);
 
             Invader invader = instantiatedTransform.GetComponent<Invader>();
             if(invader)
             {
                 invader.SetScale(Random.Range(0.8f, 1.5f));
-                EnemyManager.GetInstance().RecordNewEnemy(invader);
             }
 
             HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
             if (heavyInvader)
             {
                 heavyInvader.Randomize();
-                EnemyManager.GetInstance().RecordNewEnemy(heavyInvader);
             }
-
 
             yield return wait;
 
         }
 
         yield return wait;
-
 
         target.GetComponent<TileBehaviour>().SetApproached(false);
         airshipState = AirshipState.Depart;

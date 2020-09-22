@@ -47,6 +47,7 @@ public abstract class Enemy : MonoBehaviour
     protected float currentSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+    [HideInInspector]
     public string enemyName;
 
     // Stun
@@ -111,33 +112,36 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)
     {
-        enemyState = EnemyState.Action;
-        defenseTarget = _soldier;
-        defending = true;
-        animator.SetBool("Attack", true);
-        action = true;
-        LookAtPosition(_soldier.transform.position);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            enemyState = EnemyState.Action;
+            defenseTarget = _soldier;
+            defending = true;
+            animator.SetBool("Attack", true);
+            action = true;
+            LookAtPosition(_soldier.transform.position);
+        }
     }
 
     public void ForgetSoldier()
     {
-        defenseTarget = null;
-        defending = false;
-        action = false;
-        enemyState = EnemyState.Idle;
-        animator.SetBool("Attack", false);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            defenseTarget = null;
+            defending = false;
+            action = false;
+            enemyState = EnemyState.Idle;
+            animator.SetBool("Attack", false);
+        }
     }
 
     protected virtual void LookAtPosition(Vector3 _position)
     {
         transform.LookAt(_position);
-        // fixing animation problems
-        transform.right = transform.forward;
     }
 
     protected virtual void Update()
     {
-
         if (GlobalData.longhausDead)
         {
             if (!delayedDeathCalled)

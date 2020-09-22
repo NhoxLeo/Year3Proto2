@@ -22,13 +22,6 @@ public class FlyingInvader : Enemy
         }
     }
 
-    protected override void LookAtPosition(Vector3 _position)
-    {
-        transform.LookAt(_position);
-        // fixing animation problems
-    }
-
-
     // Start is called before the first frame update
     protected override void Start()
     {
