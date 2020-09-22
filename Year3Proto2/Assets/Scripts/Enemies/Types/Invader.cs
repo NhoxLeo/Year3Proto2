@@ -19,6 +19,13 @@ public class Invader : Enemy
         };
     }
 
+    protected override void LookAtPosition(Vector3 _position)
+    {
+        base.LookAtPosition(_position);
+        // fixing animation problems
+        transform.right = transform.forward;
+    }
+
     private void FixedUpdate()
     {
         if (stunned) return;
@@ -150,7 +157,7 @@ public class Invader : Enemy
         transform.localScale *= _scale + 0.3f;
         damage = _scale * 2.0f;
         health = _scale * 10f;
-        finalSpeed = 0.4f + 1f / _scale / 10.0f;
+        finalSpeed = 0.4f + ((1f / _scale) / 10.0f);
 
         if (!animator) { animator = GetComponent<Animator>(); }
 

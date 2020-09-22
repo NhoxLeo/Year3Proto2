@@ -5,8 +5,8 @@ using UnityEngine;
 public class FlyingInvaderBarrel : MonoBehaviour
 {
     private float damage = 25f;
-    private float accelerationRate = 0.175f;
     private float explosionRadius = 0.25f;
+    private float accelerationRate = 0.175f;
     private float speed = 0.0f;
     private float maxSpeed = 1.0f;
 

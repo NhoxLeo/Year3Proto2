@@ -39,6 +39,7 @@ public class Ballista : ProjectileDefenseStructure
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.FlyingInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
     }
 
     protected override void Update()

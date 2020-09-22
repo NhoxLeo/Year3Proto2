@@ -629,6 +629,7 @@ public class PathManager : MonoBehaviour
         // dispose of the memory being used by the tiles list.
         allTiles.Dispose();
         allTileIDs.Dispose();
+        Shutdown();
     }
 
     private EnemyPathJobInfo ScheduleEnemyPathJob(EnemyPathSignature _signature)
@@ -764,6 +765,15 @@ public class PathManager : MonoBehaviour
 
             string soldierJobs = "\n\nSoldier Jobs: " + soldierPaths.Count.ToString();
             debugText.text = heading + activeJobs + jobsCompleted + totalTimeSyncString + totalTimeAsyncString + soldierJobs;
+        }
+    }
+
+    public void Shutdown()
+    {
+        foreach (EnemyPathJobInfo jobInfo in activeJobDict.Values)
+        {
+            jobInfo.jobHandle.Complete();
+            jobInfo.resultPath.Dispose();
         }
     }
 }

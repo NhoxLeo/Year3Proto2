@@ -36,7 +36,7 @@ public static class EnemyNames
     public static string Invader = "Invader";
     public static string HeavyInvader = "Heavy Invader";
     public static string FlyingInvader = "Flying Invader";
-    //public static string ExplosiveInvader = "Petard";
+    public static string Petard = "Petard";
 }
 
 public struct WaveData
@@ -123,7 +123,8 @@ public class EnemyManager : MonoBehaviour
     {
         { EnemyNames.Invader, new EnemyDefinition(1.0f, 1) },
         { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) },
-        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 4) }
+        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 2) },
+        { EnemyNames.Petard, new EnemyDefinition(0.25f, 2) },
     };
 
     private readonly List<EnemyLevelSetting> levelSettings = new List<EnemyLevelSetting>
@@ -134,14 +135,16 @@ public class EnemyManager : MonoBehaviour
         // Level 2
         new EnemyLevelSetting(1, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(1, 1, EnemyNames.HeavyInvader, 1),
-        new EnemyLevelSetting(1, 5, EnemyNames.FlyingInvader, 1),
+        new EnemyLevelSetting(1, 5, EnemyNames.Petard, 1),
         // Level 3
         new EnemyLevelSetting(2, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(2, 1, EnemyNames.HeavyInvader, 1),
+        new EnemyLevelSetting(2, 1, EnemyNames.Petard, 1),
         new EnemyLevelSetting(2, 5, EnemyNames.FlyingInvader, 1),
         // Level 4
         new EnemyLevelSetting(3, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(3, 1, EnemyNames.HeavyInvader, 1),
+        new EnemyLevelSetting(3, 1, EnemyNames.Petard, 1),
         new EnemyLevelSetting(3, 1, EnemyNames.FlyingInvader, 1),
     };
 
@@ -316,7 +319,6 @@ public class EnemyManager : MonoBehaviour
                     }
 
                     messageBox.ShowMessage("Invaders incoming!", 3.5f);
-                    GameManager.CreateAudioEffect("horn", transform.position);
                 }
 
                 tokens = 0.0f;
@@ -382,7 +384,6 @@ public class EnemyManager : MonoBehaviour
                 enemiesThisWave.Add(Enemies[key]);
             }
         }
-
         EnemyDefinition cheapestEnemy = enemiesThisWave[0];
         if (enemiesThisWave.Count > 1)
         {
@@ -568,6 +569,19 @@ public class EnemyManager : MonoBehaviour
         enemies.Add(enemy);
     }
 
+    public void LoadPetard(SuperManager.EnemySaveData _saveData)
+    {
+        Petard enemy = Instantiate(Enemies[EnemyNames.Petard].GetPrefab()).GetComponent<Petard>();
+
+        enemy.transform.position = _saveData.position;
+        enemy.transform.rotation = _saveData.orientation;
+        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.targetPosition));
+        enemy.SetState(_saveData.state);
+        enemy.SetSpawnWave(_saveData.enemyWave);
+
+        enemies.Add(enemy);
+    }
+
     public void OnEnemyDeath(Enemy _enemy)
     {
         enemiesKilled++;
@@ -615,7 +629,7 @@ public class EnemyManager : MonoBehaviour
         {
             if (setting.level == SuperManager.GetInstance().GetCurrentLevel())
             {
-                if (setting.wave == waveCounter)
+                if (setting.wave <= waveCounter)
                 {
                     currentSettings[setting.enemy] = (setting.enemyLevel != 0, setting.enemyLevel);
                 }
