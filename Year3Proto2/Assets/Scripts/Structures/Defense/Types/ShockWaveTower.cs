@@ -16,6 +16,10 @@ public class ShockWaveTower : DefenseStructure
         attackCost = new ResourceBundle(0, 4, 0);
         maxHealth = 400.0f;
         health = maxHealth;
+
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
     }
 
     protected override void Start()
@@ -43,7 +47,8 @@ public class ShockWaveTower : DefenseStructure
                     }
                 });
             }
-        } else
+        }
+        else
         {
             time = startDelay;
         }

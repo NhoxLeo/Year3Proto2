@@ -101,7 +101,7 @@ public class FlyingInvader : Enemy
         base.OnKill();
         GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
-        puff.transform.localScale *= 3f;
+        puff.transform.localScale *= 2f;
     }
 
     private void FindTarget()

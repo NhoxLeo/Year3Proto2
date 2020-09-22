@@ -466,78 +466,99 @@ public class GameManager : MonoBehaviour
             if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
         }
 
-        if (gameover)
-        {
-            if (victory)
-            {
-                if (musicDelay == 3f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
-                }
-                musicDelay -= Time.deltaTime;
-                if (musicDelay < 0f && !musicBackOn)
-                {
-                    GetComponents<AudioSource>()[0].DOFade(volumeFull, 2f);
-                    musicBackOn = true;
-                }
-            }
-            else
-            {
-                if (gameoverTimer == 5f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
-                }
-                gameoverTimer -= Time.deltaTime;
-                if (gameoverTimer < 0f && !switchingScene)
-                {
-                    //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
-                    switchingScene = true;
-                }
-            }
-            
-        }
-    }
-
-    public void SaveMatch()
-    {
-        SuperManager.GetInstance().SaveCurrentMatch();
-    }
-
-    public void OnRestart()
-    {
-        SuperManager superMan = SuperManager.GetInstance();
-        superMan.ClearCurrentMatch();
-        superMan.PlayLevel(superMan.GetCurrentLevel());
-    }
-
-    public bool WinConditionIsMet()
-    {
-        switch (SuperManager.GetInstance().GetCurrentWinCondition())
-        {
-            case SuperManager.Accumulate:
-                return playerResources.Get(ResourceType.Metal) >= 1500 && playerResources.Get(ResourceType.Food) >= 1500 && playerResources.Get(ResourceType.Wood) >= 1500;
-            case SuperManager.AccumulateII:
-                return playerResources.Get(ResourceType.Metal) >= 2500 && playerResources.Get(ResourceType.Food) >= 2500 && playerResources.Get(ResourceType.Wood) >= 2500;
-            case SuperManager.AccumulateIII:
-                return playerResources.Get(ResourceType.Metal) >= 5000 && playerResources.Get(ResourceType.Food) >= 5000 && playerResources.Get(ResourceType.Wood) >= 5000;
-            case SuperManager.Slaughter:
-                return EnemyManager.GetInstance().GetEnemiesKilled() > 300;
-            case SuperManager.SlaughterII:
-                return EnemyManager.GetInstance().GetEnemiesKilled() > 800;
-            case SuperManager.SlaughterIII:
-                return EnemyManager.GetInstance().GetEnemiesKilled() > 2000;
-            case SuperManager.Survive:
-                return EnemyManager.GetInstance().GetWaveSurvived(10);
-            case SuperManager.SurviveII:
-                return EnemyManager.GetInstance().GetWaveSurvived(15);
-            case SuperManager.SurviveIII:
-                return EnemyManager.GetInstance().GetWaveSurvived(25);
-            default:
-                break;
-        }
-        return false;
-    }
+        panelRefreshTimer -= Time.deltaTime;
+        if (panelRefreshTimer <= 0f)
+        {
+            panelRefreshTimer = panelRefreshCooldown;
+            // do refresh
+            for (int i = 1; i <= 12; i++)
+            {
+                BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
+                if (buildingI == BuildPanel.Buildings.Catapult)
+                {
+                    if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
+                    {
+                        continue;
+                    }
+                }
+                if (buildingI == BuildPanel.Buildings.Barracks)
+                {
+                    if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Barracks))
+                    {
+                        continue;
+                    }
+                }
+                if (buildingI == BuildPanel.Buildings.FreezeTower)
+                {
+                    continue;
+                }
+                if (buildingI == BuildPanel.Buildings.ShockwaveTower)
+                {
+                    continue;
+                }
+                if (buildingI == BuildPanel.Buildings.LightningTower)
+                {
+                    continue;
+                }
+                ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
+                bool playerCanAfford = playerResources.CanAfford(cost);
+                Color colour = playerCanAfford ? Color.white : buildPanel.cannotAfford;
+                buildPanel.SetButtonColour(buildingI, colour);
+            }
+        }
 
+        if (!gameover)
+        {
+            if (longhausDead == true)
+            {
+                gameover = true;
+                victory = false;
+                messageBox.ShowMessage("You Lost!", 3f);
+                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                CreateAudioEffect("lose", Vector3.zero, 1f, false);
+            }
+            else if (WinConditionIsMet() && !SuperManager.GetInstance().GetSavedMatch().matchWon)
+            {
+                gameover = true;
+                victory = true;
+                SuperManager.GetInstance().OnLevelComplete();
+                messageBox.ShowMessage("You Win!", 5f);
+                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                CreateAudioEffect("win", Vector3.zero, 1f, false);
+            }
+        }
+
+
+        if (gameover)
+        {
+            if (victory)
+            {
+                if (musicDelay == 3f)
+                {
+                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
+                }
+                musicDelay -= Time.deltaTime;
+                if (musicDelay < 0f && !musicBackOn)
+                {
+                    GetComponents<AudioSource>()[0].DOFade(volumeFull, 2f);
+                    musicBackOn = true;
+                }
+            }
+            else
+            {
+                if (gameoverTimer == 5f)
+                {
+                    FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
+                }
+                gameoverTimer -= Time.deltaTime;
+                if (gameoverTimer < 0f && !switchingScene)
+                {
+                    //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                    switchingScene = true;
+                }
+            }
+        }
+    }
     public void SaveMatch()
     {
         SuperManager.GetInstance().SaveCurrentMatch();
@@ -567,11 +588,11 @@ public class GameManager : MonoBehaviour
             case SuperManager.SlaughterIII:
                 return EnemyManager.GetInstance().GetEnemiesKilled() > 2000;
             case SuperManager.Survive:
-                return (EnemyManager.GetInstance().GetWaveCurrent() == 10 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 10;
+                return EnemyManager.GetInstance().GetWaveSurvived(10);
             case SuperManager.SurviveII:
-                return (EnemyManager.GetInstance().GetWaveCurrent() == 15 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 15;
+                return EnemyManager.GetInstance().GetWaveSurvived(15);
             case SuperManager.SurviveIII:
-                return (EnemyManager.GetInstance().GetWaveCurrent() == 25 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 25;
+                return EnemyManager.GetInstance().GetWaveSurvived(25);
             default:
                 break;
         }

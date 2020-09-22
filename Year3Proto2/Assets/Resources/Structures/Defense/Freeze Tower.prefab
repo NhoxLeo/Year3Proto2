@@ -343,7 +343,8 @@ GameObject:
   - component: {fileID: 648221123915331090}
   - component: {fileID: 6611979998191110891}
   - component: {fileID: 7717512019997552269}
-  m_Layer: 0
+  - component: {fileID: 3125420406668506432}
+  m_Layer: 9
   m_Name: Freeze Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -440,6 +441,20 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
+--- !u!64 &3125420406668506432
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4899545629308059191}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2668841619902011886, guid: 236049baccfeae84f931ed9d7354be30, type: 3}
 --- !u!1 &5749792796090463421
 GameObject:
   m_ObjectHideFlags: 0

@@ -33,6 +33,8 @@ public class HeavyInvader : Enemy
     {
         base.Start();
         UpdateEquipment();
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
     }
 
     protected override void LookAtPosition(Vector3 _position)
@@ -223,7 +225,7 @@ public class HeavyInvader : Enemy
         base.OnKill();
         GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
-        puff.transform.localScale *= 5f;
+        puff.transform.localScale *= 3f;
     }
 
     public override void Action()

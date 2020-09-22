@@ -18,6 +18,11 @@ public class LightningTower : DefenseStructure
         health = maxHealth;
         time = lightningStartDelay;
         structureName = StructureNames.LightningTower;
+
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.FlyingInvader);
     }
 
     protected override void Start()
@@ -47,23 +52,38 @@ public class LightningTower : DefenseStructure
     IEnumerator Strike(float seconds)
     {
         List<Transform> enemies = GetEnemies();
-        float enemyAmount = enemies.Count >= lightningAmount ? lightningAmount : enemies.Count;
+        bool moreEnemiesThanBolts = enemies.Count > lightningAmount;
+        float enemyAmount = moreEnemiesThanBolts ? lightningAmount : enemies.Count;
+
+        // finds targets all at once, then fires on them between delays
+        List<Transform> enemiesToStrike = new List<Transform>();
         for (int i = 0; i < enemyAmount; i++)
         {
-            if (enemies[i] == null) break;
+            enemiesToStrike.Add(enemies[i]);
+        }
 
-            yield return new WaitForSeconds(seconds);
-            Transform transform = enemies[i];
-            Enemy enemy = transform.GetComponent<Enemy>();
-            if(enemy)
+        for (int i = 0; i < enemiesToStrike.Count; i++)
+        {
+            if (!enemiesToStrike[i])
             {
-                Vector3 location = this.transform.position;
-                location.y = 1.5f;
-                LightningBolt lightningBolt = Instantiate(lightning, location, Quaternion.identity);
-                lightningBolt.Fire(transform);
+                continue;
             }
+            Enemy enemy = enemiesToStrike[i].GetComponent<Enemy>();
+            if (enemy)
+            {
+                StrikeEnemy(enemiesToStrike[i]);
+            }
+            yield return new WaitForSeconds(seconds);
         }
 
         yield return null;
+    }
+
+    private void StrikeEnemy(Transform _target)
+    {
+        Vector3 location = transform.position;
+        location.y = 1.5f;
+        LightningBolt lightningBolt = Instantiate(lightning, location, Quaternion.identity);
+        lightningBolt.Fire(_target);
     }
 }

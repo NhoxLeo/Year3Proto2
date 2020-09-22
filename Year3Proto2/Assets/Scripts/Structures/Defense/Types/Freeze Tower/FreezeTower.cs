@@ -11,6 +11,10 @@ public class FreezeTower : DefenseStructure
         attackCost = new ResourceBundle(0, 4, 0);
         maxHealth = 450.0f;
         health = maxHealth;
+
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
     }
 
     protected override void Start()
@@ -22,19 +26,23 @@ public class FreezeTower : DefenseStructure
     protected override void OnDestroyed()
     {
         base.OnDestroyed();
-        StartCoroutine(Refresh());
+        Refresh();
     }
 
-    IEnumerator Refresh()
+    private void Refresh()
     {
         foreach (FreezeTowerCannon cannon in cannons)
         {
             cannon.GetTargets().ForEach(target => {
-                Enemy enemy = target.GetComponent<Enemy>();
-                if (enemy) enemy.Slow(false);
+                if (target)
+                {
+                    Enemy enemy = target.GetComponent<Enemy>();
+                    if (enemy)
+                    {
+                        enemy.Slow(false);
+                    }
+                }
             });
         }
-
-        yield return null;
     }
 }

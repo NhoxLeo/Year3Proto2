@@ -33,11 +33,12 @@ public class FreezeTowerCannon : MonoBehaviour
                     enemy.Slow(true);
                     targets.Add(other.transform);
                 }
-
             }
         }
-
-        if (targets.Count > 0) particle.Play();
+        if (targets.Count > 0)
+        {
+            particle.Play();
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -55,7 +56,10 @@ public class FreezeTowerCannon : MonoBehaviour
             }
         }
 
-        if (targets.Count < 0) particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        if (targets.Count < 0)
+        {
+            particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        }
     }
 
     private Vector3 DirectionFromAngle(float angleInDegrees)

@@ -25,8 +25,6 @@ public enum EnemyState
 
 public abstract class Enemy : MonoBehaviour
 {
-    protected float scale = 0.0f;
-
     [HideInInspector]
     protected static GameObject PuffEffect;
     [HideInInspector]
@@ -67,6 +65,7 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
+    private int slowCount = 0;
 
     public abstract void Action();
 
@@ -100,11 +99,35 @@ public abstract class Enemy : MonoBehaviour
         stunTime = stunDuration;
     }
 
-    public void Slow(bool enabled)
+    public void Slow(bool _newSlow)
     {
-        currentSpeed = enabled ? 0.2f : finalSpeed;
-        float attackSpeed = 1f / scale;
-        animator.SetFloat("AttackSpeed", enabled ? 0.2f : attackSpeed);
+        if (_newSlow)
+        {
+            if (slowCount == 0)
+            {
+                currentSpeed = finalSpeed * 0.5f;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    float attackSpeed = 0.5f * animator.GetFloat("AttackSpeed");
+                    animator.SetFloat("AttackSpeed", attackSpeed);
+                }
+            }
+            slowCount++;
+        }
+        else
+        {
+            if (slowCount == 1)
+            {
+                currentSpeed = finalSpeed;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    float attackSpeed = 2f * animator.GetFloat("AttackSpeed");
+                    animator.SetFloat("AttackSpeed", attackSpeed);
+                }
+            }
+            slowCount--;
+        }
+
     }
 
     public virtual void OnKill()
@@ -347,11 +370,6 @@ public abstract class Enemy : MonoBehaviour
     public bool IsBeingObserved()
     {
         return observers > 0;
-    }
-
-    public float GetScale()
-    {
-        return scale;
     }
 
     public TileBehaviour GetCurrentTile()
