@@ -35,10 +35,29 @@ public static class EnemyNames
 {
     public static string Invader = "Invader";
     public static string HeavyInvader = "Heavy Invader";
-    //public static string FlyingInvader = "Flying Invader";
+    public static string FlyingInvader = "Flying Invader";
     //public static string ExplosiveInvader = "Petard";
 }
 
+public struct WaveData
+{
+    public int enemiesRemaining;
+
+    public WaveData(int _enemies)
+    {
+        enemiesRemaining = _enemies;
+    }
+
+    public void ReportEnemyDead()
+    {
+        enemiesRemaining--;
+    }
+
+    public bool WaveSurvived()
+    {
+        return enemiesRemaining == 0;
+    }
+}
 
 public struct EnemyDefinition
 {
@@ -79,7 +98,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float tokensScalar = 0.0001f; // 0.05f every 500 seconds
     [SerializeField] private float time = 90.0f;
     [SerializeField] private float tokens = 0.0f;
-    [SerializeField] private Vector2 timeVariance = new Vector2(20, 80);
+    [SerializeField] private Vector2 timeVariance = new Vector2(45, 90);
     [SerializeField] private bool spawning = false;
 
     [Header("Enemies")]
@@ -103,7 +122,8 @@ public class EnemyManager : MonoBehaviour
     public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
         { EnemyNames.Invader, new EnemyDefinition(1.0f, 1) },
-        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) }
+        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) },
+        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 4) }
     };
 
     private readonly List<EnemyLevelSetting> levelSettings = new List<EnemyLevelSetting>
@@ -111,18 +131,22 @@ public class EnemyManager : MonoBehaviour
         // Level 1
         new EnemyLevelSetting(0, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(0, 5, EnemyNames.HeavyInvader, 1),
-        // Level 1
+        // Level 2
         new EnemyLevelSetting(1, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(1, 1, EnemyNames.HeavyInvader, 1),
-        // Level 1
+        new EnemyLevelSetting(1, 5, EnemyNames.FlyingInvader, 1),
+        // Level 3
         new EnemyLevelSetting(2, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(2, 1, EnemyNames.HeavyInvader, 1),
-        // Level 1
+        new EnemyLevelSetting(2, 5, EnemyNames.FlyingInvader, 1),
+        // Level 4
         new EnemyLevelSetting(3, 1, EnemyNames.Invader, 1),
         new EnemyLevelSetting(3, 1, EnemyNames.HeavyInvader, 1),
+        new EnemyLevelSetting(3, 1, EnemyNames.FlyingInvader, 1),
     };
 
     private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
+    private Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
 
     public static EnemyManager GetInstance()
     {
@@ -157,13 +181,16 @@ public class EnemyManager : MonoBehaviour
     private void Start()
     {
         messageBox = FindObjectOfType<MessageBox>();
-        TileBehaviour[] tileBehaviours = FindObjectsOfType<TileBehaviour>();
-        for (int i = 0; i < tileBehaviours.Length; i++)
+        TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
+        for (int i = 0; i < tiles.Length; i++)
         {
-            float distance = (tileBehaviours[i].transform.position - transform.position).sqrMagnitude;
-            if (distance > this.distance) this.distance = distance;
+            float newDistance = (tiles[i].transform.position - transform.position).magnitude;
+            if (newDistance > distance)
+            {
+                distance = newDistance;
+            }
         }
-        distance = Mathf.Sqrt(distance) + radiusOffset;
+        distance += radiusOffset;
 
     }
 
@@ -205,10 +232,37 @@ public class EnemyManager : MonoBehaviour
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
         if (airship) {
-            if (airship.HasTarget()) {
+            if (airship.GetTarget()) {
                 airship.Embark(transforms, pointerParent);
             }
         }
+    }
+
+
+    public Transform[] SpawnFlyingInvaders(Transform[] transforms)
+    {
+        List<Transform> flyingInvaders = new List<Transform>();
+        List<Transform> remainingEnemies = new List<Transform>();
+        for (int i = 0; i < transforms.Length; i++)
+        {
+            if (transforms[i].gameObject.GetComponent<FlyingInvader>())
+            {
+                flyingInvaders.Add(transforms[i]);
+            }
+            else
+            {
+                remainingEnemies.Add(transforms[i]);
+            }
+        }
+        foreach (Transform transform in flyingInvaders)
+        {
+            Vector3 location = new Vector3(Mathf.Sin(Random.Range(0.0f, 180f)) * distance, 2.0f, Mathf.Cos(Random.Range(0.0f, 180f)) * distance);
+
+            Enemy enemy = Instantiate(transform.gameObject, location, Quaternion.identity).GetComponent<Enemy>();
+            enemy.SetSpawnWave(waveCounter);
+            RecordNewEnemy(enemy);
+        }
+        return remainingEnemies.ToArray();
     }
 
     /**************************************
@@ -246,11 +300,15 @@ public class EnemyManager : MonoBehaviour
                 enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
 
                 Transform[] dedicatedEnemies = DedicateEnemies((int)enemiesToSpawn);
+                waveEnemyCounts.Add(waveCounter, new WaveData(dedicatedEnemies.Length));
 
-                if (dedicatedEnemies.Length > 0)
+                // first spawn flying invaders
+                Transform[] remaining = SpawnFlyingInvaders(dedicatedEnemies);
+
+                if (remaining.Length > 0)
                 {
                     //Dedicate enemies to airships
-                    List<Transform[]> dedicatedAirships = DedicateAirships(dedicatedEnemies);
+                    List<Transform[]> dedicatedAirships = DedicateAirships(remaining);
                     for (int i = 0; i < dedicatedAirships.Count; i++)
                     {
                         SpawnAirship(dedicatedAirships[i]);
@@ -279,14 +337,25 @@ public class EnemyManager : MonoBehaviour
         List<Transform[]> enemiesInAirships = new List<Transform[]>();
         Transform[] currentBatch = new Transform[enemiesPerAirship];
 
+        // for every enemy
         for (int i = 0; i < enemies.Length; i++)
         {
+            // add this enemy to the batch/ship
             currentBatch[i % enemiesPerAirship] = enemies[i];
+            // if the batch/ship is full
             if (((i + 1) % enemiesPerAirship) == 0)
             {
+                // add this batch/ship to the list 
                 enemiesInAirships.Add(currentBatch);
+                // define the next batch/ship 
                 currentBatch = new Transform[enemiesPerAirship];
             }
+        }
+        // if the currentBatch has any enemies in it
+        if (currentBatch[0])
+        {
+            // add that batch as an airship
+            enemiesInAirships.Add(currentBatch);
         }
         return enemiesInAirships;
     }
@@ -459,26 +528,41 @@ public class EnemyManager : MonoBehaviour
 
     public void LoadInvader(SuperManager.InvaderSaveData _saveData)
     {
-        Invader enemy = Instantiate(enemyPrefabs[0]).GetComponent<Invader>();
+        Invader enemy = Instantiate(Enemies[EnemyNames.Invader].GetPrefab()).GetComponent<Invader>();
 
         enemy.transform.position = _saveData.enemyData.position;
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetScale(_saveData.scale);
         enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
         enemy.SetState(_saveData.enemyData.state);
+        enemy.SetSpawnWave(_saveData.enemyData.enemyWave);
 
         enemies.Add(enemy);
     }
 
     public void LoadHeavyInvader(SuperManager.HeavyInvaderSaveData _saveData)
     {
-        HeavyInvader enemy = Instantiate(enemyPrefabs[1]).GetComponent<HeavyInvader>();
+        HeavyInvader enemy = Instantiate(Enemies[EnemyNames.HeavyInvader].GetPrefab()).GetComponent<HeavyInvader>();
 
         enemy.transform.position = _saveData.enemyData.position;
         enemy.transform.rotation = _saveData.enemyData.orientation;
         enemy.SetEquipment(_saveData.equipment);
         enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.enemyData.targetPosition));
         enemy.SetState(_saveData.enemyData.state);
+        enemy.SetSpawnWave(_saveData.enemyData.enemyWave);
+
+        enemies.Add(enemy);
+    }
+
+    public void LoadFlyingInvader(SuperManager.EnemySaveData _saveData)
+    {
+        FlyingInvader enemy = Instantiate(Enemies[EnemyNames.FlyingInvader].GetPrefab()).GetComponent<FlyingInvader>();
+
+        enemy.transform.position = _saveData.position;
+        enemy.transform.rotation = _saveData.orientation;
+        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.targetPosition));
+        enemy.SetState(_saveData.state);
+        enemy.SetSpawnWave(_saveData.enemyWave);
 
         enemies.Add(enemy);
     }
@@ -489,6 +573,13 @@ public class EnemyManager : MonoBehaviour
         if (enemies.Contains(_enemy))
         {
             enemies.Remove(_enemy);
+        }
+        int wave = _enemy.GetSpawnWave();
+        if (waveEnemyCounts.ContainsKey(wave))
+        {
+            WaveData data = waveEnemyCounts[wave];
+            data.ReportEnemyDead();
+            waveEnemyCounts[wave] = data;
         }
     }
 
@@ -529,5 +620,30 @@ public class EnemyManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public int GetWavesSurvived()
+    {
+        int total = 0;
+        foreach (WaveData data in waveEnemyCounts.Values)
+        {
+            if (data.WaveSurvived())
+            {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    public bool GetWaveSurvived(int _wave)
+    {
+        if (waveEnemyCounts.ContainsKey(_wave))
+        {
+            if (waveEnemyCounts[_wave].WaveSurvived())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

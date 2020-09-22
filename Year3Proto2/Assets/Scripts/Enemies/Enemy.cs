@@ -27,7 +27,7 @@ public enum EnemyState
 public abstract class Enemy : MonoBehaviour
 {
     [HideInInspector]
-    public GameObject puffEffect;
+    protected static GameObject PuffEffect;
     [HideInInspector]
     public float health = 10.0f;
     [HideInInspector]
@@ -47,13 +47,14 @@ public abstract class Enemy : MonoBehaviour
     protected float currentSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+    public string enemyName;
 
     // Stun
     protected bool stunned = false;
     protected float stunTime = 1.0f;
     protected float stunCurrentTime = 0.0f;
 
-
+    private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
@@ -66,6 +67,14 @@ public abstract class Enemy : MonoBehaviour
 
 
     public abstract void Action();
+
+    protected virtual void Awake()
+    {
+        if (!PuffEffect)
+        {
+            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+        }
+    }
 
     protected virtual void Start()
     {
@@ -342,5 +351,15 @@ public abstract class Enemy : MonoBehaviour
             return hit.transform.GetComponent<TileBehaviour>();
         }
         return null;
+    }
+
+    public void SetSpawnWave(int _wave)
+    {
+        spawnWave = _wave;
+    }
+
+    public int GetSpawnWave()
+    {
+        return spawnWave;
     }
 }

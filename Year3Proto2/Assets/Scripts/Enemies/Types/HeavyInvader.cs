@@ -18,9 +18,10 @@ public class HeavyInvader : Enemy
 {
     private bool[] equipment = new bool[4];
 
-    private void Awake()
+    protected override void Awake()
     {
-
+        base.Awake();
+        enemyName = EnemyNames.HeavyInvader;
         structureTypes = new List<StructureType>()
         {
             StructureType.Storage,
@@ -216,7 +217,7 @@ public class HeavyInvader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
         puff.transform.localScale *= 3f;
     }
