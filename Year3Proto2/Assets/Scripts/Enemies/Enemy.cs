@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 
 [Serializable]
@@ -26,6 +25,8 @@ public enum EnemyState
 
 public abstract class Enemy : MonoBehaviour
 {
+    protected float scale = 0.0f;
+
     [HideInInspector]
     public GameObject puffEffect;
     [HideInInspector]
@@ -50,9 +51,8 @@ public abstract class Enemy : MonoBehaviour
 
     // Stun
     protected bool stunned = false;
-    protected float stunTime = 1.0f;
-    protected float stunCurrentTime = 0.0f;
-
+    protected float stunDuration = 1.2f;
+    protected float stunTime = 0.0f;
 
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
@@ -82,17 +82,18 @@ public abstract class Enemy : MonoBehaviour
         };
     }
 
+    public void Stun()
+    {
+        animator.enabled = false;
+        stunned = true;
+        stunTime = stunDuration;
+    }
+
     public void Slow(bool enabled)
     {
         currentSpeed = enabled ? 0.2f : finalSpeed;
-    }
-
-    public void Stun(float _stunDuration)
-    {
-        stunned = true;
-        stunCurrentTime = _stunDuration;
-        animator.SetBool("Attack", false);
-        animator.SetBool("Walk", false);
+        float attackSpeed = 1f / scale;
+        animator.SetFloat("AttackSpeed", enabled ? 0.2f : attackSpeed);
     }
 
     public virtual void OnKill()
@@ -128,6 +129,15 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
+        if(stunned)
+        {
+            stunTime -= Time.deltaTime;
+            if (stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.enabled = true;
+            }
+        }
 
         if (GlobalData.longhausDead)
         {
@@ -141,17 +151,6 @@ public abstract class Enemy : MonoBehaviour
             {
                 Damage(health);
             }
-        }
-
-        if (stunned)
-        {
-            stunCurrentTime -= Time.deltaTime;
-            if (stunTime <= 0.0f)
-            {
-                stunned = false;
-                animator.SetBool("Walk", true);
-            }
-            return;
         }
 
         // update signature
@@ -333,6 +332,11 @@ public abstract class Enemy : MonoBehaviour
     public bool IsBeingObserved()
     {
         return observers > 0;
+    }
+
+    public float GetScale()
+    {
+        return scale;
     }
 
     public TileBehaviour GetCurrentTile()

@@ -13,6 +13,8 @@ public class FlyingInvader : Enemy
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (stunned) return;
+
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)

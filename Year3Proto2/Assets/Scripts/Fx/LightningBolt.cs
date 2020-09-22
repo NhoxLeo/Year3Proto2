@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LightningBolt : MonoBehaviour
 {
@@ -36,6 +34,12 @@ public class LightningBolt : MonoBehaviour
 
             lightningBolt.Emit(1);
             sparks.Emit(10);
+
+            Enemy enemy = target.GetComponent<Enemy>();
+            if(enemy)
+            {
+                enemy.Damage(10.0f);
+            }
         }
     }
 }

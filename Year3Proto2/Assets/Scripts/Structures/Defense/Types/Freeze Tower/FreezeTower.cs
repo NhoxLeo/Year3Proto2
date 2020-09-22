@@ -1,19 +1,40 @@
-﻿public class FreezeTower : DefenseStructure
+﻿using System.Collections;
+
+public class FreezeTower : DefenseStructure
 {
+    private FreezeTowerCannon[] cannons;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        structureName = StructureNames.FreezeTower;
+        attackCost = new ResourceBundle(0, 4, 0);
+        maxHealth = 450.0f;
+        health = maxHealth;
+    }
+
     protected override void Start()
     {
         base.Start();
-        structureName = StructureNames.FreezeTower;
+        cannons = GetComponentsInChildren<FreezeTowerCannon>();
+    }
 
-        attackCost = new ResourceBundle(0, 4, 0);
-        //attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerEfficiency) ? 4 : 8, 0);
+    protected override void OnDestroyed()
+    {
+        base.OnDestroyed();
+        StartCoroutine(Refresh());
+    }
 
-        // Freeze Range
-        /*if (SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerRange))
+    IEnumerator Refresh()
+    {
+        foreach (FreezeTowerCannon cannon in cannons)
         {
-            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
-            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+            cannon.GetTargets().ForEach(target => {
+                Enemy enemy = target.GetComponent<Enemy>();
+                if (enemy) enemy.Slow(false);
+            });
         }
-        */
+
+        yield return null;
     }
 }

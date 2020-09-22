@@ -679,7 +679,7 @@ public class SuperManager : MonoBehaviour
                     targetPosition = new SaveVector3(invader.GetTarget().transform.position),
                     state = invader.GetState()
                 },
-                scale = invader.scale,
+                scale = invader.GetScale(),
             };
             save.invaders.Add(saveData);
         }

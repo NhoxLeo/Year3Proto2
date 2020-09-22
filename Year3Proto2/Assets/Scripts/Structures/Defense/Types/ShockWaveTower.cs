@@ -1,30 +1,51 @@
 ﻿using UnityEngine;
 
-public class ShockWaveTower : ParticleDefenseStructure
+public class ShockWaveTower : DefenseStructure
 {
+    [Header("Shockwave Tower")]
+    [SerializeField] private float delay = 4.0f;
+    [SerializeField] private float startDelay = 1.2f;
+    [SerializeField] private Transform particle;
+    private float time = 0.0f;
+
+
     protected override void Awake()
     {
         base.Awake();
-
-        attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerEfficiency) ? 4 : 8, 0);
-
-        // Freeze Range
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerRange))
-        {
-            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
-            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
-        }
+        structureName = StructureNames.ShockwaveTower;
+        attackCost = new ResourceBundle(0, 4, 0);
+        maxHealth = 400.0f;
+        health = maxHealth;
     }
 
-    public override void OnParticleHit(Transform _target)
+    protected override void Start()
     {
-        //Possible shockwave damage and stun.
-        //Maybe a way to repulse them backwards...
+        base.Start();
+        time = startDelay;
+    }
 
-        Rigidbody body = _target.GetComponent<Rigidbody>();
-        if(body)
+    protected override void Update()
+    {
+        base.Update();
+        if(isPlaced && enemies.Count > 0)
         {
-            body.AddForce(-transform.forward * 10.0f);
+            time -= Time.deltaTime;
+            if(time <= 0.0f)
+            {
+                time = delay;
+
+                Instantiate(particle, transform.position, particle.rotation);
+                enemies.ForEach(transform => {
+                    Enemy enemy = transform.GetComponent<Enemy>();
+                    if(enemy)
+                    {
+                        enemy.Stun();
+                    }
+                });
+            }
+        } else
+        {
+            time = startDelay;
         }
     }
 }
