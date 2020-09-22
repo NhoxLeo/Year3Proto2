@@ -6,8 +6,10 @@ public class Invader : Enemy
 {
     public float scale = 0.0f;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        enemyName = EnemyNames.Invader;
         structureTypes = new List<StructureType>()
         {
             StructureType.Resource,
@@ -155,7 +157,7 @@ public class Invader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
         puff.transform.localScale *= scale;
     }

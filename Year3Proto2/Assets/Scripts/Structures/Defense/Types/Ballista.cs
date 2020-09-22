@@ -35,6 +35,10 @@ public class Ballista : ProjectileDefenseStructure
         }
         arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
         attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
+
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.FlyingInvader);
     }
 
     protected override void Update()
