@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TowerRange : MonoBehaviour
 {
-    AttackStructure parentStructure;
     DefenseStructure defenseParent;
     int enemyStructureColliderLayer;
 
@@ -16,7 +15,6 @@ public class TowerRange : MonoBehaviour
 
     private void GetParent()
     {
-        parentStructure = transform.parent.GetComponent<AttackStructure>();
         defenseParent = transform.parent.GetComponent<DefenseStructure>();
     }
 
@@ -26,17 +24,11 @@ public class TowerRange : MonoBehaviour
         {
             if (other.transform.parent)
             {
-                if (other.transform.parent.GetComponent<Enemy>())
+                Enemy enemy = other.transform.parent.GetComponent<Enemy>();
+                if (enemy)
                 {
-                    if (!parentStructure && !defenseParent) { GetParent(); }
-                    if (parentStructure)
-                    {
-                        if (!parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
-                        {
-                            parentStructure.GetEnemies().Add(other.transform.parent.gameObject);
-                        }
-                    }
-                    else
+                    if (!defenseParent) { GetParent(); }
+                    if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
                     {
                         if (!defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
@@ -54,17 +46,11 @@ public class TowerRange : MonoBehaviour
         {
             if (other.transform.parent)
             {
-                if (other.transform.parent.GetComponent<Enemy>())
+                Enemy enemy = other.transform.parent.GetComponent<Enemy>();
+                if (enemy)
                 {
-                    if (!parentStructure && !defenseParent) { GetParent(); }
-                    if (parentStructure)
-                    {
-                        if (parentStructure.GetEnemies().Contains(other.transform.parent.gameObject))
-                        {
-                            parentStructure.GetEnemies().Remove(other.transform.parent.gameObject);
-                        }
-                    }
-                    else
+                    if (!defenseParent) { GetParent(); }
+                    if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
                     {
                         if (defenseParent.GetEnemies().Contains(other.transform.parent))
                         {

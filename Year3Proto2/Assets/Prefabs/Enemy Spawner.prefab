@@ -43,11 +43,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9288ec39486596045b2c73980b8e8fbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemySpawner: {fileID: 0}
-  weightageScalar: 0.2
-  tokensScalar: 0.1
-  time: 120
-  timeVariance: {x: 60, y: 120}
+  weightageScalar: 0.01
+  tokenIncrement: 0.05
+  tokensScalar: 0.0001
+  time: 90
+  tokens: 0
+  timeVariance: {x: 45, y: 90}
+  spawning: 0
   enemyPrefabs:
   - {fileID: 5323469284787221598, guid: 7c85a205f5e638b4d8eeace9685d07c6, type: 3}
   - {fileID: 4317903546219083560, guid: 6264ac47d9f223a48a9997c27bb5f11f, type: 3}
@@ -56,5 +58,5 @@ MonoBehaviour:
   airshipPrefab: {fileID: 0}
   pointerParent: {fileID: 0}
   enemiesPerAirship: 9
-  radiusOffset: 0
+  radiusOffset: 5
   distance: 0

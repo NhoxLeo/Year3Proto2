@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 
 [Serializable]
@@ -27,7 +26,7 @@ public enum EnemyState
 public abstract class Enemy : MonoBehaviour
 {
     [HideInInspector]
-    public GameObject puffEffect;
+    protected static GameObject PuffEffect;
     [HideInInspector]
     public float health = 10.0f;
     [HideInInspector]
@@ -44,15 +43,18 @@ public abstract class Enemy : MonoBehaviour
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     protected bool needToMoveAway;
     protected float finalSpeed = 0.0f;
+    protected float currentSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
+    [HideInInspector]
+    public string enemyName;
 
     // Stun
     protected bool stunned = false;
-    protected float stunTime = 1.0f;
-    protected float stunCurrentTime = 0.0f;
+    protected float stunDuration = 1.2f;
+    protected float stunTime = 0.0f;
 
-
+    private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
@@ -63,16 +65,24 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
 
-    private float halfSpeed;
+    private int slowCount = 0;
 
     public abstract void Action();
+
+    protected virtual void Awake()
+    {
+        if (!PuffEffect)
+        {
+            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+        }
+    }
 
     protected virtual void Start()
     {
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
-        halfSpeed = finalSpeed * 0.5f;
+        currentSpeed = finalSpeed;
 
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         signature = new EnemyPathSignature()
@@ -82,17 +92,42 @@ public abstract class Enemy : MonoBehaviour
         };
     }
 
-    public void Slow(bool enabled)
+    public void Stun()
     {
-        finalSpeed = enabled ? halfSpeed : finalSpeed;
+        animator.enabled = false;
+        stunned = true;
+        stunTime = stunDuration;
     }
 
-    public void Stun(float _stunDuration)
+    public void Slow(bool _newSlow)
     {
-        stunned = true;
-        stunCurrentTime = _stunDuration;
-        animator.SetBool("Attack", false);
-        animator.SetBool("Walk", false);
+        if (_newSlow)
+        {
+            if (slowCount == 0)
+            {
+                currentSpeed = finalSpeed * 0.5f;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    float attackSpeed = 0.5f * animator.GetFloat("AttackSpeed");
+                    animator.SetFloat("AttackSpeed", attackSpeed);
+                }
+            }
+            slowCount++;
+        }
+        else
+        {
+            if (slowCount == 1)
+            {
+                currentSpeed = finalSpeed;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    float attackSpeed = 2f * animator.GetFloat("AttackSpeed");
+                    animator.SetFloat("AttackSpeed", attackSpeed);
+                }
+            }
+            slowCount--;
+        }
+
     }
 
     public virtual void OnKill()
@@ -102,32 +137,45 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)
     {
-        enemyState = EnemyState.Action;
-        defenseTarget = _soldier;
-        defending = true;
-        animator.SetBool("Attack", true);
-        action = true;
-        LookAtPosition(_soldier.transform.position);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            enemyState = EnemyState.Action;
+            defenseTarget = _soldier;
+            defending = true;
+            animator.SetBool("Attack", true);
+            action = true;
+            LookAtPosition(_soldier.transform.position);
+        }
     }
 
     public void ForgetSoldier()
     {
-        defenseTarget = null;
-        defending = false;
-        action = false;
-        enemyState = EnemyState.Idle;
-        animator.SetBool("Attack", false);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            defenseTarget = null;
+            defending = false;
+            action = false;
+            enemyState = EnemyState.Idle;
+            animator.SetBool("Attack", false);
+        }
     }
 
     protected virtual void LookAtPosition(Vector3 _position)
     {
         transform.LookAt(_position);
-        // fixing animation problems
-        transform.right = transform.forward;
     }
 
     protected virtual void Update()
     {
+        if(stunned)
+        {
+            stunTime -= Time.deltaTime;
+            if (stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.enabled = true;
+            }
+        }
 
         if (GlobalData.longhausDead)
         {
@@ -141,17 +189,6 @@ public abstract class Enemy : MonoBehaviour
             {
                 Damage(health);
             }
-        }
-
-        if (stunned)
-        {
-            stunCurrentTime -= Time.deltaTime;
-            if (stunTime <= 0.0f)
-            {
-                stunned = false;
-                animator.SetBool("Walk", true);
-            }
-            return;
         }
 
         // update signature
@@ -242,16 +279,16 @@ public abstract class Enemy : MonoBehaviour
                 enemiesInArea.RemoveAll(enemy => !enemy);
             }
         }
-        return finalMotionVector.normalized * finalSpeed;
+        return finalMotionVector.normalized * currentSpeed;
     }
 
-    protected Vector3 GetMotionVector()
+    protected Vector3 GetAvoidingMotionVector()
     {
         // Get the vector between this enemy and the target
         Vector3 toTarget = target.transform.position - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 0.5f)
+        if (toTarget.magnitude > 0.85f)
         {
             bool enemyWasNull = false;
             foreach (GameObject enemy in enemiesInArea)
@@ -273,8 +310,10 @@ public abstract class Enemy : MonoBehaviour
                 enemiesInArea.RemoveAll(enemy => !enemy);
             }
         }
-        return finalMotionVector.normalized * finalSpeed;
+        return finalMotionVector.normalized * currentSpeed;
     }
+
+
 
     public Structure GetTarget()
     {
@@ -340,5 +379,15 @@ public abstract class Enemy : MonoBehaviour
             return hit.transform.GetComponent<TileBehaviour>();
         }
         return null;
+    }
+
+    public void SetSpawnWave(int _wave)
+    {
+        spawnWave = _wave;
+    }
+
+    public int GetSpawnWave()
+    {
+        return spawnWave;
     }
 }
