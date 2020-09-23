@@ -150,12 +150,20 @@ public class Invader : Enemy
         }
     }
 
+    public void Initialize(int _level, float _scale)
+    {
+        SetScale(_scale);
+        SetLevel(_level);
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
+    }
+
     public void SetScale(float _scale)
     {
         scale = _scale;
         transform.localScale *= _scale + 0.3f;
-        damage = _scale * 2.0f;
-        health = _scale * 10f;
+        baseDamage = _scale * 2.0f;
+        baseHealth = _scale * 10f;
         finalSpeed = 0.4f + ((1f / _scale) / 10.0f);
 
         currentSpeed = finalSpeed;
@@ -163,7 +171,6 @@ public class Invader : Enemy
         if (!animator) { animator = GetComponent<Animator>(); }
 
         animator.SetFloat("AttackSpeed", 1f / _scale);
-
     }
 
     public override void OnKill()

@@ -132,13 +132,36 @@ public class Airship : MonoBehaviour
             Invader invader = instantiatedTransform.GetComponent<Invader>();
             if(invader)
             {
-                invader.SetScale(Random.Range(0.8f, 1.5f));
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Invader);
+                invader.Initialize(level, Random.Range(0.8f, 1.5f));
             }
 
             HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
             if (heavyInvader)
             {
-                heavyInvader.Randomize();
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.HeavyInvader);
+                heavyInvader.Initialize(level);
+            }
+
+            FlyingInvader flying = instantiatedTransform.GetComponent<FlyingInvader>();
+            if (flying)
+            {
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.FlyingInvader);
+                flying.Initialize(level);
+            }
+
+            Petard pet = instantiatedTransform.GetComponent<Petard>();
+            if (pet)
+            {
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Petard);
+                pet.Initialize(level);
+            }
+
+            BatteringRam ram = instantiatedTransform.GetComponent<BatteringRam>();
+            if (ram)
+            {
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.BatteringRam);
+                ram.Initialize(level);
             }
 
             yield return wait;

@@ -4,17 +4,8 @@ using UnityEngine;
 
 public class Petard : Enemy
 {
-    private float explosionDamage = 50f;
     private float explosionRadius = 0.35f;
     private bool barrelExploded = false;
-
-    protected override void Start()
-    {
-        base.Start();
-        finalSpeed = 0.4f;
-        currentSpeed = finalSpeed;
-        health = 15f;
-    }
 
     protected override void Awake()
     {
@@ -161,8 +152,8 @@ public class Petard : Enemy
                     {
                         continue;
                     }
-                    float damageToThisStructure = explosionDamage * (transform.position - structure.transform.position).magnitude / explosionRadius;
-                    float clamped = Mathf.Clamp(damageToThisStructure, explosionDamage * 0.3f, explosionDamage);
+                    float damageToThisStructure = damage * (transform.position - structure.transform.position).magnitude / explosionRadius;
+                    float clamped = Mathf.Clamp(damageToThisStructure, damage * 0.3f, damage);
                     structure.Damage(clamped);
                 }
             }
@@ -177,5 +168,15 @@ public class Petard : Enemy
         base.OnKill();
         GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
+    }
+
+    public void Initialize(int _level)
+    {
+        baseHealth = 15f;
+        baseDamage = 60f;
+        SetLevel(_level);
+        finalSpeed = 0.4f;
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
     }
 }

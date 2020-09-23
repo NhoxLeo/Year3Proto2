@@ -80,9 +80,9 @@ public class BuildPanel : MonoBehaviour
 
         if (!superMan.GetResearchComplete(SuperManager.Catapult)) { transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
         if (!superMan.GetResearchComplete(SuperManager.Barracks)) { transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
-        //transform.Find("PanelMask/Content/DefenceBuildings/IconFreeze").GetComponent<Image>().sprite = lockedBuilding;
-        //transform.Find("PanelMask/Content/DefenceBuildings/IconShockwave").GetComponent<Image>().sprite = lockedBuilding;
-        //transform.Find("PanelMask/Content/DefenceBuildings/IconLightning").GetComponent<Image>().sprite = lockedBuilding;
+        if (!superMan.GetResearchComplete(SuperManager.FreezeTower)) { transform.Find("PanelMask/Content/DefenceBuildings/IconFreeze").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.LightningTower)) { transform.Find("PanelMask/Content/DefenceBuildings/IconLightning").GetComponent<Image>().sprite = lockedBuilding; }
+        if (!superMan.GetResearchComplete(SuperManager.ShockwaveTower)) { transform.Find("PanelMask/Content/DefenceBuildings/IconShockwave").GetComponent<Image>().sprite = lockedBuilding; }
     }
 
     public void SetButtonColour(Buildings _button, Color _colour)
@@ -196,7 +196,7 @@ public class BuildPanel : MonoBehaviour
         toolInfo.heading[(int)Buildings.Barracks]           = StructureNames.BuildPanelToString(Buildings.Barracks);
         toolInfo.heading[(int)Buildings.FreezeTower]        = StructureNames.BuildPanelToString(Buildings.FreezeTower);
         toolInfo.heading[(int)Buildings.ShockwaveTower]     = StructureNames.BuildPanelToString(Buildings.ShockwaveTower);
-        toolInfo.heading[(int)Buildings.LightningTower]      = StructureNames.BuildPanelToString(Buildings.LightningTower);
+        toolInfo.heading[(int)Buildings.LightningTower]     = StructureNames.BuildPanelToString(Buildings.LightningTower);
         toolInfo.heading[(int)Buildings.Farm]               = StructureNames.BuildPanelToString(Buildings.Farm);
         toolInfo.heading[(int)Buildings.Granary]            = StructureNames.BuildPanelToString(Buildings.Granary);
         toolInfo.heading[(int)Buildings.LumberMill]         = StructureNames.BuildPanelToString(Buildings.LumberMill);
@@ -211,7 +211,7 @@ public class BuildPanel : MonoBehaviour
         toolInfo.description[(int)Buildings.Barracks]       = StructureManager.StructureDescriptions[Buildings.Barracks];
         toolInfo.description[(int)Buildings.FreezeTower]    = StructureManager.StructureDescriptions[Buildings.FreezeTower];
         toolInfo.description[(int)Buildings.ShockwaveTower] = StructureManager.StructureDescriptions[Buildings.ShockwaveTower];
-        toolInfo.description[(int)Buildings.LightningTower]  = StructureManager.StructureDescriptions[Buildings.LightningTower];
+        toolInfo.description[(int)Buildings.LightningTower] = StructureManager.StructureDescriptions[Buildings.LightningTower];
         toolInfo.description[(int)Buildings.Farm]           = StructureManager.StructureDescriptions[Buildings.Farm];
         toolInfo.description[(int)Buildings.Granary]        = StructureManager.StructureDescriptions[Buildings.Granary];
         toolInfo.description[(int)Buildings.LumberMill]     = StructureManager.StructureDescriptions[Buildings.LumberMill];
@@ -243,9 +243,9 @@ public class BuildPanel : MonoBehaviour
 
         if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
         if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
-        //if (tooltipSelected == Buildings.FreezeTower) { return; }
-        //if (tooltipSelected == Buildings.ShockwaveTower) { return; }
-        //if (tooltipSelected == Buildings.LightningTower) { return; }
+        if (tooltipSelected == Buildings.FreezeTower && !superMan.GetResearchComplete(SuperManager.FreezeTower)) { return; }
+        if (tooltipSelected == Buildings.LightningTower && !superMan.GetResearchComplete(SuperManager.LightningTower)) { return; }
+        if (tooltipSelected == Buildings.ShockwaveTower && !superMan.GetResearchComplete(SuperManager.ShockwaveTower)) { return; }
 
         if (tooltipSelected == Buildings.None)
         {
@@ -282,6 +282,9 @@ public class BuildPanel : MonoBehaviour
     {
         if ((Buildings)buildingType == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
         if ((Buildings)buildingType == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
+        if ((Buildings)buildingType == Buildings.FreezeTower && !superMan.GetResearchComplete(SuperManager.FreezeTower)) { return; }
+        if ((Buildings)buildingType == Buildings.LightningTower && !superMan.GetResearchComplete(SuperManager.LightningTower)) { return; }
+        if ((Buildings)buildingType == Buildings.ShockwaveTower && !superMan.GetResearchComplete(SuperManager.ShockwaveTower)) { return; }
         //if ((Buildings)buildingType == Buildings.FreezeTower) { return; }
         //if ((Buildings)buildingType == Buildings.ShockwaveTower) { return; }
         //if ((Buildings)buildingType == Buildings.LightningTower) { return; }

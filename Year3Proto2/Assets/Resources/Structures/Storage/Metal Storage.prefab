@@ -55,7 +55,7 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
-  storage: 0
+  storage: 500
 --- !u!33 &4206844913795456530
 MeshFilter:
   m_ObjectHideFlags: 0

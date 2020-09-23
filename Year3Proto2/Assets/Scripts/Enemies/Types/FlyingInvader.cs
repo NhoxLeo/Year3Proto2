@@ -16,24 +16,17 @@ public class FlyingInvader : Enemy
             StructureType.Longhaus,
             StructureType.Defense
         };
+        enemyName = EnemyNames.FlyingInvader;
         if (!Barrel)
         {
             Barrel = Resources.Load("FlyingInvaderBarrel") as GameObject;
         }
     }
 
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-        base.Start();
-        transform.position = new Vector3(transform.position.x, 2f, transform.position.z);
-        finalSpeed = 0.25f;
-        health = 25f;
-    }
-
     // Update is called once per frame
     void FixedUpdate()
     {
+        transform.position = new Vector3(transform.position.x, 2f, transform.position.z);
         if (stunned) return;
 
         if (!GlobalData.longhausDead)
@@ -92,7 +85,8 @@ public class FlyingInvader : Enemy
         if (barrelDropTimer <= 0)
         {
             barrelDropTimer = barrelDropDelay;
-            Instantiate(Barrel, transform.position, Quaternion.identity);
+            FlyingInvaderBarrel barrel = Instantiate(Barrel, transform.position, Quaternion.identity).GetComponent<FlyingInvaderBarrel>();
+            barrel.Initialize(damage);
         }
     }
 
@@ -156,5 +150,15 @@ public class FlyingInvader : Enemy
 
         target = closest;
         enemyState = EnemyState.Walk;
+    }
+
+    public void Initialize(int _level)
+    {
+        baseHealth = 25f;
+        baseDamage = 25f;
+        SetLevel(_level);
+        finalSpeed = 0.25f;
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
     }
 }
