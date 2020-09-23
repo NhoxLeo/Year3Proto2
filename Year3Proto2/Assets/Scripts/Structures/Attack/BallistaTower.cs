@@ -20,10 +20,7 @@ public class BallistaTower : AttackStructure
     protected override void Awake()
     {
         base.Awake();
-        maxHealth = 350f;
-        health = maxHealth;
         structureName = StructureNames.Ballista;
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
     }
 
     protected override void Start()
@@ -126,5 +123,15 @@ public class BallistaTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return 350f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
     }
 }

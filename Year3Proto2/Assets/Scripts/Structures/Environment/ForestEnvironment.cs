@@ -6,6 +6,7 @@ public class ForestEnvironment : EnvironmentStructure
 {
     private bool exploitedState = false;
     private MeshRenderer meshRenderer;
+    private bool playable = false;
 
     protected override void Awake()
     {
@@ -15,20 +16,46 @@ public class ForestEnvironment : EnvironmentStructure
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    protected override void Update()
+    protected override void Start()
     {
-        base.Update();
-        if (exploited && !exploitedState)
+        base.Start();
+        playable = attachedTile.GetPlayable();
+        /*
+        if (!playable)
         {
             transform.GetChild(0).gameObject.SetActive(true);
             meshRenderer.enabled = false;
-            exploitedState = true;
         }
-        if (!exploited && exploitedState)
-        {
-            transform.GetChild(0).gameObject.SetActive(false);
-            meshRenderer.enabled = true;
-            exploitedState = false;
+        */
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (playable)
+            {
+            if (exploited && !exploitedState)
+            {
+                transform.GetChild(0).gameObject.SetActive(true);
+                meshRenderer.enabled = false;
+                exploitedState = true;
+            }
+            if (!exploited && exploitedState)
+            {
+                transform.GetChild(0).gameObject.SetActive(false);
+                meshRenderer.enabled = true;
+                exploitedState = false;
+            }
         }
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return 100f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
     }
 }

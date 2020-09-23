@@ -128,11 +128,15 @@ public class HUDManager : MonoBehaviour
             metalDeltaTip.showTooltip = false;
         }
 
-
+        EnemyManager enemyMan = EnemyManager.GetInstance();
         // Info Bar
-
-        int wavesSurvived = Mathf.Clamp(EnemyManager.GetInstance().GetWaveCurrent() - 1, 0, 999);
-        if (EnemyManager.GetInstance().GetWaveCurrent() >= 1 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) { wavesSurvived++; }
+        int waveCurrent = enemyMan.GetWaveCurrent();
+        bool waveSurvived = enemyMan.GetWaveSurvived(waveCurrent);
+        int wavesSurvived = waveSurvived ? waveCurrent : waveCurrent - 1;
+        if (wavesSurvived < 0)
+        {
+            wavesSurvived = 0;
+        }
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
     }

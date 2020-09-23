@@ -10,4 +10,14 @@ public class PlainsEnvironment : EnvironmentStructure
         environmentType = EnvironmentType.plains;
         structureName = StructureNames.FoodEnvironment;
     }
+
+    public override float GetBaseMaxHealth()
+    {
+        return 100f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
+    }
 }

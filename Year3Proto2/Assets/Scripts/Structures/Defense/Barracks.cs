@@ -5,12 +5,15 @@ using DG.Tweening;
 
 public class Barracks : DefenseStructure
 {
-    private GameObject soldierPrefab;
+    private static GameObject SoldierPrefab;
     private int maxSoldiers = 3;
     [HideInInspector]
     public List<Soldier> soldiers;
     private float trainTime = 20f;
     private float timeTrained = 0f;
+
+    private const float BaseMaxHealth = 200f;
+    private const float BaseDamage = 3f;
 
     public float GetTimeTrained()
     {
@@ -53,16 +56,6 @@ public class Barracks : DefenseStructure
         }
     }
 
-    public override void OnPlace()
-    {
-        base.OnPlace();
-        Barracks[] barracks = FindObjectsOfType<Barracks>();
-        if (barracks.Length >= 2)
-        {
-            Barracks other = (barracks[0] == this) ? barracks[1] : barracks[0];
-        }
-    }
-
     protected override void Start()
     {
         base.Start();
@@ -71,23 +64,30 @@ public class Barracks : DefenseStructure
 
     protected override void Awake()
     {
+        // set base stats
         base.Awake();
-        SuperManager superMan = SuperManager.GetInstance();
         structureName = StructureNames.Barracks;
-        soldiers = new List<Soldier>();
-        soldierPrefab = Resources.Load("Soldier") as GameObject;
-        maxHealth = 200f;
-        if (superMan.GetResearchComplete(SuperManager.BarracksFortification))
-        {
-            maxHealth *= 1.5f;
-        }
-        health = maxHealth;
+
+        // research
+        SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
         {
             trainTime = 10f;
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
         }
+
+        // set targets
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
+
+        // soldier stuff
+        if (!SoldierPrefab)
+        {
+            SoldierPrefab = Resources.Load("Soldier") as GameObject;
+        }
+        soldiers = new List<Soldier>();
     }
 
     protected override void Update()
@@ -104,13 +104,15 @@ public class Barracks : DefenseStructure
                     SpawnSoldier();
                 }
             }
+
+            soldiers.RemoveAll(soldier => !soldier);
         }
     }
 
     private void SpawnSoldier()
     {
         SuperManager superMan = SuperManager.GetInstance();
-        Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
+        Soldier newSoldier = Instantiate(SoldierPrefab).GetComponent<Soldier>();
         newSoldier.SetBarracksID(ID);
         newSoldier.SetHome(this);
         //float vectorSampler = Random.Range(0f, 1f);
@@ -134,7 +136,7 @@ public class Barracks : DefenseStructure
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
     {
         SuperManager superMan = SuperManager.GetInstance();
-        Soldier newSoldier = Instantiate(soldierPrefab).GetComponent<Soldier>();
+        Soldier newSoldier = Instantiate(SoldierPrefab).GetComponent<Soldier>();
         newSoldier.SetBarracksID(ID);
         newSoldier.SetHome(this);
         newSoldier.transform.position = _saveData.position;
@@ -153,5 +155,45 @@ public class Barracks : DefenseStructure
         }
 
         soldiers.Add(newSoldier);
+    }
+
+    protected override void OnSetLevel()
+    {
+        base.OnSetLevel();
+        Soldier.SetDamage(GetBaseDamage() * Mathf.Pow(1.25f, level - 1));
+        health = GetTrueMaxHealth();
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return BaseMaxHealth;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        // get base health
+        float maxHealth = GetBaseMaxHealth();
+
+        // fortification upgrade
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BarracksFortification))
+        {
+            maxHealth *= 1.5f;
+        }
+
+        // level
+        maxHealth *= Mathf.Pow(1.25f, level - 1);
+
+        // poor timber multiplier
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
+        {
+            maxHealth *= 0.5f;
+        }
+
+        return maxHealth;
+    }
+
+    private float GetBaseDamage()
+    {
+        return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f);
     }
 }

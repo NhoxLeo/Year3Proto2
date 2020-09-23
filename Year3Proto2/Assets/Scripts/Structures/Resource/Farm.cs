@@ -34,7 +34,6 @@ public class Farm : ResourceStructure
         base.Awake();
         resourceType = ResourceType.Food;
         structureName = StructureNames.FoodResource;
-        health = maxHealth;
     }
 
     public override void OnPlace()

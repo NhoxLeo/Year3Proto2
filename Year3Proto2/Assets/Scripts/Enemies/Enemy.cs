@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 
 [Serializable]
@@ -27,11 +26,15 @@ public enum EnemyState
 public abstract class Enemy : MonoBehaviour
 {
     [HideInInspector]
-    public GameObject puffEffect;
+    protected static GameObject PuffEffect;
     [HideInInspector]
-    public float health = 10.0f;
+    protected float baseHealth = 10.0f;
     [HideInInspector]
-    public float damage = 2.0f;
+    protected float baseDamage = 2.0f;
+    [HideInInspector]
+    protected float health;
+    [HideInInspector]
+    protected float damage;
     [HideInInspector]
     public bool nextReturnFalse = false;
     protected bool delayedDeathCalled = false;
@@ -45,15 +48,13 @@ public abstract class Enemy : MonoBehaviour
     protected bool needToMoveAway;
     protected float finalSpeed = 0.0f;
     protected float currentSpeed = 0.0f;
+    protected float finalAttackSpeed = 0.0f;
+    protected float currentAttackSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
-
-    // Stun
-    protected bool stunned = false;
-    protected float stunTime = 1.0f;
-    protected float stunCurrentTime = 0.0f;
-
-
+    [HideInInspector]
+    public string enemyName;
+    private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
@@ -63,17 +64,30 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathTimer = 0f;
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
+    protected int level;
 
+    // Stun
+    protected bool stunned = false;
+    protected float stunDuration = 1.2f;
+    protected float stunTime = 0.0f;
+
+    // Slow
+    private int slowCount = 0;
 
     public abstract void Action();
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
+        if (!PuffEffect)
+        {
+            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+        }
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
-        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
-        currentSpeed = finalSpeed;
+    }
 
+    protected virtual void Start()
+    {
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         signature = new EnemyPathSignature()
         {
@@ -82,17 +96,43 @@ public abstract class Enemy : MonoBehaviour
         };
     }
 
-    public void Slow(bool enabled)
+    public void Stun()
     {
-        currentSpeed = enabled ? 0.2f : finalSpeed;
+        animator.enabled = false;
+        stunned = true;
+        stunTime = stunDuration;
     }
 
-    public void Stun(float _stunDuration)
+    public void Slow(bool _newSlow, float _slowAmount)
     {
-        stunned = true;
-        stunCurrentTime = _stunDuration;
-        animator.SetBool("Attack", false);
-        animator.SetBool("Walk", false);
+        if (_newSlow)
+        {
+            if (slowCount == 0)
+            {
+                float slowMult = 0.6f * (1f / _slowAmount);
+                currentSpeed = finalSpeed * slowMult;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    finalAttackSpeed = animator.GetFloat("AttackSpeed");
+                    currentAttackSpeed = finalAttackSpeed * slowMult;
+                    animator.SetFloat("AttackSpeed", currentAttackSpeed);
+                }
+            }
+            slowCount++;
+        }
+        else
+        {
+            if (slowCount == 1)
+            {
+                currentSpeed = finalSpeed;
+                if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+                {
+                    animator.SetFloat("AttackSpeed", finalAttackSpeed);
+                }
+            }
+            slowCount--;
+        }
+
     }
 
     public virtual void OnKill()
@@ -102,32 +142,49 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void OnDamagedBySoldier(Soldier _soldier)
     {
-        enemyState = EnemyState.Action;
-        defenseTarget = _soldier;
-        defending = true;
-        animator.SetBool("Attack", true);
-        action = true;
-        LookAtPosition(_soldier.transform.position);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            enemyState = EnemyState.Action;
+            defenseTarget = _soldier;
+            defending = true;
+            animator.SetBool("Attack", true);
+            action = true;
+            LookAtPosition(_soldier.transform.position);
+        }
+        if (enemyName == EnemyNames.BatteringRam)
+        {
+            Stun();
+        }
     }
 
     public void ForgetSoldier()
     {
-        defenseTarget = null;
-        defending = false;
-        action = false;
-        enemyState = EnemyState.Idle;
-        animator.SetBool("Attack", false);
+        if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
+        {
+            defenseTarget = null;
+            defending = false;
+            action = false;
+            enemyState = EnemyState.Idle;
+            animator.SetBool("Attack", false);
+        }
     }
 
     protected virtual void LookAtPosition(Vector3 _position)
     {
         transform.LookAt(_position);
-        // fixing animation problems
-        transform.right = transform.forward;
     }
 
     protected virtual void Update()
     {
+        if(stunned)
+        {
+            stunTime -= Time.deltaTime;
+            if (stunTime <= 0.0f)
+            {
+                stunned = false;
+                animator.enabled = true;
+            }
+        }
 
         if (GlobalData.longhausDead)
         {
@@ -141,17 +198,6 @@ public abstract class Enemy : MonoBehaviour
             {
                 Damage(health);
             }
-        }
-
-        if (stunned)
-        {
-            stunCurrentTime -= Time.deltaTime;
-            if (stunTime <= 0.0f)
-            {
-                stunned = false;
-                animator.SetBool("Walk", true);
-            }
-            return;
         }
 
         // update signature
@@ -342,5 +388,42 @@ public abstract class Enemy : MonoBehaviour
             return hit.transform.GetComponent<TileBehaviour>();
         }
         return null;
+    }
+
+    public void SetSpawnWave(int _wave)
+    {
+        spawnWave = _wave;
+    }
+
+    public int GetSpawnWave()
+    {
+        return spawnWave;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    public virtual void SetLevel(int _level)
+    {
+        level = _level;
+        damage = baseDamage * Mathf.Pow(1.25f, _level - 1);
+        health = baseHealth * Mathf.Pow(1.25f, _level - 1);
+    }
+
+    public float GetHealth()
+    {
+        return health;
+    }
+
+    public void SetHealth(float _health)
+    {
+        health = _health;
+    }
+
+    public float GetDamage()
+    {
+        return damage;
     }
 }

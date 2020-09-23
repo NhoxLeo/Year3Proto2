@@ -37,12 +37,18 @@ public class BoulderBehaviour : MonoBehaviour
             foreach (RaycastHit enemyHit in hitEnemies)
             {
                 Enemy enemy = enemyHit.transform.GetComponent<Enemy>();
+                if (enemy.enemyName == EnemyNames.Petard)
+                {
+                    enemy.GetComponent<Petard>().SetOffBarrel();
+                    continue;
+                }
                 if (enemy)
                 {
                     enemy.Damage(damage);
                 }
             }
             Destroy(gameObject);
+            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
         }
     }
 }
