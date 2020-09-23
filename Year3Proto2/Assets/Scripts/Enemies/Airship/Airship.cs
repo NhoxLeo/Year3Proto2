@@ -43,6 +43,8 @@ public class Airship : MonoBehaviour
 
     private Transform target;
     private float distance = float.MaxValue;
+    public int spawnWave;
+
 
     private AirshipState airshipState;
 
@@ -163,6 +165,8 @@ public class Airship : MonoBehaviour
                 int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.BatteringRam);
                 ram.Initialize(level);
             }
+
+            enemy.SetSpawnWave(spawnWave);
 
             yield return wait;
 

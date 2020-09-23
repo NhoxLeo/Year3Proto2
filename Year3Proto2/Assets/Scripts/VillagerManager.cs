@@ -12,7 +12,7 @@ public class VillagerManager : MonoBehaviour
     private int villagersManAllocated = 0;
     private int starveTicks = 0;
     [SerializeField]
-    private int villagerHungerModifier = 2;
+    private int villagerHungerModifier = 1;
     private Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
 
     private void Awake()

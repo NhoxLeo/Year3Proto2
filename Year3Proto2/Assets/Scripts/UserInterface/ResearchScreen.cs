@@ -173,7 +173,7 @@ public class ResearchScreen : MonoBehaviour
     private void GetResearchInfo()
     {
         SuperManager superMan = SuperManager.GetInstance();
-        researchDefinitions = SuperManager.researchDefinitions;
+        researchDefinitions = SuperManager.ResearchDefinitions;
         completedResearch = superMan.GetResearch();
     }
 

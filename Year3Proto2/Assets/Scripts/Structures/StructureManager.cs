@@ -802,17 +802,17 @@ public class StructureManager : MonoBehaviour
                 string structName = structure.GetStructureName();
                 if (attachedName == StructureNames.FoodEnvironment && structName == StructureNames.FoodResource)
                 {
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Food));
+                    GameManager.GetInstance().AddBatch(new ResourceBatch(50, ResourceType.Food));
                     structure.GetComponent<Farm>().wasPlacedOnPlains = true;
                 }
                 else if (attachedName == StructureNames.LumberEnvironment && structName == StructureNames.LumberResource)
                 {
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Wood));
+                    GameManager.GetInstance().AddBatch(new ResourceBatch(50, ResourceType.Wood));
                     structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
                 }
                 else if (attachedName == StructureNames.MetalEnvironment && structName == StructureNames.MetalResource)
                 {
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(50, ResourceType.Metal));
+                    GameManager.GetInstance().AddBatch(new ResourceBatch(50, ResourceType.Metal));
                     structure.GetComponent<Mine>().wasPlacedOnHills = true;
                 }
                 Destroy(attached.gameObject);
