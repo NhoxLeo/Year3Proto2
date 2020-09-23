@@ -1,30 +1,58 @@
 ﻿using UnityEngine;
 
-public class ShockWaveTower : ParticleDefenseStructure
+public class ShockWaveTower : DefenseStructure
 {
+    [Header("Shockwave Tower")]
+    [SerializeField] private float delay = 4.0f;
+    [SerializeField] private float startDelay = 1.2f;
+    [SerializeField] private Transform particle;
+    private float time = 0.0f;
+
+
     protected override void Awake()
     {
         base.Awake();
+        structureName = StructureNames.ShockwaveTower;
+        attackCost = new ResourceBundle(0, 4, 0);
+        maxHealth = 400.0f;
+        health = maxHealth;
 
-        attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerEfficiency) ? 4 : 8, 0);
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
+    }
 
-        // Freeze Range
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerRange))
+    protected override void Start()
+    {
+        base.Start();
+        time = startDelay;
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if(isPlaced && enemies.Count > 0)
         {
-            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
-            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+            time -= Time.deltaTime;
+            if(time <= 0.0f)
+            {
+                time = delay;
+
+                Instantiate(particle, transform.position, particle.rotation);
+                enemies.ForEach(transform => {
+                    Enemy enemy = transform.GetComponent<Enemy>();
+                    if(enemy) enemy.Stun();
+                });
+            }
+        }
+        else
+        {
+            time = startDelay;
         }
     }
 
-    public override void OnParticleHit(Transform _target)
+    public float GetAttackRate()
     {
-        //Possible shockwave damage and stun.
-        //Maybe a way to repulse them backwards...
-
-        Rigidbody body = _target.GetComponent<Rigidbody>();
-        if(body)
-        {
-            body.AddForce(-transform.forward * 10.0f);
-        }
+        return 1f / delay;
     }
 }

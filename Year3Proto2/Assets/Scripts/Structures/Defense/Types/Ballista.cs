@@ -4,6 +4,11 @@ public class Ballista : ProjectileDefenseStructure
 {
     [SerializeField] private Transform ballista;
 
+    [SerializeField] private GameObject arrowPrefab;
+    public static bool arrowPierce;
+    private float arrowDamage = 10f;
+    private float arrowSpeed = 12.5f;
+
     private const int MetalCost = 2;
     private const float MaxHealth = 350;
 
@@ -16,18 +21,25 @@ public class Ballista : ProjectileDefenseStructure
 
         structureName = StructureNames.Ballista;
 
-        if(SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification))
+        SuperManager superMan = SuperManager.GetInstance();
+
+        if (superMan.GetResearchComplete(SuperManager.BallistaFortification))
         {
             health = maxHealth *= 1.5f;
         }
 
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange))
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
+        arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
 
-        attackCost = new ResourceBundle(0, SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.FlyingInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
     }
 
     protected override void Update()
@@ -45,10 +57,15 @@ public class Ballista : ProjectileDefenseStructure
 
     public override void Launch(Transform _target)
     {
+        GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
+        BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
+        arrowBehaviour.Initialize(_target, arrowDamage, arrowSpeed, arrowPierce);
+        GameManager.CreateAudioEffect("arrow", transform.position);
+        /*
         Vector3 position = transform.position;
         position.y = 1.25f;
 
-        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity, transform);
+        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity);
         Arrow arrow = projectile.GetComponent<Arrow>();
         if (arrow)
         {
@@ -58,6 +75,7 @@ public class Ballista : ProjectileDefenseStructure
             arrow.SetDamage(arrow.GetDamage() * damageFactor * level);
             arrow.SetTarget(_target);
         }
+        */
     }
 
 

@@ -134,7 +134,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = ballista.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
-                //foodValueText.text = ballista.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = ballista.CanBeRepaired();
@@ -146,7 +145,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = catapult.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
-                //foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = catapult.CanBeRepaired();
@@ -158,10 +156,42 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Troop Capacity";
                 statValueText.text = barracks.GetTroopCapacity().ToString("0");
                 statInfoText.text = "units";
-                //foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = barracks.CanBeRepaired();
+                break;
+
+            case StructureNames.FreezeTower:
+                FreezeTower freeze = targetBuilding.GetComponent<FreezeTower>();
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "Slow effect";
+                statValueText.text = freeze.GetFreezeEffect().ToString("F");
+                statInfoText.text = "%";
+
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = freeze.CanBeRepaired();
+                break;
+
+            case StructureNames.ShockwaveTower:
+                ShockWaveTower shockwave = targetBuilding.GetComponent<ShockWaveTower>();
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = shockwave.GetAttackRate().ToString("F");
+                statInfoText.text = "per second";
+
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = shockwave.CanBeRepaired();
+                break;
+
+            case StructureNames.LightningTower:
+                LightningTower lightning = targetBuilding.GetComponent<LightningTower>();
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = lightning.GetFireRate().ToString("F");
+                statInfoText.text = "per second";
+
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = lightning.CanBeRepaired();
                 break;
 
 
@@ -193,7 +223,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
-                //foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mill.CanBeRepaired();

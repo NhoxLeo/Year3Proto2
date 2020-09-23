@@ -38,4 +38,9 @@ public class Arrow : PhysicalProjectile
             if (structure) structure.Damage(damage);
         }
     }
+
+    protected override void OnGroundHit()
+    {
+
+    }
 }

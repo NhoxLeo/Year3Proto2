@@ -6,7 +6,7 @@ public abstract class DefenseStructure : Structure
     [Range(1, 5)] protected int level = 1;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
-    protected Transform target;
+    protected List<string> targetableEnemies = new List<string>();
 
     private Transform attackingRange;
     private Transform spottingRange = null;
@@ -22,14 +22,31 @@ public abstract class DefenseStructure : Structure
     protected override void Start()
     {
         base.Start();
-
-        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
-        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        if (isPlaced)
         {
-            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
-            if (distanceFromEnemy <= rangeCollider.radius)
+            CapsuleCollider capsule = GetComponentInChildren<TowerRange>().GetComponent<CapsuleCollider>();
+            SphereCollider sphere = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+            if (capsule)
             {
-                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+                foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+                {
+                    float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+                    if (distanceFromEnemy <= capsule.radius)
+                    {
+                        if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+                    }
+                }
+            }
+            else
+            {
+                foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+                {
+                    float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+                    if (distanceFromEnemy <= sphere.radius)
+                    {
+                        if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+                    }
+                }
             }
         }
     }
@@ -51,5 +68,10 @@ public abstract class DefenseStructure : Structure
     {
         enemies.RemoveAll(enemy => !enemy);
         return enemies;
+    }
+
+    public List<string> GetTargetableEnemies()
+    {
+        return targetableEnemies;
     }
 }

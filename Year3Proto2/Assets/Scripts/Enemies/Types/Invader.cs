@@ -6,8 +6,10 @@ public class Invader : Enemy
 {
     public float scale = 0.0f;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        enemyName = EnemyNames.Invader;
         structureTypes = new List<StructureType>()
         {
             StructureType.Resource,
@@ -17,10 +19,16 @@ public class Invader : Enemy
         };
     }
 
+    protected override void LookAtPosition(Vector3 _position)
+    {
+        base.LookAtPosition(_position);
+        // fixing animation problems
+        transform.right = transform.forward;
+    }
+
     private void FixedUpdate()
     {
         if (stunned) return;
-
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -43,7 +51,7 @@ public class Invader : Enemy
                             {
                                 if ((target.transform.position - transform.position).magnitude < (scale * 0.04f) + 0.5f)
                                 {
-                                    Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
+                                    Vector3 newPosition = transform.position - (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                                     LookAtPosition(newPosition);
                                     transform.position = newPosition;
                                 }
@@ -58,6 +66,10 @@ public class Invader : Enemy
                             {
                                 if (structureTypes.Contains(target.GetStructureType()))
                                 {
+                                    if (!animator.GetBool("Attack"))
+                                    {
+                                        animator.SetBool("Attack", true);
+                                    }
                                     Action();
                                 }
                                 else
@@ -102,7 +114,7 @@ public class Invader : Enemy
                             hasPath = false;
 
                             // get the motion vector for this frame
-                            Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
+                            Vector3 newPosition = transform.position + (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                             //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
@@ -144,7 +156,9 @@ public class Invader : Enemy
         transform.localScale *= _scale + 0.3f;
         damage = _scale * 2.0f;
         health = _scale * 10f;
-        finalSpeed = 0.4f + 1f / _scale / 10.0f;
+        finalSpeed = 0.4f + ((1f / _scale) / 10.0f);
+
+        currentSpeed = finalSpeed;
 
         if (!animator) { animator = GetComponent<Animator>(); }
 
@@ -155,7 +169,7 @@ public class Invader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
         puff.transform.localScale *= scale;
     }

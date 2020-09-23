@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BoulderBehaviour : MonoBehaviour
 {
@@ -12,7 +10,6 @@ public class BoulderBehaviour : MonoBehaviour
     public float explosionRadius = 0.5f;
     private float arcFactor = 0.60f;
     private float distanceTravelled = 0f;
-    public GameObject puffEffect;
 
     // Start is called before the first frame update
     void Start()
@@ -36,16 +33,22 @@ public class BoulderBehaviour : MonoBehaviour
         {
             RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
             GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
-            explosion.transform.localScale *= 2f * explosionRadius;
+            explosion.transform.localScale *= 3f * explosionRadius;
             foreach (RaycastHit enemyHit in hitEnemies)
             {
                 Enemy enemy = enemyHit.transform.GetComponent<Enemy>();
+                if (enemy.enemyName == EnemyNames.Petard)
+                {
+                    enemy.GetComponent<Petard>().SetOffBarrel();
+                    continue;
+                }
                 if (enemy)
                 {
                     enemy.Damage(damage);
                 }
             }
             Destroy(gameObject);
+            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
         }
     }
 }
