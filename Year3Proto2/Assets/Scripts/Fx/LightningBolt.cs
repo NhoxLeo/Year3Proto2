@@ -5,20 +5,16 @@ public class LightningBolt : MonoBehaviour
     public Transform target;
     [SerializeField] private ParticleSystem lightningBolt;
     [SerializeField] private ParticleSystem sparks;
+    private float damage;
     
-    // Update is called once per frame
-    void Update()
+    public void Initialize(Transform _target, float _damage)
     {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            Fire(target);
-        }
+        target = _target;
+        damage = _damage;
     }
 
     public void Fire(Transform _target)
     {
-        target = _target;
-
         if (target != null)
         {
             transform.LookAt(target);
@@ -40,7 +36,7 @@ public class LightningBolt : MonoBehaviour
                 }
                 else
                 {
-                    enemy.Damage(10.0f);
+                    enemy.Damage(damage);
                 }
             }
         }

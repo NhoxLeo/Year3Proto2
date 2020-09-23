@@ -16,13 +16,13 @@ using System.Collections.Generic;
 // Mail         : tjeu.vreeburg@gmail.com
 //
 
-public struct EnemyLevelSetting
+public struct LevelSetting
 {
     public string enemy;
     public int enemyLevel;
     public int level;
     public int wave;
-    public EnemyLevelSetting(int _level, int _wave, string _enemy, int _enemyLevel)
+    public LevelSetting(int _level, int _wave, string _enemy, int _enemyLevel)
     {
         enemy = _enemy;
         enemyLevel = _enemyLevel;
@@ -127,70 +127,69 @@ public class EnemyManager : MonoBehaviour
         { EnemyNames.Petard, new EnemyDefinition(0.25f, 2) },
     };
 
-    private readonly List<EnemyLevelSetting> levelSettings = new List<EnemyLevelSetting>
+    private readonly List<LevelSetting> levelSettings = new List<LevelSetting>
     {
         // Level 1 --------------------------------
         // wave 1
-        new EnemyLevelSetting(0, 1, EnemyNames.Invader,         1),
+        new LevelSetting(0, 1, EnemyNames.Invader,         1),
         
         // wave 3
-        new EnemyLevelSetting(0, 3, EnemyNames.HeavyInvader,    1),
+        new LevelSetting(0, 3, EnemyNames.HeavyInvader,    1),
         
         // wave 5
-        new EnemyLevelSetting(0, 5, EnemyNames.Invader,         2),
+        new LevelSetting(0, 5, EnemyNames.Invader,         2),
 
         // Level 2 --------------------------------
         // wave 1
-        new EnemyLevelSetting(1, 1, EnemyNames.Invader,         1),
-        new EnemyLevelSetting(1, 1, EnemyNames.HeavyInvader,    1),
+        new LevelSetting(1, 1, EnemyNames.Invader,         1),
+        new LevelSetting(1, 1, EnemyNames.HeavyInvader,    1),
         
         // wave 3
-        new EnemyLevelSetting(1, 3, EnemyNames.Invader,         2),
-        new EnemyLevelSetting(1, 3, EnemyNames.Petard,          1),
+        new LevelSetting(1, 3, EnemyNames.Invader,         2),
+        new LevelSetting(1, 3, EnemyNames.Petard,          1),
         
         // wave 5
-        new EnemyLevelSetting(1, 5, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(1, 5, EnemyNames.HeavyInvader,    2),
         
         // wave 7
-        new EnemyLevelSetting(1, 7, EnemyNames.Invader,         2),
-        new EnemyLevelSetting(1, 7, EnemyNames.Petard,          2),
+        new LevelSetting(1, 7, EnemyNames.Petard,          2),
 
         // Level 3 --------------------------------
         // wave 1
-        new EnemyLevelSetting(2, 1, EnemyNames.Invader,         2),
-        new EnemyLevelSetting(2, 1, EnemyNames.HeavyInvader,    1),
-        new EnemyLevelSetting(2, 1, EnemyNames.Petard,          1),
+        new LevelSetting(2, 1, EnemyNames.Invader,         2),
+        new LevelSetting(2, 1, EnemyNames.HeavyInvader,    1),
+        new LevelSetting(2, 1, EnemyNames.Petard,          1),
         
         // wave 3
-        new EnemyLevelSetting(2, 3, EnemyNames.HeavyInvader,    2),
-        new EnemyLevelSetting(2, 3, EnemyNames.FlyingInvader,   1),
+        new LevelSetting(2, 3, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(2, 3, EnemyNames.FlyingInvader,   1),
         
         // wave 5
-        new EnemyLevelSetting(2, 5, EnemyNames.Invader,         3),
-        new EnemyLevelSetting(2, 5, EnemyNames.Petard,          2),
+        new LevelSetting(2, 5, EnemyNames.Invader,         3),
+        new LevelSetting(2, 5, EnemyNames.Petard,          2),
         
         // wave 7
-        new EnemyLevelSetting(2, 7, EnemyNames.HeavyInvader,    3),
-        new EnemyLevelSetting(2, 7, EnemyNames.FlyingInvader,   2),
+        new LevelSetting(2, 7, EnemyNames.HeavyInvader,    3),
+        new LevelSetting(2, 7, EnemyNames.FlyingInvader,   2),
 
         // Level 4 --------------------------------
         // wave 1
-        new EnemyLevelSetting(3, 1, EnemyNames.Invader,         2),
-        new EnemyLevelSetting(3, 1, EnemyNames.HeavyInvader,    2),
-        new EnemyLevelSetting(3, 1, EnemyNames.Petard,          1),
-        new EnemyLevelSetting(3, 1, EnemyNames.FlyingInvader,   1),
+        new LevelSetting(3, 1, EnemyNames.Invader,         2),
+        new LevelSetting(3, 1, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(3, 1, EnemyNames.Petard,          1),
+        new LevelSetting(3, 1, EnemyNames.FlyingInvader,   1),
         
         // wave 3
-        new EnemyLevelSetting(3, 3, EnemyNames.Petard,          2),
-        new EnemyLevelSetting(3, 3, EnemyNames.FlyingInvader,   2),
+        new LevelSetting(3, 3, EnemyNames.Petard,          2),
+        new LevelSetting(3, 3, EnemyNames.FlyingInvader,   2),
         
         // wave 5
-        new EnemyLevelSetting(3, 5, EnemyNames.Invader,         3),
-        new EnemyLevelSetting(3, 5, EnemyNames.HeavyInvader,    3),
+        new LevelSetting(3, 5, EnemyNames.Invader,         3),
+        new LevelSetting(3, 5, EnemyNames.HeavyInvader,    3),
         
         // wave 7
-        new EnemyLevelSetting(3, 7, EnemyNames.Petard,          3),
-        new EnemyLevelSetting(3, 7, EnemyNames.FlyingInvader,   3),
+        new LevelSetting(3, 7, EnemyNames.Petard,          3),
+        new LevelSetting(3, 7, EnemyNames.FlyingInvader,   3),
     };
 
     private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
@@ -677,7 +676,7 @@ public class EnemyManager : MonoBehaviour
 
     private void UpdateSpawnSettings()
     {
-        foreach (EnemyLevelSetting setting in levelSettings)
+        foreach (LevelSetting setting in levelSettings)
         {
             if (setting.level == SuperManager.GetInstance().GetCurrentLevel())
             {
