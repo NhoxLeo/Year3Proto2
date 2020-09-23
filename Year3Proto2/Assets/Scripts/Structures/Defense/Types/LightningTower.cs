@@ -14,15 +14,39 @@ public class LightningTower : DefenseStructure
     protected override void Awake()
     {
         base.Awake();
+
+        // Properties
+
         maxHealth = 300.0f;
         health = maxHealth;
         time = lightningStartDelay;
         structureName = StructureNames.LightningTower;
 
+
+        // Targetable Enemies
+
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.FlyingInvader);
+
+        // Research
+
+        SuperManager superMan = SuperManager.GetInstance();
+
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
+        {
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+        }
+
+        if (superMan.GetResearchComplete(SuperManager.BallistaFortification))
+        {
+            health = maxHealth *= 1.5f;
+        }
+
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
+
     }
 
     protected override void Start()
