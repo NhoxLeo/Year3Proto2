@@ -669,11 +669,11 @@ public class GameManager : MonoBehaviour
                 case SuperManager.SlaughterIII:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
                 case SuperManager.Survive:
-                    return EnemyManager.GetInstance().GetWaveSurvived(10);
+                    return EnemyManager.GetInstance().GetWaveSurvived(5);
                 case SuperManager.SurviveII:
-                    return EnemyManager.GetInstance().GetWaveSurvived(15);
+                    return EnemyManager.GetInstance().GetWaveSurvived(10);
                 case SuperManager.SurviveIII:
-                    return EnemyManager.GetInstance().GetWaveSurvived(25);
+                    return EnemyManager.GetInstance().GetWaveSurvived(15);
                 case SuperManager.Food:
                     return foodSinceObjective >= 1000;
                 case SuperManager.FoodII:
