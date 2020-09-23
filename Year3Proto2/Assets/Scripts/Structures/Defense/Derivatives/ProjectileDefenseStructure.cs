@@ -6,7 +6,7 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
     [Header("Projectile")]
     [SerializeField] protected Transform projectilePrefab;
     [SerializeField] protected Transform projectileLocation;
-    [SerializeField] private int projectileAmount;
+    [SerializeField] protected int projectileAmount;
     [SerializeField] private float projectileTime;
     [SerializeField] protected float projectileDelay;
     [SerializeField] protected float projectileRate;

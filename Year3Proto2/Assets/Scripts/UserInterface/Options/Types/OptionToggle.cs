@@ -18,6 +18,12 @@ public class OptionToggleData : OptionData
 {
     public bool defaultValue;
     public bool value;
+
+    public OptionToggleData(bool _defaultValue, bool _value)
+    {
+        value = _value;
+        defaultValue = _defaultValue;
+    }
 }
 
 
@@ -33,11 +39,13 @@ public class OptionToggle : OptionObject, OptionDataBase
     public void Toggle()
     {
         data.value = !data.value;
+        data.GetCallback().Invoke();
     }
 
     public override void Deserialize()
     {
         data.value = PlayerPrefs.GetInt(key, data.defaultValue ? 1 : 0) != 0;
+        data.GetCallback().Invoke();
     }
 
     public override void Serialize()

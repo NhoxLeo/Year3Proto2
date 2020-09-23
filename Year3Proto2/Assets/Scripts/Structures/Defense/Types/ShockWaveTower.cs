@@ -18,7 +18,6 @@ public class ShockWaveTower : DefenseStructure
         base.Awake();
         structureName = StructureNames.ShockwaveTower;
 
-
         // research
         if (SuperManager.GetInstance().GetResearchComplete(SuperManager.ShockwaveTowerRange))
         {
@@ -58,7 +57,9 @@ public class ShockWaveTower : DefenseStructure
                         {
                             if (enemy.enemyName != EnemyNames.BatteringRam)
                             {
-                                enemy.Stun();
+                                float distance = (this.transform.position - transform.position).magnitude;
+                                float damage = 5.0f * (1.0f / distance);
+                                enemy.Stun(damage);
                             }
                         }
                     });
