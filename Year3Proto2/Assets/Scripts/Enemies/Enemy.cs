@@ -151,6 +151,10 @@ public abstract class Enemy : MonoBehaviour
             action = true;
             LookAtPosition(_soldier.transform.position);
         }
+        if (enemyName == EnemyNames.BatteringRam)
+        {
+            Stun();
+        }
     }
 
     public void ForgetSoldier()
@@ -404,8 +408,8 @@ public abstract class Enemy : MonoBehaviour
     public virtual void SetLevel(int _level)
     {
         level = _level;
-        damage = baseDamage * Mathf.Pow(1.5f, _level - 1);
-        health = baseHealth * Mathf.Pow(1.5f, _level - 1);
+        damage = baseDamage * Mathf.Pow(1.25f, _level - 1);
+        health = baseHealth * Mathf.Pow(1.25f, _level - 1);
     }
 
     public float GetHealth()

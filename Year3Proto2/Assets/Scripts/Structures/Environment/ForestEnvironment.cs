@@ -48,4 +48,14 @@ public class ForestEnvironment : EnvironmentStructure
             }
         }
     }
+
+    public override float GetBaseMaxHealth()
+    {
+        return 100f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
+    }
 }

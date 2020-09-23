@@ -76,6 +76,14 @@ public class BuildingInfo : MonoBehaviour
             headingText.text = buildingName;
             headingTextFloating.text = buildingName;
 
+            if (targetStructure.GetStructureType() == StructureType.Defense)
+            {
+                DefenseStructure defense = targetStructure.GetComponent<DefenseStructure>();
+                string levelSuffix = " (Lvl " + defense.GetLevel() + ")";
+                headingText.text = buildingName + levelSuffix;
+                headingTextFloating.text = buildingName + levelSuffix;
+            }
+
             // Auto update info
             if (showPanel && doAutoUpdate)
             {
@@ -332,11 +340,11 @@ public class BuildingInfo : MonoBehaviour
         actionPanel.transform.position = pos;
     }
 
-    public void SetTargetBuilding(GameObject building, string name)
+    public void SetTargetBuilding(GameObject building)
     {
         targetBuilding = building;
         targetStructure = targetBuilding.GetComponent<Structure>();
-        buildingName = name;
+        buildingName = targetStructure.GetStructureName(); 
 
         if (infoPanel.showElement)
         {
@@ -392,9 +400,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void FetchCompensationInfo()
     {
-        float health = targetStructure.GetHealth();
-        float maxHealth = targetStructure.GetMaxHealth();
-        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structMan.structureCosts[targetStructure.GetStructureName()]);
+        ResourceBundle compensation = StructureManager.GetInstance().QuoteCompensationFor(targetStructure);
 
         tooltipHeading.text = "Destroy Building";
 

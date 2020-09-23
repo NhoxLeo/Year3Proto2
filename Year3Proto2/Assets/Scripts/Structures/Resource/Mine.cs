@@ -12,7 +12,6 @@ public class Mine : ResourceStructure
         base.Awake();
         resourceType = ResourceType.Metal;
         structureName = StructureNames.MetalResource;
-        health = maxHealth;
     }
 
     protected override void Start()

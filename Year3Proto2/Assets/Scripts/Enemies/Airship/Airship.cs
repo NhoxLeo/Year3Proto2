@@ -157,6 +157,13 @@ public class Airship : MonoBehaviour
                 pet.Initialize(level);
             }
 
+            BatteringRam ram = instantiatedTransform.GetComponent<BatteringRam>();
+            if (ram)
+            {
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.BatteringRam);
+                ram.Initialize(level);
+            }
+
             yield return wait;
 
         }

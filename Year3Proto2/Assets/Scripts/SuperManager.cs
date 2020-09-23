@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.5b";
+    public const string Version = "0.9.7b";
     public static bool DevMode = true;
     // CONSTANTS
     public const int NoRequirement = -1;
@@ -65,7 +65,7 @@ public class SuperManager : MonoBehaviour
     // LIGHTNING TOWER
     public const int LightningTower = 24;
     public const int LightningTowerRange = 25;
-    public const int LightningTowerBoltAmount = 26;
+    public const int LightningTowerPower = 26;
     public const int LightningTowerFortification = 27;
     public const int LightningTowerEfficiency = 28;
     public const int LightningTowerSuper = 29;
@@ -200,7 +200,7 @@ public class SuperManager : MonoBehaviour
         public int exploiterID;
 
         // defense structures
-        public float timeTrained;
+        public int level;
     }
 
     [Serializable]
@@ -217,6 +217,7 @@ public class SuperManager : MonoBehaviour
         public List<HeavyInvaderSaveData> heavyInvaders;
         public List<EnemySaveData> flyingInvaders;
         public List<EnemySaveData> petards;
+        public List<EnemySaveData> rams;
         public List<SoldierSaveData> soldiers;
         public int enemiesKilled;
         public float spawnTime;
@@ -355,17 +356,17 @@ public class SuperManager : MonoBehaviour
 
         new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
         new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
-        new ResearchElementDefinition(LightningTowerBoltAmount, LightningTower, "Bolt Amount", "Increased lightning bolts to 5.", 200),
+        new ResearchElementDefinition(LightningTowerPower, LightningTower, "Power", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(LightningTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "Efficiency", "Lightning bolt cost reduced by 50%.", 200),
-        new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Thunder Wave", "Sparks that fly off deal damage to surrounding enemies.", 500, true),
+        new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Thunder Wave", "Sparks deal damage to surrounding enemies.", 500, true),
 
         new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Shockwave Tower releases high energy shockwaves that momentarily stun enemies.", 300),
         new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
         new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "Efficiency", "Shockwave cost reduced by 50%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Shockwave towers deal damage based on how far the enemy is from the tower.", 500, true),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Shockwaves deal some damage.", 500, true),
     };
     public static List<LevelDefinition> levelDefinitions = new List<LevelDefinition>()
     {
@@ -562,7 +563,7 @@ public class SuperManager : MonoBehaviour
         }
     }
 
-        private void WipeReloadScene(bool _override)
+    private void WipeReloadScene(bool _override)
     {
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
@@ -658,6 +659,12 @@ public class SuperManager : MonoBehaviour
             EnemyManager.GetInstance().LoadPetard(saveData);
         }
 
+        // rams
+        foreach (EnemySaveData saveData in _matchData.rams)
+        {
+            EnemyManager.GetInstance().LoadRam(saveData);
+        }
+
         // soldiers
         Barracks[] allBarracks = FindObjectsOfType<Barracks>();
         foreach (SoldierSaveData saveData in _matchData.soldiers)
@@ -705,6 +712,7 @@ public class SuperManager : MonoBehaviour
             heavyInvaders = new List<HeavyInvaderSaveData>(),
             flyingInvaders = new List<EnemySaveData>(),
             petards = new List<EnemySaveData>(),
+            rams = new List<EnemySaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
@@ -791,6 +799,22 @@ public class SuperManager : MonoBehaviour
             save.petards.Add(saveData);
         }
 
+        // rams
+        foreach (BatteringRam ram in FindObjectsOfType<BatteringRam>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = ram.GetHealth(),
+                position = new SaveVector3(ram.transform.position),
+                orientation = new SaveQuaternion(ram.transform.rotation),
+                targetPosition = new SaveVector3(ram.GetTarget().transform.position),
+                state = ram.GetState(),
+                enemyWave = ram.GetSpawnWave(),
+                level = ram.GetLevel()
+            };
+            save.rams.Add(saveData);
+        }
+
         // soldiers
         foreach (Soldier soldier in FindObjectsOfType<Soldier>())
         {
@@ -842,9 +866,10 @@ public class SuperManager : MonoBehaviour
                 {
                     saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest;
                 }
-                if (structure.IsStructure("Barracks"))
+                if (structure.GetStructureType() == StructureType.Defense)
                 {
-                    //saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained();
+                    DefenseStructure defense = structure.GetComponent<DefenseStructure>();
+                    saveData.level = defense.GetLevel();
                 }
                 save.structures.Add(saveData);
             }

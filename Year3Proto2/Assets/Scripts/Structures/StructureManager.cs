@@ -302,7 +302,7 @@ public class StructureManager : MonoBehaviour
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            // NAME                                                                    NAME                                                                    wC       mC      fC
+            // NAME                                                                    NAME                                                                        wC       mC      fC
             { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(600,     200,    0)) },
 
             { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(150,     50,     0)) },
@@ -858,12 +858,30 @@ public class StructureManager : MonoBehaviour
     {
         selectedStructure.DeallocateAll();
         float health = selectedStructure.GetHealth();
-        float maxHealth = selectedStructure.GetMaxHealth();
+        ResourceBundle compensation = QuoteCompensationFor(selectedStructure);
         selectedStructure.Damage(health);
-        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structureCosts[selectedStructure.GetStructureName()]);
         GameManager.GetInstance().playerResources.AddResourceBundle(compensation);
         HUDManager.GetInstance().ShowResourceDelta(compensation, false);
         DeselectStructure();
+    }
+
+    public ResourceBundle QuoteCompensationFor(Structure _structure)
+    {
+        float health = _structure.GetHealth();
+        float maxHealth = _structure.GetTrueMaxHealth();
+        return new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structureCosts[_structure.GetStructureName()]);
+    }
+
+    public ResourceBundle QuoteUpgradeCostFor(DefenseStructure _structure)
+    {
+        int level = _structure.GetLevel();
+        if (level == 3)
+        {
+            return new ResourceBundle(0, 0, 0);
+        }
+        int cost = 200 * level;
+        ResourceBundle result = new ResourceBundle(cost, cost, 0);
+        return result;
     }
 
     public bool BuyBuilding()
@@ -961,7 +979,7 @@ public class StructureManager : MonoBehaviour
         highlightpos.y = 0.501f;
         selectedTileHighlight.position = highlightpos;
 
-        buildingInfo.SetTargetBuilding(selectedStructure.gameObject, selectedStructure.GetStructureName());
+        buildingInfo.SetTargetBuilding(selectedStructure.gameObject);
         buildingInfo.showPanel = true;
     }
 
@@ -1192,10 +1210,10 @@ public class StructureManager : MonoBehaviour
                 newStructure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest = _saveData.wasPlacedOn;
             }
         }
-        Barracks barracksComponent = newStructure.gameObject.GetComponent<Barracks>();
-        if (barracksComponent)
+        DefenseStructure defense = newStructure.gameObject.GetComponent<DefenseStructure>();
+        if (defense)
         {
-            //barracksComponent.SetTimeTrained(_saveData.timeTrained);
+            defense.SetLevel(_saveData.level);
         }
         if (_saveData.exploited)
         {
@@ -1215,7 +1233,7 @@ public class StructureManager : MonoBehaviour
             playerStructureDict.Add(_saveData.ID, newStructure);
             StructureType structType = newStructure.GetStructureType();
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (structure.IsStructure(StructureNames.Barracks) || structure.IsStructure(StructureNames.FreezeTower))
+            if (newStructure.IsStructure(StructureNames.Barracks) || newStructure.IsStructure(StructureNames.FreezeTower))
             {
                 villWidget = false;
             }
