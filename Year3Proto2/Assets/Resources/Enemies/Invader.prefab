@@ -194,8 +194,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.03
-  m_Height: 0.13
+  m_Radius: 0.06
+  m_Height: 0.23
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3486515994554915422
@@ -668,8 +668,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 053089eb552a42647a5f242f00ea8223, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 10
-  damage: 2
   nextReturnFalse: 0
   defenseTarget: {fileID: 0}
   enemyName: 
