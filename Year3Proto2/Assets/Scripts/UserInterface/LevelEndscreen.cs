@@ -13,13 +13,6 @@ public class LevelEndscreen : MonoBehaviour
     private bool showingVictory;
     private bool showingDefeat;
 
-    private SuperManager superMan;
-
-    private void Start()
-    {
-        superMan = SuperManager.GetInstance();
-    }
-
     void Update()
     {
         /*
@@ -38,6 +31,7 @@ public class LevelEndscreen : MonoBehaviour
     private void GetVictoryInfo()
     {
         List<MapScreen.Level> levels = new List<MapScreen.Level>();
+        SuperManager superMan = SuperManager.GetInstance();
         superMan.GetLevelData(ref levels);
         int currentLevel = superMan.GetCurrentLevel();
         transform.Find("Victory/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[currentLevel].victoryTitle;
@@ -83,8 +77,15 @@ public class LevelEndscreen : MonoBehaviour
         FindObjectOfType<HUDManager>().doShowHUD = true;
     }
 
-    public void SaveCurrentMatch()
+    public void DefeatGoToLevelSelect()
+    {
+        SuperManager.GetInstance().ClearCurrentMatch();
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("LevelSelect");
+    }
+
+    public void VictoryGoToLevelSelect()
     {
         SuperManager.GetInstance().SaveCurrentMatch();
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("LevelSelect");
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 // Bachelor of Software Engineering
@@ -18,9 +17,10 @@ public class HeavyInvader : Enemy
 {
     private bool[] equipment = new bool[4];
 
-    private void Awake()
+    protected override void Awake()
     {
-
+        base.Awake();
+        enemyName = EnemyNames.HeavyInvader;
         structureTypes = new List<StructureType>()
         {
             StructureType.Storage,
@@ -33,11 +33,13 @@ public class HeavyInvader : Enemy
     {
         base.Start();
         UpdateEquipment();
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
     }
 
     protected override void LookAtPosition(Vector3 _position)
     {
-        transform.LookAt(_position);
+        base.LookAtPosition(_position);
         // fixing animation problems
         transform.right = -transform.forward;
     }
@@ -45,7 +47,6 @@ public class HeavyInvader : Enemy
     private void FixedUpdate()
     {
         if (stunned) return;
-
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -61,6 +62,7 @@ public class HeavyInvader : Enemy
                         {
                             animator.SetBool("Attack", false);
                             enemyState = EnemyState.Idle;
+                            UpdateEquipment();
                         }
                         else
                         {
@@ -83,6 +85,10 @@ public class HeavyInvader : Enemy
                             {
                                 if (structureTypes.Contains(target.GetStructureType()))
                                 {
+                                    if (!animator.GetBool("Attack"))
+                                    {
+                                        animator.SetBool("Attack", true);
+                                    }
                                     Action();
                                 }
                                 else
@@ -207,16 +213,17 @@ public class HeavyInvader : Enemy
 
         health = 65f;
         finalSpeed = 0.35f;
-        currentSpeed = finalSpeed;
 
-        if (equipment[2]) { health += 10f; currentSpeed -= 0.035f; }
-        if (equipment[3]) { health += 5f; currentSpeed -= 0.0175f; }
+        if (equipment[2]) { health += 10f; finalSpeed -= 0.035f; }
+        if (equipment[3]) { health += 5f; finalSpeed -= 0.0175f; }
+
+        currentSpeed = finalSpeed;
     }
 
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
         puff.transform.localScale *= 3f;
     }

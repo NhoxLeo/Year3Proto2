@@ -246,8 +246,8 @@ public class StructureManager : MonoBehaviour
         { StructureNames.Catapult,          new ResourceBundle(200,     250,    0) },
         { StructureNames.Barracks,          new ResourceBundle(200,     100,    0) },
         { StructureNames.FreezeTower,       new ResourceBundle(200,     50,     0) },
-        { StructureNames.ShockwaveTower,    new ResourceBundle(300,     250,    0) },
-        { StructureNames.LightningTower,    new ResourceBundle(250,     100,    0) },
+        { StructureNames.ShockwaveTower,    new ResourceBundle(200,     200,    0) },
+        { StructureNames.LightningTower,    new ResourceBundle(200,     100,    0) },
 
         { StructureNames.FoodResource,      new ResourceBundle(40,      0,      0) },
         { StructureNames.LumberResource,    new ResourceBundle(60,      20,     0) },
@@ -305,12 +305,12 @@ public class StructureManager : MonoBehaviour
             // NAME                                                                    NAME                                                                    wC       mC      fC
             { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(600,     200,    0)) },
 
-            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(150,     50,     0)) },
+            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")     as GameObject,  new ResourceBundle(150,     50,     0)) },
             { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower")     as GameObject,  new ResourceBundle(200,     250,    0)) },
             { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(200,     250,    0)) },
-            { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(200,     250,    0)) },
-            { StructureNames.ShockwaveTower,    new StructureDefinition(Resources.Load("Structures/Defense/Shockwave Tower")    as GameObject,  new ResourceBundle(200,     250,    0)) },
-            { StructureNames.LightningTower,    new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")    as GameObject,  new ResourceBundle(200,     250,    0)) },
+            { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(200,     200,    0)) },
+            { StructureNames.ShockwaveTower,    new StructureDefinition(Resources.Load("Structures/Defense/Shockwave Tower")    as GameObject,  new ResourceBundle(200,     200,    0)) },
+            { StructureNames.LightningTower,    new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")    as GameObject,  new ResourceBundle(200,     200,    0)) },
 
 
             { StructureNames.FoodResource,      new StructureDefinition(Resources.Load("Structures/Resource/Farm")              as GameObject,  new ResourceBundle(40,      0,      0)) },
@@ -475,7 +475,7 @@ public class StructureManager : MonoBehaviour
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        envInfo.SetVisibility(false);
+        //envInfo.SetVisibility(false);
         if (!isOverUI)
         {
             if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
@@ -536,7 +536,7 @@ public class StructureManager : MonoBehaviour
                     // turn off the tile highlight.
                     tileHighlight.gameObject.SetActive(false);
                     // hide the environment info panel.
-                    envInfo.SetVisibility(false);
+                    //envInfo.SetVisibility(false);
                 }
             }
             // if the player is hovering over a tile...
@@ -1122,6 +1122,8 @@ public class StructureManager : MonoBehaviour
 
     private void PlayerMouseOver(Structure _structure)
     {
+        // disabled
+        /*
         if (!_structure)
         {
             hoveroverStructure = null;
@@ -1145,63 +1147,7 @@ public class StructureManager : MonoBehaviour
         {
             envInfo.SetInfoByStructure(_structure);
         }
-    }
-
-    private void SetHoverInfo(Structure _structure)
-    {
-        envInfo.SetVisibility(true);
-        switch (_structure.GetStructureName())
-        {
-            case "Longhaus":
-                envInfo.ShowInfo("The Longhaus is your base of operations, protect it at all costs! The Longhaus generates a small amount of wood & food and an even smaller amount of metal.");
-                break;
-            case "Forest Environment":
-                envInfo.ShowInfo("Placing a Lumber Mill (LM) on this tile will destroy the forest, and provide a bonus to the LM. Placing a LM adjacent to this tile with provide a bonus to the LM.");
-                break;
-            case "Hills Environment":
-                envInfo.ShowInfo("Placing a Mine on this tile will destroy the hill, and provide a bonus to the Mine. Placing a Mine adjacent to this tile with provide a bonus to the Mine.");
-                break;
-            case "Plains Environment":
-                envInfo.ShowInfo("Placing a Farm on this tile will destroy the plains, and provide a bonus to the Farm. Placing a Farm adjacent to this tile with provide a bonus to the Farm.");
-                break;
-            case "Farm":
-                envInfo.ShowInfo("The Farm generates Food. It gains a bonus from all plains tiles surrounding it, and an additional bonus if placed on a plains tile.");
-                break;
-            case "Lumber Mill":
-                envInfo.ShowInfo("The Lumber Mill generates Wood. It gains a bonus from all forest tiles surrounding it, and an additional bonus if placed on a forest tile.");
-                break;
-            case "Mine":
-                envInfo.ShowInfo("The Mine generates Metal. It gains a bonus from all hill tiles surrounding it, and an additional bonus if placed on a hill tile.");
-                break;
-            case "Granary":
-                envInfo.ShowInfo("The Granary stores Food. If it is broken, you will lose the additional capacity it gives you, and any excess Food you have will be lost.");
-                break;
-            case "Lumber Pile":
-                envInfo.ShowInfo("The Lumber Pile stores Wood. If it is broken, you will lose the additional capacity it gives you, and any excess Wood you have will be lost.");
-                break;
-            case "Metal Storage":
-                envInfo.ShowInfo("The Metal Storehouse stores Metal. If it is broken, you will lose the additional capacity it gives you, and any excess Metal you have will be lost.");
-                break;
-            case "Ballista Tower":
-                envInfo.ShowInfo("The Ballista Tower fires bolts at enemy units.");
-                break;
-            case "Catapult Tower":
-                envInfo.ShowInfo("The Catapult fires explosive fireballs at enemy units.");
-                break;
-            case "Barracks":
-                envInfo.ShowInfo("The Barracks spawns soldiers which attack enemy units automatically.");
-                break;
-            case "Freeze Tower":
-                envInfo.ShowInfo("The Freeze Tower sprays snow at enemies to slow them.");
-                break;
-            case "Shockwave Tower":
-                envInfo.ShowInfo("The Shockwave Tower creates a shockwave to repulse enemies.");
-                break;
-            case "Lightning Tower":
-                envInfo.ShowInfo("The Lightning Tower casts lightning bolts from the sky onto players.");
-                break;
-        }
-
+        */
     }
 
     private void ShowMessage(string _message, float _duration)

@@ -88,6 +88,10 @@ public class Barracks : DefenseStructure
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
         }
+
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
     }
 
     protected override void Update()
