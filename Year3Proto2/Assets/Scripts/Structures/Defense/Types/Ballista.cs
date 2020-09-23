@@ -83,6 +83,7 @@ public class Ballista : ProjectileDefenseStructure
         if (allocatedVillagers != 0)
         {
             projectileDelay = 1f / projectileRate;
+            projectileAmount = allocatedVillagers;
         }
     }
 

@@ -1,7 +1,9 @@
-﻿using TMPro;
+﻿using DG.Tweening;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+
 public class ResearchScreen : MonoBehaviour
 {
     [System.Serializable]
@@ -40,6 +42,12 @@ public class ResearchScreen : MonoBehaviour
     public List<SuperManager.ResearchElementDefinition> researchDefinitions;
     public Dictionary<int, bool> completedResearch;
 
+    // Scrolling
+    public bool dragging;
+
+    private Vector3 dragPotentialStart;
+    private Vector3 dragOffset;
+
     private void Start()
     {
         Time.timeScale = 1.0f;
@@ -50,9 +58,16 @@ public class ResearchScreen : MonoBehaviour
         GetResearchInfo();
 
         InitializeCards();
+        Debug.Log(Screen.width / Screen.height);
+
+        if (Screen.width / Screen.height >= 2.0f)
+        {
+            Vector3 localPos = cardPanel.localPosition;
+            localPos.x = 0.0f;
+            cardPanel.localPosition = localPos;
+        }
     }
 
-    
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
@@ -69,8 +84,32 @@ public class ResearchScreen : MonoBehaviour
                 UpdateRPCounter();
             }
         }
+
+        if (dragging)
+        {
+            //cardPanel.transform.position = Input.mousePosition + dragOffset;
+            Vector3 pos = cardPanel.position;
+            pos.x = Input.mousePosition.x + dragOffset.x;
+            cardPanel.position = pos;
+
+            Vector3 localPos = cardPanel.localPosition;
+            if (localPos.x < -200.0f)
+            {
+                float diff = localPos.x - -200.0f;
+                float squeeze = (diff / 4);
+                Debug.Log(squeeze);
+                localPos.x = -200.0f + squeeze;
+            }
+            else if (localPos.x > 200.0f)
+            {
+                float diff = localPos.x - 200.0f;
+                float squeeze = (diff / 4);
+                Debug.Log(squeeze);
+                localPos.x = 200.0f + squeeze;
+            }
+            cardPanel.localPosition = localPos;
+        }
     }
-    
 
     private void InitializeCards()
     {
@@ -137,7 +176,6 @@ public class ResearchScreen : MonoBehaviour
             }
         }
 
-
         // Get info from Research Manager
         GetResearchInfo();
 
@@ -150,7 +188,7 @@ public class ResearchScreen : MonoBehaviour
             buildings[i].card.transform.Find("ResearchInfo/Price").GetComponent<TMP_Text>().text = buildings[i].price.ToString();
 
             int upgradeLength = Mathf.Clamp(buildings[i].upgrades.Count - 1, 0, 4);
-      
+
             // Update upgrade info
 
             for (int j = 0; j < upgradeLength; j++)
@@ -173,7 +211,7 @@ public class ResearchScreen : MonoBehaviour
     private void GetResearchInfo()
     {
         SuperManager superMan = SuperManager.GetInstance();
-        researchDefinitions = SuperManager.researchDefinitions;
+        researchDefinitions = SuperManager.ResearchDefinitions;
         completedResearch = superMan.GetResearch();
     }
 
@@ -322,7 +360,7 @@ public class ResearchScreen : MonoBehaviour
         RefreshCards();
     }
 
-    int BuildingFromResearchID(int _ID)
+    private int BuildingFromResearchID(int _ID)
     {
         int buildingNum = -1;
         for (int i = 0; i < buildings.Count; i++)
@@ -335,7 +373,7 @@ public class ResearchScreen : MonoBehaviour
         return buildingNum;
     }
 
-    int UpgradeFromResearchID(Building _building, int _ID)
+    private int UpgradeFromResearchID(Building _building, int _ID)
     {
         int upgradeNum = -1;
         for (int i = 0; i < _building.upgrades.Count; i++)
@@ -346,5 +384,26 @@ public class ResearchScreen : MonoBehaviour
             }
         }
         return upgradeNum;
+    }
+
+    public void StartPotantialDrag()
+    {
+        dragPotentialStart = Input.mousePosition;
+    }
+
+    public void DragCard()
+    {
+        dragging = true;
+
+        dragOffset = cardPanel.position - dragPotentialStart;
+
+        cardPanel.DOKill(true);
+    }
+
+    public void ReleaseCard()
+    {
+        dragging = false;
+
+        cardPanel.DOLocalMoveX(Mathf.Clamp(cardPanel.localPosition.x, -200.0f, 200.0f), 0.4f).SetEase(Ease.OutQuint);
     }
 }

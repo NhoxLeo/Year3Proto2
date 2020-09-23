@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Linq;
+using System.Globalization;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -29,7 +30,9 @@ public abstract class OptionObject : MonoBehaviour
     {
         transform.name = _key;
         key = _key;
-        displayName.text = _key.Substring(0, 1).ToUpper() + _key.Substring(1).ToLower();
+
+        TextInfo cultInfo = new CultureInfo("en-US", false).TextInfo;
+        displayName.text = cultInfo.ToTitleCase(_key.Replace("_", " "));
     }
 
     /**************************************
