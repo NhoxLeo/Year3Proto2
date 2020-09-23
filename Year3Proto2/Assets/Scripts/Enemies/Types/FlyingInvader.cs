@@ -17,7 +17,6 @@ public class FlyingInvader : Enemy
             StructureType.Defense
         };
         enemyName = EnemyNames.FlyingInvader;
-        transform.position = new Vector3(transform.position.x, 2f, transform.position.z);
         if (!Barrel)
         {
             Barrel = Resources.Load("FlyingInvaderBarrel") as GameObject;
@@ -27,6 +26,7 @@ public class FlyingInvader : Enemy
     // Update is called once per frame
     void FixedUpdate()
     {
+        transform.position = new Vector3(transform.position.x, 2f, transform.position.z);
         if (stunned) return;
 
         if (!GlobalData.longhausDead)
