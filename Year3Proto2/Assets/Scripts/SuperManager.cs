@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     public const string Version = "0.9.7.3b";
-    public static bool DevMode = true;
+    public static bool DevMode = false;
     // CONSTANTS
     public const int NoRequirement = -1;
 
