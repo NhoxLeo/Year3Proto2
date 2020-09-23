@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 using System.Collections.Generic;
 public class ResearchScreen : MonoBehaviour
 {
@@ -40,6 +41,11 @@ public class ResearchScreen : MonoBehaviour
     public List<SuperManager.ResearchElementDefinition> researchDefinitions;
     public Dictionary<int, bool> completedResearch;
 
+    // Scrolling
+    public bool dragging;
+    private Vector3 dragPotentialStart;
+    private Vector3 dragOffset;
+
     private void Start()
     {
         Time.timeScale = 1.0f;
@@ -50,6 +56,15 @@ public class ResearchScreen : MonoBehaviour
         GetResearchInfo();
 
         InitializeCards();
+            Debug.Log(Screen.width / Screen.height);
+
+        if (Screen.width / Screen.height >= 2.0f)
+        {
+
+            Vector3 localPos = cardPanel.localPosition;
+            localPos.x = 0.0f;
+            cardPanel.localPosition = localPos;
+        }
     }
 
     
@@ -69,6 +84,17 @@ public class ResearchScreen : MonoBehaviour
                 UpdateRPCounter();
             }
         }
+
+        if (dragging)
+        {
+            //cardPanel.transform.position = Input.mousePosition + dragOffset;
+            Vector3 pos = cardPanel.position;
+            pos.x = Input.mousePosition.x + dragOffset.x;
+            cardPanel.position = pos;
+            
+        }
+
+
     }
     
 
@@ -346,5 +372,30 @@ public class ResearchScreen : MonoBehaviour
             }
         }
         return upgradeNum;
+    }
+
+    public void StartPotantialDrag()
+    {
+        dragPotentialStart = Input.mousePosition;
+    }
+
+    public void DragCard()
+    {
+        dragging = true;
+
+        dragOffset = cardPanel.position - dragPotentialStart;
+
+        Vector3 localPos = cardPanel.localPosition;
+        //Debug.Log(localPos.x);
+        localPos.x = Mathf.Clamp(localPos.x, -200.0f, 200.0f);
+        cardPanel.localPosition = localPos;
+    }
+
+    public void ReleaseCard()
+    {
+        dragging = false;
+
+        cardPanel.DOLocalMoveX(Mathf.Clamp(cardPanel.localPosition.x, -200.0f, 200.0f), 0.4f).SetEase(Ease.OutQuint);
+
     }
 }
