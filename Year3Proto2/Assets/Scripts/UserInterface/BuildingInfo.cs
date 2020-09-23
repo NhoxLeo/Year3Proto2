@@ -461,9 +461,17 @@ public class BuildingInfo : MonoBehaviour
     {
         if (targetStructure.GetStructureType() == StructureType.Defense)
         {
-            defenseStructure.LevelUp();
-            upgradeButton.enabled = defenseStructure.GetLevel() < 3;
-            SetInfo();
+            if (defenseStructure.GetLevel() < 3)
+            {
+                ResourceBundle cost = StructureManager.GetInstance().QuoteUpgradeCostFor(defenseStructure);
+                if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
+                {
+                    HUDManager.GetInstance().ShowResourceDelta(cost, true);
+                    defenseStructure.LevelUp();
+                    upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+                    SetInfo();
+                }
+            }
         }
     }
 
