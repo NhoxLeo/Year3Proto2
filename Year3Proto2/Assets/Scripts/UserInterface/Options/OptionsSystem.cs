@@ -82,10 +82,6 @@ public class OptionsSystem : MonoBehaviour
         optionToggleData.CallBack(() => { });
         optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", optionToggleData, togglePrefab, controlsPanel));
 
-        optionToggleData = new OptionToggleData(true, false);
-        optionToggleData.CallBack(() => { });
-        optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", optionToggleData, togglePrefab, controlsPanel));
-
         optionToggleData = new OptionToggleData(false, false);
         optionToggleData.CallBack(() => QualitySettings.vSyncCount = optionToggleData.value ? 1 : 0);
         optionObjects.Add(InstantiateOption("V_SYNC", optionToggleData, togglePrefab, displayPanel));
