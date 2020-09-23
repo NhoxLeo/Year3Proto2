@@ -289,4 +289,14 @@ public class HeavyInvader : Enemy
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         currentSpeed = finalSpeed;
     }
+
+    public override void SetLevel(int _level)
+    {
+        base.SetLevel(_level);
+        SkinnedMeshRenderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        foreach (SkinnedMeshRenderer renderer in renderers)
+        {
+            renderer.material = EnemyMaterials.Fetch(enemyName, level);
+        }
+    }
 }
