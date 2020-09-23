@@ -5,12 +5,16 @@ public class ShockWaveTower : DefenseStructure
     [Header("Shockwave Tower")]
     [SerializeField] private float startDelay = 1.2f;
     [SerializeField] private Transform particle;
-    private float time = 0.0f;
+    private float timer = 0.0f;
 
     private const float BaseMaxHealth = 400f;
     private const float MinimumDelay = 3f;
 
     private float delay = MinimumDelay;
+
+    private GameObject boulderModel;
+    private Vector3 restingPosition;
+    private Vector3 readyPosition;
 
     protected override void Awake()
     {
@@ -30,25 +34,33 @@ public class ShockWaveTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+
+        boulderModel = transform.GetChild(3).gameObject;
     }
 
     protected override void Start()
     {
         base.Start();
-        time = startDelay;
+        timer = startDelay;
     }
 
     protected override void Update()
     {
         base.Update();
-        if(isPlaced && enemies.Count > 0)
+        if(isPlaced)
         {
+            restingPosition = transform.GetChild(4).position;
+            readyPosition = transform.GetChild(5).position;
             if (allocatedVillagers > 0)
             {
-                time -= Time.deltaTime;
-                if(time <= 0.0f)
+                timer -= Time.deltaTime;
+                if (timer < 0)
                 {
-                    time = delay;
+                    timer = 0;
+                }
+                if (enemies.Count > 0 && timer <= 0.0f)
+                {
+                    timer = delay;
                     GameManager.CreateAudioEffect("Thud", transform.position, 0.6f);
                     Instantiate(particle, transform.position, particle.rotation);
                     enemies.ForEach(transform => {
@@ -65,11 +77,10 @@ public class ShockWaveTower : DefenseStructure
                     });
                 }
             }
+            float yPoint = 1f - (timer / delay);
+            boulderModel.transform.position = Vector3.Lerp(restingPosition, readyPosition, yPoint);
         }
-        else
-        {
-            time = startDelay;
-        }
+
     }
 
     public float GetAttackRate()
