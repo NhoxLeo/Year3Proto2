@@ -28,9 +28,13 @@ public abstract class Enemy : MonoBehaviour
     [HideInInspector]
     protected static GameObject PuffEffect;
     [HideInInspector]
-    public float health = 10.0f;
+    protected float baseHealth = 10.0f;
     [HideInInspector]
-    public float damage = 2.0f;
+    protected float baseDamage = 2.0f;
+    [HideInInspector]
+    protected float health;
+    [HideInInspector]
+    protected float damage;
     [HideInInspector]
     public bool nextReturnFalse = false;
     protected bool delayedDeathCalled = false;
@@ -50,15 +54,6 @@ public abstract class Enemy : MonoBehaviour
     protected bool action = false;
     [HideInInspector]
     public string enemyName;
-
-    // Stun
-    protected bool stunned = false;
-    protected float stunDuration = 1.2f;
-    protected float stunTime = 0.0f;
-
-    // Slow
-    private int slowCount = 0;
-
     private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
@@ -69,6 +64,15 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathTimer = 0f;
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
+    protected int level;
+
+    // Stun
+    protected bool stunned = false;
+    protected float stunDuration = 1.2f;
+    protected float stunTime = 0.0f;
+
+    // Slow
+    private int slowCount = 0;
 
     public abstract void Action();
 
@@ -78,15 +82,12 @@ public abstract class Enemy : MonoBehaviour
         {
             PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
         }
+        animator = GetComponent<Animator>();
+        body = GetComponent<Rigidbody>();
     }
 
     protected virtual void Start()
     {
-        animator = GetComponent<Animator>();
-        body = GetComponent<Rigidbody>();
-        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
-        currentSpeed = finalSpeed;
-
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         signature = new EnemyPathSignature()
         {
@@ -393,5 +394,32 @@ public abstract class Enemy : MonoBehaviour
     public int GetSpawnWave()
     {
         return spawnWave;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    public virtual void SetLevel(int _level)
+    {
+        level = _level;
+        damage = baseDamage * Mathf.Pow(1.5f, _level - 1);
+        health = baseHealth * Mathf.Pow(1.5f, _level - 1);
+    }
+
+    public float GetHealth()
+    {
+        return health;
+    }
+
+    public void SetHealth(float _health)
+    {
+        health = _health;
+    }
+
+    public float GetDamage()
+    {
+        return damage;
     }
 }

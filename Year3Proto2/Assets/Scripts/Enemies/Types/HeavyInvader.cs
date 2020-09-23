@@ -29,14 +29,6 @@ public class HeavyInvader : Enemy
         };
     }
 
-    protected override void Start()
-    {
-        base.Start();
-        UpdateEquipment();
-        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
-        currentSpeed = finalSpeed;
-    }
-
     protected override void LookAtPosition(Vector3 _position)
     {
         base.LookAtPosition(_position);
@@ -195,14 +187,14 @@ public class HeavyInvader : Enemy
         Transform lowPoly = transform.GetChild(1);
         if (equipment[0]) // if sword
         {
-            damage = 10f;
+            baseDamage = 10f;
             animator.SetFloat("AttackSpeed", 1.2f);
             // disable axe
             lowPoly.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
         else // !sword means axe
         {
-            damage = 12f;
+            baseDamage = 12f;
             animator.SetFloat("AttackSpeed", 1.0f);
             // disable sword
             lowPoly.GetChild(2).GetComponent<SkinnedMeshRenderer>().enabled = false;
@@ -211,11 +203,11 @@ public class HeavyInvader : Enemy
         lowPoly.GetChild(3).GetComponent<SkinnedMeshRenderer>().enabled = equipment[2];
         lowPoly.GetChild(4).GetComponent<SkinnedMeshRenderer>().enabled = equipment[3];
 
-        health = 65f;
+        baseHealth = 65f;
         finalSpeed = 0.35f;
 
-        if (equipment[2]) { health += 10f; finalSpeed -= 0.035f; }
-        if (equipment[3]) { health += 5f; finalSpeed -= 0.0175f; }
+        if (equipment[2]) { baseHealth += 10f; finalSpeed -= 0.035f; }
+        if (equipment[3]) { baseHealth += 5f; finalSpeed -= 0.0175f; }
 
         currentSpeed = finalSpeed;
     }
@@ -280,5 +272,21 @@ public class HeavyInvader : Enemy
                 }
             }
         }
+    }
+
+    public void Initialize(int _level, bool[] equipment = null)
+    {
+        if (equipment == null)
+        {
+            Randomize();
+        }
+        else
+        {
+            SetEquipment(equipment);
+        }
+        UpdateEquipment();
+        SetLevel(_level);
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
     }
 }

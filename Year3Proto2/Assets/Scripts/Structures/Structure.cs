@@ -364,6 +364,7 @@ public abstract class Structure : MonoBehaviour
                 healthBar.fillAmount = health / maxHealth;
             }
             RefreshWidget();
+
         }
     }
 

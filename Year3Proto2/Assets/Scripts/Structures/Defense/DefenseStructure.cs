@@ -3,13 +3,13 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
-    [Range(1, 5)] protected int level = 1;
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
     protected List<string> targetableEnemies = new List<string>();
 
     private Transform attackingRange;
     private Transform spottingRange = null;
+    protected int level;
 
     protected override void Awake()
     {
@@ -55,6 +55,15 @@ public abstract class DefenseStructure : Structure
     {
         base.Update();
         enemies.RemoveAll(enemy => !enemy);
+        /*
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            if (StructureManager.GetInstance().StructureIsSelected(this))
+            {
+                OnLevelUp();
+            }
+        }
+        */
     }
 
     public override void ShowRangeDisplay(bool _active)
@@ -73,5 +82,20 @@ public abstract class DefenseStructure : Structure
     public List<string> GetTargetableEnemies()
     {
         return targetableEnemies;
+    }
+
+    public void SetLevel(int _level)
+    {
+        level = _level;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    public virtual void OnLevelUp()
+    {
+        level++;
     }
 }
