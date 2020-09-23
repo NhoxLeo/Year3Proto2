@@ -517,7 +517,7 @@ public class GameManager : MonoBehaviour
 
         if (!gameover)
         {
-            if (longhausDead == true)
+            if (longhausDead)
             {
                 gameover = true;
                 victory = false;
@@ -651,7 +651,7 @@ public class GameManager : MonoBehaviour
 
     private bool CheckNextWinConditionIsMet()
     {
-        if (objectives.Count < objectivesCompleted)
+        if (objectives.Count > objectivesCompleted)
         {
             int currentWinCondition = objectives[objectivesCompleted];
             switch (currentWinCondition)
