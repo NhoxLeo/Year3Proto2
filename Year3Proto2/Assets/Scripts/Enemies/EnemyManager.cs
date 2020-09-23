@@ -33,11 +33,40 @@ public struct LevelSetting
 
 public static class EnemyNames
 {
-    public static string Invader = "Invader";
-    public static string HeavyInvader = "Heavy Invader";
-    public static string FlyingInvader = "Flying Invader";
-    public static string Petard = "Petard";
-    public static string BatteringRam = "Battering Ram";
+    public const string Invader = "Invader";
+    public const string HeavyInvader = "Heavy Invader";
+    public const string FlyingInvader = "Flying Invader";
+    public const string Petard = "Petard";
+    public const string BatteringRam = "Battering Ram";
+}
+
+public static class EnemyMaterials
+{
+    private static Dictionary<(string, int), Material> materials = new Dictionary<(string, int), Material>();
+
+    private static string GetPathFromKey((string, int) _key)
+    {
+        switch (_key.Item1)
+        {
+            case EnemyNames.BatteringRam:
+                return "Materials/mBatteringRam_Lvl" + _key.Item2.ToString();
+            case EnemyNames.Invader:
+                return "Materials/mInvader_Lvl" + _key.Item2.ToString();
+            default:
+                break;
+        }
+        return "";
+    }
+
+    public static Material Fetch(string _name, int _level)
+    {
+        (string, int) key = (_name, _level);
+        if (!materials.ContainsKey(key))
+        {
+            materials.Add(key, Resources.Load(GetPathFromKey(key)) as Material);
+        }
+        return materials[key];
+    }
 }
 
 public struct WaveData
