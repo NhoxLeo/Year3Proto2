@@ -6,8 +6,10 @@ public class Invader : Enemy
 {
     public float scale = 0.0f;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        enemyName = EnemyNames.Invader;
         structureTypes = new List<StructureType>()
         {
             StructureType.Resource,
@@ -17,10 +19,16 @@ public class Invader : Enemy
         };
     }
 
+    protected override void LookAtPosition(Vector3 _position)
+    {
+        base.LookAtPosition(_position);
+        // fixing animation problems
+        transform.right = transform.forward;
+    }
+
     private void FixedUpdate()
     {
         if (stunned) return;
-
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -58,6 +66,10 @@ public class Invader : Enemy
                             {
                                 if (structureTypes.Contains(target.GetStructureType()))
                                 {
+                                    if (!animator.GetBool("Attack"))
+                                    {
+                                        animator.SetBool("Attack", true);
+                                    }
                                     Action();
                                 }
                                 else
@@ -138,24 +150,33 @@ public class Invader : Enemy
         }
     }
 
+    public void Initialize(int _level, float _scale)
+    {
+        SetScale(_scale);
+        SetLevel(_level);
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
+    }
+
     public void SetScale(float _scale)
     {
         scale = _scale;
         transform.localScale *= _scale + 0.3f;
-        damage = _scale * 2.0f;
-        health = _scale * 10f;
-        finalSpeed = 0.4f + 1f / _scale / 10.0f;
+        baseDamage = _scale * 2.0f;
+        baseHealth = _scale * 10f;
+        finalSpeed = 0.4f + ((1f / _scale) / 10.0f);
+
+        currentSpeed = finalSpeed;
 
         if (!animator) { animator = GetComponent<Animator>(); }
 
         animator.SetFloat("AttackSpeed", 1f / _scale);
-
     }
 
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
         puff.transform.localScale *= scale;
     }

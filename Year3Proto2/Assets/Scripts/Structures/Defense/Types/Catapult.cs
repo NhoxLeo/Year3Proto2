@@ -4,42 +4,40 @@
 public class Catapult : ProjectileDefenseStructure
 {
     private const int MetalCost = 4;
-    private const float MaxHealth = 450.0f;
     public GameObject boulder;
-    public float boulderDamage = 5f;
-    public float boulderExplosionRadius = 0.25f;
-    private float boulderSpeed = 1.0f;
+
+    private const float BoulderSpeed = 1f;
+    private const float BaseMaxHealth = 450f;
+    private const float BaseDamage = 5f;
+
+    private float damage;
+    private float boulderExplosionRadius = 0.375f;
 
     protected override void Awake()
     {
+        // set base stats
         base.Awake();
+        damage = GetBaseDamage();
         structureName = StructureNames.Catapult;
-        maxHealth = MaxHealth;
-        health = maxHealth;
 
+        // research
         SuperManager superMan = SuperManager.GetInstance();
-
-        if (superMan.GetResearchComplete(SuperManager.CatapultFortification))
-        {
-            health = maxHealth *= 1.5f;
-        }
-
         if (superMan.GetResearchComplete(SuperManager.CatapultRange))
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
-
-        if (superMan.GetResearchComplete(SuperManager.CatapultPower))
-        {
-            boulderDamage *= 1.3f;
-        }
         if (superMan.GetResearchComplete(SuperManager.CatapultSuper))
         {
             boulderExplosionRadius *= 1.5f;
         }
-
         attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        
+        // set targets
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
     }
 
     public override void Launch(Transform _target)
@@ -50,8 +48,8 @@ public class Catapult : ProjectileDefenseStructure
         GameObject newBoulder = Instantiate(boulder, position, Quaternion.identity, transform);
         BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
         boulderBehaviour.target = _target.position;
-        boulderBehaviour.damage = boulderDamage;
-        boulderBehaviour.speed = boulderSpeed;
+        boulderBehaviour.damage = damage;
+        boulderBehaviour.speed = BoulderSpeed;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
         GameManager.CreateAudioEffect("catapultFire", transform.position);
 
@@ -81,5 +79,45 @@ public class Catapult : ProjectileDefenseStructure
         {
             projectileDelay = 1f / projectileRate;
         }
+    }
+
+    protected override void OnSetLevel()
+    {
+        base.OnSetLevel();
+        damage = GetBaseDamage() * Mathf.Pow(1.25f, level - 1);
+        health = GetTrueMaxHealth();
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return BaseMaxHealth;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        // get base health
+        float maxHealth = GetBaseMaxHealth();
+
+        // fortification upgrade
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification))
+        {
+            maxHealth *= 1.5f;
+        }
+
+        // level
+        maxHealth *= Mathf.Pow(1.25f, level - 1);
+
+        // poor timber multiplier
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
+        {
+            maxHealth *= 0.5f;
+        }
+
+        return maxHealth;
+    }
+
+    private float GetBaseDamage()
+    {
+        return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultPower) ? 1.3f : 1.0f);
     }
 }

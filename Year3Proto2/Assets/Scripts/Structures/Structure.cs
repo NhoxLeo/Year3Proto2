@@ -26,13 +26,12 @@ public abstract class Structure : MonoBehaviour
     protected int ID;
     protected float health;
     protected Healthbar healthBar;
-    protected float maxHealth = 100.0f;
     protected StructureType structureType;
     protected float timeSinceLastHit = Mathf.Infinity;
     protected BuildingInfo buildingInfo;
     public bool fromSaveData = false;
     public bool saveDataStartFrame = false;
-    private GameObject destructionEffect;
+    private static GameObject DestructionEffect;
     protected int allocatedVillagers = 0;
     protected static int villagerCapacity = 3;
     protected VillagerAllocation villagerWidget = null;
@@ -172,7 +171,7 @@ public abstract class Structure : MonoBehaviour
     public bool Damage(float amount)
     {
         timeSinceLastHit = 0.0f;
-        bool setInfo = health == maxHealth;
+        bool setInfo = health == GetTrueMaxHealth();
         health -= amount;
         if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
@@ -188,7 +187,7 @@ public abstract class Structure : MonoBehaviour
         if (health <= 0f)
         {
             VillagerManager.GetInstance().RemoveVillagers(allocatedVillagers);
-            GameObject destroyedVFX = Instantiate(destructionEffect);
+            GameObject destroyedVFX = Instantiate(DestructionEffect);
             destroyedVFX.transform.position = transform.position;
         }
 
@@ -205,11 +204,6 @@ public abstract class Structure : MonoBehaviour
         health = _health;
     }
 
-    public float GetMaxHealth()
-    {
-        return maxHealth;
-    }
-
     public string GetStructureName()
     {
         return structureName;
@@ -217,7 +211,7 @@ public abstract class Structure : MonoBehaviour
 
     public bool CanBeRepaired()
     {
-        return (health < maxHealth) && (timeSinceLastHit >= 5.0f);
+        return (health < GetTrueMaxHealth()) && (timeSinceLastHit >= 5.0f);
     }
 
     public StructureType GetStructureType()
@@ -300,7 +294,7 @@ public abstract class Structure : MonoBehaviour
             GameManager.IncrementRepairCount();
             if (!_mass) { HUDManager.GetInstance().ShowResourceDelta(repairCost, true); }
             gameMan.playerResources.DeductResourceBundle(repairCost);
-            health = maxHealth;
+            health = GetTrueMaxHealth();
             return true;
         }
         return false;
@@ -308,7 +302,7 @@ public abstract class Structure : MonoBehaviour
 
     public ResourceBundle RepairCost()
     {
-        return StructureManager.GetInstance().structureDict[structureName].originalCost * (1.0f - (health / maxHealth));
+        return StructureManager.GetInstance().structureDict[structureName].originalCost * (1.0f - (health / GetTrueMaxHealth()));
     }
 
     public void SetHealthbar(Healthbar _healthBar)
@@ -318,9 +312,13 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void Awake()
     {
+        health = GetTrueMaxHealth();
+
         buildingInfo = FindObjectOfType<BuildingInfo>();
-        health = maxHealth;
-        destructionEffect = Resources.Load("DestructionEffect") as GameObject;
+        if (!DestructionEffect)
+        {
+            DestructionEffect = Resources.Load("DestructionEffect") as GameObject;
+        }
     }
 
     protected virtual void Start()
@@ -329,14 +327,16 @@ public abstract class Structure : MonoBehaviour
         {
             hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
         }
+
         StructureManager structMan = StructureManager.GetInstance();
+
         GameObject healthBarInst = Instantiate(structMan.healthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
         SetHealthbar(healthBarInst.GetComponent<Healthbar>());
         healthBar.target = gameObject;
         healthBar.fillAmount = 1.0f;
         healthBarInst.SetActive(false);
         // health is set in awake, so this is called after and will affect all structures
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber)) { health = maxHealth *= 0.5f; }
+        //if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber)) { health = GetBaseMaxHealth() * 0.5f; }
     }
 
     protected virtual void Update()
@@ -361,7 +361,7 @@ public abstract class Structure : MonoBehaviour
             }
             else
             {
-                healthBar.fillAmount = health / maxHealth;
+                healthBar.fillAmount = health / GetTrueMaxHealth();
             }
             RefreshWidget();
         }
@@ -387,5 +387,9 @@ public abstract class Structure : MonoBehaviour
     {
 
     }
+
+    public abstract float GetBaseMaxHealth();
+
+    public abstract float GetTrueMaxHealth();
 }
 

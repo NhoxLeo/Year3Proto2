@@ -1,31 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LightningBolt : MonoBehaviour
 {
     public Transform target;
     [SerializeField] private ParticleSystem lightningBolt;
     [SerializeField] private ParticleSystem sparks;
-
-    void Start()
+    private float damage;
+    
+    public void Initialize(Transform _target, float _damage)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            Fire(target);
-        }
+        target = _target;
+        damage = _damage;
     }
 
     public void Fire(Transform _target)
     {
-        target = _target;
-
         if (target != null)
         {
             transform.LookAt(target);
@@ -36,6 +25,20 @@ public class LightningBolt : MonoBehaviour
 
             lightningBolt.Emit(1);
             sparks.Emit(10);
+
+            Enemy enemy = target.GetComponent<Enemy>();
+            if(enemy)
+            {
+                Petard pet = enemy.GetComponent<Petard>();
+                if (pet)
+                {
+                    pet.SetOffBarrel();
+                }
+                else
+                {
+                    enemy.Damage(damage);
+                }
+            }
         }
     }
 }

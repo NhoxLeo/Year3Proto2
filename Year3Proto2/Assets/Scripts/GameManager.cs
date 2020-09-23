@@ -383,7 +383,8 @@ public class GameManager : MonoBehaviour
             { "UIclick3", Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip },
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
             { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
-        };
+            { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
+        };
     }
 
     // Start is called before the first frame update
@@ -556,10 +557,8 @@ public class GameManager : MonoBehaviour
                     switchingScene = true;
                 }
             }
-            
         }
-    }
-
+    }
     public void SaveMatch()
     {
         SuperManager.GetInstance().SaveCurrentMatch();
@@ -589,11 +588,11 @@ public class GameManager : MonoBehaviour
             case SuperManager.SlaughterIII:
                 return EnemyManager.GetInstance().GetEnemiesKilled() > 2000;
             case SuperManager.Survive:
-                return (EnemyManager.GetInstance().GetWaveCurrent() == 10 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 10;
+                return EnemyManager.GetInstance().GetWaveSurvived(10);
             case SuperManager.SurviveII:
-                return (EnemyManager.GetInstance().GetWaveCurrent() == 15 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 15;
+                return EnemyManager.GetInstance().GetWaveSurvived(15);
             case SuperManager.SurviveIII:
-                return (EnemyManager.GetInstance().GetWaveCurrent() == 25 && EnemyManager.GetInstance().GetEnemiesAlive() == 0) || EnemyManager.GetInstance().GetWaveCurrent() > 25;
+                return EnemyManager.GetInstance().GetWaveSurvived(25);
             default:
                 break;
         }

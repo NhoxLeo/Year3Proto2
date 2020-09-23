@@ -10,4 +10,14 @@ public class HillEnvironment : EnvironmentStructure
         environmentType = EnvironmentType.hill;
         structureName = StructureNames.MetalEnvironment;
     }
+
+    public override float GetBaseMaxHealth()
+    {
+        return 100f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
+    }
 }

@@ -1,75 +1,92 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FreezeTowerCannon : MonoBehaviour
 {
     [Header("Attributes")]
     [SerializeField] private float viewRadius = 5.0f;
-    [SerializeField] private float damage = 0.02f;
+    [SerializeField] private float damageDelay = 1.2f;
     [Range(0, 360)] [SerializeField] private float viewAngle = 60.0f;
     [SerializeField] private LayerMask targetMask;
     [SerializeField] private Material material;
     [SerializeField] private ParticleSystem particle;
+    private bool particlesPlaying = false;
 
-    private List<Transform> previousTargets = new List<Transform>();
+    private float time;
     private readonly List<Transform> targets = new List<Transform>();
 
-    private const float interval = 3.0f;
-    private float time = 0.0f;
+    // Research 
+    private float slowAmount = 1.0f;
+    private bool damageEnemies = false;
 
     private void Start()
     {
-        time = interval;
         particle.Stop();
     }
 
     private void Update()
     {
-        time -= Time.deltaTime;
-        if(time <= 0.0f)
+        if(targets.Count > 0 && damageEnemies)
         {
-            time = interval;
-
-            previousTargets = targets;
-
-            targets.Clear();
-
-            Collider[] transforms = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
-            for (int i = 0; i < transforms.Length; i++)
+            time -= Time.deltaTime;
+            if (time <= 0.0f)
             {
-                Transform target = transforms[i].transform;
-                Vector3 direction = (target.position - transform.position).normalized;
-                if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
+                targets.ForEach(target =>
                 {
-                    Enemy enemy = target.GetComponent<Enemy>();
-                    if (enemy)
+                    if (target)
                     {
-                        enemy.Slow(true);
-                        targets.Add(target);
+                        Enemy enemy = target.GetComponent<Enemy>();
+                        if(enemy) enemy.Damage(0.8f);
                     }
-                }
+                });
+                time = damageDelay;
             }
+            targets.RemoveAll(target => !target);
+        }
+        if (targets.Count > 0 && !particlesPlaying)
+        {
+            particle.Play();
+            particlesPlaying = true;
+        }
+        else if (targets.Count == 0 && particlesPlaying)
+        {
+            particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            particlesPlaying = false;
+        }
+    } 
 
-            previousTargets.RemoveAll(target => !target);
-            for (int i = 0; i < previousTargets.Count; i++)
+    private void OnTriggerEnter(Collider other)
+    {
+        if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
+        {
+            Vector3 direction = (other.transform.position - transform.position).normalized;
+            // If transform is inside angle based on snow cannons transform
+            if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
             {
-                Transform target = previousTargets[i];
-                Enemy enemy = target.GetComponent<Enemy>();
-                if(enemy)
+                Enemy enemy = other.GetComponent<Enemy>();
+                if (enemy)
                 {
-                    enemy.Slow(false);
+                    enemy.Slow(true, slowAmount);
+                    targets.Add(other.transform);
                 }
             }
+        }
+    }
 
-            if(targets.Count > 0)
+    private void OnTriggerExit(Collider other)
+    {
+        if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
+        {
+            if (targets.Contains(other.transform))
             {
-                particle.Play();
-            } else
-            {
-                particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                Enemy enemy = other.GetComponent<Enemy>();
+                if (enemy)
+                {
+                    enemy.Slow(false, slowAmount);
+                    targets.Remove(other.transform);
+                }
             }
-
-            //material.color = targets.Count > 0 ? Color.red : Color.white;
         }
     }
 
@@ -91,5 +108,16 @@ public class FreezeTowerCannon : MonoBehaviour
 
         Gizmos.DrawLine(transform.position, lineA);
         Gizmos.DrawLine(transform.position, lineB);
+    }
+
+    public void Setup(float _slowPercentage, bool _damageEnemies)
+    {
+        slowAmount = _slowPercentage;
+        damageEnemies = _damageEnemies;
+    }
+
+    public List<Transform> GetTargets()
+    {
+        return targets;
     }
 }

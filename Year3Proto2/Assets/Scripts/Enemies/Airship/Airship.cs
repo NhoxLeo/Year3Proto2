@@ -118,36 +118,57 @@ public class Airship : MonoBehaviour
     
     private IEnumerator Deploy(float seconds)
     {
+        GameManager.CreateAudioEffect("horn", transform.position, 0.5f);
         WaitForSeconds wait = new WaitForSeconds(seconds);
         List<Vector3> spawnPoints = GenerateSpawnPoints();
         for (int i = 0; i < transforms.Length; i++)
         {
-            if (transforms[i] == null) break;
+            if (!transforms[i]) break;
 
-            Transform instantiatedTransform = Instantiate(transforms[i], transform.position, Quaternion.identity);
-            instantiatedTransform.position = spawnPoints[i];
+            Transform instantiatedTransform = Instantiate(transforms[i], spawnPoints[i], Quaternion.identity);
+            Enemy enemy = instantiatedTransform.GetComponent<Enemy>();
+            EnemyManager.GetInstance().RecordNewEnemy(enemy);
 
             Invader invader = instantiatedTransform.GetComponent<Invader>();
             if(invader)
             {
-                invader.SetScale(Random.Range(0.8f, 1.5f));
-                EnemyManager.GetInstance().RecordNewEnemy(invader);
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Invader);
+                invader.Initialize(level, Random.Range(0.8f, 1.5f));
             }
 
             HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
             if (heavyInvader)
             {
-                heavyInvader.Randomize();
-                EnemyManager.GetInstance().RecordNewEnemy(heavyInvader);
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.HeavyInvader);
+                heavyInvader.Initialize(level);
             }
 
+            FlyingInvader flying = instantiatedTransform.GetComponent<FlyingInvader>();
+            if (flying)
+            {
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.FlyingInvader);
+                flying.Initialize(level);
+            }
+
+            Petard pet = instantiatedTransform.GetComponent<Petard>();
+            if (pet)
+            {
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Petard);
+                pet.Initialize(level);
+            }
+
+            BatteringRam ram = instantiatedTransform.GetComponent<BatteringRam>();
+            if (ram)
+            {
+                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.BatteringRam);
+                ram.Initialize(level);
+            }
 
             yield return wait;
 
         }
 
         yield return wait;
-
 
         target.GetComponent<TileBehaviour>().SetApproached(false);
         airshipState = AirshipState.Depart;
@@ -160,7 +181,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform Array, Transform
     * @Return: void
     ***************************************/
-    public void Embark(Transform[] transforms, Transform pointerParent)
+    public void Embark(Transform[] _transforms, Transform _pointerParent)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
@@ -170,11 +191,11 @@ public class Airship : MonoBehaviour
             initialLocation = transform.position;
 
             // Instantiate and Setup pointer.
-            if (pointerPrefab) pointer = Instantiate(pointerPrefab, pointerParent);
+            if (pointerPrefab) pointer = Instantiate(pointerPrefab, _pointerParent);
             AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
             if (airshipPointer) airshipPointer.SetTarget(transform);
 
-            this.transforms = transforms;
+            transforms = _transforms;
             airshipState = AirshipState.Move;
             return;
         }
@@ -207,9 +228,9 @@ public class Airship : MonoBehaviour
 
             // Create position based on offset and index.
             Vector3 position = new Vector3(
-                target.localPosition.x + xPosition - (xOffset / 2.0f),
-                target.localPosition.y + yPosition,
-                target.localPosition.z + zPosition - (zOffset / 2.0f)
+                target.position.x + xPosition - (xOffset / 2.0f),
+                target.position.y + yPosition,
+                target.position.z + zPosition - (zOffset / 2.0f)
             );
 
             // Add position to Vector list.
@@ -238,22 +259,22 @@ public class Airship : MonoBehaviour
     }
 
     /**************************************
-    * Name of the Function: HasTarget
+    * Name of the Function: GetTarget
     * @Author: Tjeu Vreeburg
     * @Parameter: n/a
     * @Return: boolean
     ***************************************/
-    public bool HasTarget()
+    public bool GetTarget()
     {
         List<TileBehaviour> list = new List<TileBehaviour>(FindObjectsOfType<TileBehaviour>());
-        list.RemoveAll(element => element.GetAttached() != null && element.GetApproached());
+        list.RemoveAll(element => !element.GetSpawnTile() || element.GetApproached());
 
         list.ForEach(tile =>
         {
-            float distance = (tile.transform.position - transform.position).sqrMagnitude;
-            if (distance < this.distance)
+            float newDistance = (tile.transform.position - transform.position).magnitude;
+            if (newDistance < distance)
             {
-                this.distance = distance;
+                distance = newDistance;
                 target = tile.transform;
             }
         });
