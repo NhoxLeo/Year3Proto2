@@ -96,11 +96,13 @@ public abstract class Enemy : MonoBehaviour
         };
     }
 
-    public void Stun()
+    public void Stun(float _damage)
     {
         animator.enabled = false;
         stunned = true;
         stunTime = stunDuration;
+
+        Damage(_damage);
     }
 
     public void Slow(bool _newSlow, float _slowAmount)
@@ -153,7 +155,7 @@ public abstract class Enemy : MonoBehaviour
         }
         if (enemyName == EnemyNames.BatteringRam)
         {
-            Stun();
+            Stun(0.0f);
         }
     }
 

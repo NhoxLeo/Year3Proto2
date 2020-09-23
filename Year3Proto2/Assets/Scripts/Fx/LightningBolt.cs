@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class LightningBolt : MonoBehaviour
 {
@@ -6,14 +7,43 @@ public class LightningBolt : MonoBehaviour
     [SerializeField] private ParticleSystem lightningBolt;
     [SerializeField] private ParticleSystem sparks;
     private float damage;
-    
-    public void Initialize(Transform _target, float _damage)
+    private bool sparkDamage;
+
+    private List<ParticleCollisionEvent> collisions;
+
+    public void Initialize(Transform _target, float _damage, bool _sparkDamage)
     {
         target = _target;
         damage = _damage;
+        sparkDamage = _sparkDamage;
+
+        collisions = new List<ParticleCollisionEvent>();
     }
 
-    public void Fire(Transform _target)
+    private void OnParticleCollision(GameObject _other)
+    {
+        if (sparkDamage)
+        {
+            if ((sparks.gameObject.layer & (1 << _other.gameObject.layer)) != 0)
+            {
+                int numCollisionEvents = sparks.GetCollisionEvents(_other, collisions);
+
+                Enemy enemy = _other.GetComponent<Enemy>();
+                int i = 0;
+
+                while (i < numCollisionEvents)
+                {
+                    if (enemy)
+                    {
+                        enemy.Damage(2.5f);
+                    }
+                    i++;
+                }
+            }
+        }
+    }
+
+    public void Fire()
     {
         if (target != null)
         {

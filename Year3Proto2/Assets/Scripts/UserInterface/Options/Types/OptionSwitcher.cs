@@ -21,12 +21,11 @@ public class OptionSwitcherData : OptionData
     public int value;
     public string[] values;
 
-    public OptionSwitcherData(int _defaultValue, int _value, string[] _values, OptionCallback _optionCallback)
+    public OptionSwitcherData(int _defaultValue, int _value, string[] _values)
     {
         value = _value;
         values = _values;
         defaultValue = _defaultValue;
-        optionCallback = _optionCallback;
     }
 }
 
@@ -52,6 +51,7 @@ public class OptionSwitcher : OptionObject, OptionDataBase
             data.value += 1;
         }
         value.text = data.values[data.value].ToString();
+        data.GetCallback().Invoke();
     }
 
     /**************************************
@@ -71,12 +71,14 @@ public class OptionSwitcher : OptionObject, OptionDataBase
             data.value -= 1;
         }
         value.text = data.values[data.value].ToString();
+        data.GetCallback().Invoke();
     }
 
     public override void Deserialize()
     {
         data.value = PlayerPrefs.GetInt(key, data.defaultValue);
         value.text = data.values[data.value].ToString();
+        data.GetCallback().Invoke();
     }
 
     public override void Serialize()

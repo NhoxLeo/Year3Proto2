@@ -13,10 +13,12 @@ public class BuildingInfo : MonoBehaviour
 
     private GameObject targetBuilding;
     private Structure targetStructure;
+    private DefenseStructure defenseStructure;
     private string buildingName;
 
     [Header("Sprites")]
     [SerializeField] private Sprite defenceSprite;
+
     [SerializeField] private Sprite villagerSprite;
     [SerializeField] private Sprite foodSprite;
     [SerializeField] private Sprite woodSprite;
@@ -27,6 +29,7 @@ public class BuildingInfo : MonoBehaviour
 
     [Header("Text")]
     [SerializeField] private TMP_Text headingTextFloating;       // Text showing name of building
+
     [SerializeField] private TMP_Text headingText;               // Text showing name of building
     [SerializeField] private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
     [SerializeField] private TMP_Text statValueText;             // Text showing value of stat
@@ -34,14 +37,18 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private Image statIcon;                     // Icon shown next to stat value
 
     [Header("Buttons")]
+    [SerializeField] private Button upgradeButton;               // Button for upgrading towers
+
     [SerializeField] private Button repairButton;                // Button for repairing buildings
     [SerializeField] private Button destroyButton;               // Button to destroy buildings
     [SerializeField] private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
     [SerializeField] private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
+
     [SerializeField] private Tooltip trainVillagerButton;        // Button to train a new villager for the Longhaus
 
     [Header("Tooltip")]                                          // Repair and Destroy tooltips
     [SerializeField] private RectTransform tooltipTransform;
+
     [SerializeField] private TMP_Text tooltipHeading;
     [SerializeField] private GameObject costComponent;
     [SerializeField] private TMP_Text woodText;
@@ -51,19 +58,19 @@ public class BuildingInfo : MonoBehaviour
 
     [Header("Settings")]
     public bool doAutoUpdate;                                    // Whether to automatically update info panel
+
     public float updateInterval = 0.25f;                         // Time between info panel updates
     private float updateTimer;
 
     private void Start()
     {
         buildPanel = FindObjectOfType<BuildPanel>();
-        structMan = FindObjectOfType<StructureManager>();
+        structMan = StructureManager.GetInstance();
         buildingName = "Building Name";
 
         statInfoText.text = "";
 
         updateTimer = updateInterval;
-
     }
 
     private void LateUpdate()
@@ -73,17 +80,6 @@ public class BuildingInfo : MonoBehaviour
 
         if (targetBuilding != null)
         {
-            headingText.text = buildingName;
-            headingTextFloating.text = buildingName;
-
-            if (targetStructure.GetStructureType() == StructureType.Defense)
-            {
-                DefenseStructure defense = targetStructure.GetComponent<DefenseStructure>();
-                string levelSuffix = " (Lvl " + defense.GetLevel() + ")";
-                headingText.text = buildingName + levelSuffix;
-                headingTextFloating.text = buildingName + levelSuffix;
-            }
-
             // Auto update info
             if (showPanel && doAutoUpdate)
             {
@@ -109,7 +105,6 @@ public class BuildingInfo : MonoBehaviour
             destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
             destroyButtonConfirm.showTooltip = showDestroyConfirm;
         }
-        
 
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -201,7 +196,6 @@ public class BuildingInfo : MonoBehaviour
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = lightning.CanBeRepaired();
                 break;
-
 
             case StructureNames.FoodResource:
                 Farm farm = targetBuilding.GetComponent<Farm>();
@@ -315,6 +309,25 @@ public class BuildingInfo : MonoBehaviour
                 break;
         }
 
+        if (targetStructure.GetStructureType() == StructureType.Defense)
+        {
+            defenseStructure = targetStructure.GetComponent<DefenseStructure>();
+            string levelSuffix = " (Lv " + defenseStructure.GetLevel() + ")";
+            string shortenedName = buildingName.Replace(" Tower", "");
+            headingText.text = buildingName;
+            headingTextFloating.text = shortenedName + levelSuffix;
+
+            upgradeButton.gameObject.SetActive(true);
+            upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+        }
+        else
+        {
+            headingText.text = buildingName;
+            headingTextFloating.text = buildingName;
+
+            upgradeButton.gameObject.SetActive(false);
+        }
+
         switch (tooltipMode)
         {
             case -1:
@@ -322,9 +335,12 @@ public class BuildingInfo : MonoBehaviour
                 break;
 
             case 0:
-                FetchRepairInfo();
+                FetchUpgradeInfo();
                 break;
             case 1:
+                FetchRepairInfo();
+                break;
+            case 2:
                 FetchCompensationInfo();
                 break;
         }
@@ -344,7 +360,7 @@ public class BuildingInfo : MonoBehaviour
     {
         targetBuilding = building;
         targetStructure = targetBuilding.GetComponent<Structure>();
-        buildingName = targetStructure.GetStructureName(); 
+        buildingName = targetStructure.GetStructureName();
 
         if (infoPanel.showElement)
         {
@@ -361,7 +377,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void SetTooptipMode(int _mode)
     {
-        tooltipMode = +_mode;
+        tooltipMode = _mode;
     }
 
     private void RefreshTooltip()
@@ -372,6 +388,34 @@ public class BuildingInfo : MonoBehaviour
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipTransform);
+    }
+
+    public void FetchUpgradeInfo()
+    {
+        tooltipHeading.text = "Upgrade Tower";
+
+        if (targetStructure.GetStructureType() == StructureType.Defense)
+        {
+            ResourceBundle upgradeCost = structMan.QuoteUpgradeCostFor(defenseStructure);
+            if (upgradeCost.foodCost + upgradeCost.woodCost + upgradeCost.metalCost != 0)
+            {
+                costComponent.SetActive(true);
+                upgradeButton.interactable = true;
+                woodText.text = upgradeCost.woodCost.ToString();
+                metalText.text = upgradeCost.metalCost.ToString();
+
+                tooltipDescription.gameObject.SetActive(true);
+                tooltipDescription.text = "Fully repairs tower. Increases durability and damage.";
+            }
+            else
+            {
+                costComponent.SetActive(false);
+                upgradeButton.interactable = false;
+                tooltipDescription.gameObject.SetActive(true);
+                if (defenseStructure.GetLevel() != 0) { tooltipDescription.text = "Tower is fully upgraded"; }
+                else { tooltipDescription.text = "Building cannot be upgraded"; }
+            }
+        }
     }
 
     public void FetchRepairInfo()
@@ -400,7 +444,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void FetchCompensationInfo()
     {
-        ResourceBundle compensation = StructureManager.GetInstance().QuoteCompensationFor(targetStructure);
+        ResourceBundle compensation = structMan.QuoteCompensationFor(targetStructure);
 
         tooltipHeading.text = "Destroy Building";
 
@@ -413,7 +457,23 @@ public class BuildingInfo : MonoBehaviour
         RefreshTooltip();
     }
 
-
+    public void UpgradeBuilding()
+    {
+        if (targetStructure.GetStructureType() == StructureType.Defense)
+        {
+            if (defenseStructure.GetLevel() < 3)
+            {
+                ResourceBundle cost = StructureManager.GetInstance().QuoteUpgradeCostFor(defenseStructure);
+                if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
+                {
+                    HUDManager.GetInstance().ShowResourceDelta(cost, true);
+                    defenseStructure.LevelUp();
+                    upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+                    SetInfo();
+                }
+            }
+        }
+    }
 
     public void RepairBuilding()
     {
