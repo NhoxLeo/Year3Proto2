@@ -55,22 +55,6 @@ public abstract class DefenseStructure : Structure
     {
         base.Update();
         enemies.RemoveAll(enemy => !enemy);
-        
-        if (level < 3)
-        {
-            if (Input.GetKeyDown(KeyCode.U))
-            {
-                StructureManager structMan = StructureManager.GetInstance();
-                if (structMan.StructureIsSelected(this))
-                {
-                    if (GameManager.GetInstance().playerResources.AttemptPurchase(structMan.QuoteUpgradeCostFor(this)))
-                    {
-                        LevelUp();
-                    }
-                }
-            }
-        }
-        
     }
 
     public override void ShowRangeDisplay(bool _active)
