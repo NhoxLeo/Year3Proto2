@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 2
-  damage: 0.02
+  damageDelay: 1.2
   viewAngle: 60
   targetMask:
     serializedVersion: 2
@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 2
-  damage: 0.02
+  damageDelay: 1.2
   viewAngle: 60
   targetMask:
     serializedVersion: 2
@@ -311,7 +311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 2
-  damage: 0.02
+  damageDelay: 1.2
   viewAngle: 60
   targetMask:
     serializedVersion: 2
@@ -560,7 +560,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 2
-  damage: 0.02
+  damageDelay: 1.2
   viewAngle: 60
   targetMask:
     serializedVersion: 2
@@ -806,11 +806,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6324492158956954611}
     m_Modifications:
-    - target: {fileID: 3250190899022308385, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
-        type: 3}
-      propertyPath: ShapeModule.angle
-      value: 15
-      objectReference: {fileID: 0}
     - target: {fileID: 3250190899022308387, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
         type: 3}
       propertyPath: m_Name
@@ -892,11 +887,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4019586587792546152}
     m_Modifications:
-    - target: {fileID: 3250190899022308385, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
-        type: 3}
-      propertyPath: ShapeModule.angle
-      value: 15
-      objectReference: {fileID: 0}
     - target: {fileID: 3250190899022308387, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
         type: 3}
       propertyPath: m_Name
@@ -978,11 +968,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5594071556411205163}
     m_Modifications:
-    - target: {fileID: 3250190899022308385, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
-        type: 3}
-      propertyPath: ShapeModule.angle
-      value: 15
-      objectReference: {fileID: 0}
     - target: {fileID: 3250190899022308387, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
         type: 3}
       propertyPath: m_Name
@@ -1064,11 +1049,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 136556988506569497}
     m_Modifications:
-    - target: {fileID: 3250190899022308385, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
-        type: 3}
-      propertyPath: ShapeModule.angle
-      value: 15
-      objectReference: {fileID: 0}
     - target: {fileID: 3250190899022308387, guid: e1124fa6c952a3e4f8b5e9d15dadb984,
         type: 3}
       propertyPath: m_Name
