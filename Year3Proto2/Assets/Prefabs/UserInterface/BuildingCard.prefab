@@ -1178,8 +1178,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Building Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7dba8e6911e5e8a4b879f3284010b6fa, type: 2}
-  m_sharedMaterial: {fileID: 955247091600741525, guid: 7dba8e6911e5e8a4b879f3284010b6fa,
+  m_fontAsset: {fileID: 11400000, guid: fbfd2739654355142baf30d9d42cd008, type: 2}
+  m_sharedMaterial: {fileID: 1612501218419185297, guid: fbfd2739654355142baf30d9d42cd008,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1205,8 +1205,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 21
-  m_fontSizeBase: 21
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

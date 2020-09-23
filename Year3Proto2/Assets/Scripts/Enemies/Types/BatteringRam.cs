@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class BatteringRam : Enemy
 {
-    private const float delay = 2f;
-    private float timer = delay;
 
     protected override void Awake()
     {
@@ -31,6 +29,7 @@ public class BatteringRam : Enemy
                 case EnemyState.Action:
                     if (!target)
                     {
+                        animator.SetBool("Attack", false);
                         enemyState = EnemyState.Idle;
                     }
                     else
@@ -57,12 +56,14 @@ public class BatteringRam : Enemy
                             }
                             else
                             {
+                                animator.SetBool("Attack", false);
                                 enemyState = EnemyState.Idle;
                             }
                         }
                     }
                     break;
                 case EnemyState.Walk:
+                    action = false;
                     if (target)
                     {
                         updatePathTimer += Time.fixedDeltaTime;
@@ -82,6 +83,7 @@ public class BatteringRam : Enemy
                         {
                             if (!hasPath)
                             {
+                                animator.SetBool("Attack", false);
                                 enemyState = EnemyState.Idle;
                                 break;
                             }
@@ -100,9 +102,10 @@ public class BatteringRam : Enemy
                             transform.position = newPosition;
 
                             // if we are close enough to the target, attack the target
-                            if ((target.transform.position - transform.position).magnitude <= 0.6f)
+                            if ((target.transform.position - transform.position).magnitude <= 0.75f)
                             {
                                 LookAtPosition(target.transform.position);
+                                animator.SetBool("Attack", true);
                                 enemyState = EnemyState.Action;
                                 needToMoveAway = (target.transform.position - transform.position).magnitude < 0.5f;
                             }
@@ -110,10 +113,12 @@ public class BatteringRam : Enemy
                     }
                     else
                     {
+                        animator.SetBool("Attack", false);
                         enemyState = EnemyState.Idle;
                     }
                     break;
                 case EnemyState.Idle:
+                    action = false;
                     RequestNewPath();
                     break;
             }
@@ -126,12 +131,8 @@ public class BatteringRam : Enemy
 
     public override void Action()
     {
-        timer -= Time.fixedDeltaTime;
-        if (timer <= 0f)
-        {
-            timer = delay;
-            target.Damage(damage);
-        }
+        action = true;
+        animator.SetBool("Attack", true);
     }
 
     protected override void LookAtPosition(Vector3 _position)
@@ -152,10 +153,27 @@ public class BatteringRam : Enemy
     public void Initialize(int _level)
     {
         baseHealth = 100f;
-        baseDamage = 50f;
+        baseDamage = 30f;
         SetLevel(_level);
         finalSpeed = 0.25f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         currentSpeed = finalSpeed;
+    }
+
+    public void SwingContact()
+    {
+        if (action)
+        {
+            if (target)
+            {
+                target.Damage(damage);
+            }
+        }
+    }
+
+    public override void SetLevel(int _level)
+    {
+        base.SetLevel(_level);
+        GetComponentInChildren<SkinnedMeshRenderer>().material = EnemyMaterials.Fetch(enemyName, level);
     }
 }

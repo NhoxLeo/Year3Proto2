@@ -405,6 +405,8 @@ public class GameManager : MonoBehaviour
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
             { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
             { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
+            { "Zap", Resources.Load("Audio/SFX/sfxLightning") as AudioClip },
+            { "Thud", Resources.Load("Audio/SFX/sfxShockwave") as AudioClip },
         };        objectives = SuperManager.GetInstance().GetCurrentWinConditions();
     }
 
@@ -515,7 +517,7 @@ public class GameManager : MonoBehaviour
 
         if (!gameover)
         {
-            if (longhausDead == true)
+            if (longhausDead)
             {
                 gameover = true;
                 victory = false;
@@ -649,7 +651,7 @@ public class GameManager : MonoBehaviour
 
     private bool CheckNextWinConditionIsMet()
     {
-        if (objectives.Count < objectivesCompleted)
+        if (objectives.Count > objectivesCompleted)
         {
             int currentWinCondition = objectives[objectivesCompleted];
             switch (currentWinCondition)
@@ -667,11 +669,11 @@ public class GameManager : MonoBehaviour
                 case SuperManager.SlaughterIII:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
                 case SuperManager.Survive:
-                    return EnemyManager.GetInstance().GetWaveSurvived(10);
+                    return EnemyManager.GetInstance().GetWaveSurvived(5);
                 case SuperManager.SurviveII:
-                    return EnemyManager.GetInstance().GetWaveSurvived(15);
+                    return EnemyManager.GetInstance().GetWaveSurvived(10);
                 case SuperManager.SurviveIII:
-                    return EnemyManager.GetInstance().GetWaveSurvived(25);
+                    return EnemyManager.GetInstance().GetWaveSurvived(15);
                 case SuperManager.Food:
                     return foodSinceObjective >= 1000;
                 case SuperManager.FoodII:
