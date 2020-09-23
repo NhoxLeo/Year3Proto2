@@ -97,14 +97,12 @@ public class ResearchScreen : MonoBehaviour
             {
                 float diff = localPos.x - -200.0f;
                 float squeeze = (diff / 4);
-                Debug.Log(squeeze);
                 localPos.x = -200.0f + squeeze;
             }
             else if (localPos.x > 200.0f)
             {
                 float diff = localPos.x - 200.0f;
                 float squeeze = (diff / 4);
-                Debug.Log(squeeze);
                 localPos.x = 200.0f + squeeze;
             }
             cardPanel.localPosition = localPos;
