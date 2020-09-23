@@ -48,10 +48,16 @@ public static class EnemyMaterials
     {
         switch (_key.Item1)
         {
-            case EnemyNames.BatteringRam:
-                return "Materials/mBatteringRam_Lvl" + _key.Item2.ToString();
             case EnemyNames.Invader:
                 return "Materials/mInvader_Lvl" + _key.Item2.ToString();
+            case EnemyNames.HeavyInvader:
+                return "Materials/mHeavyInvader_Lvl" + _key.Item2.ToString();
+            case EnemyNames.FlyingInvader:
+                return "Materials/mFlyingInvaderSails_Lvl" + _key.Item2.ToString();
+            case EnemyNames.Petard:
+                return "Materials/mExplosiveInvader_Lvl" + _key.Item2.ToString();
+            case EnemyNames.BatteringRam:
+                return "Materials/mBatteringRam_Lvl" + _key.Item2.ToString();
             default:
                 break;
         }
