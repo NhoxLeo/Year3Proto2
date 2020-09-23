@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.4.1b";
+    public const string Version = "0.9.5b";
     public static bool DevMode = true;
     // CONSTANTS
     public const int NoRequirement = -1;
@@ -153,6 +153,7 @@ public class SuperManager : MonoBehaviour
         public SaveVector3 targetPosition;
         public EnemyState state;
         public int enemyWave;
+        public int level;
     }
 
     [Serializable]
@@ -725,12 +726,13 @@ public class SuperManager : MonoBehaviour
             {
                 enemyData = new EnemySaveData
                 {
-                    health = invader.health,
+                    health = invader.GetHealth(),
                     position = new SaveVector3(invader.transform.position),
                     orientation = new SaveQuaternion(invader.transform.rotation),
                     targetPosition = new SaveVector3(invader.GetTarget().transform.position),
                     state = invader.GetState(),
-                    enemyWave = invader.GetSpawnWave()
+                    enemyWave = invader.GetSpawnWave(),
+                    level = invader.GetLevel()
                 },
                 scale = invader.scale,
             };
@@ -744,12 +746,13 @@ public class SuperManager : MonoBehaviour
             {
                 enemyData = new EnemySaveData
                 {
-                    health = heavy.health,
+                    health = heavy.GetHealth(),
                     position = new SaveVector3(heavy.transform.position),
                     orientation = new SaveQuaternion(heavy.transform.rotation),
                     targetPosition = new SaveVector3(heavy.GetTarget().transform.position),
                     state = heavy.GetState(),
-                    enemyWave = heavy.GetSpawnWave()
+                    enemyWave = heavy.GetSpawnWave(),
+                    level = heavy.GetLevel()
                 },
                 equipment = heavy.GetEquipment()
             };
@@ -761,12 +764,13 @@ public class SuperManager : MonoBehaviour
         {
             EnemySaveData saveData = new EnemySaveData
             {
-                health = flying.health,
+                health = flying.GetHealth(),
                 position = new SaveVector3(flying.transform.position),
                 orientation = new SaveQuaternion(flying.transform.rotation),
                 targetPosition = new SaveVector3(flying.GetTarget().transform.position),
                 state = flying.GetState(),
-                enemyWave = flying.GetSpawnWave()
+                enemyWave = flying.GetSpawnWave(),
+                level = flying.GetLevel()
             };
             save.flyingInvaders.Add(saveData);
         }
@@ -776,12 +780,13 @@ public class SuperManager : MonoBehaviour
         {
             EnemySaveData saveData = new EnemySaveData
             {
-                health = petard.health,
+                health = petard.GetHealth(),
                 position = new SaveVector3(petard.transform.position),
                 orientation = new SaveQuaternion(petard.transform.rotation),
                 targetPosition = new SaveVector3(petard.GetTarget().transform.position),
                 state = petard.GetState(),
-                enemyWave = petard.GetSpawnWave()
+                enemyWave = petard.GetSpawnWave(),
+                level = petard.GetLevel()
             };
             save.petards.Add(saveData);
         }
