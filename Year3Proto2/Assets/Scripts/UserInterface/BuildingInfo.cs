@@ -412,7 +412,7 @@ public class BuildingInfo : MonoBehaviour
                 costComponent.SetActive(false);
                 upgradeButton.interactable = false;
                 tooltipDescription.gameObject.SetActive(true);
-                if (defenseStructure.GetLevel() != 0) { tooltipDescription.text = "Building is fully upgraded"; }
+                if (defenseStructure.GetLevel() != 0) { tooltipDescription.text = "Tower is fully upgraded"; }
                 else { tooltipDescription.text = "Building cannot be upgraded"; }
             }
         }
