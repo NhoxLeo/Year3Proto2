@@ -17,9 +17,11 @@ using UnityEngine;
 
 public class OptionsSystem : MonoBehaviour
 {
-    [Header("Parents")]
-    [SerializeField] private Transform display;
-    [SerializeField] private Transform graphics;
+    [Header("Panels")]
+    [SerializeField] private Transform displayPanel;
+    [SerializeField] private Transform graphicsPanel;
+    [SerializeField] private Transform audioPanel;
+    [SerializeField] private Transform controlsPanel;
 
     [Header("Prefabrication")]
     [SerializeField] private Transform togglePrefab;
@@ -29,65 +31,64 @@ public class OptionsSystem : MonoBehaviour
     private List<OptionObject> optionObjects = new List<OptionObject>();
     private void Awake()
     {
-        Debug.Log("Quality Setting: " + QualitySettings.GetQualityLevel());
-        optionObjects.Add(InstantiateOption("RESOLUTION",
-            new OptionSwitcherData(0, 0, Screen.resolutions.Select(o => o.ToString()).ToArray(),
-                delegate
-                {
-                    OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "RESOLUTION");
-                    if (optionSwitcher)
-                    {
-                        OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
-                        Resolution resolution = Screen.resolutions[optionSwitcherData.value];
-                        Screen.SetResolution(resolution.width, resolution.height, true);
-                    }
-                }
-            ), switcherPrefab, display)
-        );
 
-        optionObjects.Add(InstantiateOption("QUALITY",
-            new OptionSwitcherData(0, 0, QualitySettings.names.ToArray(),
-               delegate
-               {
-                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "QUALITY");
-                   if (optionSwitcher)
-                   {
-                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
-                       QualitySettings.SetQualityLevel(optionSwitcherData.value);
-                   }
-               }
-            ), switcherPrefab, graphics)
-        );
+        // SWITCHERS
+        OptionSwitcherData optionSwitcherData = new OptionSwitcherData(0, 0, Screen.resolutions.Select(o => o.ToString()).ToArray());
+        optionSwitcherData.CallBack(() => 
+        {
+            Resolution resolution = Screen.resolutions[optionSwitcherData.value];
+            Screen.SetResolution(resolution.width, resolution.height, true);
+        });
+        optionObjects.Add(InstantiateOption("RESOLUTION", optionSwitcherData, switcherPrefab, displayPanel));
 
-        optionObjects.Add(InstantiateOption("TEXTURE_QUALITY",
-            new OptionSwitcherData(0, 0, new string[] { "High", "Medium", "Low" },
-               delegate
-               {
-                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "TEXTURE_QUALITY");
-                   if (optionSwitcher)
-                   {
-                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
-                       QualitySettings.masterTextureLimit = optionSwitcherData.value;
-                   }
-               }
-            ), switcherPrefab, graphics)
-        );
+        optionSwitcherData = new OptionSwitcherData(0, 0, new string[] { "High", "Medium", "Low" });
+        optionSwitcherData.CallBack(() => QualitySettings.masterTextureLimit = optionSwitcherData.value);
+        optionObjects.Add(InstantiateOption("TEXTURE_QUALITY", optionSwitcherData, switcherPrefab, graphicsPanel));
 
-        optionObjects.Add(InstantiateOption("SHADOW_QUALITY",
-            new OptionSwitcherData(0, 0, Enum.GetNames(typeof(ShadowResolution)),
-               delegate
-               {
-  
-                   OptionSwitcher optionSwitcher = (OptionSwitcher)optionObjects.First(o => o.GetKey() == "SHADOW_QUALITY");
-                   if (optionSwitcher)
-                   {
-                       OptionSwitcherData optionSwitcherData = (OptionSwitcherData)optionSwitcher.GetData();
-                       QualitySettings.shadowResolution = (ShadowResolution)Enum.ToObject(typeof(ShadowResolution), (byte)optionSwitcherData.value);
-                   }
-               }
-            ), switcherPrefab, graphics)
-        );
 
+        optionSwitcherData = new OptionSwitcherData(0, 0, Enum.GetNames(typeof(ShadowResolution)));
+        optionSwitcherData.CallBack(() => QualitySettings.shadowResolution = (ShadowResolution)Enum.ToObject(typeof(ShadowResolution), (byte)optionSwitcherData.value));
+        optionObjects.Add(InstantiateOption("SHADOW_QUALITY", optionSwitcherData, switcherPrefab, graphicsPanel));
+
+        // SLIDERS
+        OptionSliderData optionSliderData = new OptionSliderData(0.5f, 0.5f);
+        optionSliderData.CallBack(() => AudioListener.volume = optionSliderData.value);
+        optionObjects.Add(InstantiateOption("MASTER_VOLUME", optionSliderData, sliderPrefab, audioPanel));
+
+        optionSliderData = new OptionSliderData(0.5f, 0.5f);
+        optionSliderData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("SOUND_EFFECTS_VOLUME", optionSliderData, sliderPrefab, audioPanel));
+
+        optionSliderData = new OptionSliderData(0.5f, 0.5f);
+        optionSliderData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("AMBIENT_EFFECTS_VOLUME", optionSliderData, sliderPrefab, audioPanel));
+
+        optionSliderData = new OptionSliderData(0.5f, 0.5f);
+        optionSliderData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("CAMERA_ZOOM_SENSITIVITY", optionSliderData, sliderPrefab, controlsPanel));
+
+        optionSliderData = new OptionSliderData(0.5f, 0.5f);
+        optionSliderData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("CAMERA_MOVEMENT_SENSITIVITY", optionSliderData, sliderPrefab, controlsPanel));
+
+
+        // TOGGLES
+
+        OptionToggleData optionToggleData = new OptionToggleData(true, false);
+        optionToggleData.CallBack(() => Screen.fullScreenMode = optionToggleData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        optionObjects.Add(InstantiateOption("FULL_SCREEN_MODE", optionToggleData, togglePrefab, displayPanel));
+
+        optionToggleData = new OptionToggleData(true, false);
+        optionToggleData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", optionToggleData, togglePrefab, controlsPanel));
+
+        optionToggleData = new OptionToggleData(true, false);
+        optionToggleData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", optionToggleData, togglePrefab, controlsPanel));
+
+        optionToggleData = new OptionToggleData(false, false);
+        optionToggleData.CallBack(() => QualitySettings.vSyncCount = optionToggleData.value ? 1 : 0);
+        optionObjects.Add(InstantiateOption("V_SYNC", optionToggleData, togglePrefab, displayPanel));
         /* 
         [Switchers]
 
@@ -117,6 +118,11 @@ public class OptionsSystem : MonoBehaviour
          */
     }
 
+    private void Start()
+    {
+        optionObjects.ForEach(optionObject => optionObject.Deserialize());
+    }
+
     public OptionObject InstantiateOption(string _key, OptionData _optionData, Transform _prefab, Transform _parent)
     {
         Transform transform = Instantiate(_prefab, _parent);
@@ -131,17 +137,6 @@ public class OptionsSystem : MonoBehaviour
     }
 
     /**************************************
-    * Name of the Function: LoadData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    public void LoadData()
-    {
-        optionObjects.ForEach(optionObject => optionObject.Deserialize());
-    }
-
-    /**************************************
     * Name of the Function: SaveData
     * @Author: Tjeu Vreeburg
     * @Parameter: n/a
@@ -149,12 +144,7 @@ public class OptionsSystem : MonoBehaviour
     ***************************************/
     public void SaveData()
     {
-        optionObjects.ForEach(optionObject =>
-        {
-            optionObject.Serialize();
-            optionObject.GetData().GetCallback().Invoke();
-        });
-
+        optionObjects.ForEach(optionObject => optionObject.Serialize());
         PlayerPrefs.Save();
     }
 }

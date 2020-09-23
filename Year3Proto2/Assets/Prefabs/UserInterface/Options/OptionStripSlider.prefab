@@ -125,7 +125,18 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4135699406364290336}
+        m_MethodName: Refresh
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &4135699406364290336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,6 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   key: 
   displayName: {fileID: 6140907655363442268}
+  slider: {fileID: 1978500109914572777}
 --- !u!1 &3623162766526765977
 GameObject:
   m_ObjectHideFlags: 0
