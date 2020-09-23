@@ -104,6 +104,8 @@ public class Barracks : DefenseStructure
                     SpawnSoldier();
                 }
             }
+
+            soldiers.RemoveAll(soldier => !soldier);
         }
     }
 
