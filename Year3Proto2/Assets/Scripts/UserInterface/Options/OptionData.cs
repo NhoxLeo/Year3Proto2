@@ -20,4 +20,9 @@ public class OptionData
     {
         return optionCallback;
     }
+
+    public void CallBack(OptionCallback _optionCallBack)
+    {
+        optionCallback = _optionCallBack;
+    }
 }

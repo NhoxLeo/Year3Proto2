@@ -1230,8 +1230,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c7e683fd06e2642bcc0608d7368715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  display: {fileID: 699267392035509444}
-  graphics: {fileID: 3195180222391324492}
+  displayPanel: {fileID: 699267392035509444}
+  graphicsPanel: {fileID: 3195180222391324492}
+  audioPanel: {fileID: 484639647643257670}
+  controlsPanel: {fileID: 5338686803406578613}
   togglePrefab: {fileID: 381413995761681123, guid: d6e44535c66b8d54a85791f83b8cdfb7,
     type: 3}
   sliderPrefab: {fileID: 1793204711935092994, guid: fec8c483d03b6954f911ee29d330de72,

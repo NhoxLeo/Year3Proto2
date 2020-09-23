@@ -323,6 +323,7 @@ public class SuperManager : MonoBehaviour
 
     private static SuperManager instance = null;
     private GameSaveData saveData;
+
     public static List<ResearchElementDefinition> researchDefinitions = new List<ResearchElementDefinition>()
     {
         // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)

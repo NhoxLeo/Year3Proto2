@@ -27,6 +27,17 @@ public class OptionCategoryObject : MonoBehaviour
     * @Parameter: n/a
     * @Return: void
     ***************************************/
+
+    private void Start()
+    {
+        Transform child = transform.parent.GetChild(0);
+        if (child)
+        {
+            OptionCategoryObject categoryObject = child.GetComponent<OptionCategoryObject>();
+            categoryObject.GetPanel().GetComponent<UIAnimator>().showElement = true;
+        }
+    }
+
     public void OnClick()
     {
         Transform parent = transform.parent;
