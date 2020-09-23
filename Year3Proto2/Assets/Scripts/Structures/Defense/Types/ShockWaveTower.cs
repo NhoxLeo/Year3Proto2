@@ -49,7 +49,7 @@ public class ShockWaveTower : DefenseStructure
                 if(time <= 0.0f)
                 {
                     time = delay;
-
+                    GameManager.CreateAudioEffect("Thud", transform.position, 0.6f);
                     Instantiate(particle, transform.position, particle.rotation);
                     enemies.ForEach(transform => {
                         Enemy enemy = transform.GetComponent<Enemy>();
