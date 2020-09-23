@@ -8907,6 +8907,80 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 385676495}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &392917079
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -6326634863704932635, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 223518e4406ad594fa66b516e1970ca5, type: 2}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.61
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.67
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -7.33
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.60523444
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7960474
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 47
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 74.491005
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_Name
+      value: FlyingInvader_MiniAirship (3)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2ecf10052b66f3c4c94413fbd4317928, type: 3}
 --- !u!1 &395830056
 GameObject:
   m_ObjectHideFlags: 0
@@ -45839,6 +45913,80 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1588346290}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1548529735
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -6326634863704932635, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2503a02e1690b2e4298e31f791250023, type: 2}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.207
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.67
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.852
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.58715534
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8094743
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 46
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 71.911
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_Name
+      value: FlyingInvader_MiniAirship (2)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2ecf10052b66f3c4c94413fbd4317928, type: 3}
 --- !u!1001 &1549289924
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -53965,6 +54113,75 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a78c4e5611283ba4f91d5962e6e727a2, type: 3}
+--- !u!1001 &1808285193
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.702
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.67
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.554
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.4415798
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.897222
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 52.409004
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 2ecf10052b66f3c4c94413fbd4317928,
+        type: 3}
+      propertyPath: m_Name
+      value: FlyingInvader_MiniAirship (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2ecf10052b66f3c4c94413fbd4317928, type: 3}
 --- !u!1001 &1808385531
 PrefabInstance:
   m_ObjectHideFlags: 0
