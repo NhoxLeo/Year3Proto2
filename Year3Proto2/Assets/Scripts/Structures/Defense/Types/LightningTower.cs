@@ -16,6 +16,7 @@ public class LightningTower : DefenseStructure
 
     private float damage;
     private float time;
+    private bool sparkDamage;
 
     protected override void Awake()
     {
@@ -31,6 +32,8 @@ public class LightningTower : DefenseStructure
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
+
+        sparkDamage = superMan.GetResearchComplete(SuperManager.LightningTowerSuper);
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
@@ -103,8 +106,8 @@ public class LightningTower : DefenseStructure
         Vector3 location = transform.position;
         location.y = 1.5f;
         LightningBolt lightningBolt = Instantiate(lightning, location, Quaternion.identity);
-        lightningBolt.Initialize(_target, damage);
-        lightningBolt.Fire(_target);
+        lightningBolt.Initialize(_target, damage, sparkDamage);
+        lightningBolt.Fire();
     }
 
     public float GetFireRate()
