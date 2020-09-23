@@ -405,6 +405,8 @@ public class GameManager : MonoBehaviour
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
             { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
             { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
+            { "Zap", Resources.Load("Audio/SFX/sfxLightning") as AudioClip },
+            { "Thud", Resources.Load("Audio/SFX/sfxShockwave") as AudioClip },
         };        objectives = SuperManager.GetInstance().GetCurrentWinConditions();
     }
 
