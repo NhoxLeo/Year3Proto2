@@ -20,9 +20,7 @@ public class CatapultTower : AttackStructure
     {
         base.Awake();
         structureName = StructureNames.Catapult;
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification)) { health = maxHealth *= 1.5f; }
-        maxHealth = 450f;
-        health = maxHealth;
+        health = GetTrueMaxHealth();
     }
 
     protected override void Start()
@@ -129,5 +127,15 @@ public class CatapultTower : AttackStructure
             resourceDelta -= attackCost * fireRate;
         }
         return resourceDelta;
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return 450f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
     }
 }

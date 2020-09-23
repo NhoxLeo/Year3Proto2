@@ -28,9 +28,13 @@ public abstract class Enemy : MonoBehaviour
     [HideInInspector]
     protected static GameObject PuffEffect;
     [HideInInspector]
-    public float health = 10.0f;
+    protected float baseHealth = 10.0f;
     [HideInInspector]
-    public float damage = 2.0f;
+    protected float baseDamage = 2.0f;
+    [HideInInspector]
+    protected float health;
+    [HideInInspector]
+    protected float damage;
     [HideInInspector]
     public bool nextReturnFalse = false;
     protected bool delayedDeathCalled = false;
@@ -44,19 +48,12 @@ public abstract class Enemy : MonoBehaviour
     protected bool needToMoveAway;
     protected float finalSpeed = 0.0f;
     protected float currentSpeed = 0.0f;
+    protected float finalAttackSpeed = 0.0f;
+    protected float currentAttackSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
     [HideInInspector]
     public string enemyName;
-
-    // Stun
-    protected bool stunned = false;
-    protected float stunDuration = 1.2f;
-    protected float stunTime = 0.0f;
-
-    // Slow
-    private int slowCount = 0;
-
     private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
@@ -67,6 +64,15 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathTimer = 0f;
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
+    protected int level;
+
+    // Stun
+    protected bool stunned = false;
+    protected float stunDuration = 1.2f;
+    protected float stunTime = 0.0f;
+
+    // Slow
+    private int slowCount = 0;
 
     public abstract void Action();
 
@@ -76,15 +82,12 @@ public abstract class Enemy : MonoBehaviour
         {
             PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
         }
+        animator = GetComponent<Animator>();
+        body = GetComponent<Rigidbody>();
     }
 
     protected virtual void Start()
     {
-        animator = GetComponent<Animator>();
-        body = GetComponent<Rigidbody>();
-        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
-        currentSpeed = finalSpeed;
-
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         signature = new EnemyPathSignature()
         {
@@ -106,11 +109,13 @@ public abstract class Enemy : MonoBehaviour
         {
             if (slowCount == 0)
             {
-                currentSpeed = finalSpeed *= _slowAmount;
+                float slowMult = 0.6f * (1f / _slowAmount);
+                currentSpeed = finalSpeed * slowMult;
                 if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
                 {
-                    float attackSpeed = 0.5f * animator.GetFloat("AttackSpeed");
-                    animator.SetFloat("AttackSpeed", attackSpeed);
+                    finalAttackSpeed = animator.GetFloat("AttackSpeed");
+                    currentAttackSpeed = finalAttackSpeed * slowMult;
+                    animator.SetFloat("AttackSpeed", currentAttackSpeed);
                 }
             }
             slowCount++;
@@ -122,8 +127,7 @@ public abstract class Enemy : MonoBehaviour
                 currentSpeed = finalSpeed;
                 if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
                 {
-                    float attackSpeed = 2f * animator.GetFloat("AttackSpeed");
-                    animator.SetFloat("AttackSpeed", attackSpeed);
+                    animator.SetFloat("AttackSpeed", finalAttackSpeed);
                 }
             }
             slowCount--;
@@ -146,6 +150,10 @@ public abstract class Enemy : MonoBehaviour
             animator.SetBool("Attack", true);
             action = true;
             LookAtPosition(_soldier.transform.position);
+        }
+        if (enemyName == EnemyNames.BatteringRam)
+        {
+            Stun();
         }
     }
 
@@ -390,5 +398,32 @@ public abstract class Enemy : MonoBehaviour
     public int GetSpawnWave()
     {
         return spawnWave;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    public virtual void SetLevel(int _level)
+    {
+        level = _level;
+        damage = baseDamage * Mathf.Pow(1.25f, _level - 1);
+        health = baseHealth * Mathf.Pow(1.25f, _level - 1);
+    }
+
+    public float GetHealth()
+    {
+        return health;
+    }
+
+    public void SetHealth(float _health)
+    {
+        health = _health;
+    }
+
+    public float GetDamage()
+    {
+        return damage;
     }
 }

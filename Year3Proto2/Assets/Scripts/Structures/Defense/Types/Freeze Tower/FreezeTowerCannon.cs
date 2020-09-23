@@ -11,6 +11,7 @@ public class FreezeTowerCannon : MonoBehaviour
     [SerializeField] private LayerMask targetMask;
     [SerializeField] private Material material;
     [SerializeField] private ParticleSystem particle;
+    private bool particlesPlaying = false;
 
     private float time;
     private readonly List<Transform> targets = new List<Transform>();
@@ -33,11 +34,25 @@ public class FreezeTowerCannon : MonoBehaviour
             {
                 targets.ForEach(target =>
                 {
-                    Enemy enemy = target.GetComponent<Enemy>();
-                    if(enemy) enemy.Damage(0.8f);
+                    if (target)
+                    {
+                        Enemy enemy = target.GetComponent<Enemy>();
+                        if(enemy) enemy.Damage(0.8f);
+                    }
                 });
                 time = damageDelay;
             }
+            targets.RemoveAll(target => !target);
+        }
+        if (targets.Count > 0 && !particlesPlaying)
+        {
+            particle.Play();
+            particlesPlaying = true;
+        }
+        else if (targets.Count == 0 && particlesPlaying)
+        {
+            particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            particlesPlaying = false;
         }
     } 
 
@@ -57,10 +72,6 @@ public class FreezeTowerCannon : MonoBehaviour
                 }
             }
         }
-        if (targets.Count > 0)
-        {
-            particle.Play();
-        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -76,11 +87,6 @@ public class FreezeTowerCannon : MonoBehaviour
                     targets.Remove(other.transform);
                 }
             }
-        }
-
-        if (targets.Count < 0)
-        {
-            particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
         }
     }
 

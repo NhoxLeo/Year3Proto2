@@ -20,6 +20,8 @@ public class SortTileBonusDescendingHelper : IComparer
 
 public abstract class ResourceStructure : Structure
 {
+    protected const float BaseMaxHealth = 100f;
+
     public class SortTileBonusDescendingHelper : IComparer<ResourceStructure>
     {
         public int Compare(ResourceStructure _structureA, ResourceStructure _structureB)
@@ -296,5 +298,24 @@ public abstract class ResourceStructure : Structure
         {
             villagers[i].SetActive(allocatedVillagers > i);
         }
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return BaseMaxHealth;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        // get base health
+        float maxHealth = GetBaseMaxHealth();
+
+        // poor timber multiplier
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
+        {
+            maxHealth *= 0.5f;
+        }
+
+        return maxHealth;
     }
 }

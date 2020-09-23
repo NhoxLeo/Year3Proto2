@@ -627,9 +627,9 @@ public class PathManager : MonoBehaviour
     private void OnDestroy()
     {
         // dispose of the memory being used by the tiles list.
+        Shutdown();
         allTiles.Dispose();
         allTileIDs.Dispose();
-        Shutdown();
     }
 
     private EnemyPathJobInfo ScheduleEnemyPathJob(EnemyPathSignature _signature)

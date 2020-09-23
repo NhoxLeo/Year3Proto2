@@ -56,7 +56,15 @@ public class BoltBehaviour : MonoBehaviour
                     Enemy enemy = other.GetComponentInParent<Enemy>();
                     if (enemy)
                     {
-                        enemy.Damage(damage);
+                        BatteringRam ram = enemy.GetComponent<BatteringRam>();
+                        if (ram)
+                        {
+                            enemy.Damage(damage / 3f);
+                        }
+                        else
+                        {
+                            enemy.Damage(damage);
+                        }
                         damageDealt = true;
                         if (!pierce)
                         {

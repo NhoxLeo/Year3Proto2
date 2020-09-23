@@ -3,58 +3,43 @@
 public class FreezeTower : DefenseStructure
 {
     private FreezeTowerCannon[] cannons;
+    private float freezeEffect;
+    private const float BaseMaxHealth = 300f;
 
     protected override void Awake()
     {
+        // set base stats
         base.Awake();
-
-        // Properties
-
         structureName = StructureNames.FreezeTower;
-        attackCost = new ResourceBundle(0, 4, 0);
-        maxHealth = 450.0f;
-        health = maxHealth;
 
-        // Targetable Enemies
-
-        targetableEnemies.Add(EnemyNames.Invader);
-        targetableEnemies.Add(EnemyNames.HeavyInvader);
-        targetableEnemies.Add(EnemyNames.Petard);
-
-        // Research Completed
-
-        /*
-        SuperManager superManager = SuperManager.GetInstance();
-        if (superManager.GetResearchComplete(SuperManager.FreezeTowerFortification)) 
-        { 
-            health = maxHealth *= 1.5f; 
-        }
-
-        if (superManager.GetResearchComplete(SuperManager.FreezeTowerRange))
+        // research
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerRange))
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
 
-        attackCost = new ResourceBundle(0, superManager.GetResearchComplete(SuperManager.FreezeTowerEfficiency) ? 3 : 6, 0);
-        */
+        // set targets
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
+
     }
 
     protected override void Start()
     {
         base.Start();
-        cannons = GetComponentsInChildren<FreezeTowerCannon>();
-
-        /*
         SuperManager superManager = SuperManager.GetInstance();
+        cannons = GetComponentsInChildren<FreezeTowerCannon>();
+        freezeEffect = superManager.GetResearchComplete(SuperManager.FreezeTowerSlowEffect) ? 1.0f : 1.3f;
         foreach (FreezeTowerCannon cannon in cannons)
         {
             cannon.Setup(
-                superManager.GetResearchComplete(SuperManager.FreezeTowerSlowEffect) ? 1.0f : 1.3f,
+                freezeEffect,
                 superManager.GetResearchComplete(SuperManager.FreezeTowerSuper)
             );
         }
-        */
     }
 
     protected override void OnDestroyed()
@@ -74,5 +59,44 @@ public class FreezeTower : DefenseStructure
                 }
             });
         }
+    }
+
+    public float GetFreezeEffect()
+    {
+        return 1f - (0.6f * (1f / freezeEffect));
+    }
+
+    protected override void OnSetLevel()
+    {
+        base.OnSetLevel();
+        health = GetTrueMaxHealth();
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return BaseMaxHealth;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        // get base health
+        float maxHealth = GetBaseMaxHealth();
+
+        // fortification upgrade
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.ShockwaveTowerFortification))
+        {
+            maxHealth *= 1.5f;
+        }
+
+        // level
+        maxHealth *= Mathf.Pow(1.25f, level - 1);
+
+        // poor timber multiplier
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
+        {
+            maxHealth *= 0.5f;
+        }
+
+        return maxHealth;
     }
 }

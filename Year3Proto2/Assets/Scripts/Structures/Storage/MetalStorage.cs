@@ -8,9 +8,6 @@ public class MetalStorage : StorageStructure
     {
         base.Awake();
         resourceType = ResourceType.Metal;
-        storage = 500;
         structureName = StructureNames.MetalStorage;
-        maxHealth = 200f;
-        health = maxHealth;
     }
 }

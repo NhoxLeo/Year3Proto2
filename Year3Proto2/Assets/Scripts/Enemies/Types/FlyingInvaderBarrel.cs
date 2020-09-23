@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FlyingInvaderBarrel : MonoBehaviour
 {
-    private float damage = 25f;
+    private float damage;
     private float explosionRadius = 0.25f;
     private float accelerationRate = 0.175f;
     private float speed = 0.0f;
@@ -42,15 +42,13 @@ public class FlyingInvaderBarrel : MonoBehaviour
                     structure.Damage(damageToThisStructure);
                 }
             }
-            GameManager.CreateAudioEffect("Explosion", transform.position);
+            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
             Destroy(gameObject);
         }
     }
 
-    public void Initialize(float _damage, float _accelerationRate, float _explosionRadius)
+    public void Initialize(float _damage)
     {
         damage = _damage;
-        accelerationRate = _accelerationRate;
-        explosionRadius = _explosionRadius;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,47 +7,37 @@ public class LightningTower : DefenseStructure
 {
     [Header("Lightning Tower")]
     [SerializeField] private LightningBolt lightning;
-    [SerializeField] private float lightningAmount;
-    [SerializeField] private float lightningDelay = 2.0f;
+    [SerializeField] private float lightningAmount = 2f;
+    [SerializeField] private float lightningDelay = 4f;
     [SerializeField] private float lightningStartDelay = 0.6f;
 
+    private const float BaseMaxHealth = 300f;
+    private const float BaseDamage = 5f;
+
+    private float damage;
     private float time;
+
     protected override void Awake()
     {
+        // set base stats
         base.Awake();
-
-        // Properties
-
-        maxHealth = 300.0f;
-        health = maxHealth;
-        time = lightningStartDelay;
+        damage = GetBaseDamage();
         structureName = StructureNames.LightningTower;
 
-
-        // Targetable Enemies
-
-        targetableEnemies.Add(EnemyNames.Invader);
-        targetableEnemies.Add(EnemyNames.HeavyInvader);
-        targetableEnemies.Add(EnemyNames.Petard);
-        targetableEnemies.Add(EnemyNames.FlyingInvader);
-
-        // Research
-
+        // research
         SuperManager superMan = SuperManager.GetInstance();
-
-        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
+        if (superMan.GetResearchComplete(SuperManager.LightningTowerRange))
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
 
-        if (superMan.GetResearchComplete(SuperManager.BallistaFortification))
-        {
-            health = maxHealth *= 1.5f;
-        }
-
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
-
+        // set targets
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.FlyingInvader);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
     }
 
     protected override void Start()
@@ -60,13 +51,16 @@ public class LightningTower : DefenseStructure
         base.Update();
         if(isPlaced && enemies.Count > 0)
         {
-            time -= Time.deltaTime;
-            if (time <= 0.0f)
+            if (allocatedVillagers > 0)
             {
-                time = lightningDelay;
-                StartCoroutine(Strike(0.4f));
+                time -= Time.deltaTime;
+                if (time <= 0.0f)
+                {
+                    time = lightningDelay;
+                    StartCoroutine(Strike(0.4f));
+                }
             }
-        } 
+        }
         else
         {
             time = lightningStartDelay;
@@ -107,8 +101,61 @@ public class LightningTower : DefenseStructure
     {
         // Location to be updated by random crystal location.
         Vector3 location = transform.position;
-        location.y = 1.5f; 
+        location.y = 1.5f;
         LightningBolt lightningBolt = Instantiate(lightning, location, Quaternion.identity);
+        lightningBolt.Initialize(_target, damage);
         lightningBolt.Fire(_target);
+    }
+
+    public float GetFireRate()
+    {
+        return lightningAmount * (1f / lightningDelay);
+    }
+
+
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+        lightningAmount = allocatedVillagers * 2f;
+    }
+
+    protected override void OnSetLevel()
+    {
+        base.OnSetLevel();
+        damage = GetBaseDamage() * Mathf.Pow(1.25f, level - 1);
+        health = GetTrueMaxHealth();
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return BaseMaxHealth;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        // get base health
+        float maxHealth = GetBaseMaxHealth();
+
+        // fortification upgrade
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTowerFortification))
+        {
+            maxHealth *= 1.5f;
+        }
+
+        // level
+        maxHealth *= Mathf.Pow(1.25f, level - 1);
+
+        // poor timber multiplier
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
+        {
+            maxHealth *= 0.5f;
+        }
+
+        return maxHealth;
+    }
+
+    private float GetBaseDamage()
+    {
+        return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTowerPower) ? 1.3f : 1.0f);
     }
 }

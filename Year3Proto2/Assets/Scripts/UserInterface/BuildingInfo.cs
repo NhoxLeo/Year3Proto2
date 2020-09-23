@@ -13,10 +13,12 @@ public class BuildingInfo : MonoBehaviour
 
     private GameObject targetBuilding;
     private Structure targetStructure;
+    private DefenseStructure defenseStructure;
     private string buildingName;
 
     [Header("Sprites")]
     [SerializeField] private Sprite defenceSprite;
+
     [SerializeField] private Sprite villagerSprite;
     [SerializeField] private Sprite foodSprite;
     [SerializeField] private Sprite woodSprite;
@@ -27,6 +29,7 @@ public class BuildingInfo : MonoBehaviour
 
     [Header("Text")]
     [SerializeField] private TMP_Text headingTextFloating;       // Text showing name of building
+
     [SerializeField] private TMP_Text headingText;               // Text showing name of building
     [SerializeField] private TMP_Text statHeadingText;           // Text showing name of stat e.g Production Rate
     [SerializeField] private TMP_Text statValueText;             // Text showing value of stat
@@ -34,14 +37,18 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private Image statIcon;                     // Icon shown next to stat value
 
     [Header("Buttons")]
+    [SerializeField] private Button upgradeButton;               // Button for upgrading towers
+
     [SerializeField] private Button repairButton;                // Button for repairing buildings
     [SerializeField] private Button destroyButton;               // Button to destroy buildings
     [SerializeField] private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
     [SerializeField] private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
+
     [SerializeField] private Tooltip trainVillagerButton;        // Button to train a new villager for the Longhaus
 
     [Header("Tooltip")]                                          // Repair and Destroy tooltips
     [SerializeField] private RectTransform tooltipTransform;
+
     [SerializeField] private TMP_Text tooltipHeading;
     [SerializeField] private GameObject costComponent;
     [SerializeField] private TMP_Text woodText;
@@ -51,19 +58,19 @@ public class BuildingInfo : MonoBehaviour
 
     [Header("Settings")]
     public bool doAutoUpdate;                                    // Whether to automatically update info panel
+
     public float updateInterval = 0.25f;                         // Time between info panel updates
     private float updateTimer;
 
     private void Start()
     {
         buildPanel = FindObjectOfType<BuildPanel>();
-        structMan = FindObjectOfType<StructureManager>();
+        structMan = StructureManager.GetInstance();
         buildingName = "Building Name";
 
         statInfoText.text = "";
 
         updateTimer = updateInterval;
-
     }
 
     private void LateUpdate()
@@ -73,9 +80,6 @@ public class BuildingInfo : MonoBehaviour
 
         if (targetBuilding != null)
         {
-            headingText.text = buildingName;
-            headingTextFloating.text = buildingName;
-
             // Auto update info
             if (showPanel && doAutoUpdate)
             {
@@ -101,7 +105,6 @@ public class BuildingInfo : MonoBehaviour
             destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
             destroyButtonConfirm.showTooltip = showDestroyConfirm;
         }
-        
 
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -134,7 +137,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = ballista.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
-                //foodValueText.text = ballista.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = ballista.CanBeRepaired();
@@ -146,7 +148,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Fire Rate";
                 statValueText.text = catapult.GetFireRate().ToString("F");
                 statInfoText.text = "per second";
-                //foodValueText.text = catapult.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = catapult.CanBeRepaired();
@@ -158,12 +159,43 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Troop Capacity";
                 statValueText.text = barracks.GetTroopCapacity().ToString("0");
                 statInfoText.text = "units";
-                //foodValueText.text = barracks.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = barracks.CanBeRepaired();
                 break;
 
+            case StructureNames.FreezeTower:
+                FreezeTower freeze = targetBuilding.GetComponent<FreezeTower>();
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "Slow effect";
+                statValueText.text = freeze.GetFreezeEffect().ToString("F");
+                statInfoText.text = "%";
+
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = freeze.CanBeRepaired();
+                break;
+
+            case StructureNames.ShockwaveTower:
+                ShockWaveTower shockwave = targetBuilding.GetComponent<ShockWaveTower>();
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = shockwave.GetAttackRate().ToString("F");
+                statInfoText.text = "per second";
+
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = shockwave.CanBeRepaired();
+                break;
+
+            case StructureNames.LightningTower:
+                LightningTower lightning = targetBuilding.GetComponent<LightningTower>();
+                statIcon.sprite = defenceSprite;
+                statHeadingText.text = "Fire Rate";
+                statValueText.text = lightning.GetFireRate().ToString("F");
+                statInfoText.text = "per second";
+
+                destroyButton.gameObject.SetActive(true);
+                repairButton.interactable = lightning.CanBeRepaired();
+                break;
 
             case StructureNames.FoodResource:
                 Farm farm = targetBuilding.GetComponent<Farm>();
@@ -193,7 +225,6 @@ public class BuildingInfo : MonoBehaviour
                 statHeadingText.text = "Production Rate";
                 statValueText.text = mill.GetProductionVolume().ToString("0");
                 statInfoText.text = "Every " + mill.productionTime.ToString("0") + "s";
-                //foodValueText.text = mill.GetFoodAllocation().ToString("0") + "/" + Structure.foodAllocationMax.ToString("0");
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = mill.CanBeRepaired();
@@ -278,6 +309,25 @@ public class BuildingInfo : MonoBehaviour
                 break;
         }
 
+        if (targetStructure.GetStructureType() == StructureType.Defense)
+        {
+            defenseStructure = targetStructure.GetComponent<DefenseStructure>();
+            string levelSuffix = " (Lv " + defenseStructure.GetLevel() + ")";
+            string shortenedName = buildingName.Replace(" Tower", "");
+            headingText.text = buildingName;
+            headingTextFloating.text = shortenedName + levelSuffix;
+
+            upgradeButton.gameObject.SetActive(true);
+            upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+        }
+        else
+        {
+            headingText.text = buildingName;
+            headingTextFloating.text = buildingName;
+
+            upgradeButton.gameObject.SetActive(false);
+        }
+
         switch (tooltipMode)
         {
             case -1:
@@ -285,9 +335,12 @@ public class BuildingInfo : MonoBehaviour
                 break;
 
             case 0:
-                FetchRepairInfo();
+                FetchUpgradeInfo();
                 break;
             case 1:
+                FetchRepairInfo();
+                break;
+            case 2:
                 FetchCompensationInfo();
                 break;
         }
@@ -303,11 +356,11 @@ public class BuildingInfo : MonoBehaviour
         actionPanel.transform.position = pos;
     }
 
-    public void SetTargetBuilding(GameObject building, string name)
+    public void SetTargetBuilding(GameObject building)
     {
         targetBuilding = building;
         targetStructure = targetBuilding.GetComponent<Structure>();
-        buildingName = name;
+        buildingName = targetStructure.GetStructureName();
 
         if (infoPanel.showElement)
         {
@@ -324,7 +377,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void SetTooptipMode(int _mode)
     {
-        tooltipMode = +_mode;
+        tooltipMode = _mode;
     }
 
     private void RefreshTooltip()
@@ -335,6 +388,34 @@ public class BuildingInfo : MonoBehaviour
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipTransform);
+    }
+
+    public void FetchUpgradeInfo()
+    {
+        tooltipHeading.text = "Upgrade Tower";
+
+        if (targetStructure.GetStructureType() == StructureType.Defense)
+        {
+            ResourceBundle upgradeCost = structMan.QuoteUpgradeCostFor(defenseStructure);
+            if (upgradeCost.foodCost + upgradeCost.woodCost + upgradeCost.metalCost != 0)
+            {
+                costComponent.SetActive(true);
+                upgradeButton.interactable = true;
+                woodText.text = upgradeCost.woodCost.ToString();
+                metalText.text = upgradeCost.metalCost.ToString();
+
+                tooltipDescription.gameObject.SetActive(true);
+                tooltipDescription.text = "Fully repairs tower. Increases durability and damage.";
+            }
+            else
+            {
+                costComponent.SetActive(false);
+                upgradeButton.interactable = false;
+                tooltipDescription.gameObject.SetActive(true);
+                if (defenseStructure.GetLevel() != 0) { tooltipDescription.text = "Building is fully upgraded"; }
+                else { tooltipDescription.text = "Building cannot be upgraded"; }
+            }
+        }
     }
 
     public void FetchRepairInfo()
@@ -363,9 +444,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void FetchCompensationInfo()
     {
-        float health = targetStructure.GetHealth();
-        float maxHealth = targetStructure.GetMaxHealth();
-        ResourceBundle compensation = new ResourceBundle(0.5f * (health / maxHealth) * (Vector3)structMan.structureCosts[targetStructure.GetStructureName()]);
+        ResourceBundle compensation = structMan.QuoteCompensationFor(targetStructure);
 
         tooltipHeading.text = "Destroy Building";
 
@@ -378,7 +457,23 @@ public class BuildingInfo : MonoBehaviour
         RefreshTooltip();
     }
 
-
+    public void UpgradeBuilding()
+    {
+        if (targetStructure.GetStructureType() == StructureType.Defense)
+        {
+            if (defenseStructure.GetLevel() < 3)
+            {
+                ResourceBundle cost = StructureManager.GetInstance().QuoteUpgradeCostFor(defenseStructure);
+                if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
+                {
+                    HUDManager.GetInstance().ShowResourceDelta(cost, true);
+                    defenseStructure.LevelUp();
+                    upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+                    SetInfo();
+                }
+            }
+        }
+    }
 
     public void RepairBuilding()
     {
