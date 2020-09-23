@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Petard : Enemy
+public class BatteringRam : Enemy
 {
-    private float explosionRadius = 0.35f;
-    private bool barrelExploded = false;
+    private const float delay = 2f;
+    private float timer = delay;
 
     protected override void Awake()
     {
         base.Awake();
-        enemyName = EnemyNames.Petard;
+        enemyName = EnemyNames.BatteringRam;
         structureTypes = new List<StructureType>()
         {
             StructureType.Storage,
@@ -124,58 +124,37 @@ public class Petard : Enemy
         }
     }
 
+    public override void Action()
+    {
+        timer -= Time.fixedDeltaTime;
+        if (timer <= 0f)
+        {
+            timer = delay;
+            target.Damage(damage);
+        }
+    }
+
     protected override void LookAtPosition(Vector3 _position)
     {
         base.LookAtPosition(_position);
         // fixing animation problems
-        transform.forward = transform.right;
-    }
-
-    public override void Action()
-    {
-        SetOffBarrel();
-    }
-
-    public void SetOffBarrel()
-    {
-        if (!barrelExploded)
-        {
-            RaycastHit[] hitStructures = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("Structure"));
-            GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
-            explosion.transform.localScale *= 2f * explosionRadius;
-            foreach (RaycastHit structureHit in hitStructures)
-            {
-                Structure structure = structureHit.transform.GetComponent<Structure>();
-                if (structure)
-                {
-                    if (structure.GetStructureType() == StructureType.Environment)
-                    {
-                        continue;
-                    }
-                    float damageToThisStructure = damage * (transform.position - structure.transform.position).magnitude / explosionRadius;
-                    float clamped = Mathf.Clamp(damageToThisStructure, damage * 0.3f, damage);
-                    structure.Damage(clamped);
-                }
-            }
-            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
-            barrelExploded = true;
-            Damage(health);
-        }
+        transform.right = transform.forward;
     }
 
     public override void OnKill()
     {
         base.OnKill();
         GameObject puff = Instantiate(PuffEffect);
+        puff.transform.localScale *= 4f;
         puff.transform.position = transform.position;
     }
 
     public void Initialize(int _level)
     {
-        baseHealth = 15f;
-        baseDamage = 60f;
+        baseHealth = 100f;
+        baseDamage = 50f;
         SetLevel(_level);
-        finalSpeed = 0.4f;
+        finalSpeed = 0.25f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         currentSpeed = finalSpeed;
     }

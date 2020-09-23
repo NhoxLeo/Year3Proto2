@@ -37,6 +37,7 @@ public static class EnemyNames
     public static string HeavyInvader = "Heavy Invader";
     public static string FlyingInvader = "Flying Invader";
     public static string Petard = "Petard";
+    public static string BatteringRam = "Battering Ram";
 }
 
 public struct WaveData
@@ -102,7 +103,6 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private bool spawning = false;
 
     [Header("Enemies")]
-    [SerializeField] private List<Transform> enemyPrefabs;
     [SerializeField] private int maxEnemies = 300;
     [SerializeField] private int minEnemies = 3;
 
@@ -125,6 +125,7 @@ public class EnemyManager : MonoBehaviour
         { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) },
         { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 2) },
         { EnemyNames.Petard, new EnemyDefinition(0.25f, 2) },
+        { EnemyNames.BatteringRam, new EnemyDefinition(0.1f, 8) },
     };
 
     private readonly List<LevelSetting> levelSettings = new List<LevelSetting>
@@ -167,10 +168,14 @@ public class EnemyManager : MonoBehaviour
         // wave 5
         new LevelSetting(2, 5, EnemyNames.Invader,         3),
         new LevelSetting(2, 5, EnemyNames.Petard,          2),
+        new LevelSetting(2, 5, EnemyNames.BatteringRam,    1),
         
         // wave 7
         new LevelSetting(2, 7, EnemyNames.HeavyInvader,    3),
         new LevelSetting(2, 7, EnemyNames.FlyingInvader,   2),
+        
+        // wave 9
+        new LevelSetting(2, 9, EnemyNames.BatteringRam,    2),
 
         // Level 4 --------------------------------
         // wave 1
@@ -182,14 +187,19 @@ public class EnemyManager : MonoBehaviour
         // wave 3
         new LevelSetting(3, 3, EnemyNames.Petard,          2),
         new LevelSetting(3, 3, EnemyNames.FlyingInvader,   2),
+        new LevelSetting(3, 3, EnemyNames.BatteringRam,    1),
         
         // wave 5
         new LevelSetting(3, 5, EnemyNames.Invader,         3),
         new LevelSetting(3, 5, EnemyNames.HeavyInvader,    3),
+        new LevelSetting(3, 5, EnemyNames.BatteringRam,    2),
         
         // wave 7
         new LevelSetting(3, 7, EnemyNames.Petard,          3),
         new LevelSetting(3, 7, EnemyNames.FlyingInvader,   3),
+
+        // wave 9
+        new LevelSetting(3, 9, EnemyNames.BatteringRam,    3),
     };
 
     private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
@@ -307,8 +317,9 @@ public class EnemyManager : MonoBehaviour
             float random = Random.Range(-180.0f, 180f);
             Vector3 location = new Vector3(Mathf.Sin(random) * distance * 0.75f, 0.0f, Mathf.Cos(random) * distance * 0.75f);
 
-            Enemy enemy = Instantiate(transform.gameObject, location, Quaternion.identity).GetComponent<Enemy>();
+            FlyingInvader enemy = Instantiate(transform.gameObject, location, Quaternion.identity).GetComponent<FlyingInvader>();
             enemy.SetSpawnWave(waveCounter);
+            enemy.Initialize(GetEnemyCurrentLevel(EnemyNames.FlyingInvader));
             RecordNewEnemy(enemy);
         }
         return remainingEnemies.ToArray();
@@ -621,6 +632,21 @@ public class EnemyManager : MonoBehaviour
     public void LoadPetard(SuperManager.EnemySaveData _saveData)
     {
         Petard enemy = Instantiate(Enemies[EnemyNames.Petard].GetPrefab()).GetComponent<Petard>();
+
+        enemy.Initialize(_saveData.level);
+        enemy.transform.position = _saveData.position;
+        enemy.transform.rotation = _saveData.orientation;
+        enemy.SetTarget(StructureManager.FindStructureAtPosition(_saveData.targetPosition));
+        enemy.SetState(_saveData.state);
+        enemy.SetSpawnWave(_saveData.enemyWave);
+        enemy.SetHealth(_saveData.health);
+
+        enemies.Add(enemy);
+    }
+
+    public void LoadRam(SuperManager.EnemySaveData _saveData)
+    {
+        BatteringRam enemy = Instantiate(Enemies[EnemyNames.BatteringRam].GetPrefab()).GetComponent<BatteringRam>();
 
         enemy.Initialize(_saveData.level);
         enemy.transform.position = _saveData.position;
