@@ -627,6 +627,7 @@ public class PathManager : MonoBehaviour
     private void OnDestroy()
     {
         // dispose of the memory being used by the tiles list.
+        Shutdown();
         allTiles.Dispose();
         allTileIDs.Dispose();
     }
@@ -641,9 +642,6 @@ public class PathManager : MonoBehaviour
             Structure[] structures = { };
             switch (_signature.validStructureTypes[i])
             {
-                case StructureType.Attack:
-                    structures = FindObjectsOfType<AttackStructure>();
-                    break;
                 case StructureType.Defense:
                     structures = FindObjectsOfType<DefenseStructure>();
                     break;
@@ -767,6 +765,15 @@ public class PathManager : MonoBehaviour
 
             string soldierJobs = "\n\nSoldier Jobs: " + soldierPaths.Count.ToString();
             debugText.text = heading + activeJobs + jobsCompleted + totalTimeSyncString + totalTimeAsyncString + soldierJobs;
+        }
+    }
+
+    public void Shutdown()
+    {
+        foreach (EnemyPathJobInfo jobInfo in activeJobDict.Values)
+        {
+            jobInfo.jobHandle.Complete();
+            jobInfo.resultPath.Dispose();
         }
     }
 }

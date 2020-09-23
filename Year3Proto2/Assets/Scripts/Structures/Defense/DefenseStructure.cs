@@ -5,56 +5,97 @@ public abstract class DefenseStructure : Structure
 {
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
-    protected Transform target;
+    protected List<string> targetableEnemies = new List<string>();
 
     private Transform attackingRange;
-
-    public void DetectEnemies()
-    {
-        SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
-        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
-        {
-            float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
-            if (distanceFromEnemy <= rangeCollider.radius)
-            {
-                if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
-            }
-        }
-    }
+    private Transform spottingRange = null;
+    protected int level;
 
     protected override void Awake()
     {
         base.Awake();
         structureType = StructureType.Defense;
         attackingRange = transform.Find("Range");
+        spottingRange = transform.Find("SpottingRange");
     }
 
     protected override void Start()
     {
         base.Start();
-        DetectEnemies();
-        CheckResearch();
+        if (isPlaced)
+        {
+            CapsuleCollider capsule = GetComponentInChildren<TowerRange>().GetComponent<CapsuleCollider>();
+            SphereCollider sphere = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+            if (capsule)
+            {
+                foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+                {
+                    float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+                    if (distanceFromEnemy <= capsule.radius)
+                    {
+                        if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+                    }
+                }
+            }
+            else
+            {
+                foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+                {
+                    float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
+                    if (distanceFromEnemy <= sphere.radius)
+                    {
+                        if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
+                    }
+                }
+            }
+        }
     }
 
     protected override void Update()
     {
         base.Update();
         enemies.RemoveAll(enemy => !enemy);
+        /*
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            if (StructureManager.GetInstance().StructureIsSelected(this))
+            {
+                OnLevelUp();
+            }
+        }
+        */
     }
 
     public override void ShowRangeDisplay(bool _active)
     {
         base.ShowRangeDisplay(_active);
+        spottingRange.GetChild(0).gameObject.SetActive(_active);
         attackingRange.GetChild(0).gameObject.SetActive(_active);
     }
 
     public List<Transform> GetEnemies()
     {
+        enemies.RemoveAll(enemy => !enemy);
         return enemies;
     }
 
-    public virtual void CheckResearch()
+    public List<string> GetTargetableEnemies()
     {
+        return targetableEnemies;
+    }
 
+    public void SetLevel(int _level)
+    {
+        level = _level;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    public virtual void OnLevelUp()
+    {
+        level++;
     }
 }

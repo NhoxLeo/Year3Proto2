@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
+    public const string Version = "0.9.5b";
+    public static bool DevMode = true;
     // CONSTANTS
     public const int NoRequirement = -1;
 
@@ -27,8 +29,6 @@ public class SuperManager : MonoBehaviour
     public const int Survive = 6;
     public const int SurviveII = 7;
     public const int SurviveIII = 8;
-
-    // TODO REFACTOR NUMBERS
 
     // BALLISTA
     public const int Ballista = 0;
@@ -57,10 +57,26 @@ public class SuperManager : MonoBehaviour
     // FREEZE TOWER
     public const int FreezeTower = 18;
     public const int FreezeTowerRange = 19;
-    public const int FreezeTowerStunDuration = 20;
+    public const int FreezeTowerSlowEffect = 20;
     public const int FreezeTowerFortification = 21;
     public const int FreezeTowerEfficiency = 22;
     public const int FreezeTowerSuper = 23;
+
+    // LIGHTNING TOWER
+    public const int LightningTower = 24;
+    public const int LightningTowerRange = 25;
+    public const int LightningTowerBoltAmount = 26;
+    public const int LightningTowerFortification = 27;
+    public const int LightningTowerEfficiency = 28;
+    public const int LightningTowerSuper = 29;
+
+    // SHOCKWAVE TOWER
+    public const int ShockwaveTower = 30;
+    public const int ShockwaveTowerRange = 31;
+    public const int ShockwaveTowerStunDuration = 32;
+    public const int ShockwaveTowerFortification = 33;
+    public const int ShockwaveTowerEfficiency = 34;
+    public const int ShockwaveTowerSuper = 35;
 
     [Serializable]
     public struct SaveQuaternion
@@ -136,6 +152,8 @@ public class SuperManager : MonoBehaviour
         public SaveQuaternion orientation;
         public SaveVector3 targetPosition;
         public EnemyState state;
+        public int enemyWave;
+        public int level;
     }
 
     [Serializable]
@@ -197,6 +215,8 @@ public class SuperManager : MonoBehaviour
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
         public List<HeavyInvaderSaveData> heavyInvaders;
+        public List<EnemySaveData> flyingInvaders;
+        public List<EnemySaveData> petards;
         public List<SoldierSaveData> soldiers;
         public int enemiesKilled;
         public float spawnTime;
@@ -225,6 +245,7 @@ public class SuperManager : MonoBehaviour
         public int researchPoints;
         public MatchSaveData currentMatch;
         public bool showTutorial;
+        public string gameVersion;
     }
 
     [Serializable]
@@ -301,10 +322,80 @@ public class SuperManager : MonoBehaviour
 
     private static SuperManager instance = null;
     private GameSaveData saveData;
-    public static List<ResearchElementDefinition> researchDefinitions;
-    public static List<LevelDefinition> levelDefinitions;
-    public static List<ModifierDefinition> modDefinitions;
-    public static List<WinConditionDefinition> winConditionDefinitions;
+    public static List<ResearchElementDefinition> researchDefinitions = new List<ResearchElementDefinition>()
+    {
+        // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
+        new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
+        new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
+        new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
+
+        new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
+        new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
+
+        new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns soldiers, which automatically chase down enemies.", 300),
+        new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
+        new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
+        new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
+
+        new ResearchElementDefinition(FreezeTower, NoRequirement, "Freeze Tower", "The Freeze Tower slows down enemies making it easier for other defenses to hit them.", 300),
+        new ResearchElementDefinition(FreezeTowerRange, FreezeTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(FreezeTowerSlowEffect, FreezeTower, "Slow Effect", "Slows Enemies by +30%.", 200),
+        new ResearchElementDefinition(FreezeTowerFortification, FreezeTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(FreezeTowerEfficiency, FreezeTower, "Efficiency", "Freezing cost reduced by 50%.", 200),
+        new ResearchElementDefinition(FreezeTowerSuper, FreezeTower, "Blizzard", "Frost effect damages enemies.", 500, true),
+
+        new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
+        new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(LightningTowerBoltAmount, LightningTower, "Bolt Amount", "Increased lightning bolts to 5.", 200),
+        new ResearchElementDefinition(LightningTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "Efficiency", "Lightning bolt cost reduced by 50%.", 200),
+        new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Thunder Wave", "Sparks that fly off deal damage to surrounding enemies.", 500, true),
+
+        new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Shockwave Tower releases high energy shockwaves that momentarily stun enemies.", 300),
+        new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
+        new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "Efficiency", "Shockwave cost reduced by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Shockwave towers deal damage based on how far the enemy is from the tower.", 500, true),
+    };
+    public static List<LevelDefinition> levelDefinitions = new List<LevelDefinition>()
+    {
+        // ID, ID requirement, Win Condition, Modifiers, Base Reward
+        new LevelDefinition(0, NoRequirement, Accumulate, new List<int>(), 500),
+        new LevelDefinition(1, 0, Survive, new List<int>(){ SnoballPrices, SwiftFootwork }, 750),
+        new LevelDefinition(2, 1, SurviveII, new List<int>(){ DryFields, PoorTimber }, 1000),
+        new LevelDefinition(3, 2, AccumulateIII, new List<int>(){ SnoballPrices, DryFields, PoorTimber }, 1500)
+    };
+    public static List<ModifierDefinition> modDefinitions = new List<ModifierDefinition>()
+    { 
+        // ID, Name, Description, Coefficient
+        new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
+        new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
+        new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
+        new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
+    };
+    public static List<WinConditionDefinition> winConditionDefinitions = new List<WinConditionDefinition>()
+    { 
+        // ID, Name, Description
+        new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
+        new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
+        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 5000 of each resource."),
+        new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
+        new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
+        new WinConditionDefinition(Survive, "Survive", "Defend against 10 waves."),
+        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 15 waves."),
+        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 20 waves."),
+    };
     private int currentLevel;
     [SerializeField]
     private bool startMaxed;
@@ -403,64 +494,6 @@ public class SuperManager : MonoBehaviour
         return levelDefinitions[currentLevel].winCond;
     }
 
-    void DataInitialization()
-    {
-        researchDefinitions = new List<ResearchElementDefinition>()
-        {
-            // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
-            new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
-            new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
-            new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
-
-            new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
-            new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
-            new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
-
-            new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns enemy soldiers, which automatically chase down enemies.", 300),
-            new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
-            new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
-            new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
-        };
-        levelDefinitions = new List<LevelDefinition>()
-        {
-            // ID, ID requirement, Win Condition, Modifiers, Base Reward
-            new LevelDefinition(0, NoRequirement, Accumulate, new List<int>(), 500),
-            new LevelDefinition(1, 0, Survive, new List<int>(){ SnoballPrices, SwiftFootwork }, 750),
-            new LevelDefinition(2, 1, SurviveII, new List<int>(){ DryFields, PoorTimber }, 1000),
-            new LevelDefinition(3, 2, AccumulateIII, new List<int>(){ SnoballPrices, DryFields, PoorTimber }, 1500)
-        };
-        modDefinitions = new List<ModifierDefinition>()
-        { 
-            // ID, Name, Description, Coefficient
-            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
-            new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
-            new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
-            new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
-        };
-        winConditionDefinitions = new List<WinConditionDefinition>()
-        { 
-            // ID, Name, Description
-            new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
-            new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
-            new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
-            new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
-            new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
-            new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
-            new WinConditionDefinition(Survive, "Survive", "Defend against 25 waves."),
-            new WinConditionDefinition(SurviveII, "Survive II", "Defend against 50 waves."),
-            new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 100 waves."),
-        };
-
-    }
-
     void Awake()
     {
         if (instance)
@@ -470,7 +503,6 @@ public class SuperManager : MonoBehaviour
         }
         instance = GetComponent<SuperManager>();
         DontDestroyOnLoad(gameObject);
-        DataInitialization();
         string sceneName = SceneManager.GetActiveScene().name;
         switch (sceneName)
         {
@@ -489,40 +521,48 @@ public class SuperManager : MonoBehaviour
         }
         if (startMaxed) { StartNewGame(false); }
         else { ReadGameData(); }
+
+        if (saveData.gameVersion != Version)
+        {
+            ClearCurrentMatch();
+        }
+
+        saveData.gameVersion = Version;
     }
 
     private void Update()
     {
-        // Hold control
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+        // Hold both mouse buttons
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
             // Press D
             if (Input.GetKeyDown(KeyCode.D))
             {
                 WipeReloadScene(false);
             }
-            // Press M
-            if (Input.GetKeyDown(KeyCode.M))
+            if (DevMode)
             {
-                if (GameManager.GetInstance())
+                // Press S
+                if (Input.GetKeyDown(KeyCode.S))
                 {
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
-                    GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    startMaxed = true;
+                    WipeReloadScene(true);
                 }
-            }
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                startMaxed = true;
-                WipeReloadScene(true);
+                // Press M
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    if (GameManager.GetInstance())
+                    {
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
+                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    }
+                }
             }
         }
     }
 
-    private void WipeReloadScene(bool _override)
+        private void WipeReloadScene(bool _override)
     {
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
@@ -606,6 +646,18 @@ public class SuperManager : MonoBehaviour
             EnemyManager.GetInstance().LoadHeavyInvader(saveData);
         }
 
+        // flying invaders
+        foreach (EnemySaveData saveData in _matchData.flyingInvaders)
+        {
+            EnemyManager.GetInstance().LoadFlyingInvader(saveData);
+        }
+
+        // petards
+        foreach (EnemySaveData saveData in _matchData.petards)
+        {
+            EnemyManager.GetInstance().LoadPetard(saveData);
+        }
+
         // soldiers
         Barracks[] allBarracks = FindObjectsOfType<Barracks>();
         foreach (SoldierSaveData saveData in _matchData.soldiers)
@@ -651,6 +703,8 @@ public class SuperManager : MonoBehaviour
             wave = EnemyManager.GetInstance().GetWaveCurrent(),
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
+            flyingInvaders = new List<EnemySaveData>(),
+            petards = new List<EnemySaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
@@ -672,11 +726,13 @@ public class SuperManager : MonoBehaviour
             {
                 enemyData = new EnemySaveData
                 {
-                    health = invader.health,
+                    health = invader.GetHealth(),
                     position = new SaveVector3(invader.transform.position),
                     orientation = new SaveQuaternion(invader.transform.rotation),
                     targetPosition = new SaveVector3(invader.GetTarget().transform.position),
-                    state = invader.GetState()
+                    state = invader.GetState(),
+                    enemyWave = invader.GetSpawnWave(),
+                    level = invader.GetLevel()
                 },
                 scale = invader.scale,
             };
@@ -690,15 +746,49 @@ public class SuperManager : MonoBehaviour
             {
                 enemyData = new EnemySaveData
                 {
-                    health = heavy.health,
+                    health = heavy.GetHealth(),
                     position = new SaveVector3(heavy.transform.position),
                     orientation = new SaveQuaternion(heavy.transform.rotation),
                     targetPosition = new SaveVector3(heavy.GetTarget().transform.position),
-                    state = heavy.GetState()
+                    state = heavy.GetState(),
+                    enemyWave = heavy.GetSpawnWave(),
+                    level = heavy.GetLevel()
                 },
                 equipment = heavy.GetEquipment()
             };
             save.heavyInvaders.Add(saveData);
+        }
+        
+        // flying
+        foreach (FlyingInvader flying in FindObjectsOfType<FlyingInvader>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = flying.GetHealth(),
+                position = new SaveVector3(flying.transform.position),
+                orientation = new SaveQuaternion(flying.transform.rotation),
+                targetPosition = new SaveVector3(flying.GetTarget().transform.position),
+                state = flying.GetState(),
+                enemyWave = flying.GetSpawnWave(),
+                level = flying.GetLevel()
+            };
+            save.flyingInvaders.Add(saveData);
+        }
+
+        // petards
+        foreach (Petard petard in FindObjectsOfType<Petard>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = petard.GetHealth(),
+                position = new SaveVector3(petard.transform.position),
+                orientation = new SaveQuaternion(petard.transform.rotation),
+                targetPosition = new SaveVector3(petard.GetTarget().transform.position),
+                state = petard.GetState(),
+                enemyWave = petard.GetSpawnWave(),
+                level = petard.GetLevel()
+            };
+            save.petards.Add(saveData);
         }
 
         // soldiers
@@ -765,13 +855,26 @@ public class SuperManager : MonoBehaviour
 
     public bool GetResearchComplete(int _ID)
     {
-        if (saveData.research == null) { RestoreSaveData(); }
+        if (saveData.research == null) 
+        { 
+            RestoreSaveData(); 
+        }
+        else
+        {
+            if (!saveData.research.ContainsKey(_ID))
+            {
+                WipeReloadScene(false);
+            }
+        }
         return saveData.research[_ID];
     }
 
     public Dictionary<int, bool> GetResearch()
     {
-        if (saveData.research == null) { RestoreSaveData(); }
+        if (saveData.research == null) 
+        { 
+            RestoreSaveData(); 
+        }
         return saveData.research;
     }
 

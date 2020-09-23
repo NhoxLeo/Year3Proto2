@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
+﻿using UnityEngine;
 
 public class BallistaTower : AttackStructure
 {
@@ -97,7 +94,7 @@ public class BallistaTower : AttackStructure
         fireCooldown = 0;
         GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
         BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
-        arrowBehaviour.Initialize(target.transform, arrowDamage, arrowSpeed, puffPrefab, arrowPierce);
+        arrowBehaviour.Initialize(target.transform, arrowDamage, arrowSpeed, arrowPierce);
         GameManager.CreateAudioEffect("arrow", transform.position);
     }
 

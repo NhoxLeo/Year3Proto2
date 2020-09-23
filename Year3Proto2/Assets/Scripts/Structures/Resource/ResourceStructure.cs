@@ -52,7 +52,7 @@ public abstract class ResourceStructure : Structure
     protected int tileBonus = 0;
     protected static GameObject TileHighlight = null;
     protected static GameObject Fencing = null;
-
+    private GameObject[] villagers = new GameObject[3];
     public virtual int GetProductionVolume()
     {
         return tileBonus * batchSize * allocatedVillagers;
@@ -234,6 +234,9 @@ public abstract class ResourceStructure : Structure
         base.Awake();
         structureType = StructureType.Resource;
         tileHighlights = new Dictionary<TileBehaviour.TileCode, GameObject>();
+        villagers[0] = transform.Find("Villager 1").gameObject;
+        villagers[1] = transform.Find("Villager 2").gameObject;
+        villagers[2] = transform.Find("Villager 3").gameObject;
     }
 
     private GameObject GetTileHighlight()
@@ -283,5 +286,15 @@ public abstract class ResourceStructure : Structure
     public float GetRPSPerVillager()
     {
         return batchSize * tileBonus / productionTime;
+    }
+
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+        //update villager models
+        for (int i = 0; i < villagers.Length; i++)
+        {
+            villagers[i].SetActive(allocatedVillagers > i);
+        }
     }
 }

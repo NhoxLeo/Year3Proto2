@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 // Bachelor of Software Engineering
@@ -18,27 +17,21 @@ public class HeavyInvader : Enemy
 {
     private bool[] equipment = new bool[4];
 
-    private void Awake()
+    protected override void Awake()
     {
-
+        base.Awake();
+        enemyName = EnemyNames.HeavyInvader;
         structureTypes = new List<StructureType>()
         {
-            StructureType.Attack,
             StructureType.Storage,
             StructureType.Longhaus,
             StructureType.Defense
         };
     }
 
-    protected override void Start()
-    {
-        base.Start();
-        UpdateEquipment();
-    }
-
     protected override void LookAtPosition(Vector3 _position)
     {
-        transform.LookAt(_position);
+        base.LookAtPosition(_position);
         // fixing animation problems
         transform.right = -transform.forward;
     }
@@ -46,7 +39,6 @@ public class HeavyInvader : Enemy
     private void FixedUpdate()
     {
         if (stunned) return;
-
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -62,6 +54,7 @@ public class HeavyInvader : Enemy
                         {
                             animator.SetBool("Attack", false);
                             enemyState = EnemyState.Idle;
+                            UpdateEquipment();
                         }
                         else
                         {
@@ -69,7 +62,7 @@ public class HeavyInvader : Enemy
                             {
                                 if ((target.transform.position - transform.position).magnitude < 0.5f)
                                 {
-                                    Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
+                                    Vector3 newPosition = transform.position - (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                                     LookAtPosition(newPosition);
                                     transform.position = newPosition;
                                 }
@@ -84,6 +77,10 @@ public class HeavyInvader : Enemy
                             {
                                 if (structureTypes.Contains(target.GetStructureType()))
                                 {
+                                    if (!animator.GetBool("Attack"))
+                                    {
+                                        animator.SetBool("Attack", true);
+                                    }
                                     Action();
                                 }
                                 else
@@ -128,7 +125,7 @@ public class HeavyInvader : Enemy
                             hasPath = false;
 
                             // get the motion vector for this frame
-                            Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
+                            Vector3 newPosition = transform.position + (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                             //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
@@ -190,14 +187,14 @@ public class HeavyInvader : Enemy
         Transform lowPoly = transform.GetChild(1);
         if (equipment[0]) // if sword
         {
-            damage = 10f;
+            baseDamage = 10f;
             animator.SetFloat("AttackSpeed", 1.2f);
             // disable axe
             lowPoly.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
         else // !sword means axe
         {
-            damage = 12f;
+            baseDamage = 12f;
             animator.SetFloat("AttackSpeed", 1.0f);
             // disable sword
             lowPoly.GetChild(2).GetComponent<SkinnedMeshRenderer>().enabled = false;
@@ -205,16 +202,20 @@ public class HeavyInvader : Enemy
         lowPoly.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = equipment[1];
         lowPoly.GetChild(3).GetComponent<SkinnedMeshRenderer>().enabled = equipment[2];
         lowPoly.GetChild(4).GetComponent<SkinnedMeshRenderer>().enabled = equipment[3];
-        health = 65f;
-        finalSpeed = 0.25f;
-        if (equipment[2]) { health += 10f; finalSpeed -= 0.03f; }
-        if (equipment[3]) { health += 5f; finalSpeed -= 0.015f; }
+
+        baseHealth = 65f;
+        finalSpeed = 0.35f;
+
+        if (equipment[2]) { baseHealth += 10f; finalSpeed -= 0.035f; }
+        if (equipment[3]) { baseHealth += 5f; finalSpeed -= 0.0175f; }
+
+        currentSpeed = finalSpeed;
     }
 
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
         puff.transform.localScale *= 3f;
     }
@@ -271,5 +272,21 @@ public class HeavyInvader : Enemy
                 }
             }
         }
+    }
+
+    public void Initialize(int _level, bool[] equipment = null)
+    {
+        if (equipment == null)
+        {
+            Randomize();
+        }
+        else
+        {
+            SetEquipment(equipment);
+        }
+        UpdateEquipment();
+        SetLevel(_level);
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
     }
 }

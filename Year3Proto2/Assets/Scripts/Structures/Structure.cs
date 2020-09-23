@@ -4,7 +4,6 @@ public enum StructureType
     Resource,
     Environment,
     Storage,
-    Attack,
     Defense,
     Longhaus
 };
@@ -37,7 +36,6 @@ public abstract class Structure : MonoBehaviour
     protected int allocatedVillagers = 0;
     protected static int villagerCapacity = 3;
     protected VillagerAllocation villagerWidget = null;
-    private Transform spottingRange = null;
     private bool manualAllocation = false;
 
     public void HandleAllocation(int _villagers)
@@ -116,6 +114,7 @@ public abstract class Structure : MonoBehaviour
             manualAllocation = false;
             allocatedVillagers += 1;
             RefreshWidget();
+            OnAllocation();
             villMan.OnVillagerAllocated();
         }
     }
@@ -143,12 +142,14 @@ public abstract class Structure : MonoBehaviour
     public virtual void SetAllocated(int _allocated)
     {
         allocatedVillagers = _allocated;
+        OnAllocation();
     }
 
     public virtual void DeallocateAll()
     {
         VillagerManager.GetInstance().ReturnVillagers(allocatedVillagers);
         allocatedVillagers = 0;
+        OnAllocation();
         RefreshWidget();
     }
 
@@ -178,10 +179,10 @@ public abstract class Structure : MonoBehaviour
         
         GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
 
-        if (structureType == StructureType.Attack)
+        if (structureType == StructureType.Defense)
         {
-            AttackStructure attackStructure = GetComponent<AttackStructure>();
-            if (attackStructure.GetEnemies().Count == 0) attackStructure.DetectEnemies();
+            DefenseStructure defenseStructure = GetComponent<DefenseStructure>();
+            //if (defenseStructure.GetEnemies().Count == 0) defenseStructure.DetectEnemies();
         }
 
         if (health <= 0f)
@@ -280,7 +281,7 @@ public abstract class Structure : MonoBehaviour
         {
             if (this == enemy.GetTarget())
             {
-                enemy.SetTargetNull();
+                enemy.SetTarget(null);
             }
         }
         PathManager.GetInstance().ClearPaths();
@@ -320,7 +321,6 @@ public abstract class Structure : MonoBehaviour
         buildingInfo = FindObjectOfType<BuildingInfo>();
         health = maxHealth;
         destructionEffect = Resources.Load("DestructionEffect") as GameObject;
-        spottingRange = transform.Find("SpottingRange");
     }
 
     protected virtual void Start()
@@ -364,6 +364,7 @@ public abstract class Structure : MonoBehaviour
                 healthBar.fillAmount = health / maxHealth;
             }
             RefreshWidget();
+
         }
     }
 
@@ -380,7 +381,7 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void ShowRangeDisplay(bool _active)
     {
-        spottingRange.GetChild(0).gameObject.SetActive(_active);
+
     }
 
     public virtual void OnAllocation()

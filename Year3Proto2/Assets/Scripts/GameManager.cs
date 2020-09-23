@@ -383,7 +383,8 @@ public class GameManager : MonoBehaviour
             { "UIclick3", Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip },
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
             { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
-        };
+            { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
+        };
     }
 
     // Start is called before the first frame update
@@ -470,7 +471,7 @@ public class GameManager : MonoBehaviour
         {
             panelRefreshTimer = panelRefreshCooldown;
             // do refresh
-            for (int i = 1; i <= 9; i++)
+            for (int i = 1; i <= 12; i++)
             {
                 BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
                 if (buildingI == BuildPanel.Buildings.Catapult)
@@ -486,6 +487,18 @@ public class GameManager : MonoBehaviour
                     {
                         continue;
                     }
+                }
+                if (buildingI == BuildPanel.Buildings.FreezeTower)
+                {
+                    continue;
+                }
+                if (buildingI == BuildPanel.Buildings.ShockwaveTower)
+                {
+                    continue;
+                }
+                if (buildingI == BuildPanel.Buildings.LightningTower)
+                {
+                    continue;
                 }
                 ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
                 bool playerCanAfford = playerResources.CanAfford(cost);
@@ -544,10 +557,8 @@ public class GameManager : MonoBehaviour
                     switchingScene = true;
                 }
             }
-            
         }
-    }
-
+    }
     public void SaveMatch()
     {
         SuperManager.GetInstance().SaveCurrentMatch();
@@ -555,7 +566,9 @@ public class GameManager : MonoBehaviour
 
     public void OnRestart()
     {
-        SuperManager.GetInstance().ClearCurrentMatch();
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.ClearCurrentMatch();
+        superMan.PlayLevel(superMan.GetCurrentLevel());
     }
 
     public bool WinConditionIsMet()
@@ -567,7 +580,7 @@ public class GameManager : MonoBehaviour
             case SuperManager.AccumulateII:
                 return playerResources.Get(ResourceType.Metal) >= 2500 && playerResources.Get(ResourceType.Food) >= 2500 && playerResources.Get(ResourceType.Wood) >= 2500;
             case SuperManager.AccumulateIII:
-                return playerResources.Get(ResourceType.Metal) >= 7500 && playerResources.Get(ResourceType.Food) >= 7500 && playerResources.Get(ResourceType.Wood) >= 7500;
+                return playerResources.Get(ResourceType.Metal) >= 5000 && playerResources.Get(ResourceType.Food) >= 5000 && playerResources.Get(ResourceType.Wood) >= 5000;
             case SuperManager.Slaughter:
                 return EnemyManager.GetInstance().GetEnemiesKilled() > 300;
             case SuperManager.SlaughterII:
@@ -575,11 +588,11 @@ public class GameManager : MonoBehaviour
             case SuperManager.SlaughterIII:
                 return EnemyManager.GetInstance().GetEnemiesKilled() > 2000;
             case SuperManager.Survive:
-                return EnemyManager.GetInstance().GetWaveCurrent() == 25 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 25;
+                return EnemyManager.GetInstance().GetWaveSurvived(10);
             case SuperManager.SurviveII:
-                return EnemyManager.GetInstance().GetWaveCurrent() == 50 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 50;
+                return EnemyManager.GetInstance().GetWaveSurvived(15);
             case SuperManager.SurviveIII:
-                return EnemyManager.GetInstance().GetWaveCurrent() == 100 && EnemyManager.GetInstance().GetEnemiesAlive() == 0 || EnemyManager.GetInstance().GetWaveCurrent() > 100;
+                return EnemyManager.GetInstance().GetWaveSurvived(25);
             default:
                 break;
         }

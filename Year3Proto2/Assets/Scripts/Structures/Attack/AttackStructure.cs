@@ -41,7 +41,7 @@ public abstract class AttackStructure : Structure
     {
         base.Start();
         puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
-        structureType = StructureType.Attack;
+        //structureType = StructureType.Attack;
         enemies = new List<GameObject>();
         DetectEnemies();
     }

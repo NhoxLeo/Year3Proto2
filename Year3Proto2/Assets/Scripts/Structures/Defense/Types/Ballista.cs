@@ -4,25 +4,42 @@ public class Ballista : ProjectileDefenseStructure
 {
     [SerializeField] private Transform ballista;
 
-    private const int CostArrowBase = 4;
+    [SerializeField] private GameObject arrowPrefab;
+    public static bool arrowPierce;
+    private float arrowDamage = 10f;
+    private float arrowSpeed = 12.5f;
+
+    private const int MetalCost = 2;
+    private const float MaxHealth = 350;
 
     protected override void Awake()
     {
         base.Awake();
-        maxHealth = 350f;
+
+        maxHealth = MaxHealth;
         health = maxHealth;
+
         structureName = StructureNames.Ballista;
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
-    }
 
-    public override void CheckResearch()
-    {
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
+        SuperManager superMan = SuperManager.GetInstance();
 
-        bool efficiencyUpgrade = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaEfficiency);
-        int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
-        attackCost = new ResourceBundle(woodCost, 0, 0);
+        if (superMan.GetResearchComplete(SuperManager.BallistaFortification))
+        {
+            health = maxHealth *= 1.5f;
+        }
+
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
+        {
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+        }
+        arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
+
+        targetableEnemies.Add(EnemyNames.Invader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.FlyingInvader);
+        targetableEnemies.Add(EnemyNames.Petard);
     }
 
     protected override void Update()
@@ -40,20 +57,27 @@ public class Ballista : ProjectileDefenseStructure
 
     public override void Launch(Transform _target)
     {
+        GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
+        BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
+        arrowBehaviour.Initialize(_target, arrowDamage, arrowSpeed, arrowPierce);
+        GameManager.CreateAudioEffect("arrow", transform.position);
+        /*
         Vector3 position = transform.position;
         position.y = 1.25f;
 
-        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity, transform);
+        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity);
         Arrow arrow = projectile.GetComponent<Arrow>();
         if (arrow)
         {
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
 
             arrow.Pierce = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper);
-            arrow.SetDamage(arrow.GetDamage() * damageFactor);
+            arrow.SetDamage(arrow.GetDamage() * damageFactor * level);
             arrow.SetTarget(_target);
         }
+        */
     }
+
 
     public override void OnAllocation()
     {

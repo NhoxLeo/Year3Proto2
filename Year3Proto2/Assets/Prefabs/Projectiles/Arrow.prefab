@@ -209,6 +209,10 @@ MonoBehaviour:
   damage: 2
   speed: 3
   distanceOffset: 0.1
+  ground: 1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 9216
 --- !u!1 &6298176533902510963
 GameObject:
   m_ObjectHideFlags: 0
