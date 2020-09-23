@@ -290,6 +290,7 @@ public class EnemyManager : MonoBehaviour
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
         if (airship) {
+            airship.spawnWave = waveCounter;
             if (airship.GetTarget()) {
                 airship.Embark(transforms, pointerParent);
             }
@@ -736,11 +737,23 @@ public class EnemyManager : MonoBehaviour
                 return true;
             }
         }
+        else
+        {
+            if (waveCounter > _wave)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
     public int GetEnemyCurrentLevel(string _enemyName)
     {
         return currentSettings[_enemyName].Item2;
+    }
+
+    public void OnObjectiveComplete()
+    {
+        enemiesKilled = 0;
     }
 }
