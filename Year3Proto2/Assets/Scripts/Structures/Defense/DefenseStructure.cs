@@ -99,7 +99,6 @@ public abstract class DefenseStructure : Structure
 
     public void LevelUp()
     {
-        HUDManager.GetInstance().ShowResourceDelta(StructureManager.GetInstance().QuoteUpgradeCostFor(this), true);
         SetLevel(level + 1);
     }
 
