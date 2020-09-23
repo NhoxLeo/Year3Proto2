@@ -152,6 +152,12 @@ public class HUDManager : MonoBehaviour
         transform.Find("ResourceBar/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[currentLevel].victoryValue.ToString();
     }
 
+    public void SetVictoryInfo(string _title, string _description)
+    {
+        transform.Find("ResourceBar/LevelModCard/Title").GetComponent<TMP_Text>().text = _title;
+        transform.Find("ResourceBar/LevelModCard/Description").GetComponent<TMP_Text>().text = _description;
+    }
+
     public void RefreshResources()
     {
         // available out of total
