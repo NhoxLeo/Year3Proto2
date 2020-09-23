@@ -37,6 +37,7 @@ public class LightningTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.FlyingInvader);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
     }
 
     protected override void Start()

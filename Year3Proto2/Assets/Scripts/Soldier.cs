@@ -349,6 +349,13 @@ public class Soldier : MonoBehaviour
             {
                 target = null;
             }
+            else
+            {
+                if ((target.transform.position - transform.position).magnitude > 0.2f)
+                {
+                    state = 1;
+                }
+            }
         }
     }
 

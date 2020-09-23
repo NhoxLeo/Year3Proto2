@@ -30,6 +30,7 @@ public class ShockWaveTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
     }
 
     protected override void Start()
@@ -53,7 +54,13 @@ public class ShockWaveTower : DefenseStructure
                     Instantiate(particle, transform.position, particle.rotation);
                     enemies.ForEach(transform => {
                         Enemy enemy = transform.GetComponent<Enemy>();
-                        if(enemy) enemy.Stun();
+                        if (enemy)
+                        {
+                            if (enemy.enemyName != EnemyNames.BatteringRam)
+                            {
+                                enemy.Stun();
+                            }
+                        }
                     });
                 }
             }

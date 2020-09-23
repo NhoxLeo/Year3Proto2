@@ -59,12 +59,15 @@ public class ResearchScreen : MonoBehaviour
         {
             RefreshCards();
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if (SuperManager.DevMode)
         {
-            // give the player some research points, they've earned it
-            superMan.SetResearchPoints(9001);
-            superMan.WriteGameData();
-            UpdateRPCounter();
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                // give the player some research points, they've earned it
+                superMan.SetResearchPoints(9001);
+                superMan.WriteGameData();
+                UpdateRPCounter();
+            }
         }
     }
     

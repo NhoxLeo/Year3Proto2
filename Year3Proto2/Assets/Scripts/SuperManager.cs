@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.6b";
+    public const string Version = "0.9.7b";
     public static bool DevMode = true;
     // CONSTANTS
     public const int NoRequirement = -1;
@@ -217,6 +217,7 @@ public class SuperManager : MonoBehaviour
         public List<HeavyInvaderSaveData> heavyInvaders;
         public List<EnemySaveData> flyingInvaders;
         public List<EnemySaveData> petards;
+        public List<EnemySaveData> rams;
         public List<SoldierSaveData> soldiers;
         public int enemiesKilled;
         public float spawnTime;
@@ -658,6 +659,12 @@ public class SuperManager : MonoBehaviour
             EnemyManager.GetInstance().LoadPetard(saveData);
         }
 
+        // rams
+        foreach (EnemySaveData saveData in _matchData.rams)
+        {
+            EnemyManager.GetInstance().LoadRam(saveData);
+        }
+
         // soldiers
         Barracks[] allBarracks = FindObjectsOfType<Barracks>();
         foreach (SoldierSaveData saveData in _matchData.soldiers)
@@ -705,6 +712,7 @@ public class SuperManager : MonoBehaviour
             heavyInvaders = new List<HeavyInvaderSaveData>(),
             flyingInvaders = new List<EnemySaveData>(),
             petards = new List<EnemySaveData>(),
+            rams = new List<EnemySaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
@@ -789,6 +797,22 @@ public class SuperManager : MonoBehaviour
                 level = petard.GetLevel()
             };
             save.petards.Add(saveData);
+        }
+
+        // rams
+        foreach (BatteringRam ram in FindObjectsOfType<BatteringRam>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = ram.GetHealth(),
+                position = new SaveVector3(ram.transform.position),
+                orientation = new SaveQuaternion(ram.transform.rotation),
+                targetPosition = new SaveVector3(ram.GetTarget().transform.position),
+                state = ram.GetState(),
+                enemyWave = ram.GetSpawnWave(),
+                level = ram.GetLevel()
+            };
+            save.rams.Add(saveData);
         }
 
         // soldiers

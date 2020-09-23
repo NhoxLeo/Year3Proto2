@@ -23,6 +23,7 @@ public class FreezeTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
 
     }
 

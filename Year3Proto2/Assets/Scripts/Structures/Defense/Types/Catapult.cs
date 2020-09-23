@@ -37,6 +37,7 @@ public class Catapult : ProjectileDefenseStructure
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
     }
 
     public override void Launch(Transform _target)
