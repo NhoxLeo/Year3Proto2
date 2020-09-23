@@ -305,7 +305,7 @@ public class StructureManager : MonoBehaviour
             // NAME                                                                    NAME                                                                    wC       mC      fC
             { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(600,     200,    0)) },
 
-            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")     as GameObject,  new ResourceBundle(150,     50,     0)) },
+            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(150,     50,     0)) },
             { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower")     as GameObject,  new ResourceBundle(200,     250,    0)) },
             { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(200,     250,    0)) },
             { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(200,     200,    0)) },
@@ -830,7 +830,11 @@ public class StructureManager : MonoBehaviour
                 }
                 firstStructurePlaced = true;
             }
-            bool villWidget = (structType == StructureType.Resource || (structType == StructureType.Defense && !structure.IsStructure(StructureNames.Barracks)));
+            bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense);
+            if (structure.IsStructure(StructureNames.Barracks) || structure.IsStructure(StructureNames.FreezeTower))
+            {
+                villWidget = false;
+            }
             if (villWidget)
             {
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
@@ -1209,7 +1213,13 @@ public class StructureManager : MonoBehaviour
         if (newStructure.GetStructureType() != StructureType.Environment)
         {
             playerStructureDict.Add(_saveData.ID, newStructure);
-            if (newStructure.GetStructureType() == StructureType.Resource)
+            StructureType structType = newStructure.GetStructureType();
+            bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense);
+            if (structure.IsStructure(StructureNames.Barracks) || structure.IsStructure(StructureNames.FreezeTower))
+            {
+                villWidget = false;
+            }
+            if (villWidget)
             {
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(newStructure);

@@ -44,6 +44,8 @@ public abstract class Enemy : MonoBehaviour
     protected bool needToMoveAway;
     protected float finalSpeed = 0.0f;
     protected float currentSpeed = 0.0f;
+    protected float finalAttackSpeed = 0.0f;
+    protected float currentAttackSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
     [HideInInspector]
@@ -106,11 +108,13 @@ public abstract class Enemy : MonoBehaviour
         {
             if (slowCount == 0)
             {
-                currentSpeed = finalSpeed *= _slowAmount;
+                float slowMult = 0.6f * (1f / _slowAmount);
+                currentSpeed = finalSpeed * slowMult;
                 if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
                 {
-                    float attackSpeed = 0.5f * animator.GetFloat("AttackSpeed");
-                    animator.SetFloat("AttackSpeed", attackSpeed);
+                    finalAttackSpeed = animator.GetFloat("AttackSpeed");
+                    currentAttackSpeed = finalAttackSpeed * slowMult;
+                    animator.SetFloat("AttackSpeed", currentAttackSpeed);
                 }
             }
             slowCount++;
@@ -122,8 +126,7 @@ public abstract class Enemy : MonoBehaviour
                 currentSpeed = finalSpeed;
                 if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
                 {
-                    float attackSpeed = 2f * animator.GetFloat("AttackSpeed");
-                    animator.SetFloat("AttackSpeed", attackSpeed);
+                    animator.SetFloat("AttackSpeed", finalAttackSpeed);
                 }
             }
             slowCount--;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -86,5 +87,10 @@ public class LightningTower : DefenseStructure
         location.y = 1.5f; 
         LightningBolt lightningBolt = Instantiate(lightning, location, Quaternion.identity);
         lightningBolt.Fire(_target);
+    }
+
+    public float GetFireRate()
+    {
+        return lightningAmount * (1f / lightningDelay);
     }
 }

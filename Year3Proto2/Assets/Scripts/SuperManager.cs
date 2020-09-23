@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.4b";
+    public const string Version = "0.9.4.1b";
     public static bool DevMode = true;
     // CONSTANTS
     public const int NoRequirement = -1;
@@ -345,12 +345,12 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
 
-        new ResearchElementDefinition(FreezeTower, NoRequirement, "Freeze Tower", "The Freeze Tower slows down enemies making it easier for other turrets to hit them.", 300),
+        new ResearchElementDefinition(FreezeTower, NoRequirement, "Freeze Tower", "The Freeze Tower slows down enemies making it easier for other defenses to hit them.", 300),
         new ResearchElementDefinition(FreezeTowerRange, FreezeTower, "Range Boost", "Extends tower range by 25%.", 200),
-        new ResearchElementDefinition(FreezeTowerSlowEffect, FreezeTower, "Slow Effect", "Slows Enemies by 30%.", 200),
+        new ResearchElementDefinition(FreezeTowerSlowEffect, FreezeTower, "Slow Effect", "Slows Enemies by +30%.", 200),
         new ResearchElementDefinition(FreezeTowerFortification, FreezeTower, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(FreezeTowerEfficiency, FreezeTower, "Efficiency", "Freezing cost reduced by 50%.", 200),
-        new ResearchElementDefinition(FreezeTowerSuper, FreezeTower, "Blizzard", "Frost effect damages enemies because of the cold.", 500, true),
+        new ResearchElementDefinition(FreezeTowerSuper, FreezeTower, "Blizzard", "Frost effect damages enemies.", 500, true),
 
         new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
         new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
@@ -359,7 +359,7 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "Efficiency", "Lightning bolt cost reduced by 50%.", 200),
         new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Thunder Wave", "Sparks that fly off deal damage to surrounding enemies.", 500, true),
 
-        new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
+        new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Shockwave Tower releases high energy shockwaves that momentarily stun enemies.", 300),
         new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
         new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
@@ -850,13 +850,26 @@ public class SuperManager : MonoBehaviour
 
     public bool GetResearchComplete(int _ID)
     {
-        if (saveData.research == null) { RestoreSaveData(); }
+        if (saveData.research == null) 
+        { 
+            RestoreSaveData(); 
+        }
+        else
+        {
+            if (!saveData.research.ContainsKey(_ID))
+            {
+                WipeReloadScene(false);
+            }
+        }
         return saveData.research[_ID];
     }
 
     public Dictionary<int, bool> GetResearch()
     {
-        if (saveData.research == null) { RestoreSaveData(); }
+        if (saveData.research == null) 
+        { 
+            RestoreSaveData(); 
+        }
         return saveData.research;
     }
 

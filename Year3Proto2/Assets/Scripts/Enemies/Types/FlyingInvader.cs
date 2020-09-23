@@ -20,6 +20,7 @@ public class FlyingInvader : Enemy
         {
             Barrel = Resources.Load("FlyingInvaderBarrel") as GameObject;
         }
+        enemyName = EnemyNames.FlyingInvader;
     }
 
     // Start is called before the first frame update

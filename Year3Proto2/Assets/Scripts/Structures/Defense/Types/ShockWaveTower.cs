@@ -50,4 +50,9 @@ public class ShockWaveTower : DefenseStructure
             time = startDelay;
         }
     }
+
+    public float GetAttackRate()
+    {
+        return 1f / delay;
+    }
 }

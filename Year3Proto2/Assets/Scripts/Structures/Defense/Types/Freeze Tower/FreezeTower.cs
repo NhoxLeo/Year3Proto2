@@ -3,7 +3,7 @@
 public class FreezeTower : DefenseStructure
 {
     private FreezeTowerCannon[] cannons;
-
+    private float freezeEffect;
     protected override void Awake()
     {
         base.Awake();
@@ -23,7 +23,6 @@ public class FreezeTower : DefenseStructure
 
         // Research Completed
 
-        /*
         SuperManager superManager = SuperManager.GetInstance();
         if (superManager.GetResearchComplete(SuperManager.FreezeTowerFortification)) 
         { 
@@ -37,24 +36,21 @@ public class FreezeTower : DefenseStructure
         }
 
         attackCost = new ResourceBundle(0, superManager.GetResearchComplete(SuperManager.FreezeTowerEfficiency) ? 3 : 6, 0);
-        */
     }
 
     protected override void Start()
     {
         base.Start();
-        cannons = GetComponentsInChildren<FreezeTowerCannon>();
-
-        /*
         SuperManager superManager = SuperManager.GetInstance();
+        cannons = GetComponentsInChildren<FreezeTowerCannon>();
+        freezeEffect = superManager.GetResearchComplete(SuperManager.FreezeTowerSlowEffect) ? 1.0f : 1.3f;
         foreach (FreezeTowerCannon cannon in cannons)
         {
             cannon.Setup(
-                superManager.GetResearchComplete(SuperManager.FreezeTowerSlowEffect) ? 1.0f : 1.3f,
+                freezeEffect,
                 superManager.GetResearchComplete(SuperManager.FreezeTowerSuper)
             );
         }
-        */
     }
 
     protected override void OnDestroyed()
@@ -74,5 +70,10 @@ public class FreezeTower : DefenseStructure
                 }
             });
         }
+    }
+
+    public float GetFreezeEffect()
+    {
+        return 1f - (0.6f * (1f / freezeEffect));
     }
 }

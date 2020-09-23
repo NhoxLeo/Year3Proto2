@@ -207,7 +207,7 @@ public class Soldier : MonoBehaviour
         }
         float distanceFromTarget = (target.transform.position - transform.position).magnitude;
         // if you are further than 1.0f from target
-        if (distanceFromTarget > 1.0f)
+        if (distanceFromTarget > 1.0f && path.pathPoints.Count > 0)
         {
             // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
             Vector3 nextPathPoint = path.pathPoints[0];

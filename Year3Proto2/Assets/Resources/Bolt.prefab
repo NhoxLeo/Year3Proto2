@@ -106,14 +106,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1147110280109721153}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 596c2762391d6bc4ab9024cbb1d35404, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f07fc667fd2e734e83a94ad7d06f320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  damage: 0
-  speed: 0
-  puffEffect: {fileID: 0}
-  pierce: 0
 --- !u!96 &-2620554229025470606
 TrailRenderer:
   serializedVersion: 2
