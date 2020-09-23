@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.UI;
 using UnityEngine;
 
 // Bachelor of Software Engineering
@@ -29,7 +30,8 @@ public class OptionToggleData : OptionData
 
 public class OptionToggle : OptionObject, OptionDataBase
 {
-    [SerializeField] OptionToggleData data;
+    [SerializeField] private OptionToggleData data;
+    [SerializeField] private Toggle toggle;
     /**************************************
     * Name of the Function: Toggle
     * @Author: Tjeu Vreeburg
@@ -45,6 +47,7 @@ public class OptionToggle : OptionObject, OptionDataBase
     public override void Deserialize()
     {
         data.value = PlayerPrefs.GetInt(key, data.defaultValue ? 1 : 0) != 0;
+        toggle.isOn = data.value;
         data.GetCallback().Invoke();
     }
 
