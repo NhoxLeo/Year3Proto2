@@ -33,7 +33,7 @@ public class BoulderBehaviour : MonoBehaviour
         {
             RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
             GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
-            explosion.transform.localScale *= 3f * explosionRadius;
+            explosion.transform.localScale *= 2f * explosionRadius;
             foreach (RaycastHit enemyHit in hitEnemies)
             {
                 Enemy enemy = enemyHit.transform.GetComponent<Enemy>();

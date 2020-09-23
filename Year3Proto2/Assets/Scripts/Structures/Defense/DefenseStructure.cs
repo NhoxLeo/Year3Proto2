@@ -9,7 +9,7 @@ public abstract class DefenseStructure : Structure
 
     private Transform attackingRange;
     private Transform spottingRange = null;
-    protected int level;
+    protected int level = 1;
 
     protected override void Awake()
     {
@@ -55,15 +55,22 @@ public abstract class DefenseStructure : Structure
     {
         base.Update();
         enemies.RemoveAll(enemy => !enemy);
-        /*
-        if (Input.GetKeyDown(KeyCode.U))
+        
+        if (level < 3)
         {
-            if (StructureManager.GetInstance().StructureIsSelected(this))
+            if (Input.GetKeyDown(KeyCode.U))
             {
-                OnLevelUp();
+                StructureManager structMan = StructureManager.GetInstance();
+                if (structMan.StructureIsSelected(this))
+                {
+                    if (GameManager.GetInstance().playerResources.AttemptPurchase(structMan.QuoteUpgradeCostFor(this)))
+                    {
+                        LevelUp();
+                    }
+                }
             }
         }
-        */
+        
     }
 
     public override void ShowRangeDisplay(bool _active)
@@ -87,6 +94,12 @@ public abstract class DefenseStructure : Structure
     public void SetLevel(int _level)
     {
         level = _level;
+        OnSetLevel();
+    }
+
+    public void LevelUp()
+    {
+        SetLevel(level + 1);
     }
 
     public int GetLevel()
@@ -94,8 +107,8 @@ public abstract class DefenseStructure : Structure
         return level;
     }
 
-    public virtual void OnLevelUp()
+    protected virtual void OnSetLevel()
     {
-        level++;
+
     }
 }

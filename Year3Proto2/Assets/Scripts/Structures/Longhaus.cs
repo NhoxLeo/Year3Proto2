@@ -6,23 +6,21 @@ public class Longhaus : Structure
 {
     [SerializeField]
     static public int foodStorage = 500;
-
     [SerializeField]
     static public int woodStorage = 500;
-
     [SerializeField]
     static public int metalStorage = 500;
 
     public static float productionTime = 3f;
     protected float remainingTime = 3f;
 
+    private const float BaseMaxHealth = 500f;
+
     protected override void Awake()
     {
         base.Awake();
         structureType = StructureType.Longhaus;
         structureName = "Longhaus";
-        maxHealth = 400f;
-        health = maxHealth;
     }
 
     // Update is called once per frame
@@ -70,5 +68,24 @@ public class Longhaus : Structure
         resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec());
 
         return resourceDelta;
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return BaseMaxHealth;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        // get base health
+        float maxHealth = GetBaseMaxHealth();
+
+        // poor timber multiplier
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
+        {
+            maxHealth *= 0.5f;
+        }
+
+        return maxHealth;
     }
 }
