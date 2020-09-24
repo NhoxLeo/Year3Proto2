@@ -8,7 +8,7 @@ public class Catapult : ProjectileDefenseStructure
 
     private const float BoulderSpeed = 1f;
     private const float BaseMaxHealth = 450f;
-    private const float BaseDamage = 5f;
+    private const float BaseDamage = 15f;
 
     private float damage;
     private float boulderExplosionRadius = 0.375f;
@@ -74,7 +74,7 @@ public class Catapult : ProjectileDefenseStructure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        projectileRate = allocatedVillagers * 0.167f;
+        projectileRate = 0.2f + (allocatedVillagers * 0.1f);
         if (allocatedVillagers != 0)
         {
             projectileDelay = 1f / projectileRate;
