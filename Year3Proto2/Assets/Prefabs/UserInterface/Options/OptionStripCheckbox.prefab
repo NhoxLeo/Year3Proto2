@@ -17,6 +17,7 @@ MonoBehaviour:
   data:
     defaultValue: 0
     value: 0
+  toggle: {fileID: 8022401440475850210}
 --- !u!1001 &205272859580822897
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -78,26 +79,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 84
       objectReference: {fileID: 0}
     - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
         type: 3}
@@ -297,5 +278,22 @@ PrefabInstance:
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 118406384260320129}
+    - target: {fileID: 7364723460861976117, guid: 0c3de5b20f538bb488364997231f4be0,
+        type: 3}
+      propertyPath: m_IsOn
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c3de5b20f538bb488364997231f4be0, type: 3}
+--- !u!114 &8022401440475850210 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7364723460861976117, guid: 0c3de5b20f538bb488364997231f4be0,
+    type: 3}
+  m_PrefabInstance: {fileID: 675974718017043415}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

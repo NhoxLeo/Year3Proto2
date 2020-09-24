@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.UI;
 using UnityEngine;
 
 // Bachelor of Software Engineering
@@ -18,12 +19,19 @@ public class OptionToggleData : OptionData
 {
     public bool defaultValue;
     public bool value;
+
+    public OptionToggleData(bool _defaultValue, bool _value)
+    {
+        value = _value;
+        defaultValue = _defaultValue;
+    }
 }
 
 
 public class OptionToggle : OptionObject, OptionDataBase
 {
-    [SerializeField] OptionToggleData data;
+    [SerializeField] private OptionToggleData data;
+    [SerializeField] private Toggle toggle;
     /**************************************
     * Name of the Function: Toggle
     * @Author: Tjeu Vreeburg
@@ -33,11 +41,14 @@ public class OptionToggle : OptionObject, OptionDataBase
     public void Toggle()
     {
         data.value = !data.value;
+        data.GetCallback().Invoke();
     }
 
     public override void Deserialize()
     {
         data.value = PlayerPrefs.GetInt(key, data.defaultValue ? 1 : 0) != 0;
+        toggle.isOn = data.value;
+        data.GetCallback().Invoke();
     }
 
     public override void Serialize()

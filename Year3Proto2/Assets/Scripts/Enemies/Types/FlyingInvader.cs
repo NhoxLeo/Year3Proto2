@@ -161,4 +161,17 @@ public class FlyingInvader : Enemy
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
         currentSpeed = finalSpeed;
     }
+
+    public override void SetLevel(int _level)
+    {
+        base.SetLevel(_level);
+        Material[] materials = transform.GetChild(1).GetComponent<MeshRenderer>().materials;
+        materials[1] = EnemyMaterials.Fetch(enemyName, level);
+        transform.GetChild(1).GetComponent<MeshRenderer>().materials = materials;
+        transform.GetChild(1).GetComponent<MeshRenderer>().materials[1] = EnemyMaterials.Fetch(enemyName, level);
+        transform.GetChild(2).GetComponent<MeshRenderer>().material = EnemyMaterials.Fetch(EnemyNames.Petard, level);
+        transform.GetChild(3).GetComponent<MeshRenderer>().material = EnemyMaterials.Fetch(EnemyNames.Petard, level);
+        transform.GetChild(4).GetComponent<MeshRenderer>().material = EnemyMaterials.Fetch(EnemyNames.Petard, level);
+        transform.GetChild(5).GetComponent<MeshRenderer>().material = EnemyMaterials.Fetch(EnemyNames.Petard, level);
+    }
 }

@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public const string Version = "0.9.7.3b";
-    public static bool DevMode = true;
     // CONSTANTS
+    public const string Version = "0.9.9b";
+    public static bool DevMode = true;
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -23,12 +23,30 @@ public class SuperManager : MonoBehaviour
     public const int Accumulate = 0;
     public const int AccumulateII = 1;
     public const int AccumulateIII = 2;
+
     public const int Slaughter = 3;
     public const int SlaughterII = 4;
     public const int SlaughterIII = 5;
+
     public const int Survive = 6;
     public const int SurviveII = 7;
     public const int SurviveIII = 8;
+
+    public const int Food = 9;
+    public const int FoodII = 10;
+    public const int FoodIII = 11;
+
+    public const int Lumber = 12;
+    public const int LumberII = 13;
+    public const int LumberIII = 14;
+
+    public const int Metal = 15;
+    public const int MetalII = 16;
+    public const int MetalIII = 17;
+
+    public const int Villagers = 18;
+    public const int VillagersII = 19;
+    public const int VillagersIII = 20;
 
     // BALLISTA
     public const int Ballista = 0;
@@ -208,6 +226,7 @@ public class SuperManager : MonoBehaviour
     {
         public bool match;
         public int levelID;
+        public int objectivesCompleted;
         public bool matchWon;
         public PlayerResources playerResources;
         public Dictionary<string, ResourceBundle> structureCosts;
@@ -236,6 +255,9 @@ public class SuperManager : MonoBehaviour
         public int villagers;
         public int availableVillagers;
         public int starveTicks;
+        public int tempFood;
+        public int tempLumber;
+        public int tempMetal;
     }
 
     [Serializable]
@@ -275,16 +297,16 @@ public class SuperManager : MonoBehaviour
     {
         public int ID;
         public int reqID;
-        public int winCond;
+        public List<int> objectives;
         public List<int> modifiers;
         public int reward;
 
-        public LevelDefinition(int _id, int _reqID, int _winCond, List<int> _modifiers, int _reward)
+        public LevelDefinition(int _id, int _reqID, List<int> _objectives, List<int> _modifiers, int _reward)
         {
             ID = _id;
             reqID = _reqID;
-            winCond = _winCond;
             modifiers = _modifiers;
+            objectives = _objectives;
             reward = _reward;
         }
     }
@@ -323,7 +345,7 @@ public class SuperManager : MonoBehaviour
 
     private static SuperManager instance = null;
     private GameSaveData saveData;
-    public static List<ResearchElementDefinition> researchDefinitions = new List<ResearchElementDefinition>()
+    public static List<ResearchElementDefinition> ResearchDefinitions = new List<ResearchElementDefinition>()
     {
         // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
         new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
@@ -368,15 +390,15 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "Efficiency", "Shockwave cost reduced by 50%.", 200),
         new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Shockwaves deal some damage.", 500, true),
     };
-    public static List<LevelDefinition> levelDefinitions = new List<LevelDefinition>()
+    public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
     {
         // ID, ID requirement, Win Condition, Modifiers, Base Reward
-        new LevelDefinition(0, NoRequirement, Accumulate, new List<int>(), 500),
-        new LevelDefinition(1, 0, Survive, new List<int>(){ SnoballPrices, SwiftFootwork }, 750),
-        new LevelDefinition(2, 1, SurviveII, new List<int>(){ DryFields, PoorTimber }, 1000),
-        new LevelDefinition(3, 2, AccumulateIII, new List<int>(){ SnoballPrices, DryFields, PoorTimber }, 1500)
+        new LevelDefinition(0, NoRequirement,   new List<int>(){ Survive, Villagers, FoodII },                          new List<int>(),                                            1000),
+        new LevelDefinition(1, 0,               new List<int>(){ Villagers, Accumulate, SlaughterII },                  new List<int>(){ SnoballPrices, SwiftFootwork },            1250),
+        new LevelDefinition(2, 1,               new List<int>(){ Slaughter, Lumber, VillagersII, AccumulateII },        new List<int>(){ DryFields, PoorTimber },                   1500),
+        new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, DryFields, PoorTimber },    1750)
     };
-    public static List<ModifierDefinition> modDefinitions = new List<ModifierDefinition>()
+    public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
     { 
         // ID, Name, Description, Coefficient
         new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
@@ -384,18 +406,36 @@ public class SuperManager : MonoBehaviour
         new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
         new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
     };
-    public static List<WinConditionDefinition> winConditionDefinitions = new List<WinConditionDefinition>()
+    public static List<WinConditionDefinition> WinConditionDefinitions = new List<WinConditionDefinition>()
     { 
         // ID, Name, Description
-        new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
-        new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
-        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 5000 of each resource."),
-        new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
-        new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
-        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
-        new WinConditionDefinition(Survive, "Survive", "Defend against 10 waves."),
-        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 15 waves."),
-        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 20 waves."),
+        new WinConditionDefinition(Accumulate, "Accumulate", "Have 1500 of each resource."),
+        new WinConditionDefinition(AccumulateII, "Accumulate II", "Have 2500 of each resource."),
+        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Have 5000 of each resource."),
+
+        new WinConditionDefinition(Slaughter, "Slaughter", "Kill 20 Enemies."),
+        new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 50 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 100 Enemies."),
+
+        new WinConditionDefinition(Survive, "Survive", "Defend against 5 waves."),
+        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 10 waves."),
+        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 15 waves."),
+
+        new WinConditionDefinition(Food, "Food", "Collect a total of 1000 food."),
+        new WinConditionDefinition(FoodII, "Food II", "Collect a total of 2000 food."),
+        new WinConditionDefinition(FoodIII, "Food III", "Collect a total of 3000 food."),
+
+        new WinConditionDefinition(Lumber, "Lumber", "Collect a total of 1000 lumber."),
+        new WinConditionDefinition(LumberII, "Lumber II", "Collect a total of 2000 lumber."),
+        new WinConditionDefinition(LumberIII, "Lumber III", "Collect a total of 3000 lumber."),
+
+        new WinConditionDefinition(Metal, "Metal", "Collect a total of 1000 metal."),
+        new WinConditionDefinition(MetalII, "Metal II", "Collect a total of 2000 metal."),
+        new WinConditionDefinition(MetalIII, "Metal III", "Collect a total of 3000 metal."),
+
+        new WinConditionDefinition(Villagers, "Villagers", "Train a total of 15 villagers."),
+        new WinConditionDefinition(VillagersII, "Villagers II", "Train a total of 35 villagers."),
+        new WinConditionDefinition(VillagersIII, "Villagers III", "Train a total of 65 villagers."),
     };
     private int currentLevel;
     [SerializeField]
@@ -440,16 +480,16 @@ public class SuperManager : MonoBehaviour
         if (_levelData == null) { _levelData = new List<MapScreen.Level>(); }
         else { _levelData.Clear(); }
 
-        for (int i = 0; i < levelDefinitions.Count; i++)
+        for (int i = 0; i < LevelDefinitions.Count; i++)
         {
             MapScreen.Level newLevelData = new MapScreen.Level
             {
                 completed = saveData.levelCompletion[i],
-                locked = levelDefinitions[i].reqID == -1 ? false : !saveData.levelCompletion[levelDefinitions[i].reqID],
+                locked = LevelDefinitions[i].reqID == -1 ? false : !saveData.levelCompletion[LevelDefinitions[i].reqID],
                 inProgress = saveData.currentMatch.match && saveData.currentMatch.levelID == i,
-                victoryTitle = winConditionDefinitions[levelDefinitions[i].winCond].name,
-                victoryDescription = winConditionDefinitions[levelDefinitions[i].winCond].description,
-                victoryValue = levelDefinitions[i].reward,
+                victoryTitle = "Objectives: " + LevelDefinitions[i].objectives.Count.ToString(),
+                victoryDescription = "First objective: " + WinConditionDefinitions[LevelDefinitions[i].objectives[0]].description,
+                victoryValue = LevelDefinitions[i].reward,
                 modifiers = new List<MapScreen.Modifier>()
             };
             GetModifierData(i, ref newLevelData.modifiers);
@@ -461,11 +501,11 @@ public class SuperManager : MonoBehaviour
 
     public static bool GetModifier(string _modifierName, ref ModifierDefinition _modifierDefinition)
     {
-        for (int i = 0; i < modDefinitions.Count; i++)
+        for (int i = 0; i < ModDefinitions.Count; i++)
         {
-            if (modDefinitions[i].name == _modifierName)
+            if (ModDefinitions[i].name == _modifierName)
             {
-                _modifierDefinition = modDefinitions[i];
+                _modifierDefinition = ModDefinitions[i];
                 return true;
             }
         }
@@ -478,21 +518,21 @@ public class SuperManager : MonoBehaviour
         if (_modifierData == null) { _modifierData = new List<MapScreen.Modifier>(); }
         else { _modifierData.Clear(); }
 
-        for (int i = 0; i < levelDefinitions[levelID].modifiers.Count; i++)
+        for (int i = 0; i < LevelDefinitions[levelID].modifiers.Count; i++)
         {
             MapScreen.Modifier mod = new MapScreen.Modifier
             {
-                title = modDefinitions[levelDefinitions[levelID].modifiers[i]].name,
-                description = modDefinitions[levelDefinitions[levelID].modifiers[i]].description,
-                modBonus = modDefinitions[levelDefinitions[levelID].modifiers[i]].coefficient
+                title = ModDefinitions[LevelDefinitions[levelID].modifiers[i]].name,
+                description = ModDefinitions[LevelDefinitions[levelID].modifiers[i]].description,
+                modBonus = ModDefinitions[LevelDefinitions[levelID].modifiers[i]].coefficient
             };
             _modifierData.Add(mod);
         }
     }
 
-    public int GetCurrentWinCondition()
+    public List<int> GetCurrentWinConditions()
     {
-        return levelDefinitions[currentLevel].winCond;
+        return LevelDefinitions[currentLevel].objectives;
     }
 
     void Awake()
@@ -554,9 +594,9 @@ public class SuperManager : MonoBehaviour
                 {
                     if (GameManager.GetInstance())
                     {
-                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
-                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
-                        GameManager.GetInstance().playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Food));
+                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Wood));
+                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Metal));
                     }
                 }
             }
@@ -608,10 +648,14 @@ public class SuperManager : MonoBehaviour
         EnemyManager.GetInstance().SetTime(_matchData.spawnTime);
         EnemyManager.GetInstance().SetEnemiesKilled(_matchData.enemiesKilled);
         GameManager.GetInstance().gameAlreadyWon = _matchData.matchWon;
+        GameManager.GetInstance().objectivesCompleted = _matchData.objectivesCompleted;
         VillagerManager.GetInstance().SetVillagers(_matchData.villagers);
         VillagerManager.GetInstance().SetAvailable(_matchData.availableVillagers);
         EnemyManager.GetInstance().LoadSystemFromData(_matchData);
         VillagerManager.GetInstance().SetStarveTicks(_matchData.starveTicks);
+        GameManager.GetInstance().foodSinceObjective = _matchData.tempFood;
+        GameManager.GetInstance().lumberSinceObjective = _matchData.tempLumber;
+        GameManager.GetInstance().metalSinceObjective = _matchData.tempMetal;
         // not so easy stuff...
 
         // structures
@@ -716,12 +760,16 @@ public class SuperManager : MonoBehaviour
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
             enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
-            matchWon = GameManager.GetInstance().WinConditionIsMet() || GameManager.GetInstance().gameAlreadyWon,
+            matchWon = GameManager.GetInstance().AllObjectivesCompleted() || GameManager.GetInstance().gameAlreadyWon,
+            objectivesCompleted = GameManager.GetInstance().objectivesCompleted,
             nextStructureID = StructureManager.GetInstance().GetNextStructureID(),
             villagers = VillagerManager.GetInstance().GetVillagers(),
             availableVillagers = VillagerManager.GetInstance().GetAvailable(),
             spawnTime = EnemyManager.GetInstance().GetTime(),
-            starveTicks = VillagerManager.GetInstance().GetStarveTicks()
+            starveTicks = VillagerManager.GetInstance().GetStarveTicks(),
+            tempFood = GameManager.GetInstance().foodSinceObjective,
+            tempLumber = GameManager.GetInstance().lumberSinceObjective,
+            tempMetal = GameManager.GetInstance().metalSinceObjective
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
@@ -938,7 +986,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CanPlayLevel(int _ID)
     {
-        int reqID = levelDefinitions[_ID].reqID;
+        int reqID = LevelDefinitions[_ID].reqID;
         // if the level does not require any levels to be complete
         if (reqID == -1)
         { return true; }
@@ -949,7 +997,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CurrentLevelHasModifier(int _modifierID)
     {
-        return levelDefinitions[currentLevel].modifiers.Contains(_modifierID);
+        return LevelDefinitions[currentLevel].modifiers.Contains(_modifierID);
     }
 
     public int GetResearchPoints()
@@ -970,9 +1018,9 @@ public class SuperManager : MonoBehaviour
     {
         if (!saveData.research[_ID])
         {
-            if (researchDefinitions[_ID].price <= GetResearchPoints())
+            if (ResearchDefinitions[_ID].price <= GetResearchPoints())
             {
-                saveData.researchPoints -= researchDefinitions[_ID].price;
+                saveData.researchPoints -= ResearchDefinitions[_ID].price;
                 saveData.research[_ID] = true;
                 WriteGameData();
                 return true;
@@ -1045,12 +1093,12 @@ public class SuperManager : MonoBehaviour
         saveData.currentMatch.match = false;
         saveData.currentMatch.matchWon = false;
         saveData.showTutorial = true;
-        for (int i = 0; i < researchDefinitions.Count; i++)
+        for (int i = 0; i < ResearchDefinitions.Count; i++)
         {
             if (i == 0) { saveData.research.Add(0, true); }
             else { saveData.research.Add(i, startMaxed); }
         }
-        for (int i = 0; i < levelDefinitions.Count; i++)
+        for (int i = 0; i < LevelDefinitions.Count; i++)
         {
             saveData.levelCompletion.Add(i, startMaxed);
         }

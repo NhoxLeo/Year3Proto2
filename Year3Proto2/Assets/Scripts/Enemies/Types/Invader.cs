@@ -239,4 +239,10 @@ public class Invader : Enemy
             }
         }
     }
+
+    public override void SetLevel(int _level)
+    {
+        base.SetLevel(_level);
+        GetComponentInChildren<SkinnedMeshRenderer>().material = EnemyMaterials.Fetch(enemyName, level);
+    }
 }

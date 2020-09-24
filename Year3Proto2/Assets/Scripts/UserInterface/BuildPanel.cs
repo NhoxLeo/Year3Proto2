@@ -182,7 +182,7 @@ public class BuildPanel : MonoBehaviour
     {
         transform.DOKill(true);
 
-        transform.DOLocalMoveY(yPos - 158.0f, 0.4f).SetEase(Ease.InBack);
+        transform.DOLocalMoveY(yPos - 162.0f, 0.4f).SetEase(Ease.InBack);
 
         //showPanel = false;
     }
