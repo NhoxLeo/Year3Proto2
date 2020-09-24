@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.42006522, g: 0.26437777, b: 0.17907275, a: 1}
+  m_IndirectSpecularColor: {r: 0.4193465, g: 0.26414257, b: 0.17941822, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -20764,7 +20764,7 @@ PrefabInstance:
     - target: {fileID: 1291451684281704932, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 137
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1291451684281704932, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -20939,7 +20939,7 @@ PrefabInstance:
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 272.12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1768472489356126720, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -21104,7 +21104,7 @@ PrefabInstance:
     - target: {fileID: 2044351222396580430, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 53.85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2044351222396580430, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -21354,7 +21354,7 @@ PrefabInstance:
     - target: {fileID: 2191502888412140003, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 53.85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2191502888412140003, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -21884,7 +21884,7 @@ PrefabInstance:
     - target: {fileID: 3611708696968069312, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 53.85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3611708696968069312, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -21939,7 +21939,7 @@ PrefabInstance:
     - target: {fileID: 3690567244980985200, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 28
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3690567244980985200, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -21964,7 +21964,7 @@ PrefabInstance:
     - target: {fileID: 3695689181370998421, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 78.505005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3695689181370998421, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -22119,7 +22119,7 @@ PrefabInstance:
     - target: {fileID: 3931019773995225896, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 138
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3931019773995225896, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -22994,7 +22994,7 @@ PrefabInstance:
     - target: {fileID: 5641878450548992787, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 53.85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5641878450548992787, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -23089,7 +23089,7 @@ PrefabInstance:
     - target: {fileID: 5700746621814355270, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 809.735
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5700746621814355270, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -23134,7 +23134,7 @@ PrefabInstance:
     - target: {fileID: 5720451378943850147, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 28
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5720451378943850147, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -23769,7 +23769,7 @@ PrefabInstance:
     - target: {fileID: 6999301145696568365, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 28
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7003589786596453326, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -23789,7 +23789,7 @@ PrefabInstance:
     - target: {fileID: 7015690879628036040, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 285.555
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7015690879628036040, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -23889,7 +23889,7 @@ PrefabInstance:
     - target: {fileID: 7139812414381598592, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 28
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7139812414381598592, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -23920,7 +23920,7 @@ PrefabInstance:
     - target: {fileID: 7163972953153234021, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 547.645
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7163972953153234021, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -24035,7 +24035,7 @@ PrefabInstance:
     - target: {fileID: 7675371014826506130, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7675371014826506130, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -24315,7 +24315,7 @@ PrefabInstance:
     - target: {fileID: 8257044745335533386, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 36
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8257044745335533386, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}

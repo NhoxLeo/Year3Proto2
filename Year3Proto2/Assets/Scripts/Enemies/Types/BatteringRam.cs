@@ -52,6 +52,10 @@ public class BatteringRam : Enemy
                         {
                             if (structureTypes.Contains(target.GetStructureType()))
                             {
+                                if (!animator.GetBool("Attack"))
+                                {
+                                    animator.SetBool("Attack", true);
+                                }
                                 Action();
                             }
                             else
@@ -104,10 +108,14 @@ public class BatteringRam : Enemy
                             // if we are close enough to the target, attack the target
                             if ((target.transform.position - transform.position).magnitude <= 0.75f)
                             {
-                                LookAtPosition(target.transform.position);
                                 animator.SetBool("Attack", true);
+                                LookAtPosition(target.transform.position);
                                 enemyState = EnemyState.Action;
                                 needToMoveAway = (target.transform.position - transform.position).magnitude < 0.5f;
+                                if (needToMoveAway)
+                                {
+                                    animator.SetBool("Attack", false);
+                                }
                             }
                         }
                     }
@@ -118,7 +126,6 @@ public class BatteringRam : Enemy
                     }
                     break;
                 case EnemyState.Idle:
-                    action = false;
                     RequestNewPath();
                     break;
             }
@@ -131,8 +138,10 @@ public class BatteringRam : Enemy
 
     public override void Action()
     {
-        action = true;
-        animator.SetBool("Attack", true);
+        if (target.GetHealth() > 0)
+        { 
+            action = true; 
+        }
     }
 
     protected override void LookAtPosition(Vector3 _position)
