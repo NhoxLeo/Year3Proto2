@@ -16,6 +16,8 @@ public class TitleScreen : MonoBehaviour
 
     private Sequence titleSequence;
 
+    [SerializeField] TMP_Text version;
+
     void Start()
     {
         Time.timeScale = 1.0f;
@@ -75,6 +77,8 @@ public class TitleScreen : MonoBehaviour
         TMP_Text startText = transform.Find("ButtonStart/Text").GetComponent<TMP_Text>();
         startText.text = SuperManager.GetInstance().GetSavedMatch().match ? "CONTINUE" : "NEW GAME";
         Debug.Log(SuperManager.GetInstance().GetCurrentLevel());
+
+        version.text = "v" + SuperManager.Version;
     }
 
     /*
