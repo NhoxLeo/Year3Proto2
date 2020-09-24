@@ -431,7 +431,6 @@ public class GameManager : MonoBehaviour
         {
             Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
         }
-
     }
 
     // Update is called once per frame
@@ -545,7 +544,16 @@ public class GameManager : MonoBehaviour
                     lumberSinceObjective = 0;
                     metalSinceObjective = 0;
                 }
-                if (AllObjectivesCompleted() && !SuperManager.GetInstance().GetSavedMatch().matchWon)
+                bool gameAlreadyWon = false;
+                SuperManager.MatchSaveData match = SuperManager.GetInstance().GetSavedMatch();
+                if (match.match)
+                {
+                    if (match.matchWon)
+                    {
+                        gameAlreadyWon = true;
+                    }
+                }
+                if (AllObjectivesCompleted() && !gameAlreadyWon)
                 {
                     gameover = true;
                     victory = true;
