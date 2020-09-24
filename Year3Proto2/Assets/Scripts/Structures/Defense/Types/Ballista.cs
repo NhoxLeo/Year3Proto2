@@ -83,14 +83,14 @@ public class Ballista : ProjectileDefenseStructure
         if (allocatedVillagers != 0)
         {
             projectileDelay = 1f / projectileRate;
-            projectileAmount = allocatedVillagers;
+            //projectileAmount = allocatedVillagers;
         }
     }
 
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        damage = GetBaseDamage() * Mathf.Pow(1.25f, level - 1);
+        damage = GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
         health = GetTrueMaxHealth();
     }
 
@@ -111,7 +111,7 @@ public class Ballista : ProjectileDefenseStructure
         }
 
         // level
-        maxHealth *= Mathf.Pow(1.25f, level - 1);
+        maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
         if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))

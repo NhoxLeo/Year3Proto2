@@ -10,6 +10,7 @@ public class LightningTower : DefenseStructure
     [SerializeField] private float lightningAmount = 2f;
     [SerializeField] private float lightningDelay = 4f;
     [SerializeField] private float lightningStartDelay = 0.6f;
+    [SerializeField] private Transform lightningStartPosition;
 
     private const float BaseMaxHealth = 300f;
     private const float BaseDamage = 5f;
@@ -60,7 +61,7 @@ public class LightningTower : DefenseStructure
                 if (time <= 0.0f)
                 {
                     time = lightningDelay;
-                    StartCoroutine(Strike(0.4f));
+                    StartCoroutine(Strike(0.3f));
                 }
             }
         }
@@ -102,10 +103,7 @@ public class LightningTower : DefenseStructure
 
     private void StrikeEnemy(Transform _target)
     {
-        // Location to be updated by random crystal location.
-        Vector3 location = transform.position;
-        location.y = 1.5f;
-        LightningBolt lightningBolt = Instantiate(lightning, location, Quaternion.identity);
+        LightningBolt lightningBolt = Instantiate(lightning, lightningStartPosition.position, Quaternion.identity);
         lightningBolt.Initialize(_target, damage, sparkDamage);
         lightningBolt.Fire();
         GameManager.CreateAudioEffect("Zap", _target.position, 0.6f);
@@ -126,7 +124,7 @@ public class LightningTower : DefenseStructure
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        damage = GetBaseDamage() * Mathf.Pow(1.25f, level - 1);
+        damage = GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
         health = GetTrueMaxHealth();
     }
 
@@ -147,7 +145,7 @@ public class LightningTower : DefenseStructure
         }
 
         // level
-        maxHealth *= Mathf.Pow(1.25f, level - 1);
+        maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
         if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))

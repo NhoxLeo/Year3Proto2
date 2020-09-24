@@ -89,7 +89,7 @@ public class FreezeTower : DefenseStructure
         }
 
         // level
-        maxHealth *= Mathf.Pow(1.25f, level - 1);
+        maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
         if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
