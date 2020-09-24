@@ -42,8 +42,9 @@ public class OptionsSystem : MonoBehaviour
         optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", mouseCameraControlData, togglePrefab, controlsPanel));
         */
 
-        OptionToggleData vSyncData = new OptionToggleData(false, false);
+        /*OptionToggleData vSyncData = new OptionToggleData(false, false);
         vSyncData.CallBack(() => QualitySettings.vSyncCount = vSyncData.value ? 1 : 0);
+        */
 
         // SWITCHERS
         OptionSwitcherData resolutionData = new OptionSwitcherData(Screen.resolutions.Length - 1, 0, Screen.resolutions.Select(o => o.ToString()).ToArray());
@@ -91,7 +92,7 @@ public class OptionsSystem : MonoBehaviour
 
         optionObjects.Add(InstantiateOption("RESOLUTION", resolutionData, switcherPrefab, displayPanel));
         optionObjects.Add(InstantiateOption("FULL_SCREEN_MODE", fullscreenData, togglePrefab, displayPanel));
-        optionObjects.Add(InstantiateOption("V_SYNC", vSyncData, togglePrefab, displayPanel));
+        //optionObjects.Add(InstantiateOption("V_SYNC", vSyncData, togglePrefab, displayPanel));
 
         // AUDIO
 
@@ -102,7 +103,6 @@ public class OptionsSystem : MonoBehaviour
 
     private void Start()
     {
-        PlayerPrefs.DeleteAll();
         optionObjects.ForEach(optionObject => optionObject.Deserialize());
     }
 
