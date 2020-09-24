@@ -431,7 +431,6 @@ public class GameManager : MonoBehaviour
         {
             Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
         }
-
     }
 
     // Update is called once per frame
@@ -482,31 +481,41 @@ public class GameManager : MonoBehaviour
             for (int i = 1; i <= 12; i++)
             {
                 BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
-                if (buildingI == BuildPanel.Buildings.Catapult)
+
+                switch (buildingI)
                 {
-                    if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
-                    {
-                        continue;
-                    }
-                }
-                if (buildingI == BuildPanel.Buildings.Barracks)
-                {
-                    if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Barracks))
-                    {
-                        continue;
-                    }
-                }
-                if (buildingI == BuildPanel.Buildings.FreezeTower)
-                {
-                    continue;
-                }
-                if (buildingI == BuildPanel.Buildings.ShockwaveTower)
-                {
-                    continue;
-                }
-                if (buildingI == BuildPanel.Buildings.LightningTower)
-                {
-                    continue;
+                    case BuildPanel.Buildings.Catapult:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.Barracks:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Barracks))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.FreezeTower:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTower))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.ShockwaveTower:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.ShockwaveTower))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.LightningTower:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTower))
+                        {
+                            continue;
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
                 bool playerCanAfford = playerResources.CanAfford(cost);
@@ -535,7 +544,16 @@ public class GameManager : MonoBehaviour
                     lumberSinceObjective = 0;
                     metalSinceObjective = 0;
                 }
-                if (AllObjectivesCompleted() && !SuperManager.GetInstance().GetSavedMatch().matchWon)
+                bool gameAlreadyWon = false;
+                SuperManager.MatchSaveData match = SuperManager.GetInstance().GetSavedMatch();
+                if (match.match)
+                {
+                    if (match.matchWon)
+                    {
+                        gameAlreadyWon = true;
+                    }
+                }
+                if (AllObjectivesCompleted() && !gameAlreadyWon)
                 {
                     gameover = true;
                     victory = true;
@@ -549,7 +567,7 @@ public class GameManager : MonoBehaviour
 
         if (objectivesCompleted < objectives.Count)
         {
-            string completion = "(" + (objectivesCompleted + 1).ToString() + "/" + objectives.Count.ToString() + ") ";
+            string completion = "(" + (objectivesCompleted).ToString() + "/" + objectives.Count.ToString() + ") ";
             string name = completion + SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].name;
             string desc = SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].description;
             string objCompletion = "";
@@ -599,7 +617,7 @@ public class GameManager : MonoBehaviour
         }
         else if (objectivesCompleted == objectives.Count)
         {
-            HUDManager.GetInstance().SetVictoryInfo("", "All objectives completed");
+            HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
         }
 
         if (gameover)

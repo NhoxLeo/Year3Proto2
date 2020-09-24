@@ -84,7 +84,7 @@ public class Catapult : ProjectileDefenseStructure
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        damage = GetBaseDamage() * Mathf.Pow(1.25f, level - 1);
+        damage = GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
         health = GetTrueMaxHealth();
     }
 
@@ -105,7 +105,7 @@ public class Catapult : ProjectileDefenseStructure
         }
 
         // level
-        maxHealth *= Mathf.Pow(1.25f, level - 1);
+        maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
         if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
