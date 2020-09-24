@@ -33,89 +33,70 @@ public class OptionsSystem : MonoBehaviour
     {
 
         // SWITCHERS
-        OptionSwitcherData optionSwitcherData = new OptionSwitcherData(0, 0, Screen.resolutions.Select(o => o.ToString()).ToArray());
-        optionSwitcherData.CallBack(() => 
+        OptionSwitcherData resolutionData = new OptionSwitcherData(0, 0, Screen.resolutions.Select(o => o.ToString()).ToArray());
+        resolutionData.CallBack(() => 
         {
-            Resolution resolution = Screen.resolutions[optionSwitcherData.value];
+            Resolution resolution = Screen.resolutions[resolutionData.value];
             Screen.SetResolution(resolution.width, resolution.height, true);
         });
-        optionObjects.Add(InstantiateOption("RESOLUTION", optionSwitcherData, switcherPrefab, displayPanel));
+        optionObjects.Add(InstantiateOption("RESOLUTION", resolutionData, switcherPrefab, displayPanel));
 
-        optionSwitcherData = new OptionSwitcherData(0, 0, new string[] { "High", "Medium", "Low" });
-        optionSwitcherData.CallBack(() => QualitySettings.masterTextureLimit = optionSwitcherData.value);
-        optionObjects.Add(InstantiateOption("TEXTURE_QUALITY", optionSwitcherData, switcherPrefab, graphicsPanel));
+        /*
+        OptionSwitcherData textureQualityData = new OptionSwitcherData(0, 0, new string[] { "High", "Medium", "Low" });
+        textureQualityData.CallBack(() => QualitySettings.masterTextureLimit = textureQualityData.value);
+        optionObjects.Add(InstantiateOption("TEXTURE_QUALITY", textureQualityData, switcherPrefab, graphicsPanel));
 
-
-        optionSwitcherData = new OptionSwitcherData(0, 0, Enum.GetNames(typeof(ShadowResolution)));
-        optionSwitcherData.CallBack(() => QualitySettings.shadowResolution = (ShadowResolution)Enum.ToObject(typeof(ShadowResolution), (byte)optionSwitcherData.value));
-        optionObjects.Add(InstantiateOption("SHADOW_QUALITY", optionSwitcherData, switcherPrefab, graphicsPanel));
+        OptionSwitcherData shadowQualityData = new OptionSwitcherData(0, 0, Enum.GetNames(typeof(ShadowResolution)));
+        shadowQualityData.CallBack(() => QualitySettings.shadowResolution = (ShadowResolution)Enum.ToObject(typeof(ShadowResolution), (byte)shadowQualityData.value));
+        optionObjects.Add(InstantiateOption("SHADOW_QUALITY", shadowQualityData, switcherPrefab, graphicsPanel));
+        */
 
         // SLIDERS
-        OptionSliderData optionSliderData = new OptionSliderData(0.5f, 0.5f);
-        optionSliderData.CallBack(() => AudioListener.volume = optionSliderData.value);
-        optionObjects.Add(InstantiateOption("MASTER_VOLUME", optionSliderData, sliderPrefab, audioPanel));
+        OptionSliderData masterVolumeData = new OptionSliderData(0.5f, 0.5f);
+        masterVolumeData.CallBack(() => AudioListener.volume = masterVolumeData.value);
+        optionObjects.Add(InstantiateOption("MASTER_VOLUME", masterVolumeData, sliderPrefab, audioPanel));
 
-        optionSliderData = new OptionSliderData(0.5f, 0.5f);
-        optionSliderData.CallBack(() => { });
-        optionObjects.Add(InstantiateOption("SOUND_EFFECTS_VOLUME", optionSliderData, sliderPrefab, audioPanel));
+        /*
+        OptionSliderData soundEffectData = new OptionSliderData(0.5f, 0.5f);
+        soundEffectData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("SOUND_EFFECTS_VOLUME", soundEffectData, sliderPrefab, audioPanel));
 
-        optionSliderData = new OptionSliderData(0.5f, 0.5f);
-        optionSliderData.CallBack(() => { });
-        optionObjects.Add(InstantiateOption("AMBIENT_EFFECTS_VOLUME", optionSliderData, sliderPrefab, audioPanel));
+        OptionSliderData ambientEffectsData = new OptionSliderData(0.5f, 0.5f);
+        ambientEffectsData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("AMBIENT_EFFECTS_VOLUME", ambientEffectsData, sliderPrefab, audioPanel));
+        */
 
-        optionSliderData = new OptionSliderData(0.5f, 0.5f);
-        optionSliderData.CallBack(() => { });
-        optionObjects.Add(InstantiateOption("CAMERA_ZOOM_SENSITIVITY", optionSliderData, sliderPrefab, controlsPanel));
+        /*
+        OptionSliderData cameraZoomData = new OptionSliderData(0.5f, 0.5f);
+        cameraZoomData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("CAMERA_ZOOM_SENSITIVITY", cameraZoomData, sliderPrefab, controlsPanel));
 
-        optionSliderData = new OptionSliderData(0.5f, 0.5f);
-        optionSliderData.CallBack(() => { });
-        optionObjects.Add(InstantiateOption("CAMERA_MOVEMENT_SENSITIVITY", optionSliderData, sliderPrefab, controlsPanel));
+        OptionSliderData cameraMovementData = new OptionSliderData(0.5f, 0.5f);
+        cameraMovementData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("CAMERA_MOVEMENT_SENSITIVITY", cameraMovementData, sliderPrefab, controlsPanel));
+        */
 
 
         // TOGGLES
 
-        OptionToggleData optionToggleData = new OptionToggleData(true, false);
-        optionToggleData.CallBack(() => Screen.fullScreenMode = optionToggleData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
-        optionObjects.Add(InstantiateOption("FULL_SCREEN_MODE", optionToggleData, togglePrefab, displayPanel));
+        OptionToggleData fullscreenData = new OptionToggleData(true, true);
+        fullscreenData.CallBack(() => Screen.fullScreenMode = fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        optionObjects.Add(InstantiateOption("FULL_SCREEN_MODE", fullscreenData, togglePrefab, displayPanel));
 
-        optionToggleData = new OptionToggleData(true, false);
-        optionToggleData.CallBack(() => { });
-        optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", optionToggleData, togglePrefab, controlsPanel));
+        /*
+        OptionToggleData mouseCameraControlData = new OptionToggleData(true, false);
+        mouseCameraControlData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", mouseCameraControlData, togglePrefab, controlsPanel));
+        */
 
-        optionToggleData = new OptionToggleData(false, false);
-        optionToggleData.CallBack(() => QualitySettings.vSyncCount = optionToggleData.value ? 1 : 0);
-        optionObjects.Add(InstantiateOption("V_SYNC", optionToggleData, togglePrefab, displayPanel));
-        /* 
-        [Switchers]
-
-        RESOLUTION
-        QUALITY
-        TEXTURE_QUALITY
-        SHADOW_QUALITY
-        ANTI_ALIASING
-
-        [Sliders]
-
-        MASTER_VOLUME
-        MUSIC_VOLUME
-        AMBIENT_VOLUME
-        SOUND_EFFECTS_VOLUME
-        
-
-        pToggles]
-
-        FULL_SCREEN_MODE
-        V_SYNC
-        ENEMY_INDICATORS
-        ENEMY_TOOLTIPS
-        AMBIENT_OCCLUSION
-        WAVE_HORN_START
-
-         */
+        OptionToggleData vSyncData = new OptionToggleData(false, false);
+        vSyncData.CallBack(() => QualitySettings.vSyncCount = vSyncData.value ? 1 : 0);
+        optionObjects.Add(InstantiateOption("V_SYNC", vSyncData, togglePrefab, displayPanel));
     }
 
     private void Start()
     {
+        PlayerPrefs.DeleteAll();
         optionObjects.ForEach(optionObject => optionObject.Deserialize());
     }
 

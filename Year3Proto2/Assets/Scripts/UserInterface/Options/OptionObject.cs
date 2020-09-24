@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using TMPro;
-using System.Linq;
 using System.Globalization;
 
 // Bachelor of Software Engineering
@@ -32,7 +31,7 @@ public abstract class OptionObject : MonoBehaviour
         key = _key;
 
         TextInfo cultInfo = new CultureInfo("en-US", false).TextInfo;
-        displayName.text = cultInfo.ToTitleCase(_key.Replace("_", " "));
+        displayName.text = cultInfo.ToTitleCase(_key.ToLower().Replace("_", " "));
     }
 
     /**************************************
