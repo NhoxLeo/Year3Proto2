@@ -6968,7 +6968,7 @@ PrefabInstance:
     - target: {fileID: 3901420554082363944, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 28
+      value: 78.505005
       objectReference: {fileID: 0}
     - target: {fileID: 3901420554082363944, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
@@ -7281,7 +7281,7 @@ PrefabInstance:
     - target: {fileID: 5363793965086884347, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 181
+      value: 809.735
       objectReference: {fileID: 0}
     - target: {fileID: 5415264534443368366, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
@@ -7458,7 +7458,7 @@ PrefabInstance:
     - target: {fileID: 7219733403028861813, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 79
+      value: 285.555
       objectReference: {fileID: 0}
     - target: {fileID: 7228167068306731152, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
@@ -7619,7 +7619,7 @@ PrefabInstance:
     - target: {fileID: 7351725730819444952, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 130
+      value: 547.645
       objectReference: {fileID: 0}
     - target: {fileID: 7383842320258454333, guid: 5dc3f9fd4af5c6f468996c3558a8de68,
         type: 3}
@@ -8710,12 +8710,12 @@ PrefabInstance:
     - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 11
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
@@ -8731,6 +8731,13 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3563976898483914457, guid: bccad2a79d9fc164c8b0167db8f0a601,
+        type: 3}
+      propertyPath: m_text
+      value: 'SAVE & QUIT
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
