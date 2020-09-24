@@ -51,7 +51,7 @@ public class Catapult : ProjectileDefenseStructure
         boulderBehaviour.damage = damage;
         boulderBehaviour.speed = BoulderSpeed;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
-        GameManager.CreateAudioEffect("catapultFire", transform.position);
+        GameManager.CreateAudioEffect("catapultFire", transform.position, 0.6f);
 
         /*
         Vector3 position = transform.position;

@@ -176,7 +176,7 @@ public abstract class Structure : MonoBehaviour
         if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
         
-        GameManager.CreateAudioEffect("buildingHit", transform.position, .5f);
+        GameManager.CreateAudioEffect("buildingHit", transform.position, 0.6f);
 
         if (structureType == StructureType.Defense)
         {
@@ -355,7 +355,7 @@ public abstract class Structure : MonoBehaviour
                 if (GetStructureType() == StructureType.Longhaus) { GameManager.GetInstance().longhausDead = true; GlobalData.longhausDead = true; }
                 OnDestroyed();
                 attachedTile.Detach();
-                GameManager.CreateAudioEffect("buildingDestroy", transform.position);
+                GameManager.CreateAudioEffect("buildingDestroy", transform.position, 0.6f);
                 StructureManager.GetInstance().OnStructureDestroyed(this);
                 Destroy(gameObject);
             }

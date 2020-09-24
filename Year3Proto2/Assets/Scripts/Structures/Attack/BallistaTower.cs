@@ -92,7 +92,7 @@ public class BallistaTower : AttackStructure
         GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
         BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
         arrowBehaviour.Initialize(target.transform, arrowDamage, arrowSpeed, arrowPierce);
-        GameManager.CreateAudioEffect("arrow", transform.position);
+        GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
     }
 
     void SetFirerate()
