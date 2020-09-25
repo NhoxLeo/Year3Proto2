@@ -1,5 +1,6 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
+using TMPro;
+using System.Globalization;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -13,44 +14,10 @@ using UnityEngine;
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
-public interface OptionData<T>
-{
-    /**************************************
-    * Name of the Function: SetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: Template Data
-    ***************************************/
-    T GetData();
-
-    /**************************************
-    * Name of the Function: SetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: Template Data
-    * @Return: void
-    ***************************************/
-    void SetData(T _data);
-
-    /**************************************
-    * Name of the Function: Deserialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: Template Data
-    * @Return: void
-    ***************************************/
-    void Deserialise(T _data);
-
-    /**************************************
-    * Name of the Function: Serialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    void Serialise();
-}
-
-public class OptionObject : MonoBehaviour
+public abstract class OptionObject : MonoBehaviour
 {
     [SerializeField] protected string key;
+    [SerializeField] private TMP_Text displayName; 
 
     /**************************************
     * Name of the Function: Start
@@ -58,9 +25,13 @@ public class OptionObject : MonoBehaviour
     * @Parameter: n/a
     * @Return: void
     ***************************************/
-    private void Start()
+    public void SetKey(string _key)
     {
-        key = transform.name.ToUpper();
+        transform.name = _key;
+        key = _key;
+
+        TextInfo cultInfo = new CultureInfo("en-US", false).TextInfo;
+        displayName.text = cultInfo.ToTitleCase(_key.ToLower().Replace("_", " "));
     }
 
     /**************************************
@@ -73,4 +44,9 @@ public class OptionObject : MonoBehaviour
     {
         return key;
     }
+
+    public abstract OptionData GetData();
+    public abstract void SetData(OptionData _data);
+    public abstract void Deserialize();
+    public abstract void Serialize();
 }

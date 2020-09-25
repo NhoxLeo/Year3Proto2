@@ -9,6 +9,9 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     // CONSTANTS
+    public const string Version = "1.0.0";
+    public const float ScalingFactor = 1.33f;
+    public static bool DevMode = false;
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -21,32 +24,78 @@ public class SuperManager : MonoBehaviour
     public const int Accumulate = 0;
     public const int AccumulateII = 1;
     public const int AccumulateIII = 2;
+
     public const int Slaughter = 3;
     public const int SlaughterII = 4;
     public const int SlaughterIII = 5;
+
     public const int Survive = 6;
     public const int SurviveII = 7;
     public const int SurviveIII = 8;
 
-    // Research Elements
+    public const int Food = 9;
+    public const int FoodII = 10;
+    public const int FoodIII = 11;
+
+    public const int Lumber = 12;
+    public const int LumberII = 13;
+    public const int LumberIII = 14;
+
+    public const int Metal = 15;
+    public const int MetalII = 16;
+    public const int MetalIII = 17;
+
+    public const int Villagers = 18;
+    public const int VillagersII = 19;
+    public const int VillagersIII = 20;
+
+    // BALLISTA
     public const int Ballista = 0;
     public const int BallistaRange = 1;
     public const int BallistaPower = 2;
     public const int BallistaFortification = 3;
     public const int BallistaEfficiency = 4;
     public const int BallistaSuper = 5;
+
+    // CATAPULT
     public const int Catapult = 6;
     public const int CatapultRange = 7;
     public const int CatapultPower = 8;
     public const int CatapultFortification = 9;
     public const int CatapultEfficiency = 10;
     public const int CatapultSuper = 11;
+
+    // BARRACKS
     public const int Barracks = 12;
     public const int BarracksSoldierDamage = 13;
     public const int BarracksSoldierHealth = 14;
     public const int BarracksSoldierSpeed = 15;
     public const int BarracksFortification = 16;
     public const int BarracksSuper = 17;
+
+    // FREEZE TOWER
+    public const int FreezeTower = 18;
+    public const int FreezeTowerRange = 19;
+    public const int FreezeTowerSlowEffect = 20;
+    public const int FreezeTowerFortification = 21;
+    public const int FreezeTowerEfficiency = 22;
+    public const int FreezeTowerSuper = 23;
+
+    // LIGHTNING TOWER
+    public const int LightningTower = 24;
+    public const int LightningTowerRange = 25;
+    public const int LightningTowerPower = 26;
+    public const int LightningTowerFortification = 27;
+    public const int LightningTowerEfficiency = 28;
+    public const int LightningTowerSuper = 29;
+
+    // SHOCKWAVE TOWER
+    public const int ShockwaveTower = 30;
+    public const int ShockwaveTowerRange = 31;
+    public const int ShockwaveTowerStunDuration = 32;
+    public const int ShockwaveTowerFortification = 33;
+    public const int ShockwaveTowerEfficiency = 34;
+    public const int ShockwaveTowerSuper = 35;
 
     [Serializable]
     public struct SaveQuaternion
@@ -76,6 +125,13 @@ public class SuperManager : MonoBehaviour
         public float x;
         public float y;
         public float z;
+
+        public SaveVector3(Vector2 _vec)
+        {
+            x = _vec.x;
+            y = _vec.y;
+            z = 0f;
+        }
 
         public SaveVector3(Vector3 _vec)
         {
@@ -115,6 +171,8 @@ public class SuperManager : MonoBehaviour
         public SaveQuaternion orientation;
         public SaveVector3 targetPosition;
         public EnemyState state;
+        public int enemyWave;
+        public int level;
     }
 
     [Serializable]
@@ -127,7 +185,6 @@ public class SuperManager : MonoBehaviour
         public int state;
         public bool returnHome;
     }
-
 
     [Serializable]
     public struct InvaderSaveData
@@ -146,14 +203,23 @@ public class SuperManager : MonoBehaviour
     [Serializable]
     public struct StructureSaveData
     {
+        // all structures
         public string structure;
         public int ID;
         public float health;
         public StructureType type;
         public SaveVector3 position;
         public int villagers;
+
+        // resource structures
         public bool wasPlacedOn;
-        public float timeTrained;
+
+        // environment structures
+        public bool exploited;
+        public int exploiterID;
+
+        // defense structures
+        public int level;
     }
 
     [Serializable]
@@ -161,6 +227,7 @@ public class SuperManager : MonoBehaviour
     {
         public bool match;
         public int levelID;
+        public int objectivesCompleted;
         public bool matchWon;
         public PlayerResources playerResources;
         public Dictionary<string, ResourceBundle> structureCosts;
@@ -168,11 +235,19 @@ public class SuperManager : MonoBehaviour
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
         public List<HeavyInvaderSaveData> heavyInvaders;
+        public List<EnemySaveData> flyingInvaders;
+        public List<EnemySaveData> petards;
+        public List<EnemySaveData> rams;
         public List<SoldierSaveData> soldiers;
-        public int enemyWaveSize;
         public int enemiesKilled;
-        public float spawnerCooldown;
+        public float spawnTime;
         public bool spawning;
+        public float waveSystemWeightageScalar;
+        public float waveSystemTokenIncrement;
+        public float waveSystemTokenScalar;
+        public float waveSystemTime;
+        public SaveVector3 waveSystemTimeVariance;
+        public float waveSystemTokens;
         public int wave;
         public bool tutorialDone;
         public bool repairMessage;
@@ -180,6 +255,10 @@ public class SuperManager : MonoBehaviour
         public int nextStructureID;
         public int villagers;
         public int availableVillagers;
+        public int starveTicks;
+        public int tempFood;
+        public int tempLumber;
+        public int tempMetal;
     }
 
     [Serializable]
@@ -189,6 +268,8 @@ public class SuperManager : MonoBehaviour
         public Dictionary<int, bool> levelCompletion;
         public int researchPoints;
         public MatchSaveData currentMatch;
+        public bool showTutorial;
+        public string gameVersion;
     }
 
     [Serializable]
@@ -217,16 +298,16 @@ public class SuperManager : MonoBehaviour
     {
         public int ID;
         public int reqID;
-        public int winCond;
+        public List<int> objectives;
         public List<int> modifiers;
         public int reward;
 
-        public LevelDefinition(int _id, int _reqID, int _winCond, List<int> _modifiers, int _reward)
+        public LevelDefinition(int _id, int _reqID, List<int> _objectives, List<int> _modifiers, int _reward)
         {
             ID = _id;
             reqID = _reqID;
-            winCond = _winCond;
             modifiers = _modifiers;
+            objectives = _objectives;
             reward = _reward;
         }
     }
@@ -265,28 +346,133 @@ public class SuperManager : MonoBehaviour
 
     private static SuperManager instance = null;
     private GameSaveData saveData;
-    public static List<ResearchElementDefinition> researchDefinitions;
-    public static List<LevelDefinition> levelDefinitions;
-    public static List<ModifierDefinition> modDefinitions;
-    public static List<WinConditionDefinition> winConditionDefinitions;
-    public int currentLevel;
+    public static List<ResearchElementDefinition> ResearchDefinitions = new List<ResearchElementDefinition>()
+    {
+        // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
+        new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
+        new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
+        new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
+
+        new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
+        new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
+        new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
+
+        new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns soldiers, which automatically chase down enemies.", 300),
+        new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
+        new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
+        new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
+
+        new ResearchElementDefinition(FreezeTower, NoRequirement, "Freeze Tower", "The Freeze Tower slows down enemies making it easier for other defenses to hit them.", 300),
+        new ResearchElementDefinition(FreezeTowerRange, FreezeTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(FreezeTowerSlowEffect, FreezeTower, "Slow Effect", "Slows Enemies by +30%.", 200),
+        new ResearchElementDefinition(FreezeTowerFortification, FreezeTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(FreezeTowerEfficiency, FreezeTower, "Efficiency", "Freezing cost reduced by 50%.", 200),
+        new ResearchElementDefinition(FreezeTowerSuper, FreezeTower, "Blizzard", "Frost effect damages enemies.", 500, true),
+
+        new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
+        new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(LightningTowerPower, LightningTower, "Power", "Damage improved by 30%.", 200),
+        new ResearchElementDefinition(LightningTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "Efficiency", "Lightning bolt cost reduced by 50%.", 200),
+        new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Thunder Wave", "Sparks deal damage to surrounding enemies.", 500, true),
+
+        new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Shockwave Tower releases high energy shockwaves that momentarily stun enemies.", 300),
+        new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
+        new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "Efficiency", "Shockwave cost reduced by 50%.", 200),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Shockwaves deal some damage.", 500, true),
+    };
+    public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
+    {
+        // ID, ID requirement, Win Condition, Modifiers, Base Reward
+        new LevelDefinition(0, NoRequirement,   new List<int>(){ Survive, Villagers, FoodII },                          new List<int>(),                                            1000),
+        new LevelDefinition(1, 0,               new List<int>(){ Villagers, Accumulate, SlaughterII },                  new List<int>(){ SnoballPrices, SwiftFootwork },            1250),
+        new LevelDefinition(2, 1,               new List<int>(){ Slaughter, Lumber, VillagersII, AccumulateII },        new List<int>(){ DryFields, PoorTimber },                   1500),
+        new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, DryFields, PoorTimber },    1750)
+    };
+    public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
+    { 
+        // ID, Name, Description, Coefficient
+        new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
+        new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
+        new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
+        new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
+    };
+    public static List<WinConditionDefinition> WinConditionDefinitions = new List<WinConditionDefinition>()
+    { 
+        // ID, Name, Description
+        new WinConditionDefinition(Accumulate, "Accumulate", "Have 1500 of each resource."),
+        new WinConditionDefinition(AccumulateII, "Accumulate II", "Have 2500 of each resource."),
+        new WinConditionDefinition(AccumulateIII, "Accumulate III", "Have 5000 of each resource."),
+
+        new WinConditionDefinition(Slaughter, "Slaughter", "Kill 20 Enemies."),
+        new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 50 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 100 Enemies."),
+
+        new WinConditionDefinition(Survive, "Survive", "Defend against 5 waves."),
+        new WinConditionDefinition(SurviveII, "Survive II", "Defend against 10 waves."),
+        new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 15 waves."),
+
+        new WinConditionDefinition(Food, "Food", "Collect a total of 1000 food."),
+        new WinConditionDefinition(FoodII, "Food II", "Collect a total of 2000 food."),
+        new WinConditionDefinition(FoodIII, "Food III", "Collect a total of 3000 food."),
+
+        new WinConditionDefinition(Lumber, "Lumber", "Collect a total of 1000 lumber."),
+        new WinConditionDefinition(LumberII, "Lumber II", "Collect a total of 2000 lumber."),
+        new WinConditionDefinition(LumberIII, "Lumber III", "Collect a total of 3000 lumber."),
+
+        new WinConditionDefinition(Metal, "Metal", "Collect a total of 1000 metal."),
+        new WinConditionDefinition(MetalII, "Metal II", "Collect a total of 2000 metal."),
+        new WinConditionDefinition(MetalIII, "Metal III", "Collect a total of 3000 metal."),
+
+        new WinConditionDefinition(Villagers, "Villagers", "Train a total of 15 villagers."),
+        new WinConditionDefinition(VillagersII, "Villagers II", "Train a total of 35 villagers."),
+        new WinConditionDefinition(VillagersIII, "Villagers III", "Train a total of 65 villagers."),
+    };
+    private int currentLevel;
     [SerializeField]
     private bool startMaxed;
-
-    private GameManager gameMan;
-    private StructureManager structMan;
-    private EnemySpawner enemySpawner;
 
     public static SuperManager GetInstance()
     {
         return instance;
     }
 
+    public int GetCurrentLevel()
+    {
+        return currentLevel;
+    }
+
     public void PlayLevel(int _level)
     {
         currentLevel = _level;
         if (_level != saveData.currentMatch.levelID) { ClearCurrentMatch(); }
-        FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
+        switch (_level)
+        {
+            case 0:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
+                break;
+            case 1:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("Level 2");
+                break;
+            case 2:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("Level 3");
+                break;
+            case 3:
+                FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("Level 4");
+                break;
+            default:
+                break;
+        }
     }
 
     // populates _levelData with the levels
@@ -295,16 +481,16 @@ public class SuperManager : MonoBehaviour
         if (_levelData == null) { _levelData = new List<MapScreen.Level>(); }
         else { _levelData.Clear(); }
 
-        for (int i = 0; i < levelDefinitions.Count; i++)
+        for (int i = 0; i < LevelDefinitions.Count; i++)
         {
             MapScreen.Level newLevelData = new MapScreen.Level
             {
                 completed = saveData.levelCompletion[i],
-                locked = levelDefinitions[i].reqID == -1 ? false : !saveData.levelCompletion[levelDefinitions[i].reqID],
+                locked = LevelDefinitions[i].reqID == -1 ? false : !saveData.levelCompletion[LevelDefinitions[i].reqID],
                 inProgress = saveData.currentMatch.match && saveData.currentMatch.levelID == i,
-                victoryTitle = winConditionDefinitions[levelDefinitions[i].winCond].name,
-                victoryDescription = winConditionDefinitions[levelDefinitions[i].winCond].description,
-                victoryValue = levelDefinitions[i].reward,
+                victoryTitle = "Objectives: " + LevelDefinitions[i].objectives.Count.ToString(),
+                victoryDescription = "First objective: " + WinConditionDefinitions[LevelDefinitions[i].objectives[0]].description,
+                victoryValue = LevelDefinitions[i].reward,
                 modifiers = new List<MapScreen.Modifier>()
             };
             GetModifierData(i, ref newLevelData.modifiers);
@@ -316,11 +502,11 @@ public class SuperManager : MonoBehaviour
 
     public static bool GetModifier(string _modifierName, ref ModifierDefinition _modifierDefinition)
     {
-        for (int i = 0; i < modDefinitions.Count; i++)
+        for (int i = 0; i < ModDefinitions.Count; i++)
         {
-            if (modDefinitions[i].name == _modifierName)
+            if (ModDefinitions[i].name == _modifierName)
             {
-                _modifierDefinition = modDefinitions[i];
+                _modifierDefinition = ModDefinitions[i];
                 return true;
             }
         }
@@ -333,140 +519,100 @@ public class SuperManager : MonoBehaviour
         if (_modifierData == null) { _modifierData = new List<MapScreen.Modifier>(); }
         else { _modifierData.Clear(); }
 
-        for (int i = 0; i < levelDefinitions[levelID].modifiers.Count; i++)
+        for (int i = 0; i < LevelDefinitions[levelID].modifiers.Count; i++)
         {
             MapScreen.Modifier mod = new MapScreen.Modifier
             {
-                title = modDefinitions[levelDefinitions[levelID].modifiers[i]].name,
-                description = modDefinitions[levelDefinitions[levelID].modifiers[i]].description,
-                modBonus = modDefinitions[levelDefinitions[levelID].modifiers[i]].coefficient
+                title = ModDefinitions[LevelDefinitions[levelID].modifiers[i]].name,
+                description = ModDefinitions[LevelDefinitions[levelID].modifiers[i]].description,
+                modBonus = ModDefinitions[LevelDefinitions[levelID].modifiers[i]].coefficient
             };
             _modifierData.Add(mod);
         }
     }
 
-    public int GetCurrentWinCondition()
+    public List<int> GetCurrentWinConditions()
     {
-        return levelDefinitions[currentLevel].winCond;
-    }
-
-    void DataInitialization()
-    {
-        researchDefinitions = new List<ResearchElementDefinition>()
-        {
-            // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
-            new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 0),
-            new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
-            new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
-
-            new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
-            new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
-            new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
-            new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
-
-            new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns enemy soldiers, which automatically chase down enemies.", 300),
-            new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
-            new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
-            new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
-            new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
-            new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
-        };
-        levelDefinitions = new List<LevelDefinition>()
-        {
-            // ID, ID requirement, Win Condition, Modifiers, Base Reward
-            new LevelDefinition(0, NoRequirement, Accumulate, new List<int>(), 500),
-            new LevelDefinition(1, 0, Survive, new List<int>(){ SnoballPrices, SwiftFootwork }, 750),
-            new LevelDefinition(2, 1, SurviveII, new List<int>(){ DryFields, PoorTimber }, 1000),
-            new LevelDefinition(3, 2, AccumulateIII, new List<int>(){ SnoballPrices, DryFields, PoorTimber }, 1500)
-        };
-        modDefinitions = new List<ModifierDefinition>()
-        { 
-            // ID, Name, Description, Coefficient
-            new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure price acceleration hits twice as hard.", 0.5f),
-            new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
-            new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
-            new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
-        };
-        winConditionDefinitions = new List<WinConditionDefinition>()
-        { 
-            // ID, Name, Description
-            new WinConditionDefinition(Accumulate, "Accumulate", "Gather 1500 of each resource."),
-            new WinConditionDefinition(AccumulateII, "Accumulate II", "Gather 2500 of each resource."),
-            new WinConditionDefinition(AccumulateIII, "Accumulate III", "Gather 7500 of each resource."),
-            new WinConditionDefinition(Slaughter, "Slaughter", "Kill 300 Enemies."),
-            new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 800 Enemies."),
-            new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 2000 Enemies."),
-            new WinConditionDefinition(Survive, "Survive", "Defend against 25 waves."),
-            new WinConditionDefinition(SurviveII, "Survive II", "Defend against 50 waves."),
-            new WinConditionDefinition(SurviveIII, "Survive III", "Defend against 100 waves."),
-        };
-
+        return LevelDefinitions[currentLevel].objectives;
     }
 
     void Awake()
     {
         if (instance)
         {
-            instance.RefreshManagers();
             Destroy(gameObject);
             return;
         }
         instance = GetComponent<SuperManager>();
         DontDestroyOnLoad(gameObject);
-        gameMan = FindObjectOfType<GameManager>();
-        structMan = FindObjectOfType<StructureManager>();
-        enemySpawner = FindObjectOfType<EnemySpawner>();
-        DataInitialization();
-        currentLevel = 0;
-        if (startMaxed) { StartNewGame(); }
+        string sceneName = SceneManager.GetActiveScene().name;
+        switch (sceneName)
+        {
+            case "Level 2":
+                currentLevel = 1;
+                break;
+            case "Level 3":
+                currentLevel = 2;
+                break;
+            case "Level 4":
+                currentLevel = 3;
+                break;
+            default:
+                currentLevel = 0;
+                break;
+        }
+        if (startMaxed) { StartNewGame(false); }
         else { ReadGameData(); }
+
+        if (saveData.gameVersion != Version)
+        {
+            ClearCurrentMatch();
+        }
+
+        saveData.gameVersion = Version;
     }
 
     private void Update()
     {
-        // Hold control
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+        // Hold both mouse buttons
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
             // Press D
             if (Input.GetKeyDown(KeyCode.D))
             {
-                WipeReloadScene();
+                WipeReloadScene(false);
             }
-            // Press M
-            if (Input.GetKeyDown(KeyCode.M))
+            if (DevMode)
             {
-                if(gameMan)
+                // Press S
+                if (Input.GetKeyDown(KeyCode.S))
                 {
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Food));
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Wood));
-                    gameMan.playerResources.AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    startMaxed = true;
+                    WipeReloadScene(true);
+                }
+                // Press M
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    if (GameManager.GetInstance())
+                    {
+                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Food));
+                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Wood));
+                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Metal));
+                    }
                 }
             }
         }
     }
 
-    private void WipeReloadScene()
+    private void WipeReloadScene(bool _override)
     {
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
             File.Delete(StructureManager.GetSaveDataPath());
         }
-        ReadGameData();
+        StartNewGame(_override);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-
-    public void RefreshManagers()
-    {
-        gameMan = FindObjectOfType<GameManager>();
-        structMan = FindObjectOfType<StructureManager>();
-        enemySpawner = FindObjectOfType<EnemySpawner>();
-    }
-
 
     public bool LoadCurrentMatch()
     {
@@ -485,24 +631,32 @@ public class SuperManager : MonoBehaviour
         {
             return false;
         }
+        if (currentLevel != _matchData.levelID)
+        {
+            return false;
+        }
 
         // easy stuff
-        enemySpawner.enemiesPerWave = _matchData.enemyWaveSize;
-        gameMan.repairAll = _matchData.repairAll;
-        gameMan.repairMessage = _matchData.repairMessage;
-        gameMan.tutorialDone = _matchData.tutorialDone;
-        structMan.structureCosts = _matchData.structureCosts;
-        structMan.structureCounts = _matchData.structureCounts;
-        structMan.SetNextStructureID(_matchData.nextStructureID);
-        gameMan.playerResources = _matchData.playerResources;
-        if (_matchData.spawning != enemySpawner.IsSpawning()) { enemySpawner.ToggleSpawning(); }
-        enemySpawner.SetWaveCurrent(_matchData.wave);
-        enemySpawner.cooldown = _matchData.spawnerCooldown;
-        currentLevel = _matchData.levelID;
-        enemySpawner.SetKillCount(_matchData.enemiesKilled);
-        gameMan.gameAlreadyWon = _matchData.matchWon;
-        Longhaus.SetVillagers(_matchData.villagers);
-        Longhaus.SetAvailable(_matchData.availableVillagers);
+        GameManager.GetInstance().repairAll = _matchData.repairAll;
+        GameManager.GetInstance().repairMessage = _matchData.repairMessage;
+        GameManager.GetInstance().tutorialDone = _matchData.tutorialDone;
+        StructureManager.GetInstance().structureCosts = _matchData.structureCosts;
+        StructureManager.GetInstance().structureCounts = _matchData.structureCounts;
+        StructureManager.GetInstance().SetNextStructureID(_matchData.nextStructureID);
+        GameManager.GetInstance().playerResources = _matchData.playerResources;
+        EnemyManager.GetInstance().SetSpawning(_matchData.spawning);
+        EnemyManager.GetInstance().SetWave(_matchData.wave);
+        EnemyManager.GetInstance().SetTime(_matchData.spawnTime);
+        EnemyManager.GetInstance().SetEnemiesKilled(_matchData.enemiesKilled);
+        GameManager.GetInstance().gameAlreadyWon = _matchData.matchWon;
+        GameManager.GetInstance().objectivesCompleted = _matchData.objectivesCompleted;
+        VillagerManager.GetInstance().SetVillagers(_matchData.villagers);
+        VillagerManager.GetInstance().SetAvailable(_matchData.availableVillagers);
+        EnemyManager.GetInstance().LoadSystemFromData(_matchData);
+        VillagerManager.GetInstance().SetStarveTicks(_matchData.starveTicks);
+        GameManager.GetInstance().foodSinceObjective = _matchData.tempFood;
+        GameManager.GetInstance().lumberSinceObjective = _matchData.tempLumber;
+        GameManager.GetInstance().metalSinceObjective = _matchData.tempMetal;
         // not so easy stuff...
 
         // structures
@@ -511,31 +665,49 @@ public class SuperManager : MonoBehaviour
         foreach (StructureSaveData saveData in _matchData.structures)
         {
             // check if the structure is environment
-            if (saveData.type == StructureType.environment)
+            if (saveData.type == StructureType.Environment)
             {
-                structMan.LoadBuilding(saveData);
+                StructureManager.GetInstance().LoadBuilding(saveData);
             }
         }
         // second, non-environment structures
         foreach (StructureSaveData saveData in _matchData.structures)
         {
             // check if the structure isn't environment
-            if (saveData.type != StructureType.environment)
+            if (saveData.type != StructureType.Environment)
             {
-                structMan.LoadBuilding(saveData);
+                StructureManager.GetInstance().LoadBuilding(saveData);
             }
         }
 
         // invaders
         foreach (InvaderSaveData saveData in _matchData.invaders)
         {
-            enemySpawner.LoadInvader(saveData);
+            EnemyManager.GetInstance().LoadInvader(saveData);
         }
 
         // heavies
         foreach (HeavyInvaderSaveData saveData in _matchData.heavyInvaders)
         {
-            enemySpawner.LoadHeavyInvader(saveData);
+            EnemyManager.GetInstance().LoadHeavyInvader(saveData);
+        }
+
+        // flying invaders
+        foreach (EnemySaveData saveData in _matchData.flyingInvaders)
+        {
+            EnemyManager.GetInstance().LoadFlyingInvader(saveData);
+        }
+
+        // petards
+        foreach (EnemySaveData saveData in _matchData.petards)
+        {
+            EnemyManager.GetInstance().LoadPetard(saveData);
+        }
+
+        // rams
+        foreach (EnemySaveData saveData in _matchData.rams)
+        {
+            EnemyManager.GetInstance().LoadRam(saveData);
         }
 
         // soldiers
@@ -546,7 +718,7 @@ public class SuperManager : MonoBehaviour
             {
                 if (barr.GetID() == saveData.barracksID)
                 {
-                    barr.LoadSoldier(saveData);
+                    //barr.LoadSoldier(saveData);
                     break;
                 }
             }
@@ -569,33 +741,40 @@ public class SuperManager : MonoBehaviour
 
     private MatchSaveData SaveMatch()
     {
-        RefreshManagers();
         // define a MatchSaveData with the current game state
         MatchSaveData save = new MatchSaveData
         {
             match = true,
             levelID = currentLevel,
-            enemyWaveSize = enemySpawner.enemiesPerWave,
-            repairAll = gameMan.repairAll,
-            repairMessage = gameMan.repairMessage,
-            tutorialDone = gameMan.tutorialDone,
-            structureCosts = structMan.structureCosts,
-            structureCounts = structMan.structureCounts,
-            playerResources = gameMan.playerResources,
-            spawning = enemySpawner.IsSpawning(),
-            wave = enemySpawner.GetWaveCurrent(),
+            repairAll = GameManager.GetInstance().repairAll,
+            repairMessage = GameManager.GetInstance().repairMessage,
+            tutorialDone = GameManager.GetInstance().tutorialDone,
+            structureCosts = StructureManager.GetInstance().structureCosts,
+            structureCounts = StructureManager.GetInstance().structureCounts,
+            playerResources = GameManager.GetInstance().playerResources,
+            wave = EnemyManager.GetInstance().GetWaveCurrent(),
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
+            flyingInvaders = new List<EnemySaveData>(),
+            petards = new List<EnemySaveData>(),
+            rams = new List<EnemySaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
-            enemiesKilled = enemySpawner.GetKillCount(),
-            spawnerCooldown = enemySpawner.cooldown,
-            matchWon = gameMan.WinConditionIsMet() || gameMan.gameAlreadyWon,
-            nextStructureID = structMan.GetNextStructureID(),
-            villagers = Longhaus.GetVillagers(),
-            availableVillagers = Longhaus.GetAvailable()
+            enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
+            matchWon = GameManager.GetInstance().AllObjectivesCompleted() || GameManager.GetInstance().gameAlreadyWon,
+            objectivesCompleted = GameManager.GetInstance().objectivesCompleted,
+            nextStructureID = StructureManager.GetInstance().GetNextStructureID(),
+            villagers = VillagerManager.GetInstance().GetVillagers(),
+            availableVillagers = VillagerManager.GetInstance().GetAvailable(),
+            spawnTime = EnemyManager.GetInstance().GetTime(),
+            starveTicks = VillagerManager.GetInstance().GetStarveTicks(),
+            tempFood = GameManager.GetInstance().foodSinceObjective,
+            tempLumber = GameManager.GetInstance().lumberSinceObjective,
+            tempMetal = GameManager.GetInstance().metalSinceObjective
         };
 
+        EnemyManager.GetInstance().SaveSystemToData(ref save);
+        
         // not so easy stuff...
         // invaders
         foreach (Invader invader in FindObjectsOfType<Invader>())
@@ -604,11 +783,13 @@ public class SuperManager : MonoBehaviour
             {
                 enemyData = new EnemySaveData
                 {
-                    health = invader.health,
+                    health = invader.GetHealth(),
                     position = new SaveVector3(invader.transform.position),
                     orientation = new SaveQuaternion(invader.transform.rotation),
                     targetPosition = new SaveVector3(invader.GetTarget().transform.position),
-                    state = invader.GetState()
+                    state = invader.GetState(),
+                    enemyWave = invader.GetSpawnWave(),
+                    level = invader.GetLevel()
                 },
                 scale = invader.scale,
             };
@@ -622,15 +803,65 @@ public class SuperManager : MonoBehaviour
             {
                 enemyData = new EnemySaveData
                 {
-                    health = heavy.health,
+                    health = heavy.GetHealth(),
                     position = new SaveVector3(heavy.transform.position),
                     orientation = new SaveQuaternion(heavy.transform.rotation),
                     targetPosition = new SaveVector3(heavy.GetTarget().transform.position),
-                    state = heavy.GetState()
+                    state = heavy.GetState(),
+                    enemyWave = heavy.GetSpawnWave(),
+                    level = heavy.GetLevel()
                 },
                 equipment = heavy.GetEquipment()
             };
             save.heavyInvaders.Add(saveData);
+        }
+        
+        // flying
+        foreach (FlyingInvader flying in FindObjectsOfType<FlyingInvader>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = flying.GetHealth(),
+                position = new SaveVector3(flying.transform.position),
+                orientation = new SaveQuaternion(flying.transform.rotation),
+                targetPosition = new SaveVector3(flying.GetTarget().transform.position),
+                state = flying.GetState(),
+                enemyWave = flying.GetSpawnWave(),
+                level = flying.GetLevel()
+            };
+            save.flyingInvaders.Add(saveData);
+        }
+
+        // petards
+        foreach (Petard petard in FindObjectsOfType<Petard>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = petard.GetHealth(),
+                position = new SaveVector3(petard.transform.position),
+                orientation = new SaveQuaternion(petard.transform.rotation),
+                targetPosition = new SaveVector3(petard.GetTarget().transform.position),
+                state = petard.GetState(),
+                enemyWave = petard.GetSpawnWave(),
+                level = petard.GetLevel()
+            };
+            save.petards.Add(saveData);
+        }
+
+        // rams
+        foreach (BatteringRam ram in FindObjectsOfType<BatteringRam>())
+        {
+            EnemySaveData saveData = new EnemySaveData
+            {
+                health = ram.GetHealth(),
+                position = new SaveVector3(ram.transform.position),
+                orientation = new SaveQuaternion(ram.transform.rotation),
+                targetPosition = new SaveVector3(ram.GetTarget().transform.position),
+                state = ram.GetState(),
+                enemyWave = ram.GetSpawnWave(),
+                level = ram.GetLevel()
+            };
+            save.rams.Add(saveData);
         }
 
         // soldiers
@@ -638,12 +869,12 @@ public class SuperManager : MonoBehaviour
         {
             SoldierSaveData saveData = new SoldierSaveData
             {
-                health = soldier.health,
+                health = soldier.GetHealth(),
                 position = new SaveVector3(soldier.transform.position),
                 orientation = new SaveQuaternion(soldier.transform.rotation),
-                barracksID = soldier.barracksID,
-                state = soldier.state,
-                returnHome = soldier.returnHome
+                barracksID = soldier.GetBarracksID(),
+                state = soldier.GetState(),
+                returnHome = soldier.GetReturnHome()
             };
             save.soldiers.Add(saveData);
         }
@@ -663,10 +894,32 @@ public class SuperManager : MonoBehaviour
                     health = structure.GetHealth(),
                     ID = structure.GetID()
                 };
-                if (structure.IsStructure("Farm")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains; }
-                if (structure.IsStructure("Mine")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills; }
-                if (structure.IsStructure("Lumber Mill")) { saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest; }
-                if (structure.IsStructure("Barracks")) { saveData.timeTrained = structure.gameObject.GetComponent<Barracks>().GetTimeTrained(); }
+                if (saveData.type == StructureType.Environment)
+                {
+                    EnvironmentStructure envStructure = structure.gameObject.GetComponent<EnvironmentStructure>();
+                    if (envStructure.GetExploited())
+                    {
+                        saveData.exploited = true;
+                        saveData.exploiterID = envStructure.GetExploiterID();
+                    }
+                }
+                if (structure.IsStructure("Farm"))
+                {
+                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains;
+                }
+                if (structure.IsStructure("Mine"))
+                {
+                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills;
+                }
+                if (structure.IsStructure("Lumber Mill"))
+                {
+                    saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest;
+                }
+                if (structure.GetStructureType() == StructureType.Defense)
+                {
+                    DefenseStructure defense = structure.GetComponent<DefenseStructure>();
+                    saveData.level = defense.GetLevel();
+                }
                 save.structures.Add(saveData);
             }
         }
@@ -676,13 +929,26 @@ public class SuperManager : MonoBehaviour
 
     public bool GetResearchComplete(int _ID)
     {
-        if (saveData.research == null) { RestoreSaveData(); }
+        if (saveData.research == null) 
+        { 
+            RestoreSaveData(); 
+        }
+        else
+        {
+            if (!saveData.research.ContainsKey(_ID))
+            {
+                WipeReloadScene(false);
+            }
+        }
         return saveData.research[_ID];
     }
 
     public Dictionary<int, bool> GetResearch()
     {
-        if (saveData.research == null) { RestoreSaveData(); }
+        if (saveData.research == null) 
+        { 
+            RestoreSaveData(); 
+        }
         return saveData.research;
     }
 
@@ -709,7 +975,7 @@ public class SuperManager : MonoBehaviour
         else
         {
             Debug.LogWarning("CheckData returns false, saveData appears corrupt. Calling WipeReloadScene...");
-            WipeReloadScene();
+            WipeReloadScene(false);
         }
         Debug.Log("RestoreSaveData ends...");
     }
@@ -721,7 +987,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CanPlayLevel(int _ID)
     {
-        int reqID = levelDefinitions[_ID].reqID;
+        int reqID = LevelDefinitions[_ID].reqID;
         // if the level does not require any levels to be complete
         if (reqID == -1)
         { return true; }
@@ -732,7 +998,7 @@ public class SuperManager : MonoBehaviour
 
     public bool CurrentLevelHasModifier(int _modifierID)
     {
-        return levelDefinitions[currentLevel].modifiers.Contains(_modifierID);
+        return LevelDefinitions[currentLevel].modifiers.Contains(_modifierID);
     }
 
     public int GetResearchPoints()
@@ -753,9 +1019,9 @@ public class SuperManager : MonoBehaviour
     {
         if (!saveData.research[_ID])
         {
-            if (researchDefinitions[_ID].price <= GetResearchPoints())
+            if (ResearchDefinitions[_ID].price <= GetResearchPoints())
             {
-                saveData.researchPoints -= researchDefinitions[_ID].price;
+                saveData.researchPoints -= ResearchDefinitions[_ID].price;
                 saveData.research[_ID] = true;
                 WriteGameData();
                 return true;
@@ -796,7 +1062,7 @@ public class SuperManager : MonoBehaviour
         else
         {
             // File does not exist, start new game
-            StartNewGame();
+            StartNewGame(false);
         }
     }
 
@@ -812,9 +1078,9 @@ public class SuperManager : MonoBehaviour
         WriteGameData();
     }
 
-    private void StartNewGame()
+    private void StartNewGame(bool _override)
     {
-        if (!Application.isEditor)
+        if (!Application.isEditor && !_override)
         {
             startMaxed = false;
         }
@@ -827,12 +1093,13 @@ public class SuperManager : MonoBehaviour
         };
         saveData.currentMatch.match = false;
         saveData.currentMatch.matchWon = false;
-        for (int i = 0; i < researchDefinitions.Count; i++)
+        saveData.showTutorial = true;
+        for (int i = 0; i < ResearchDefinitions.Count; i++)
         {
             if (i == 0) { saveData.research.Add(0, true); }
             else { saveData.research.Add(i, startMaxed); }
         }
-        for (int i = 0; i < levelDefinitions.Count; i++)
+        for (int i = 0; i < LevelDefinitions.Count; i++)
         {
             saveData.levelCompletion.Add(i, startMaxed);
         }
@@ -842,6 +1109,16 @@ public class SuperManager : MonoBehaviour
 
     public void ResetSaveData()
     {
-        StartNewGame();
+        StartNewGame(false);
+    }
+
+    public void SetShowTutorial(bool _showTutorial)
+    {
+        saveData.showTutorial = _showTutorial;
+    }
+
+    public bool GetShowTutorial()
+    {
+        return saveData.showTutorial;
     }
 }

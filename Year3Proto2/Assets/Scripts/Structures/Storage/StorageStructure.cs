@@ -6,19 +6,13 @@ using DG.Tweening;
 public abstract class StorageStructure : Structure
 {
     protected ResourceType resourceType;
-    public int storage;
+    public int storage = 500;
+    protected const float BaseMaxHealth = 200f;
 
-
-    private void EnableFogMask()
+    protected override void Awake()
     {
-        transform.GetChild(0).gameObject.SetActive(true);
-        transform.GetChild(0).DOScale(Vector3.one * 2.0f, 1.0f).SetEase(Ease.OutQuint);
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        structureType = StructureType.storage;
+        base.Awake();
+        structureType = StructureType.Storage;
     }
 
     public ResourceType GetResourceType()
@@ -29,13 +23,31 @@ public abstract class StorageStructure : Structure
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
-        gameMan.CalculateStorageMaximum();
+        GameManager.GetInstance().CalculateStorageMaximum();
     }
 
     protected override void OnDestroyed()
     {
         base.OnDestroyed();
-        gameMan.CalculateStorageMaximum();
+        GameManager.GetInstance().CalculateStorageMaximum();
+    }
+
+    public override float GetBaseMaxHealth()
+    {
+        return BaseMaxHealth;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        // get base health
+        float maxHealth = GetBaseMaxHealth();
+
+        // poor timber multiplier
+        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
+        {
+            maxHealth *= 0.5f;
+        }
+
+        return maxHealth;
     }
 }

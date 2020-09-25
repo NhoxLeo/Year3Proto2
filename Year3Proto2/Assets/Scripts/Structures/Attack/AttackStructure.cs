@@ -5,21 +5,21 @@ using UnityEngine;
 
 public abstract class AttackStructure : Structure
 {
-    protected List<GameObject> enemies;
+    protected List<GameObject> enemies = new List<GameObject>();
     protected GameObject target = null;
     protected GameObject puffPrefab;
     protected ResourceBundle attackCost;
+    private Transform attackingRange;
 
     public abstract void Attack(GameObject target);
 
     public List<GameObject> GetEnemies()
     {
-        return enemies ?? (enemies = new List<GameObject>());
+        return enemies;
     }
 
     public void DetectEnemies()
     {
-        GetEnemies();
         SphereCollider rangeCollider = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
         foreach (Enemy enemy in FindObjectsOfType<Enemy>())
         {
@@ -31,14 +31,18 @@ public abstract class AttackStructure : Structure
         }
     }
 
+    protected override void Awake()
+    {
+        base.Awake();
+        attackingRange = transform.Find("Range");
+    }
+
     protected override void Start()
     {
         base.Start();
         puffPrefab = Resources.Load("EnemyPuffEffect") as GameObject;
-        structureType = StructureType.attack;
+        //structureType = StructureType.Attack;
         enemies = new List<GameObject>();
-        villagerWidget = Instantiate(structMan.villagerWidgetPrefab, structMan.canvas.transform.Find("HUD/VillagerAllocataionWidgets")).GetComponent<VillagerAllocation>();
-        villagerWidget.SetTarget(this);
         DetectEnemies();
     }
 
@@ -80,23 +84,9 @@ public abstract class AttackStructure : Structure
         }
     }
 
-    public void ShowRangeDisplay(bool _active)
+    public override void ShowRangeDisplay(bool _active)
     {
-        transform.GetChild(0).GetChild(0).gameObject.SetActive(_active);
-        transform.GetChild(1).GetChild(0).gameObject.SetActive(_active);
-    }
-
-    public override void OnSelected()
-    {
-        base.OnSelected();
-        ShowRangeDisplay(true);
-        FindObjectOfType<HUDManager>().ShowOneVillagerWidget(villagerWidget);
-    }
-
-    public override void OnDeselected()
-    {
-        base.OnDeselected();
-        ShowRangeDisplay(false);
-        FindObjectOfType<HUDManager>().HideAllVillagerWidgets();
+        base.ShowRangeDisplay(_active);
+        attackingRange.GetChild(0).gameObject.SetActive(_active);
     }
 }

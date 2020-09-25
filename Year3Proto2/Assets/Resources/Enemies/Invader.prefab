@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6930109936760025406}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7209486347857398447}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: R_Leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6805715805843007048}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: L_Leg1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8342519166817657412}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: R_Foot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4360672304931956784}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: L_Wrist1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6583941050163822221}
-  - component: {fileID: 5811779022918790127}
+  - component: {fileID: 8271544413891871545}
   m_Layer: 13
   m_Name: StructureTriggerObject
   m_TagString: Untagged
@@ -178,25 +178,26 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2900526373916217867}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.072, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5323469284787221598}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5811779022918790127
-BoxCollider:
+--- !u!136 &8271544413891871545
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2900526373916217867}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.114453465, y: 0.15531647, z: 0.1006898}
-  m_Center: {x: -0.007141635, y: 0.084800005, z: 0.007886618}
+  m_Radius: 0.06
+  m_Height: 0.23
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3486515994554915422
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,7 +207,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8098741320721316137}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: L_Shoulder1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -237,7 +238,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7995210420773857427}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: L_Elbow1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -268,7 +269,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4597619087884090870}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: R_Elbow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300,7 +301,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2295153832895144834}
   - component: {fileID: 6609046898952641304}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: NormalInvader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,7 +396,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3505180768789932862}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Hips
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -428,7 +429,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8818918437080878507}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Neck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -452,6 +453,50 @@ Transform:
   m_Father: {fileID: 3505180768789932862}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7181660515377218178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8769980780071313330}
+  - component: {fileID: 9219048063013334023}
+  m_Layer: 16
+  m_Name: Head Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8769980780071313330
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7181660515377218178}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5323469284787221598}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &9219048063013334023
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7181660515377218178}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.05
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7195165561979327822
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,7 +506,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7888100804164266109}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: L_Foot1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,7 +536,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3569476079441390776}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: R_Shoulder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -522,7 +567,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7882946362115482260}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: R_Wrist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -552,7 +597,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1957710137424833763}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +631,7 @@ GameObject:
   - component: {fileID: 908170022086241604}
   - component: {fileID: 8760216444668231008}
   - component: {fileID: 7328933255924446864}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Invader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -607,6 +652,7 @@ Transform:
   - {fileID: 6583941050163822221}
   - {fileID: 2295153832895144834}
   - {fileID: 6930109936760025406}
+  - {fileID: 8769980780071313330}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -622,13 +668,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 053089eb552a42647a5f242f00ea8223, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  puffEffect: {fileID: 5460139358624340339, guid: 7c125488aa485f94eb558da7d20dff14,
-    type: 3}
-  health: 10
-  avoidForce: 0.05
-  speed: 0.3
-  damage: 2
   nextReturnFalse: 0
+  defenseTarget: {fileID: 0}
+  enemyName: 
   scale: 0
 --- !u!95 &908170022086241604
 Animator:

@@ -7,17 +7,14 @@ using TMPro;
 public class VillagerAllocation : MonoBehaviour
 {
     public Structure target;
-    private TMP_Text villagerText;
+    [SerializeField] private GameObject autoIndicator;
+    [SerializeField] private GameObject manualIndicator;
+    [SerializeField] private Transform allocationButtons;
+    private UIAnimator uiAnimator;
 
-    void Awake()
+    private void Awake()
     {
-        villagerText = transform.Find("VillagerBox/VillagerValue").GetComponent<TMP_Text>();
-        SetInfo();
-    }
-
-    private void Update()
-    {
-        SetInfo();
+        uiAnimator = GetComponent<UIAnimator>();
     }
 
     private void LateUpdate()
@@ -45,30 +42,60 @@ public class VillagerAllocation : MonoBehaviour
         target = _target;
     }
 
-    public void AllocateVillager(int amount)
+    public void SetAllocation(int _value)
     {
-        if (target == null)
-            return;
+        //Debug.Log("Allocation for " + target.ToString() + " is being set to " + _value);
 
-        if (amount > 0) { target.AllocateVillager(); }
-        else { target.DeallocateVillager(); }
+        // Allocate Villager Function here
 
-        SetInfo();
-        FindObjectOfType<HUDManager>().RefreshResources();
+        target.HandleAllocation(_value);
+
+        
     }
 
-    public void SetInfo()
+    public void SetAutoIndicator(int _value)
     {
-        if (target == null)
-            return;
-
-        villagerText.text = target.GetAllocated().ToString("0") + "/" + target.GetVillagerCapacity().ToString("0");
+        if (_value >= 0)
+        {
+            autoIndicator.SetActive(true);
+            Vector3 pos = autoIndicator.transform.position;
+            pos.x = allocationButtons.GetChild(_value).position.x;
+            autoIndicator.transform.position = pos;
+        }
+        else
+        {
+            autoIndicator.SetActive(false);
+        }
     }
 
-    private void OnEnable()
+    public void SetManualIndicator(int _value)
     {
-        SetInfo();
-        Debug.Log("dsaads");
+        if (_value >= 0)
+        {
+            manualIndicator.SetActive(true);
+            Vector3 pos = manualIndicator.transform.position;
+            pos.x = allocationButtons.GetChild(_value).position.x;
+            manualIndicator.transform.position = pos;
+        }
+        else
+        {
+            manualIndicator.SetActive(false);
+        }
     }
 
+    public void SetVisibility(bool _visible)
+    {
+        // if the caller is trying to turn off the widget...
+        if (!_visible)
+        {
+            // and the HUDMan is not in build mode (aka showing all widgets currently)
+            if (!HUDManager.GetInstance().buildMode)
+            {
+                // don't set the visibility.
+                return;
+            }
+        }
+        // if we got this far, set it.
+        uiAnimator.SetVisibility(_visible);
+    }
 }

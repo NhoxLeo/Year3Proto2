@@ -1,32 +1,63 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class OptionSlider : OptionObject, OptionData<float>
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2020 Media Design School.
+//
+// File Name    : OptionSlider.cs
+// Description  : Slider element for options.
+// Author       : Tjeu Vreeburg
+// Mail         : tjeu.vreeburg@gmail.com
+
+public class OptionSliderData : OptionData
 {
-    private float data;
+    public float defaultValue;
+    public float value;
 
-    public void Deserialise(float _data)
+    public OptionSliderData(float _defaultValue, float _value)
     {
-        data = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetFloat(key) : _data;
+        value = _value;
+        defaultValue = _defaultValue;
+    }
+}
+
+public class OptionSlider : OptionObject, OptionDataBase
+{
+    [SerializeField] private OptionSliderData data;
+    [SerializeField] private Slider slider;
+
+    public override void Deserialize()
+    {
+        data.value = PlayerPrefs.GetFloat(key, data.defaultValue);
+        slider.value = data.value;
+        data.GetCallback().Invoke();
     }
 
-    public void UpdateValue(Slider slider)
-    {
-        data = slider.value;
-    }
-
-    public float GetData()
+    public override OptionData GetData()
     {
         return data;
     }
 
-    public void Serialise()
+    public override void Serialize()
     {
-        PlayerPrefs.SetFloat(key, data);
+        PlayerPrefs.SetFloat(key, data.value);
     }
 
-    public void SetData(float _data)
+    public override void SetData(OptionData _data)
     {
-        data = _data;
+        data = (OptionSliderData) _data;
+    }
+
+    public void Refresh()
+    {
+        if (slider && data != null)
+        {
+            data.value = slider.value;
+            data.GetCallback().Invoke();
+        }
     }
 }

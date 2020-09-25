@@ -3,41 +3,39 @@ using UnityEngine;
 
 public abstract class Projectile : MonoBehaviour
 {
-    protected GameObject target;
+    [Header("Attributes")]
+    [SerializeField] private float destroyInSeconds = 3.0f;
+    [SerializeField] protected float damage = 10.0f;
+    [SerializeField] protected float speed = 1.0f;
 
-    [Header("Properties")]
-    public Rigidbody body;
-    public LayerMask layerMask;
-    public float damage = 10.0f;
-    public float speed = 1.0f;
+    public Vector3 Destination { get; set; }
 
-    public abstract Vector3 CalculateVelocity();
+    protected Transform target;
 
-    public abstract void OnProjectileHit(GameObject _target, Vector3 _contactPoint);
+    protected virtual void Start()
+    {
+        StartCoroutine(DestroyLater(destroyInSeconds));
+    }
 
-    public IEnumerator DestroyLater(float _seconds)
+    private IEnumerator DestroyLater(float _seconds)
     {
         yield return new WaitForSeconds(_seconds);
         Destroy(gameObject);
     }
 
-    private void OnCollisionEnter(Collision _collision)
+    public void SetDamage(float  _damage)
     {
-        if ((layerMask.value & (1 << _collision.gameObject.layer)) != 0)
-        {
-            OnProjectileHit(_collision.gameObject, _collision.contacts[0].point);
-        }
+        damage = _damage;
     }
 
-    public void SetTarget(GameObject _target)
+    public virtual void SetTarget(Transform _target)
     {
         target = _target;
+        Destination = target.position;
     }
 
-    public void Ready()
+    public float GetDamage()
     {
-        body.velocity = CalculateVelocity();
-        Vector3 oppositeVelocity = -body.velocity;
-        body.AddRelativeForce(oppositeVelocity);
+        return damage;
     }
 }

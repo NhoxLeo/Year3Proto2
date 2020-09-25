@@ -16,8 +16,12 @@ public class TitleScreen : MonoBehaviour
 
     private Sequence titleSequence;
 
+    [SerializeField] TMP_Text version;
+
     void Start()
     {
+        Time.timeScale = 1.0f;
+
         GetComponent<Tooltip>().showTooltip = true;
 
         gameLogo = transform.Find("GameLogo").gameObject;
@@ -72,7 +76,9 @@ public class TitleScreen : MonoBehaviour
 
         TMP_Text startText = transform.Find("ButtonStart/Text").GetComponent<TMP_Text>();
         startText.text = SuperManager.GetInstance().GetSavedMatch().match ? "CONTINUE" : "NEW GAME";
-        Debug.Log(SuperManager.GetInstance().currentLevel);
+        Debug.Log(SuperManager.GetInstance().GetCurrentLevel());
+
+        version.text = "v" + SuperManager.Version;
     }
 
     /*
@@ -87,13 +93,14 @@ public class TitleScreen : MonoBehaviour
 
     public void PlayButton()
     {
-        if (!SuperManager.GetInstance().GetSavedMatch().match)
+        SuperManager superMan = SuperManager.GetInstance();
+        if (!superMan.GetSavedMatch().match)
         {
-            SuperManager.GetInstance().PlayLevel(0);
+            superMan.PlayLevel(0);
         }
         else
         {
-            FindObjectOfType<SceneSwitcher>().SceneSwitchLoad("SamDev");
+            superMan.PlayLevel(superMan.GetSavedMatch().levelID);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.UIElements;
+using System.Runtime.InteropServices;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -13,11 +15,24 @@ using TMPro;
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
-public class OptionSwitcher : OptionObject, OptionData<int>
+public class OptionSwitcherData : OptionData
 {
-    [SerializeField] private TMP_Text valueName;
-    [SerializeField] private int data;
-    [SerializeField] private string[] values;
+    public int defaultValue;
+    public int value;
+    public string[] values;
+
+    public OptionSwitcherData(int _defaultValue, int _value, string[] _values)
+    {
+        value = _value;
+        values = _values;
+        defaultValue = _defaultValue;
+    }
+}
+
+public class OptionSwitcher : OptionObject, OptionDataBase
+{
+    [SerializeField] private OptionSwitcherData data;
+    [SerializeField] private TMP_Text value;
 
     /**************************************
     * Name of the Function: Next
@@ -27,15 +42,16 @@ public class OptionSwitcher : OptionObject, OptionData<int>
     ***************************************/
     public void Next()
     {
-        if (data >= (values.Length - 1))
+        if (data.value >= (data.values.Length - 1))
         {
-            data = 0;
+            data.value = 0;
         }
         else
         {
-            data += 1;
+            data.value += 1;
         }
-        valueName.text = values[data].ToString();
+        value.text = data.values[data.value].ToString();
+        data.GetCallback().Invoke();
     }
 
     /**************************************
@@ -46,70 +62,37 @@ public class OptionSwitcher : OptionObject, OptionData<int>
     ***************************************/
     public void Previous()
     {
-        if (data <= 0)
+        if (data.value <= 0)
         {
-            data = values.Length - 1;
+            data.value = data.values.Length - 1;
         }
         else
         {
-            data -= 1;
+            data.value -= 1;
         }
-        valueName.text = values[data].ToString();
+        value.text = data.values[data.value].ToString();
+        data.GetCallback().Invoke();
     }
 
-    /**************************************
-    * Name of the Function: GetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: Integer
-    ***************************************/
-    public int GetData()
+    public override void Deserialize()
+    {
+        data.value = PlayerPrefs.GetInt(key, data.defaultValue);
+        value.text = data.values[data.value].ToString();
+        data.GetCallback().Invoke();
+    }
+
+    public override void Serialize()
+    {
+        PlayerPrefs.SetInt(key, data.value);
+    }
+
+    public override OptionData GetData()
     {
         return data;
     }
 
-    /**************************************
-    * Name of the Function: SetData
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    public void SetData(int _data)
+    public override void SetData(OptionData _data)
     {
-        PlayerPrefs.SetString(key, data.ToString());
-    }
-
-    /**************************************
-    * Name of the Function: Deserialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: Integer
-    * @Return: void
-    ***************************************/
-    public void Deserialise(int _data)
-    {
-        data = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetInt(key) : _data;
-        valueName.text = values[data].ToString();
-    }
-
-    /**************************************
-    * Name of the Function: Serialise
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: void
-    ***************************************/
-    public void Serialise()
-    {
-         PlayerPrefs.SetInt(key, data);
-    }
-
-    /**************************************
-    * Name of the Function: SetValues
-    * @Author: Tjeu Vreeburg
-    * @Parameter: String Array
-    * @Return: void
-    ***************************************/
-    public void SetValues(string[] _values)
-    {
-        values = _values;
+        data = (OptionSwitcherData) _data;
     }
 }

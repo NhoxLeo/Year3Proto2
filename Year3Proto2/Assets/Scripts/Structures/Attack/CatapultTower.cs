@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
+﻿using UnityEngine;
 
 public class CatapultTower : AttackStructure
 {
@@ -10,37 +7,50 @@ public class CatapultTower : AttackStructure
     public float boulderDamage = 5f;
     public float boulderExplosionRadius = 0.25f;
     private float boulderSpeed = 1.0f;
-    public float fireRate = 0f;
+    private float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
 
+    public float GetFirerate()
+    {
+        return fireRate;
+    }
 
     protected override void Awake()
     {
         base.Awake();
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Catapult];
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultFortification)) { health = maxHealth *= 1.5f; }
-        maxHealth = 450f;
-        health = maxHealth;
+        structureName = StructureNames.Catapult;
+        health = GetTrueMaxHealth();
     }
 
     protected override void Start()
     {
         base.Start();
         SetFirerate();
-        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.CatapultRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 8 : 16, 0);
+        SuperManager superMan = SuperManager.GetInstance();
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange))
+        {
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
+        }
+        if (superMan.GetResearchComplete(SuperManager.CatapultRange))
+        {
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+        }
+        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);
         if (superMan.GetResearchComplete(SuperManager.CatapultPower))
         {
             boulderDamage *= 1.3f;
         }
-        if (superMan.GetResearchComplete(SuperManager.CatapultSuper)) { boulderExplosionRadius *= 1.5f; }
+        if (superMan.GetResearchComplete(SuperManager.CatapultSuper))
+        {
+            boulderExplosionRadius *= 1.5f;
+        }
     }
 
     protected override void Update()
     {
         base.Update();
+        SetFirerate();
         if (target && isPlaced)
         {
             Vector3 catapultPosition = catapult.transform.position;
@@ -54,24 +64,12 @@ public class CatapultTower : AttackStructure
         }
     }
 
-    public override void AllocateVillager()
-    {
-        base.AllocateVillager();
-        SetFirerate();
-    }
-
-    public override void DeallocateVillager()
-    {
-        base.DeallocateVillager();
-        SetFirerate();
-    }
-
     public override void Attack(GameObject target)
     {
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
+            if (GameManager.GetInstance().playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
                 Fire();
             }
@@ -87,34 +85,17 @@ public class CatapultTower : AttackStructure
         boulderBehaviour.target = target.transform.position;
         boulderBehaviour.damage = boulderDamage;
         boulderBehaviour.speed = boulderSpeed;
-        boulderBehaviour.puffEffect = puffPrefab;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
-        GameManager.CreateAudioEffect("catapultFire", transform.position);
-    }
-
-    public override void SetFoodAllocation(int _newFoodAllocation)
-    {
-        base.SetFoodAllocation(_newFoodAllocation);
-        SetFirerate();
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        foreach (CatapultTower catapult in FindObjectsOfType<CatapultTower>())
-        {
-            catapult.SetFoodAllocation(_allocation);
-        }
+        GameManager.CreateAudioEffect("catapultFire", transform.position, 0.6f);
     }
 
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
         CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
         if (catapultTowers.Length >= 2)
         {
             CatapultTower other = (catapultTowers[0] == this) ? catapultTowers[1] : catapultTowers[0];
-            SetFoodAllocation(other.foodAllocation);
         }
     }
 
@@ -129,19 +110,13 @@ public class CatapultTower : AttackStructure
                 fireRate = 0.25f;
                 break;
             case 2:
-                fireRate = 1f / 3f;
+                fireRate = 0.334f;
                 break;
             case 3:
                 fireRate = 0.5f;
                 break;
-            case 4:
-                fireRate = 1f / 1.5f;
-                break;
-            case 5:
-                fireRate = 1.0f;
-                break;
         }
-        fireDelay = 1 / fireRate;
+        fireDelay = 1f / fireRate;
     }
 
     public override Vector3 GetResourceDelta()
@@ -154,9 +129,13 @@ public class CatapultTower : AttackStructure
         return resourceDelta;
     }
 
-    private void EnableFogMask()
+    public override float GetBaseMaxHealth()
     {
-        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
+        return 450f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
     }
 }

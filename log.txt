@@ -1,3 +1,1977 @@
+commit 2c035a91bb97050e58090a33d250f65286cc4aee
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Aug 7 12:05:31 2020 +1200
+
+    Alpha Build
+
+commit 919085e8301e3f7ac11d5b0fb12668d579614752
+Merge: cacd15af f9ed2674
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Aug 7 11:13:00 2020 +1200
+
+    Merge branch 'development' into dev_BalanceChanges
+
+commit cacd15aff2fb5e4a38bd40c45641ce171f5a271f
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Aug 7 11:12:32 2020 +1200
+
+    Minimizing Pathfinding lag for video
+
+commit f9ed2674206ef7933ecc88241caa8d8b10cce994
+Merge: 50fd4d86 22a3915e
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 11:08:39 2020 +1200
+
+    Merge remote-tracking branch 'origin/development' into development
+
+commit 50fd4d8683c42877da8758f5b2475899b36924e2
+Merge: d66bfc94 747cc944
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 11:08:30 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 747cc944adf86763ba3d674ba068ed81c69f8536
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 11:08:20 2020 +1200
+
+    Fixed issue with healthbars and allocation widgets disappearing
+
+commit 22a3915e7151f3d06863ca92674bd48e121e943f
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Fri Aug 7 11:08:08 2020 +1200
+
+    Fixed Birds Rotation
+
+commit 6857eb014dcbcca36d4ec6de9f59d38391b0191b
+Merge: fc522d55 d66bfc94
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Aug 7 10:55:10 2020 +1200
+
+    Merge branch 'development' into dev_BalanceChanges
+
+commit d66bfc943fe77e2efaf02d907fdc67d41f180430
+Merge: c25a161a 1ca5783e
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 10:37:26 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 1ca5783e48f4a9eb35048e0132787400bc65a62b
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 10:37:16 2020 +1200
+
+    Building info now updates when allocating villagers manually
+
+commit 4edc093f66e3c5bc9a96c9000360bfcb8a5db6e9
+Merge: 993154a9 c25a161a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 10:24:13 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 993154a9c1f6caca2a0b15c02cb8602ccd2127fe
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 10:24:00 2020 +1200
+
+    New Villager Priority panel done
+
+commit c25a161a37605a398729c22ac01c11f5cdefe3a7
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Fri Aug 7 09:40:04 2020 +1200
+
+    Update StefDev2.unity
+
+commit 3f6261d719e65157be4b92f32ec4eb308b5ad550
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 08:29:02 2020 +1200
+
+    Further work on villager priority panel
+
+commit f9d95dcbce66ba191f55260a709c4445f59a2937
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 06:43:21 2020 +1200
+
+    Working on new villager priority panel
+
+commit babf02236f81e2acb230f396a0917e4a2323db57
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 06:26:05 2020 +1200
+
+    Training new villagers now also hides villager priority check
+
+commit 4d9978c42e630c58e0404242b1c3d7304d6da2cc
+Merge: f9aea146 4caffd91
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 05:13:19 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 4caffd918531f131744eafadb24ba7d56f282848
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Aug 7 05:12:27 2020 +1200
+
+    Villager allocation widgets no longer block raycasts when hidden.
+
+commit fc522d55fcd766b1127fb6d2d1ded72515467e8c
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Aug 6 23:19:27 2020 +1200
+
+    Scene changes
+
+commit ff06d39e0a916748d8ca83f540c4a2198540f3e4
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Aug 6 23:18:16 2020 +1200
+
+    Bugs are hard, need to sleep
+
+commit f9aea14695196cc98aa44ca77dc711edd1dc2aa5
+Merge: e2ccf730 8407fd8f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 22:58:20 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 8407fd8f1ba3f0f8a322c1354749a0617d07362a
+Merge: 04b6592d e2ccf730
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 22:56:55 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 04b6592da1fa7b52ca0b73cbcea4faa52af450da
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 22:55:27 2020 +1200
+
+    Slightly shifted Building Info Panel to the right
+
+commit f3918a5c79ad045495d2ebd8acb3dbb6e30a110b
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 22:37:24 2020 +1200
+
+    Updates to UI...
+    
+     - New repair button sprites
+     - Removed Defence from Villager Priority
+     - Villager Priority checkmark now only disappears when allocating villagers manually
+     - Building/Villagers button changed to Show/Hide Villagers. The button will also no longer hide the Build Panel.
+     - Updates to button sprites, setting them all to the correct value of 200 pixels per unit
+     - Added a pop animation to the new Building Info floating overlay when another building is selected.
+
+commit 30dc35420af1a6e395a3950c83a083201d7f3c3b
+Merge: 8f2d8227 7c6f7e3c
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Aug 6 22:03:31 2020 +1200
+
+    Merge remote-tracking branch 'origin/AirshipArt' into dev_BalanceChanges
+
+commit 8f2d8227717399bbd2c4882ca0cadc7bc5799cff
+Merge: 0accb1be e2ccf730
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Aug 6 22:03:21 2020 +1200
+
+    Merge branch 'development' into dev_BalanceChanges
+
+commit 0accb1be5dbd6144feb9b88bfea3cc86f3ba9019
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Aug 6 22:02:52 2020 +1200
+
+    Barracks fixes, all structures have spotting range
+
+commit 2c4c79f30a85d4804b8e836fd51a71441a27e558
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 21:57:57 2020 +1200
+
+    New Building Info complete
+
+commit 97f6e49669fd6ed50e1ab7a383d8ee27ee9d4b5a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 20:59:40 2020 +1200
+
+    Further work on new building info
+
+commit cbbdf486952cb3970bd06b467f469c8d3d57c143
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 17:32:08 2020 +1200
+
+    Starting building info panel redesign
+
+commit c62c48ae3d54a13bffec582d4009ce8d42a6e12c
+Author: Sam <s.fortune66@gmail.com>
+Date:   Thu Aug 6 16:30:25 2020 +1200
+
+    Scene changes, enemy wave system in super manager, fixes to come
+
+commit e2ccf73057732636e69549546ca77d9e0073458d
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Aug 6 15:27:31 2020 +1200
+
+    Environment Update
+
+commit 7c6f7e3cc6bbc7d5f61cfb6ab1411b1aa1181a35
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Thu Aug 6 13:51:58 2020 +1200
+
+    Updated Airship Prefab with updated model
+
+commit 2b601885a7b1f9bbbcf1179ec833ba86d6d0d198
+Merge: 60f688c3 5c51d087
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Thu Aug 6 13:22:54 2020 +1200
+
+    Merge branch 'development' into AirshipArt
+
+commit 41c4f041322c859f41829ec5884a2a50a410aa34
+Merge: a7b823c5 5c51d087
+Author: Sam <s.fortune66@gmail.com>
+Date:   Thu Aug 6 13:22:41 2020 +1200
+
+    Merge branch 'development' into dev_BalanceChanges
+
+commit 5c51d087c265e290d4bdcd91f7984274df19b0f9
+Merge: 3379bd25 80daae2f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 13:09:16 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 80daae2f5f0f72b5a2ece780cd39d7939d98fd07
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 13:09:07 2020 +1200
+
+    Attempt fix at resource card width update
+    
+    Also shortened transition in TitleScreen ResearchScreen and MapScreen
+
+commit a7b823c5c9f90961ace6d49b292b90d72e8cde9e
+Merge: 74b63c6f 3379bd25
+Author: Sam <s.fortune66@gmail.com>
+Date:   Thu Aug 6 12:11:57 2020 +1200
+
+    Merge branch 'development' into dev_BalanceChanges
+
+commit 3379bd257a19925a32612a957e375465ef75c963
+Merge: cdd8e620 70bc44b4
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 12:10:09 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 70bc44b41fc5d9c5a96e47abbbce628e4e0e4cbd
+Merge: 3e92688b cdd8e620
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 12:10:00 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 3e92688bff28363b654070df03fd7e2d82bb7af3
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 12:09:46 2020 +1200
+
+    Help screen now uses UIAnimator
+
+commit cdd8e6207411acc1a9cf7a1f33925dd8f64965c8
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Aug 6 10:53:42 2020 +1200
+
+    Functional Ambient Events.
+
+commit d47f4926c5ca2eb180ccff62b4d4101521262010
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 10:35:27 2020 +1200
+
+    Loading screen entrance/exit
+
+commit 9416ea68ff0994d4b907e4378f4396c3243f9e17
+Merge: e765d520 e0414c19
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Aug 6 09:50:08 2020 +1200
+
+    Merge branch 'dev_options' into development
+
+commit e765d520b964fbe0374e4485bbef018e357b6548
+Merge: d86852b3 9eca0265
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Aug 6 09:49:56 2020 +1200
+
+    Merge branch 'dev_airship' into development
+
+commit d86852b3e0fd757cdf62166d75f45d567552eb18
+Merge: cd99e0cc 206abec9
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 09:24:50 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 206abec930f2bc97af8d77fb798580a37a9b2e8f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 02:28:44 2020 +1200
+
+    Updated Help Screen heading design. Fixed bug.
+    
+    The Build Panel's visibility was not being set correctly which meant that the Building/Villager button did not hide the panel when first clicking on it.
+
+commit 76d3e5dbb31429a573b46f36c75a3319d7b55327
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Aug 6 01:30:23 2020 +1200
+
+    Help Screen implemented
+
+commit b30e713be7657ee5dfa701641bc909e1fc64ca2a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Aug 5 23:30:56 2020 +1200
+
+    Resource bar pivot adjusments
+
+commit 1335e33dec9b63004e51a9cea38deea584ce938e
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Aug 5 23:07:36 2020 +1200
+
+    Help Screen Functional
+
+commit 74b63c6f23a0c7b44658943ed4bc5077c8194a4f
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Aug 5 18:33:38 2020 +1200
+
+    scene :|
+
+commit 12ee0a95d32c53296a8446d4e5c29d3918434947
+Merge: 99ae1c52 cd99e0cc
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Aug 5 18:31:24 2020 +1200
+
+    Merge branch 'development' into dev_BalanceChanges
+
+commit 99ae1c5200f501c3ab2673f8c17300275b68fe32
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Aug 5 18:31:06 2020 +1200
+
+    Patch 05.08.1830
+    
+    Changes:
+    
+    Various Balance Tweaks to Enemy Wave Spawner settings; more details to come for this change.
+    
+    Invader Health changed to 8 - 15, down from 11.25 - 15.
+    Ballista Damage changed to 10 | 13, up from 5 | 6.5 (base | with Power Shot)
+    Catapult Damage changed to 12 | 15.6, up from 5 | 6.5.
+    
+    Ballistas and Catapults no longer use villager allocation system, and have a set fire rate. (This will later be replaced by a tower level/match specific upgrade system)
+    
+    Resource Structures now have fencing that closes the structure off from the tile next to it if it's not the corresponding environment type.
+    
+    Structure Costs no longer increase in cost, unless the Snowball Prices modifier is active (which is now 25%, down from 50%)
+    
+    Ballista ammo cost changed to 4 | 2, down from 6 | 3. (base | with Efficiency)
+    Catapult ammo cost changed to 8 | 4, down from 16 | 8.
+
+commit 38449d3cc00d979de08c1dd6aa4994e79efe7351
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Aug 5 17:31:09 2020 +1200
+
+    UI Sprite Updates
+
+commit cd99e0ccdf1d215042ced14516e3f58c7e0eb9a5
+Merge: ee4dd1ed fdfe78cd
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Aug 5 15:41:59 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit fdfe78cddf9e612eec21642871ddacaab14b514a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Aug 5 15:41:46 2020 +1200
+
+    UI Sprite updates. Pause menu now pauses game.
+
+commit ee4dd1edc8b7d417810b96d8ccd6a5a39a5b51ba
+Merge: 45e165f7 e85dd6d7
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 15:35:14 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit e85dd6d7c5b1ad6d9fb77284e087da86281f1cb0
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 15:35:01 2020 +1200
+
+    Fixed not being able to exit research screen
+
+commit 45e165f73efb640a886aa658ee99273be32a8bb1
+Merge: e18541f9 bbe64f92
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 15:12:40 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit bbe64f92c247db85abbcc7708399b6f72eadf03b
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 15:12:06 2020 +1200
+
+    Research screen update. Removed resource bar background.
+
+commit 9eca0265e65b9465a18ff4cb61d16482c9bdca12
+Merge: d6a52ab2 e18541f9
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 14:23:15 2020 +1200
+
+    Merge branch 'development' into feature-airship
+
+commit d6a52ab2400cd2cc0d2e8a7f780353ce6b996a35
+Merge: f5610bb8 2e3eee57
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 14:22:55 2020 +1200
+
+    Merge branch 'feature-airship' of https://github.com/SurfacetoAirMissile/Year3Proto2 into feature-airship
+
+commit f5610bb876734ca4ccca66dd0f28bc4b84209131
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 14:22:52 2020 +1200
+
+    Minor Value Changes
+
+commit 83ec156ff0e0b9a38e20a402f580004c6c50ceb1
+Merge: 647ec2c4 e18541f9
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 13:44:51 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 647ec2c45eef975f27f9a2df0b6d4dbe0c57d2c8
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 13:43:03 2020 +1200
+
+    Locked building icon
+
+commit e18541f9431bf1214084c15b09e35492b9455b7f
+Merge: 91d57ab1 2e3eee57
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Tue Aug 4 13:24:41 2020 +1200
+
+    Merge branch 'feature-airship' into development
+
+commit 2e3eee5740038d71b6b0f2a99be232d2213e00da
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Tue Aug 4 13:24:22 2020 +1200
+
+    Merge fixes
+
+commit 40ad9b690dad4fd22b14a84f53bc24dd688cef3e
+Merge: 313133d2 2a02b9a1
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Tue Aug 4 13:21:53 2020 +1200
+
+    Merge remote-tracking branch 'origin/feature-airship' into feature-airship
+
+commit 2a02b9a1b129accafbed3d0a853c58c4d255592f
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 13:21:01 2020 +1200
+
+    Save StefScene to fix merge conflicts.
+
+commit 313133d2d30e429006205474875d0a09f874af74
+Merge: cc5e10bf 91d57ab1
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Tue Aug 4 13:16:46 2020 +1200
+
+    Merge branch 'development' into feature-airship
+
+commit cc5e10bfa64a510c5bd6049194ad959fa92bcace
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 13:13:28 2020 +1200
+
+    Fixed Enemy Airship Deployment.
+    
+    Co-Authored-By: surfacetoairmissile <38194198+surfacetoairmissile@users.noreply.github.com>
+
+commit 91d57ab124da1fc9e7b6f93600365155b2d69983
+Merge: 9cbb4583 d0897cf2
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Aug 4 12:19:50 2020 +1200
+
+    Merge branch 'Import' into development
+
+commit d0897cf2ea8bec63b8ad57c9d537444a695b2bd7
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Aug 4 12:19:41 2020 +1200
+
+    smSideFence added
+
+commit 9cbb4583bcb426a4d39c9155090e42573d4dde61
+Merge: 8bb27c4f db1e7d50
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Aug 4 12:11:20 2020 +1200
+
+    Merge branch 'SheepHerdersHut' into development
+
+commit db1e7d50bc327c205f31248632015b0615670d3b
+Merge: d866f0fc 8bb27c4f
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Aug 4 12:11:02 2020 +1200
+
+    Merge branch 'development' into SheepHerdersHut
+
+commit d866f0fc4485868b55a38fe10020b134848b040e
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Aug 4 12:10:44 2020 +1200
+
+    Changing of building prefabs
+
+commit e090a28cd3718c4fe7f5aa0f2e21002ae1738a08
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 11:40:18 2020 +1200
+
+    Merge from Development
+
+commit 01928db8b6568dea862f70ab707401be868cc67a
+Merge: 0dc61ccb 8bb27c4f
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 11:40:02 2020 +1200
+
+    Merge branch 'development' into feature-airship
+
+commit 0dc61ccb858a9fc233ffce91dc2e14d58c0d6c34
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 11:39:20 2020 +1200
+
+    Setting Enemy Spawner.
+
+commit d6ae6ee9c9ebe3f2049f5b53185274cc43325896
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Aug 4 10:33:19 2020 +1200
+
+    Update Serialization
+
+commit 8bb27c4f2ed290bfd0ded1bb2d61df312d902089
+Merge: 416fd2bf 5a90eb93
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 02:48:11 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 5a90eb936ff5795558879cf0bd3e63c4301df254
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 02:47:55 2020 +1200
+
+    Map and title screen colour adjustments
+
+commit 4df09ac1da53babce23df01d8b31319a5bb43f8c
+Merge: 694b319f 416fd2bf
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 02:38:51 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 416fd2bf283d530ff24fa840fb7d97f88f91886b
+Merge: b427ef95 259f62f8
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 02:22:03 2020 +1200
+
+    Merge branch 'UIColours/Teal' into development
+
+commit 259f62f82f191b649b039064cfc64b617ea5f862
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Aug 4 02:00:41 2020 +1200
+
+    Continued to update UI to teal
+
+commit 197fd8ac0181f8c5183b45c8fd3ccaa9f557939c
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Aug 3 17:34:28 2020 +1200
+
+    Teal 2
+
+commit c8d33e9be9e628c24f63e64894907fcd17855272
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Aug 3 17:06:46 2020 +1200
+
+    Teal colour test
+
+commit b427ef95daa1610dc1ff77f9aea38e585131e6bd
+Merge: 60303907 694b319f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Aug 3 13:01:01 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 694b319ff732fa1c9565edbd24ca11e3da2f936f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Aug 3 13:00:52 2020 +1200
+
+    Made background clouds darker
+
+commit db1b6883b21e84248688f1a282735c3296125361
+Merge: 5293e149 60303907
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Aug 3 12:50:02 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 5293e14966010a655af197d8b59ab2c3dfed1516
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Aug 3 12:49:42 2020 +1200
+
+    UI recolour 1
+
+commit 60303907fd01eb6c03327bbc70ef3bc75582499e
+Merge: 3c9c7706 60f688c3
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Mon Aug 3 12:45:52 2020 +1200
+
+    Merge branch 'AirshipArt' into development
+
+commit 60f688c3987f008f6668d52f6d77836e64d135b1
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Mon Aug 3 12:45:38 2020 +1200
+
+    Clouds added to lighting prefab
+
+commit f42308988199e47698dd3c9aef4ed3cf198186a9
+Merge: 63268fcb 3c9c7706
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Mon Aug 3 11:25:19 2020 +1200
+
+    Merge branch 'development' into AirshipArt
+
+commit 293527fce9b99dbc3d0b1641753507628ffe6127
+Merge: 3ce1be6e 3c9c7706
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Aug 3 09:03:29 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 3c9c7706cf9edcb159f3a728b0babbaaf8d52cea
+Merge: e75c7e20 9ec2ffa8
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Fri Jul 31 17:11:48 2020 +1200
+
+    Merge branch 'dev_VillagerAllocation' into development
+
+commit 9ec2ffa8a29b233cabdd8d45dc16c7aeb8dcd9cb
+Merge: 822bae97 e75c7e20
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Fri Jul 31 17:08:15 2020 +1200
+
+    Merge branch 'development' into dev_VillagerAllocation
+
+commit 822bae977470cac2c3a626362c3fe5ff9902831a
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Fri Jul 31 17:08:00 2020 +1200
+
+    Patch 31.07.1652 (Fencing Update)
+    
+    - Resources Structures now have fencing around the environments that are affecting their production.
+    - Resource Structures now cannot share an environment structure.
+    - Resource Structures cannot be placed on the fencing of another Resource Structure
+
+commit 63268fcbc6861c63b1d806926363367c145b1c13
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Thu Jul 30 16:46:39 2020 +1200
+
+    BenDev3 Scene Changes and minor airship adjustments
+
+commit e75c7e204cb2b9d576bc5eaf39bfdd16c4989a01
+Merge: f8b252c2 61e73e40
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 30 16:32:32 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit 61e73e40aeb2e4f8b99f77112f7db61f52cf7e42
+Merge: 1fd33f0b f8b252c2
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 30 16:32:23 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit 1fd33f0b663cb1daa626aadeefb0d12424730450
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 30 16:32:07 2020 +1200
+
+    Fog weather blending. BirdFlock prefab
+
+commit f8b252c235535108a4c1a6367e0d6770381ff9e2
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 30 16:14:23 2020 +1200
+
+    Small Initialisation update
+
+commit d8da79ec42a8c7d6e27cdabbef46f6615ee47cd6
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 30 15:48:25 2020 +1200
+
+    Minor Updates
+
+commit bcd1cfc3ff92e26e9c92908762f2b248918af118
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 30 14:40:59 2020 +1200
+
+    Implementation of Ambient and Weather Events
+
+commit 52517479112e30c3df76e008920f187e59e9bca8
+Merge: e432294e a4b3535b
+Author: Matt <mooredrawings@gmail.com>
+Date:   Thu Jul 30 14:33:20 2020 +1200
+
+    Merge branch 'development' into SheepHerdersHut
+
+commit c43c5cfec65ac5878053667fc1615246a25bba6d
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Thu Jul 30 14:27:24 2020 +1200
+
+    Invader Airship Model + Texture Imported
+
+commit 178c56866e65a54bca4de5c42c571ee1a0168993
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 30 12:45:52 2020 +1200
+
+    Setting up new lighting system
+
+commit c2b0833cce6365199b4d3b533f8c666927a5ac07
+Merge: f26d95d5 a4b3535b
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 30 12:45:01 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit c242456ed819bcb2a25d5000ba89ca0dc9b5d172
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 30 12:37:12 2020 +1200
+
+    Initial Weather Events
+
+commit 2bd150fb7b2d918611e628cac4c7087fa7187253
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 30 12:03:24 2020 +1200
+
+    Initial EnvironmentSystem Setup
+
+commit e0414c196b7704796bb433b33dccc5d87b821dbc
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 30 10:08:39 2020 +1200
+
+    Update Stef Scene
+
+commit 7505732b312777bfee06d51182223a75f674b4a8
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 29 18:39:39 2020 +1200
+
+    Balance tweaks
+
+commit a4b3535b05060554778411bc4f50c1de33fb9ff3
+Merge: e03103c3 fd935692
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 29 18:33:07 2020 +1200
+
+    Merge branch 'dev_VillagerAllocation' into development
+
+commit fd935692e01f1ff546d3541f7312e87bf365e8ba
+Merge: 76b3fe18 e03103c3
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 29 18:32:20 2020 +1200
+
+    Merge branch 'development' into dev_VillagerAllocation
+
+commit 76b3fe18c76b1d45c25629398ac560574f4f4082
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 29 18:32:08 2020 +1200
+
+    Food Priority bug fix
+
+commit e03103c3e43f8910cefe0a57b23ee228dcc12857
+Merge: 208905b7 f26d95d5
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Jul 29 17:24:53 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit f26d95d51229fa9d5beedb524f054a24f73b1ba9
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Jul 29 17:23:53 2020 +1200
+
+    Added base colour multiply property to sgForestMoving.
+    
+    Also adjusted grass colour
+
+commit a42d528e58c07f78f1d858b4eaf63a610b4a5341
+Merge: fe229d2d 208905b7
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Jul 29 17:21:43 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit 208905b711e2b344645dec6748b48f8df6a82ba0
+Merge: 2f8a8604 3c1e730c
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 29 12:00:09 2020 +1200
+
+    Merge branch 'dev_VillagerAllocation' into development
+
+commit 3c1e730c4205a3d1e296896b900121c7f82dd867
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 29 12:00:00 2020 +1200
+
+    Priority Villager Allocation System
+
+commit c24226fb2e7af70246f6d83e1324775d2d925d0d
+Merge: d7fd36dc 2f8a8604
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 29 11:03:34 2020 +1200
+
+    Merge branch 'development' into dev_VillagerAllocation
+
+commit d7fd36dc465ddbee43a3276d385739e87b66be85
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 28 17:33:05 2020 +1200
+
+    WIP Automatic Allocation
+
+commit 2f8a8604184a0879e2bd35a6b26e10c46d83be6e
+Merge: 1b3def03 3ce1be6e
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 28 16:47:02 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 3ce1be6e97fc3cb8391df646b576bc94037eaa6c
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 28 16:46:53 2020 +1200
+
+    Villager Priority Panel is now over UI
+
+commit 1b3def0386eff6b0e663261f831e36423939d4bf
+Merge: 0874a48f 8f2722b2
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 28 16:41:12 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 8f2722b22228cbe35b3246c585470d37bf0b8861
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 28 16:40:51 2020 +1200
+
+    Villager Priority Panel
+
+commit d6bafa4ba7e82aadecb985520d1b173950a00660
+Merge: a734ef42 0874a48f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 28 14:55:56 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 0874a48f20c125b0f2f42a98f8ec143e9d789d10
+Merge: 84850144 fe229d2d
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 28 14:55:31 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit fe229d2daea4f66f73322c3b3f310da94408f694
+Merge: a80e2efb 84850144
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 28 14:55:22 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit 84850144a6db813850b42068960e54e26c546126
+Merge: 5933136d e432294e
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Jul 28 14:08:55 2020 +1200
+
+    Merge branch 'SheepHerdersHut' into development
+
+commit e432294e6d5173e32daba49867802d75de23fc55
+Merge: 60efe2ca 5933136d
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Jul 28 14:06:20 2020 +1200
+
+    Merge branch 'development' into SheepHerdersHut
+
+commit 60efe2cafcbc365451e59c1f7fcec8af935fb7c5
+Author: Matt <mooredrawings@gmail.com>
+Date:   Tue Jul 28 14:05:21 2020 +1200
+
+    Test Fence and all old prefabs changed
+
+commit 5933136d93898780f7c2fb6c691ee9b05fc3a164
+Merge: 15a1f8f0 48a352a8
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 28 13:39:22 2020 +1200
+
+    Merge branch 'dev_VillagerAllocation' into development
+
+commit 48a352a842d105a8e8f59bbd2dfb95aa9f639399
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 28 13:39:09 2020 +1200
+
+    Villager Allocation saved in matchData
+
+commit 15a1f8f04d976a6472bbbd9333c730609e54f6ab
+Merge: 78dd50e6 ba70ad72
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 28 13:07:03 2020 +1200
+
+    Merge branch 'Dev_VillagerAllocation' into development
+
+commit ba70ad720e3d18e8a0a37dffdc138a4880d5bb07
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 28 13:06:39 2020 +1200
+
+    Villager Allocation Widget, 1/3 default
+
+commit a80e2efb47f29d6302715a0d7ca724b02d0ae83d
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Jul 27 17:34:12 2020 +1200
+
+    Scene
+
+commit 78dd50e6d36d896fe7aaf4cea78a3b78fb22a9ea
+Merge: 6e785fdc 0ab4fa3d
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 27 16:07:29 2020 +1200
+
+    Merge branch 'feature-options' into development
+
+commit 6e785fdc40475a2b95491372090632a331950e3d
+Merge: 1afb67c1 f6c3756b
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 27 16:07:12 2020 +1200
+
+    Merge branch 'feature-airship' into development
+
+commit 0ab4fa3d21311dae047b89911f873cdf2abe3a8d
+Merge: 4cff5e3a 1afb67c1
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 27 16:06:48 2020 +1200
+
+    Merge branch 'development' into feature-options
+
+commit 4cff5e3a95ecd66221365a2ac0efddf54b851dc6
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 27 16:03:02 2020 +1200
+
+    Update Minor Features
+
+commit 1afb67c105b7d2459237dd2a07bd8b164cdb5e3e
+Merge: ce679194 302f4b8f
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 27 15:41:52 2020 +1200
+
+    Merge branch 'SheepHerdersHut' into development
+
+commit 302f4b8f31e44c4320409e3fb0957ea2f4158ac5
+Merge: 53715b78 ce679194
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 27 15:41:30 2020 +1200
+
+    Merge branch 'development' into SheepHerdersHut
+
+commit 53715b78068d78081e7129674bffd4d0fff5300c
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 27 15:40:49 2020 +1200
+
+    Grass is now less square and test winter scene
+
+commit cb1d1de65ec5d62a9dc73781e386cef1a2bc309f
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 27 15:40:22 2020 +1200
+
+    Updated Minor things...
+
+commit 6467a28cd973ba0eb824ee4b170f1d4de6b4de7a
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 27 13:15:39 2020 +1200
+
+    Finished Base System for Options
+    
+    - Updated Prefabs
+    - Added Delegates
+    - Finished loading and saving
+
+commit 171bda18eab852f4b8ba7a4df315362a98932754
+Merge: f6c3756b ce679194
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 27 10:47:13 2020 +1200
+
+    Merge branch 'development' into feature-options
+
+commit ce679194a38e41eec49cfcb0eb908ed466e47b24
+Merge: 474f453b 37fb5d65
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 27 10:36:37 2020 +1200
+
+    Merge branch 'SheepHerdersHut' into development
+
+commit 37fb5d6517980c90f099cdf2266db285113b7189
+Merge: 4179fad2 474f453b
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 27 10:36:18 2020 +1200
+
+    Merge branch 'development' into SheepHerdersHut
+
+commit 4179fad274e580407c5dc28dec2f5cf519b1db2a
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 27 10:22:39 2020 +1200
+
+    Sheep hut and grazing tile fully done, starting seasonal variation
+
+commit f6c3756b2817c03eb734e8fd1fccde5dd0e0b134
+Merge: 5171e4b4 bec0c5ff
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Sun Jul 26 17:01:46 2020 +1200
+
+    Merge branch 'feature-options' into feature-airship
+
+commit 5171e4b4ac70467541ef338507c9835aec8cd319
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Sun Jul 26 17:01:26 2020 +1200
+
+    Massive refactor of options system.
+
+commit bec0c5ffa4ea8d416f7caaa0513770e78f9bbe0b
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Sun Jul 26 11:53:17 2020 +1200
+
+    Prefabrication Additions.
+
+commit 474f453b62873d2224464efcb4e2c3ca6b5a2793
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Fri Jul 24 20:48:37 2020 +1200
+
+    Bolt Behaviour fix
+
+commit 8120e530bfdf979ef3cef7689d35d2ca29d0c1d5
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Fri Jul 24 20:30:16 2020 +1200
+
+    TileBehaviour fix for enemy spawning system
+
+commit 7562c7dd27c68fa356509881d38abc7aff247ebc
+Merge: 2c7ee40d e85540ab
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 24 17:31:16 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit e85540ab421a17f4abc4664edf552fc6e6e5129e
+Merge: 54a5a270 a734ef42
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 24 17:30:59 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit a734ef42a4c4e65684298a2caa1485bfcdc7e37c
+Merge: 834a45ef 54a5a270
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 24 17:30:50 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 834a45efa8ca1ae0e21d1f50164957586b1eb56a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 24 17:30:42 2020 +1200
+
+    Working on bird shader
+
+commit 727b23ec597365a2c179d182af282382473df4ad
+Merge: 0fce6351 54a5a270
+Author: Matt <mooredrawings@gmail.com>
+Date:   Fri Jul 24 17:24:24 2020 +1200
+
+    Merge branch 'development' into SheepHerdersHut
+
+commit 0fce6351f4e1263540d51903f4160be3b5718156
+Author: Matt <mooredrawings@gmail.com>
+Date:   Fri Jul 24 17:22:12 2020 +1200
+
+    Grass test meta, being weird?
+
+commit 421401643a67f753d06f9852b49a9a9dd759824e
+Author: Matt <mooredrawings@gmail.com>
+Date:   Fri Jul 24 17:16:00 2020 +1200
+
+    Sheep Hut finished apart from minor foliage changes
+
+commit 54a5a270b0e22befc0cb664e81c3f4f9ae010984
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Jul 24 16:55:40 2020 +1200
+
+    bugfixing wip
+
+commit 8439b1d779e3c38f06e56442ddc491bb843bc7c8
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 24 15:09:48 2020 +1200
+
+    Checkbox sprite update. Starting bird shader
+
+commit 8d8a87202a397d3c3dba123eb736be39e3c1ae71
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Jul 24 15:04:21 2020 +1200
+
+    Villager Allocation, island shape changes
+
+commit b6a2dca83a637552c03a12d2b58cef240c11c1e7
+Merge: bd417363 b502bc88
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Jul 24 13:39:35 2020 +1200
+
+    Merge branch 'soldier-pathfinding' into development
+
+commit bd4173639bee18bffa204eec9df3167627491621
+Merge: e5b1f473 72f2c751
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Jul 24 13:37:08 2020 +1200
+
+    Merge branch 'feature-options' into development
+
+commit 72f2c7516edaf2c53ebe673e2a90c4fa3b433adc
+Merge: a8ec014c e5b1f473
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 23 19:31:35 2020 +1200
+
+    Merge branch 'development' into feature-options
+
+commit a8ec014cb8aacf23276b88639e05363da3b46ea8
+Merge: 17437eb3 6cbf40ef
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 23 19:31:20 2020 +1200
+
+    Merge branch 'feature-options' of https://github.com/SurfacetoAirMissile/Year3Proto2 into feature-options
+
+commit 17437eb30f8002d75b595f648a5e9d6a4876c3c6
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 23 19:31:16 2020 +1200
+
+    Small Changes
+
+commit e5b1f4733f53079259e34ac7ee4693fbb8220e17
+Merge: b95774f0 16e378cf
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 17:15:50 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 16e378cfdd9e1338055f5da9eba960f8a54628b4
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 17:15:38 2020 +1200
+
+    Options Screen Animations done
+
+commit 5bbe537ee25561b5e3743047a9a37e884aedc528
+Merge: 39a221e4 b95774f0
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 16:09:30 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 39a221e4f8c62679d5e0e84ac68ef7dfec528c68
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 16:09:10 2020 +1200
+
+    UI animator basic functionality
+
+commit b95774f09d4bf1102873aa56d1006d296ad9d696
+Merge: 7485158c 3e06a3ba
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 23 16:02:46 2020 +1200
+
+    Merge branch 'development' of https://github.com/SurfacetoAirMissile/Year3Proto2 into development
+
+commit 7485158c901c97ea689a7a9113d5cdb479162098
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 23 16:02:33 2020 +1200
+
+    Update
+
+commit 3e06a3bafa771475dadab3dbe707d67617da446e
+Merge: 989f8a19 1407a163
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 15:17:27 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 1407a163620ac5b440e680b9c4a421f9a5f3f648
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 15:17:16 2020 +1200
+
+    Villager Resource added to HUD
+    
+    Not yet functional
+
+commit 989f8a194a3e496e5bb620632ee7062c7db73d5e
+Merge: 6cbf40ef 3a3ea426
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 13:11:52 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 3a3ea426d59d7db6abea2e867c6179c058de73c7
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 13:11:42 2020 +1200
+
+    Villager Train Button and Tooltip
+
+commit c63cc1806eb1f967b4764956693215be9f149fc7
+Merge: 302889a9 6cbf40ef
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 23 12:17:39 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 6cbf40ef89949de7a70405cb846847f315ff163c
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 23 12:11:47 2020 +1200
+
+    General Category and elements functionality.
+
+commit 9c66c9e760948201286d85c12209ae4a930edd88
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Wed Jul 22 18:49:52 2020 +1200
+
+    Intial Features
+
+commit b502bc889c4b14ea0abe10b2fa029a649032eed5
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 22 17:16:16 2020 +1200
+
+    scene
+
+commit c97a9fb71c6ceb98541806a5da45a3c2166fe19e
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 22 17:15:24 2020 +1200
+
+    work in progress allocation
+
+commit 04ceb362c203b641586a73f90d372643c7771ccf
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 22 17:12:26 2020 +1200
+
+    work in progress villager
+
+commit 33953c0b1b843758421c5cef958a8f3547463e96
+Merge: 34b290c9 482b3d7d
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 22 17:05:26 2020 +1200
+
+    Merge branch 'development' into soldier-pathfinding
+
+commit 34b290c936383c5e6f08ccd5e04e9a22438e18ed
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 22 17:04:59 2020 +1200
+
+    villagers, soldier pathfinding
+
+commit 482b3d7df594f8c4bb13e09e20ef0006b04438ba
+Merge: f80ea6e9 302889a9
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Jul 22 17:01:16 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 302889a900190b834c8622bd5d31d0254c76d496
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Jul 22 17:01:05 2020 +1200
+
+    Villager Allocation UI
+
+commit c658536e439366fdac0361042868525f707ae49c
+Merge: 2e14fa76 f80ea6e9
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 22 12:00:38 2020 +1200
+
+    Merge branch 'development' into soldier-pathfinding
+
+commit f80ea6e92a6938d7cf4d8ed96d427a62cb0600f7
+Merge: f8589122 f3ef206f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Jul 22 09:06:33 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit f3ef206ff8813ae9cf1bd70ad031a4e050255a8f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Wed Jul 22 09:06:22 2020 +1200
+
+    Options Screen added properly to Title Screen
+
+commit f858912205f7a48b3913cf68296593ad292094cc
+Merge: c65d60bc 4e528584
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 21 21:21:14 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 4e528584625136d377c1374cf007d3c213b184fb
+Merge: bcc82d6e c65d60bc
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 21 21:21:05 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit bcc82d6e335e773f3b2251e0007995fdcf084495
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 21 21:20:53 2020 +1200
+
+    UI Sprite Updates
+
+commit c65d60bc0fca99415a6dd18bfd134748e3eb8aca
+Merge: 2e14fa76 8d6bb891
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 21 17:27:23 2020 +1200
+
+    Merge remote-tracking branch 'origin/development' into development
+
+commit 2e14fa765dec04d418a3e26d44cfe1664d4870de
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 21 17:26:19 2020 +1200
+
+    work in progress soldier
+
+commit 8d6bb89117195c23bb8d9f0d25817a9488480ab8
+Merge: 97179b15 c57cb2ab
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 21 17:00:53 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit c57cb2abede03f6e9c2b91b72adba81a49ccce8c
+Merge: 08fa102a 97179b15
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 21 17:00:43 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 08fa102aeaa07fabde50858b69ab8362cb96fc53
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 21 16:59:29 2020 +1200
+
+    Options Screen Layout
+
+commit 78542a9dd37931ffa6f7641b67901ae9dbfba208
+Merge: 97179b15 93ad69ae
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 21 11:20:53 2020 +1200
+
+    Merge branch 'floating-island-implement' into development
+
+commit 93ad69aef3a7cd309437f5ab15707b02e626eb7e
+Author: Sam <s.fortune66@gmail.com>
+Date:   Tue Jul 21 11:20:16 2020 +1200
+
+    SamDev manual fix
+
+commit c155e7cd512ae8b1adef904068b807e0b796340c
+Merge: 85ad16a7 e03ba335
+Author: Sam <s.fortune66@gmail.com>
+Date:   Mon Jul 20 17:08:55 2020 +1200
+
+    merge please :(
+
+commit 85ad16a76abd5f034f260fc1a8cef234af098737
+Author: Sam <s.fortune66@gmail.com>
+Date:   Mon Jul 20 11:55:24 2020 +1200
+
+    particles
+
+commit 1b7a53318c4b6774d81a1296feb98574dd5b2e1e
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 20 11:53:57 2020 +1200
+
+    Sheep Herders Hut V2 rock needs retexture to fit other styles etc
+
+commit e03ba335ceb607950d36a81d348f5645ae4a7986
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 20 11:49:06 2020 +1200
+
+    Update
+
+commit 386b8bb0fccee4d55e183aa5d22a18c1a7db9d14
+Merge: 32e2523c 53b3e26b
+Author: Sam <s.fortune66@gmail.com>
+Date:   Mon Jul 20 11:23:45 2020 +1200
+
+    Merge remote-tracking branch 'origin/FloatingIslandArt' into floating-island-implement
+
+commit 32e2523c1eeef85d8ed319cd82e2d5f046775a97
+Merge: dd74f9c2 97179b15
+Author: Sam <s.fortune66@gmail.com>
+Date:   Mon Jul 20 11:22:32 2020 +1200
+
+    Merge branch 'development' into floating-island-implement
+
+commit 3f0b6842b5504434b4fc851085f23fa323b32b9a
+Merge: 603b08f6 dd74f9c2
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 20 11:02:09 2020 +1200
+
+    Merge branch 'floating-island-implement' into SheepHerdersHut
+
+commit 603b08f6a4560a874a7365e4cba2a2139c9c8481
+Author: Matt <mooredrawings@gmail.com>
+Date:   Mon Jul 20 11:00:56 2020 +1200
+
+    Early Dev Sheep Herders Hut, Texture still needs altering
+
+commit 6405e8fcc141b5c5e3935cb4ff373034e95f4ac8
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 20 09:56:39 2020 +1200
+
+    Update
+
+commit 35b8bb8a98e1c514b7c38c326d8111e3a2db6e6c
+Merge: e3b1f86e a684f9f0
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 20 09:56:22 2020 +1200
+
+    Merge branch 'feature-enemy-system-overhaul' into feature-airship
+
+commit e3b1f86e06fe69cd2d75cfc21f6e177a6c6056e7
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 20 08:00:28 2020 +1200
+
+    Update
+
+commit 97179b1514f533c2d1ae27316abb34995fa9bf05
+Merge: 9840bcb6 44bf3da6
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 17 15:43:33 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit 44bf3da60bf79077ae8eb90075727bcef5ed679e
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 17 15:43:24 2020 +1200
+
+    Loading screens implemented
+
+commit dd74f9c25cb853a30979c7320b56736760afdd1b
+Author: Sam <s.fortune66@gmail.com>
+Date:   Fri Jul 17 12:09:57 2020 +1200
+
+    A* optimizations round 1
+
+commit 5d3f086c7ff5d6962f9e5d006aa90ba220402e93
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 23:38:51 2020 +1200
+
+    WIP on loading screens
+
+commit fb5fdbdde30f667a766fe7898f073d9da5bd451f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 21:36:45 2020 +1200
+
+    Starting implementation of loading screens
+
+commit 51d6e23bb49e8a0b0af600df89da35489227037f
+Merge: f85863e5 2c7ee40d
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 21:36:18 2020 +1200
+
+    Merge branch 'VFX' into UI
+
+commit 2c7ee40db6eeb58dfaa0321f3f85980a4a2d6dbb
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 19:27:04 2020 +1200
+
+    Disabled navigation on Building Info buttons
+
+commit b023fa0d478baa3b70b941284865dcc39dab5351
+Author: Sam <s.fortune66@gmail.com>
+Date:   Thu Jul 16 17:30:24 2020 +1200
+
+    A* Pathfinding
+
+commit 33ed9e2013c87ae9ce2a5407dfceac125f9460b7
+Merge: 396d7d60 9840bcb6
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 16:46:30 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit 9840bcb6d41d80e85045e2e9f90f149f01f8a627
+Merge: c45f2180 f85863e5
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 16:23:33 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit f85863e5199da65684173f81c71176d40ff0a541
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 16:23:23 2020 +1200
+
+    Hidden Building Info Panel at start
+
+commit c45f2180c8bb01661da44a763a2cdc9800f69867
+Merge: 883082bf b5cb03df
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 16:14:01 2020 +1200
+
+    Merge branch 'UI' into development
+
+commit b5cb03df4e26d0fc76ea0f4a9499352181855ce4
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 16:13:46 2020 +1200
+
+    Destroy Button added to Building Info Panel
+    
+     - Repair button and Destroy buttons will be hidden when a structure cannot be repaired or destroyed
+
+commit 53b3e26ba1476d1dfa17fbf9b70405db8a2c9b12
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Thu Jul 16 15:26:08 2020 +1200
+
+    New Optimised Forest Tile!
+    
+    Almost halved the polycount of the forest tile - Boosting FPS!
+
+commit 54b0d085fc2aa837f33f76ab72d44e0768d532db
+Merge: 1b23f5b5 f229caea
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Thu Jul 16 15:12:16 2020 +1200
+
+    Merge branch 'floating-island-implement' into FloatingIslandArt
+
+commit 5242927a4170ca345f164f89fe7505d01194bf87
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 13:14:53 2020 +1200
+
+    Building info panel now auto updates again
+
+commit c74bc7cb6abb437572be9e22b74087bfe973eaf6
+Merge: 5cb010f6 883082bf
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 13:13:36 2020 +1200
+
+    Merge branch 'development' into UI
+
+commit 396d7d60ec57d33902a2f1644049ab14d8e40f1e
+Merge: 48645153 883082bf
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 16 12:13:20 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit f229caea67fb6b64e3ef7443fd4b5e256739d1b3
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 15 15:39:55 2020 +1200
+
+    Scene
+
+commit fd06f364e64626133485c7e0c2e3b3286029c3b6
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 15 15:32:31 2020 +1200
+
+    WIP Island + Pathfinding
+    
+    Island procedural generation working,
+    WIP A* Pathfinding
+
+commit a684f9f025da4cf2d8960b145aab28460fa793a8
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Wed Jul 15 12:33:33 2020 +1200
+
+    Update
+
+commit 7b9bf38e9213da3b76ff28b56a70274f0cfa848f
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Wed Jul 15 12:11:46 2020 +1200
+
+    Initial Implementation
+
+commit 35b82f34390dfb36af0e86998d7e10da077cf6e1
+Merge: 883082bf 1b23f5b5
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 15 09:31:37 2020 +1200
+
+    Merge remote-tracking branch 'origin/FloatingIslandArt' into floating-island-implement
+
+commit 883082bfa019f3c0801d6bff309d63c04ad2e1e8
+Merge: cffedc68 ceed690b
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 15 09:25:52 2020 +1200
+
+    Merge branch 'fog-of-war-implementation' into development
+
+commit ceed690b31c8d1391094889d88193abd066f5a37
+Merge: a168e970 cffedc68
+Author: Sam <s.fortune66@gmail.com>
+Date:   Wed Jul 15 08:27:03 2020 +1200
+
+    Merge branch 'development' into fog-of-war-implementation
+
+commit cffedc68f544df23d69aa0b2d8d7c9ea42994c47
+Merge: 802acc93 48645153
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 16:30:49 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit 486451537d7479c8211f9dbbde66a4a7bbec5057
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 16:30:40 2020 +1200
+
+    Decreased tree motion
+
+commit 802acc93b7d406e70a0baed25e0c685f915482fc
+Merge: cbe9290a faa18d4f
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 16:26:52 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit faa18d4f90e1de0b3df5f4ac750ef2d93be66c3d
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 16:26:41 2020 +1200
+
+    Minor adjustment to tree movement
+
+commit cbe9290a8e8edd70485c8acb0400f66b99247afc
+Merge: a28f63c0 da6cff2d
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 15:40:36 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit da6cff2d4ec6414115af50ad23daf4b78ed75316
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 15:40:23 2020 +1200
+
+    Moving grass added
+
+commit de337138a99f65ac100fe22c7b713f5d20e17550
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 15:00:34 2020 +1200
+
+    Fixed issue with vertices disappearing when position negative
+
+commit a64e2dd5e8f10cc71f570daf8530e8e52b212852
+Merge: c1dfb28a a28f63c0
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 12:04:00 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit a28f63c0eb4f815b853f26ea98308871c4d9f5aa
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 14 12:03:06 2020 +1200
+
+    Added additional offset to moving trees
+    
+    The sine wave governing the vertex postion now has an addition time offset based on the X and Z position of that vertex.
+
+commit 5a263243350d892221f5138052dd912dbea1519b
+Merge: 4a4381f0 d1ac61ee
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Jul 14 10:27:47 2020 +1200
+
+    Merge branch 'feature-airship' of https://github.com/SurfacetoAirMissile/Year3Proto2 into feature-airship
+
+commit 4a4381f0d78631b7a3ca886ab797b1abb6acf950
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Jul 14 10:26:54 2020 +1200
+
+    Update
+
+commit 870dbf9f8802a79404d70077f314eddc8ad50ac0
+Merge: f0dcffef c1dfb28a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Jul 13 17:29:46 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit c1dfb28a5af9e5f4f97cb3be95eb931738d2bbe4
+Merge: dcdacb8e f0dcffef
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Jul 13 17:29:34 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit dcdacb8ef8f4e9fe698c3b9ee438c5e870f1273a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Jul 13 17:28:50 2020 +1200
+
+    Falling tree leaves added
+
+commit ee5a5fdb1771e67ce5f6e115a980c54e33051b9a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Mon Jul 13 17:20:39 2020 +1200
+
+    Work on moving trees and animated cloud shadows
+
+commit d1ac61ee3aeb36c6c7e459fb33c87be86d3319fc
+Merge: caa5ac06 1b23f5b5
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 11:37:51 2020 +1200
+
+    Merge remote-tracking branch 'origin/FloatingIslandArt' into feature-airship
+
+commit caa5ac06118287f88ec979b5089ff705b2895bb1
+Merge: 029493bf a168e970
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 11:31:06 2020 +1200
+
+    Merge remote-tracking branch 'origin/fog-of-war-implementation' into feature-airship
+
+commit 029493bf7388a2c1085250c892f130bf53a26c86
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 11:25:13 2020 +1200
+
+    Added Airship Greybox Model
+
+commit a168e970d638193f2c807db0813c7179c73cecad
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Mon Jul 13 11:19:17 2020 +1200
+
+    Patch 13.07.1118
+    
+    
+    - All structures work with Fog of War.
+    - Structures cannot be placed within the Fog of War.
+
+commit f56a9dea9573f77572e7bec97308e0416281ab3a
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 10:37:33 2020 +1200
+
+    Update
+
+commit 1b23f5b5253b396e23f8748db963388e7e5d50bc
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Mon Jul 13 10:25:42 2020 +1200
+
+    Some Scene Stuff
+    
+    Duplicated Sams scene to create a floating islands level.
+    - Procedural generation and enemies don't work
+
+commit 7b65847fb079d945f88565fabc7efebbaa83ec1d
+Merge: bafb5df7 2f36f591
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 09:50:58 2020 +1200
+
+    Merge remote-tracking branch 'origin/FloatingIslandArt' into feature-airship
+
+commit bafb5df7137d7879a491efee010fc8ad723ba752
+Merge: 269ce86b 7abc5db2
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 09:50:09 2020 +1200
+
+    Merge branch 'VFX' into feature-airship
+
+commit 269ce86b5ae12e74f686646accf1b3360d711c93
+Merge: d9465a9d 017d7f58
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 09:49:55 2020 +1200
+
+    Merge remote-tracking branch 'origin/sam-bugfixing' into feature-airship
+
+commit d9465a9dac92827968b71799f2b1b4c6f047b4c5
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Mon Jul 13 09:49:41 2020 +1200
+
+    Minor Changes
+
+commit 2f36f591afe0f74a4454cc96e13121d97f05f833
+Author: Ben <BenDelamore@hotmail.com>
+Date:   Mon Jul 13 01:14:38 2020 +1200
+
+    Sky-island Cliff Edge Added
+    
+    Ben-Dev 2 has an example of how the floating islands aesthetic will llook like once implemented properly
+
+commit 7abc5db26f8d0b4d2ef8bb32c8233efb305fd5c4
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Fri Jul 10 15:09:55 2020 +1200
+
+    Working on leaf fall effect
+
+commit 253322e02d6566356859b2a7a984eab542ccce9d
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Fri Jul 10 12:33:02 2020 +1200
+
+    Approachable Tiles
+    
+    Added functionality for airships to not go to a tile that is already being approached by another airship.
+
+commit 9ef87a73a5319d2f0f08887cac8b905ab97ee66f
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Thu Jul 9 15:50:11 2020 +1200
+
+    Indicator/Pointer Update
+    
+    - Added indicator to show airship location
+    - Adjusted Prefabrication
+    - Added Airship spawn radius gizmos
+    - Added Bevahiour to spawn pointer in airship.
+
+commit f0dcffeffcc9c84208eaf3724728822f3aa4ef7e
+Merge: 779494e3 257edf02
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Jul 9 14:50:31 2020 +1200
+
+    Merge branch 'spotting-range' into development
+
+commit 257edf02084d06dda11083c85dec81dbc82b6651
+Merge: 4ccc9fc2 779494e3
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Jul 9 14:50:22 2020 +1200
+
+    Merge branch 'development' into spotting-range
+
+commit 779494e3d3aab29ba291ffbe57609991d51da5ba
+Merge: fcdf174a 796c40b5
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Jul 9 14:50:05 2020 +1200
+
+    Merge remote-tracking branch 'origin/development' into development
+
+commit 4ccc9fc2f51c152e3c0acb88620b18fcb9adae5e
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Jul 9 14:33:39 2020 +1200
+
+    Patch 09.07.1433
+    
+    Soldiers only attack observed enemies
+
+commit 796c40b5f084958b09688601414ffb944935c346
+Merge: e013ce7d a7bc465b
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 9 14:30:10 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit a7bc465bc160e680e41a0c0d60ca486379fa25cb
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 9 14:28:56 2020 +1200
+
+    Archer Tower Prefab Fix
+    
+    Removed children of 'FogMask'
+
+commit e013ce7daed0460a8ea71076563f7581e813fd8e
+Merge: 573850f5 65e22c93
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 9 14:25:52 2020 +1200
+
+    Merge branch 'VFX' into development
+
+commit 65e22c93725848b61ee7cc3f48d79dc377505322
+Merge: c8e33678 573850f5
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 9 14:25:37 2020 +1200
+
+    Merge branch 'development' into VFX
+
+commit c8e3367869f67b15942abab9e9f3b71e00b7a0de
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Thu Jul 9 14:25:12 2020 +1200
+
+    Fog of war updates.
+    
+    Reduced max particles, fixed flicker, removed texture scrolling
+
+commit fcdf174a3ba0eacae3a425690d01ceb37acd9fbf
+Merge: 573850f5 5e650968
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Jul 9 14:20:01 2020 +1200
+
+    Merge branch 'spotting-range' into development
+
+commit 5e650968d12d703988d026175c324d0bae321303
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Jul 9 14:19:47 2020 +1200
+
+    Patch 09.07.1417
+    
+    
+     - Spotting Range and Attack Range have been separated. A copy of the range circle material has been used for both, spotting range showing as blue and attack range showing as red. Towers can fire on enemies within their attack range being observed by any tower.
+
+commit 573850f5427a13304a7486c13e8cf3f343e44a32
+Merge: 6c03069a 017d7f58
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Tue Jul 7 19:47:34 2020 +1200
+
+    Merge branch 'sam-bugfixing' into development
+
+commit 017d7f58d534331c8a6cf7e62384d9e46310ecf7
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Tue Jul 7 19:47:03 2020 +1200
+
+    Patch 07.07.1946
+    
+    FEATURES
+    
+    - If a barracks is linked to more soldiers than it can support due to food allocation changes, soldiers will be recalled (return to the barracks and be destroyed upon arrival.)
+    
+    CHANGES
+    
+    - Structures now have IDs, introduced to support soldier match saving.
+    - Barracks change troop capacity through food allocation system instead of healing/spawning rate
+    - Barracks change healing/spawning rate through major upgrade instead of troop capacity.
+    
+    BUG FIXES
+    
+    - Ben's PGPs have been made the new hard-coded default.
+    - Soldiers no longer run on the spot when their home barracks has been destroyed.
+
+commit 1d22f15a28b37e3496527ca41bdd0b22c949ed4f
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Jul 7 17:34:02 2020 +1200
+
+    Airship Indicator
+    
+    - Added Indicator
+    - Indicator sticks to target object
+    - Indicator rotates towards target
+
+commit cf66aa8eb02c55de8417b01ebab9d824fa151ff8
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 7 15:02:08 2020 +1200
+
+    Fog of war test
+
+commit cefa0b1f99d3ff018b01a59c0425bad36d7d28f3
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Jul 7 13:26:08 2020 +1200
+
+    Update
+    
+    - Added Embarking (Enemy spanwer can call this when instantiating an airship.)\
+    -  Did some planning for deploying enemies.
+
+commit 96efde473cb843c2712ba049aa2764a96cc54781
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 7 13:09:56 2020 +1200
+
+    Starting dust effect
+
+commit 13c49fd5be850c0d8efd54831bf470e1801e7213
+Author: iHusker <60858984+iHusker@users.noreply.github.com>
+Date:   Tue Jul 7 11:32:20 2020 +1200
+
+    Update
+    
+    - Steering Airships towards target location
+    - Random perimeter point based on radius between furthest tile and center tile.
+    - Deploy enemy troops upon arrival.
+    - Search for empty tiles around the map
+    - Instantiate airship prefabs based on perimeter point.
+
+commit bd41dc72a6434b95d0d577be3cebdc2634c47d0e
+Merge: d6b98de1 6c03069a
+Author: David Morris <pixelgrapher@outlook.co.nz>
+Date:   Tue Jul 7 11:25:07 2020 +1200
+
+    Merge branch 'master' into VFX
+
+commit 6c03069ad167f5586a1b0a03d8896f98396a5340
+Author: Samuel Fortune <s.fortune66@gmail.com>
+Date:   Thu Jun 11 18:16:49 2020 +1200
+
+    small things that don't matter
+    
+    Scene changes (none)
+    log file
+
 commit 0bbb9c55fa9ac8a4561eedaa259cfc419c5f782b
 Author: Samuel Fortune <s.fortune66@gmail.com>
 Date:   Thu Jun 11 18:10:50 2020 +1200

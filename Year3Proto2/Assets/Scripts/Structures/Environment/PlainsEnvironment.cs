@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class PlainsEnvironment : EnvironmentStructure
 {
-    // Start is called before the first frame update
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         environmentType = EnvironmentType.plains;
-        structureName = "Plains Environment";
+        structureName = StructureNames.FoodEnvironment;
     }
 
-    public override void SetFoodAllocationGlobal(int _allocation)
+    public override float GetBaseMaxHealth()
     {
-        Debug.LogError("Food Allocation should not be called for " + structureName);
+        return 100f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
     }
 }

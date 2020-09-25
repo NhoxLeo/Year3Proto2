@@ -6,27 +6,34 @@ public class Invader : Enemy
 {
     public float scale = 0.0f;
 
-    private void Start()
+    protected override void Awake()
     {
-        EnemyStart();
-
+        base.Awake();
+        enemyName = EnemyNames.Invader;
         structureTypes = new List<StructureType>()
         {
-            StructureType.attack,
-            StructureType.resource,
-            StructureType.storage,
-            StructureType.longhaus,
-            StructureType.defense
+            StructureType.Resource,
+            StructureType.Storage,
+            StructureType.Longhaus,
+            StructureType.Defense
         };
+    }
+
+    protected override void LookAtPosition(Vector3 _position)
+    {
+        base.LookAtPosition(_position);
+        // fixing animation problems
+        transform.right = transform.forward;
     }
 
     private void FixedUpdate()
     {
+        if (stunned) return;
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
             {
-                case EnemyState.ACTION:
+                case EnemyState.Action:
                     if (defending)
                     {
                         Action();
@@ -36,7 +43,7 @@ public class Invader : Enemy
                         if (!target)
                         {
                             animator.SetBool("Attack", false);
-                            enemyState = EnemyState.IDLE;
+                            enemyState = EnemyState.Idle;
                         }
                         else
                         {
@@ -44,7 +51,7 @@ public class Invader : Enemy
                             {
                                 if ((target.transform.position - transform.position).magnitude < (scale * 0.04f) + 0.5f)
                                 {
-                                    Vector3 newPosition = transform.position - (GetMotionVector() * Time.fixedDeltaTime);
+                                    Vector3 newPosition = transform.position - (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                                     LookAtPosition(newPosition);
                                     transform.position = newPosition;
                                 }
@@ -59,23 +66,32 @@ public class Invader : Enemy
                             {
                                 if (structureTypes.Contains(target.GetStructureType()))
                                 {
+                                    if (!animator.GetBool("Attack"))
+                                    {
+                                        animator.SetBool("Attack", true);
+                                    }
                                     Action();
                                 }
                                 else
                                 {
                                     animator.SetBool("Attack", false);
-                                    enemyState = EnemyState.IDLE;
+                                    enemyState = EnemyState.Idle;
                                 }
                             }
                         }
                     }
                     break;
-                case EnemyState.WALK:
+                case EnemyState.Walk:
                     if (target)
                     {
-                        if (!target.attachedTile)
+                        updatePathTimer += Time.fixedDeltaTime;
+                        if (updatePathTimer >= updatePathDelay)
                         {
-                            if (!Next()) { target = null; }
+                            if (RequestNewPath())
+                            {
+                                updatePathTimer = 0f;
+                            }
+
                         }
                         // if the distance from the enemy to the target is greater than 1 unit (one tile), the enemy should follow a path to the target. If they don't have one, they should request a path.
                         // if the distance is less than 1 unit, go ahead as normal
@@ -83,22 +99,13 @@ public class Invader : Enemy
 
                         if (distanceToTarget > 1f)
                         {
-                            // do we have a path?  If we don't have a path, get one.
                             if (!hasPath)
                             {
-                                path = spawner.GetPath(transform.position, structureTypes);
+                                animator.SetBool("Attack", false);
+                                enemyState = EnemyState.Idle;
+                                break;
                             }
-                            // follow the path
-                            // move towards the first element in the path, if you get within 0.25 units, delete the element from the path
-                            Vector3 nextPathPoint = path.pathPoints[0];
-                            nextPathPoint.y = transform.position.y;
-                            float distanceToNextPathPoint = (transform.position - nextPathPoint).magnitude;
-                            if (distanceToNextPathPoint < 0.25f)
-                            {
-                                // delete the first element in the path
-                                path.pathPoints.RemoveAt(0);
-                            }
-                            Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                            Vector3 newPosition = GetNextPositionPathFollow();
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
                         }
@@ -107,7 +114,7 @@ public class Invader : Enemy
                             hasPath = false;
 
                             // get the motion vector for this frame
-                            Vector3 newPosition = transform.position + (GetMotionVector() * Time.fixedDeltaTime);
+                            Vector3 newPosition = transform.position + (GetAvoidingMotionVector() * Time.fixedDeltaTime);
                             //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
@@ -117,21 +124,23 @@ public class Invader : Enemy
                             {
                                 animator.SetBool("Attack", true);
                                 LookAtPosition(target.transform.position);
-                                enemyState = EnemyState.ACTION;
+                                enemyState = EnemyState.Action;
                                 needToMoveAway = (target.transform.position - transform.position).magnitude < (scale * 0.04f) + 0.45f;
-                                if (needToMoveAway) { animator.SetBool("Attack", false); }
+                                if (needToMoveAway)
+                                {
+                                    animator.SetBool("Attack", false);
+                                }
                             }
                         }
                     }
                     else
                     {
                         animator.SetBool("Attack", false);
-                        enemyState = EnemyState.IDLE;
+                        enemyState = EnemyState.Idle;
                     }
                     break;
-                case EnemyState.IDLE:
-                    if (!Next()) { target = null; }
-                    if (!target) { Destroy(gameObject); }
+                case EnemyState.Idle:
+                    RequestNewPath();
                     break;
             }
         }
@@ -141,21 +150,33 @@ public class Invader : Enemy
         }
     }
 
+    public void Initialize(int _level, float _scale)
+    {
+        SetScale(_scale);
+        SetLevel(_level);
+        finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
+        currentSpeed = finalSpeed;
+    }
+
     public void SetScale(float _scale)
     {
         scale = _scale;
-        transform.localScale *= _scale;
-        damage = _scale * 2.0f;
-        health = _scale * 7.5f;
-        finalSpeed = 0.4f + (1f / _scale) / 10.0f;
+        transform.localScale *= _scale + 0.3f;
+        baseDamage = _scale * 2.0f;
+        baseHealth = _scale * 15f;
+        finalSpeed = 0.4f + ((1f / _scale) / 10.0f);
+
+        currentSpeed = finalSpeed;
+
         if (!animator) { animator = GetComponent<Animator>(); }
+
         animator.SetFloat("AttackSpeed", 1f / _scale);
     }
 
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(puffEffect);
+        GameObject puff = Instantiate(PuffEffect);
         puff.transform.position = transform.position;
         puff.transform.localScale *= scale;
     }
@@ -168,7 +189,7 @@ public class Invader : Enemy
             bool defend = true;
             if (defenseTarget)
             { 
-                if (defenseTarget.returnHome || defenseTarget.health <= 0)
+                if (defenseTarget.GetReturnHome() || defenseTarget.GetHealth() <= 0)
                 {
                     defend = false;
                 }
@@ -179,7 +200,7 @@ public class Invader : Enemy
             }
             if (defend)
             {
-                if (defenseTarget.health > 0)
+                if (defenseTarget.GetHealth() > 0)
                 {
                     LookAtPosition(defenseTarget.transform.position);
                     action = true;
@@ -203,7 +224,7 @@ public class Invader : Enemy
             {
                 if (defenseTarget)
                 {
-                    if (defenseTarget.Damage(damage))
+                    if (defenseTarget.ApplyDamage(damage))
                     {
                         ForgetSoldier();
                     }
@@ -217,5 +238,11 @@ public class Invader : Enemy
                 }
             }
         }
+    }
+
+    public override void SetLevel(int _level)
+    {
+        base.SetLevel(_level);
+        GetComponentInChildren<SkinnedMeshRenderer>().material = EnemyMaterials.Fetch(enemyName, level);
     }
 }

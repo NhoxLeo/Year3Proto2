@@ -93,7 +93,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -103,10 +103,11 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: 2d4e002a09ebef8489051ccc310a427f,
+      type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 99141ec78031d22469eef4ab22d5a5cd, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 2d4e002a09ebef8489051ccc310a427f, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: a99f38070e5345f43b150b44aef52fab, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -126,11 +127,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4135699406364290336}
-        m_MethodName: UpdateValue
-        m_Mode: 2
+        m_MethodName: Refresh
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1978500109914572777}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -149,6 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: 
+  displayName: {fileID: 6140907655363442268}
   slider: {fileID: 1978500109914572777}
 --- !u!1 &3623162766526765977
 GameObject:
@@ -424,11 +426,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
         type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -466,26 +463,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 84
       objectReference: {fileID: 0}
     - target: {fileID: 545578314566940562, guid: b8d98737b7de1544fb3df17fa638db55,
         type: 3}
@@ -548,3 +525,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2265581888818749072}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6140907655363442268 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5352550436885997772, guid: b8d98737b7de1544fb3df17fa638db55,
+    type: 3}
+  m_PrefabInstance: {fileID: 2265581888818749072}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

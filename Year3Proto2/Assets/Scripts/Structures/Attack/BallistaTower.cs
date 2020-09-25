@@ -1,35 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
+﻿using UnityEngine;
 
 public class BallistaTower : AttackStructure
 {
-    public const int CostArrowBase = 6;
+    public const int CostArrowBase = 4;
     public GameObject arrow;
     public GameObject ballista;
     public static bool arrowPierce;
-    public float arrowDamage = 5f;
-    private float arrowSpeed = 7.5f;
-    public float fireRate = 0f;
+    private float arrowDamage = 10f;
+    private float arrowSpeed = 12.5f;
+    private float fireRate = 0f;
     private float fireDelay = 0f;
     private float fireCooldown = 0f;
+
+    public float GetFirerate()
+    {
+        return fireRate;
+    }
 
     protected override void Awake()
     {
         base.Awake();
-        maxHealth = 350f;
-        health = maxHealth;
-        structureName = StructureManager.StructureNames[BuildPanel.Buildings.Ballista];
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaFortification)) { health = maxHealth *= 1.5f; }
+        structureName = StructureNames.Ballista;
     }
 
     protected override void Start()
     {
         base.Start();
         SetFirerate();
-        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f; }
-        if (superMan.GetResearchComplete(SuperManager.BallistaRange)) { GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f; }
+        SuperManager superMan = SuperManager.GetInstance();
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
+        {
+            GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
+        }
+        if (superMan.GetResearchComplete(SuperManager.BallistaRange))
+        {
+            GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
+        }
         bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.BallistaEfficiency);
         int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
         attackCost = new ResourceBundle(woodCost, 0, 0);
@@ -43,6 +49,7 @@ public class BallistaTower : AttackStructure
     protected override void Update()
     {
         base.Update();
+        SetFirerate();
         if (target && isPlaced)
         {
             Vector3 ballistaPosition = ballista.transform.position;
@@ -57,53 +64,25 @@ public class BallistaTower : AttackStructure
         }
     }
 
-    public override void AllocateVillager()
-    {
-        base.AllocateVillager();
-        SetFirerate();
-    }
-
-    public override void DeallocateVillager()
-    {
-        base.DeallocateVillager();
-        SetFirerate();
-    }
-
     public override void Attack(GameObject target)
     {
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
-            if (gameMan.playerResources.AttemptPurchase(attackCost))
+            if (GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
             {
                 Fire();
             }
         }
     }
 
-    public override void SetFoodAllocation(int _newFoodAllocation)
-    {
-        base.SetFoodAllocation(_newFoodAllocation);
-        SetFirerate();
-    }
-
-    public override void SetFoodAllocationGlobal(int _allocation)
-    {
-        foreach (BallistaTower ballista in FindObjectsOfType<BallistaTower>())
-        {
-            ballista.SetFoodAllocation(_allocation);
-        }
-    }
-
     public override void OnPlace()
     {
         base.OnPlace();
-        EnableFogMask();
         BallistaTower[] ballistaTowers = FindObjectsOfType<BallistaTower>();
         if (ballistaTowers.Length >= 2)
         {
             BallistaTower other = (ballistaTowers[0] == this) ? ballistaTowers[1] : ballistaTowers[0];
-            SetFoodAllocation(other.foodAllocation);
         }
     }
 
@@ -112,12 +91,8 @@ public class BallistaTower : AttackStructure
         fireCooldown = 0;
         GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
         BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
-        arrowBehaviour.target = target.transform;
-        arrowBehaviour.damage = arrowDamage;
-        arrowBehaviour.speed = arrowSpeed;
-        arrowBehaviour.puffEffect = puffPrefab;
-        arrowBehaviour.pierce = arrowPierce;
-        GameManager.CreateAudioEffect("arrow", transform.position);
+        arrowBehaviour.Initialize(target.transform, arrowDamage, arrowSpeed, arrowPierce);
+        GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
     }
 
     void SetFirerate()
@@ -134,16 +109,10 @@ public class BallistaTower : AttackStructure
                 fireRate = 1f;
                 break;
             case 3:
-                fireRate = 1.5f;
-                break;
-            case 4:
                 fireRate = 2f;
                 break;
-            case 5:
-                fireRate = 2.5f;
-                break;
         }
-        fireDelay = 1 / fireRate;
+        fireDelay = 1f / fireRate;
     }
 
     public override Vector3 GetResourceDelta()
@@ -156,9 +125,13 @@ public class BallistaTower : AttackStructure
         return resourceDelta;
     }
 
-    private void EnableFogMask()
+    public override float GetBaseMaxHealth()
     {
-        transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-        transform.GetChild(1).GetChild(1).DOScale(Vector3.one * 1.0f, 1.0f).SetEase(Ease.OutQuint);
+        return 350f;
+    }
+
+    public override float GetTrueMaxHealth()
+    {
+        return GetBaseMaxHealth();
     }
 }

@@ -7,21 +7,21 @@ using System;
 [Serializable]
 public struct PlayerResources
 {
-    private int rFood;
-    private int rFoodMax;
-    private int rMetal;
-    private int rMetalMax;
-    private int rWood;
-    private int rWoodMax;
+    private int food;
+    private int foodMax;
+    private int metal;
+    private int metalMax;
+    private int wood;
+    private int woodMax;
     public PlayerResources(int _startAmount, int _maxAmount)
     {
-        rWood = _startAmount;
-        rMetal = _startAmount;
-        rFood = _startAmount;
+        wood = _startAmount;
+        metal = _startAmount;
+        food = _startAmount;
 
-        rWoodMax = _maxAmount;
-        rMetalMax = _maxAmount;
-        rFoodMax = _maxAmount;
+        woodMax = _maxAmount;
+        metalMax = _maxAmount;
+        foodMax = _maxAmount;
     }
 
     public void AddBatch(ResourceBatch _batch)
@@ -29,20 +29,20 @@ public struct PlayerResources
         switch (_batch.type)
         {
             case ResourceType.Wood:
-                rWood += _batch.amount;
-                if (rWood > rWoodMax) { rWood = rWoodMax; }
+                wood += _batch.amount;
+                if (wood > woodMax) { wood = woodMax; }
                 break;
             case ResourceType.Metal:
-                rMetal += _batch.amount;
-                if (rMetal > rMetalMax) { rMetal = rMetalMax; }
+                metal += _batch.amount;
+                if (metal > metalMax) { metal = metalMax; }
                 break;
             case ResourceType.Food:
-                rFood += _batch.amount;
-                if (rFood > rFoodMax) { rFood = rFoodMax; }
-                if (rFood < 0)
+                food += _batch.amount;
+                if (food > foodMax) { food = foodMax; }
+                if (food < 0)
                 {
-                    Longhaus.AddStarveTicks(-rFood);
-                    rFood = 0;
+                    VillagerManager.GetInstance().AddStarveTicks(-food);
+                    food = 0;
                 }
                 break;
         }
@@ -52,9 +52,9 @@ public struct PlayerResources
     {
         if (CanAfford(_cost))
         {
-            rWood -= _cost.woodCost;
-            rMetal -= _cost.metalCost;
-            rFood -= _cost.foodCost;
+            wood -= _cost.woodCost;
+            metal -= _cost.metalCost;
+            food -= _cost.foodCost;
             return true;
         }
         else return false;
@@ -62,7 +62,7 @@ public struct PlayerResources
 
     public bool CanAfford(ResourceBundle _cost)
     {
-        return (rWood >= _cost.woodCost || _cost.woodCost <= 0) && (rMetal >= _cost.metalCost || _cost.metalCost <= 0) && (rFood >= _cost.foodCost || _cost.foodCost <= 0);
+        return (wood >= _cost.woodCost || _cost.woodCost <= 0) && (metal >= _cost.metalCost || _cost.metalCost <= 0) && (food >= _cost.foodCost || _cost.foodCost <= 0);
     }
 
     public void DeductResource(ResourceType _type, int _deduction)
@@ -70,29 +70,29 @@ public struct PlayerResources
         switch (_type)
         {
             case ResourceType.Wood:
-                rWood -= _deduction;
+                wood -= _deduction;
                 break;
             case ResourceType.Metal:
-                rMetal -= _deduction;
+                metal -= _deduction;
                 break;
             case ResourceType.Food:
-                rFood -= _deduction;
+                food -= _deduction;
                 break;
         }
     }
 
     public void DeductResourceBundle(ResourceBundle _bundle)
     {
-        rWood -= _bundle.woodCost;
-        rMetal -= _bundle.metalCost;
-        rFood -= _bundle.foodCost;
+        wood -= _bundle.woodCost;
+        metal -= _bundle.metalCost;
+        food -= _bundle.foodCost;
     }
 
     public void AddResourceBundle(ResourceBundle _bundle)
     {
-        rWood += _bundle.woodCost;
-        rMetal += _bundle.metalCost;
-        rFood += _bundle.foodCost;
+        wood += _bundle.woodCost;
+        metal += _bundle.metalCost;
+        food += _bundle.foodCost;
     }
 
     public int Get(ResourceType _type)
@@ -101,13 +101,13 @@ public struct PlayerResources
         switch (_type)
         {
             case ResourceType.Wood:
-                value = rWood;
+                value = wood;
                 break;
             case ResourceType.Metal:
-                value = rMetal;
+                value = metal;
                 break;
             case ResourceType.Food:
-                value = rFood;
+                value = food;
                 break;
         }
         return value;
@@ -118,11 +118,11 @@ public struct PlayerResources
         switch (_type)
         {
             case ResourceType.Wood:
-                return rWoodMax;
+                return woodMax;
             case ResourceType.Metal:
-                return rMetalMax;
+                return metalMax;
             case ResourceType.Food:
-                return rFoodMax;
+                return foodMax;
             default:
                 break;
         }
@@ -134,30 +134,36 @@ public struct PlayerResources
         switch (_type)
         {
             case ResourceType.Wood:
-                return (rWood == rWoodMax);
+                return (wood == woodMax);
             case ResourceType.Metal:
-                return (rMetal == rMetalMax);
+                return (metal == metalMax);
             case ResourceType.Food:
-                return (rFood == rFoodMax);
+                return (food == foodMax);
             default:
                 break;
         }
         return false;
     }
+
     public void SetMaximum(ResourceType _type, int _newMax)
     {
         switch (_type)
         {
             case ResourceType.Wood:
-                rWoodMax = _newMax;
+                woodMax = _newMax;
                 break;
             case ResourceType.Metal:
-                rMetalMax = _newMax;
+                metalMax = _newMax;
                 break;
             case ResourceType.Food:
-                rFoodMax = _newMax;
+                foodMax = _newMax;
                 break;
         }
+    }
+
+    public bool AllGreaterOrEqualTo(int _amount)
+    {
+        return wood >= _amount && metal >= _amount && food >= _amount;
     }
 }
 
@@ -179,8 +185,11 @@ public class ResourceBatch
         age += _time;
     }
 }
+
 public class GameManager : MonoBehaviour
 {
+    private static GameManager instance = null;
+
     [HideInInspector]
     public PlayerResources playerResources;
     [HideInInspector]
@@ -191,7 +200,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool victory = false;
     private float gameoverTimer = 5.0f;
-    private List<ResourceBatch> recentBatches;
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
     private float tutorialDelay = 2.0f;
@@ -200,10 +208,6 @@ public class GameManager : MonoBehaviour
     private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private MessageBox messageBox;
-    private SuperManager superMan;
-    private HUDManager HUDMan;
-    private EnemySpawner enemySpawner;
-    private StructureManager structMan;
     private BuildPanel buildPanel;
     [HideInInspector]
     public bool repairMessage = false;
@@ -216,54 +220,17 @@ public class GameManager : MonoBehaviour
     private float panelRefreshCooldown = 0.5f;
     [HideInInspector]
     public bool gameAlreadyWon = false;
+    public int objectivesCompleted = 0;
+    public List<int> objectives;
+    public int foodSinceObjective = 0;
+    public int lumberSinceObjective = 0;
+    public int metalSinceObjective = 0;
 
-    int RecentFood
+    public static GameManager GetInstance()
     {
-        get
-        {
-            int runningTotal = 0;
-            foreach (ResourceBatch batch in recentBatches)
-            {
-                if (batch.type == ResourceType.Food)
-                {
-                    runningTotal += batch.amount;
-                }
-            }
-            return runningTotal;
-        }
+        return instance;
     }
 
-    int RecentMetal
-    {
-        get
-        {
-            int runningTotal = 0;
-            foreach (ResourceBatch batch in recentBatches)
-            {
-                if (batch.type == ResourceType.Metal)
-                {
-                    runningTotal += batch.amount;
-                }
-            }
-            return runningTotal;
-        }
-    }
-
-    int RecentWood
-    {
-        get
-        {
-            int runningTotal = 0;
-            foreach (ResourceBatch batch in recentBatches)
-            {
-                if (batch.type == ResourceType.Wood)
-                {
-                    runningTotal += batch.amount;
-                }
-            }
-            return runningTotal;
-        }
-    }
     public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
@@ -288,7 +255,20 @@ public class GameManager : MonoBehaviour
     public void AddBatch(ResourceBatch _newBatch)
     {
         playerResources.AddBatch(_newBatch);
-        recentBatches.Add(_newBatch);
+        switch (_newBatch.type)
+        {
+            case ResourceType.Wood:
+                lumberSinceObjective += _newBatch.amount;
+                break;
+            case ResourceType.Metal:
+                metalSinceObjective += _newBatch.amount;
+                break;
+            case ResourceType.Food:
+                foodSinceObjective += _newBatch.amount;
+                break;
+            default:
+                break;
+        }
     }
 
     public void CalculateStorageMaximum()
@@ -337,22 +317,7 @@ public class GameManager : MonoBehaviour
         return resourceVelocity;
     }
 
-    public float GetFoodVelocity(int _seconds)
-    {
-        return RecentFood * _seconds / batchMaxAge;
-    }
-
-    public float GetMetalVelocity(int _seconds)
-    {
-        return RecentMetal * _seconds / batchMaxAge;
-    }
-
-    public float GetWoodVelocity(int _seconds)
-    {
-        return RecentWood * _seconds / batchMaxAge;
-    }
-
-    public void OnStructurePlace()
+    public void OnStructurePlaced()
     {
         CalculateStorageMaximum();
 
@@ -365,7 +330,7 @@ public class GameManager : MonoBehaviour
         Enemy[] enemies = FindObjectsOfType<Enemy>();
         foreach (Enemy enemy in enemies)
         {
-            enemy.Next();
+            enemy.SetState(EnemyState.Idle);
         }
     }
 
@@ -378,7 +343,7 @@ public class GameManager : MonoBehaviour
         Structure[] structures = FindObjectsOfType<Structure>();
         foreach (Structure structure in structures)
         {
-            if (structure.GetStructureType() != StructureType.environment)
+            if (structure.GetStructureType() != StructureType.Environment)
             {
                 ResourceBundle repairCost = structure.RepairCost();
                 bool repaired = structure.Repair(true);
@@ -405,7 +370,7 @@ public class GameManager : MonoBehaviour
             {
                 if (tutorialDone) { messageBox.ShowMessage("Couldn't repair everything...", 2f); }
             }
-            HUDMan.ShowResourceDelta(total, true);
+            HUDManager.GetInstance().ShowResourceDelta(total, true);
         }
         else
         {
@@ -423,6 +388,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         audioClips = new Dictionary<string, AudioClip>
         {
             { "horn", Resources.Load("Audio/SFX/sfxHorn") as AudioClip },
@@ -438,40 +404,44 @@ public class GameManager : MonoBehaviour
             { "UIclick3", Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip },
             { "UItap", Resources.Load("Audio/SFX/sfxUITap") as AudioClip },
             { "ResourceLoss", Resources.Load("Audio/SFX/sfxResourceLoss") as AudioClip },
-        };
+            { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
+            { "Zap", Resources.Load("Audio/SFX/sfxLightning") as AudioClip },
+            { "Thud", Resources.Load("Audio/SFX/sfxShockwave") as AudioClip },
+        };        objectives = SuperManager.GetInstance().GetCurrentWinConditions();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        SuperManager superMan = SuperManager.GetInstance();
         playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
-        recentBatches = new List<ResourceBatch>();
         messageBox = FindObjectOfType<MessageBox>();
-        HUDMan = FindObjectOfType<HUDManager>();
-        superMan = SuperManager.GetInstance();
-        structMan = GetComponent<StructureManager>();
-        enemySpawner = FindObjectOfType<EnemySpawner>();
         buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
+        {
+            Soldier.SetMaxHealth(1.5f * Soldier.GetMaxHealth());
+        }
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
+        {
+            Soldier.SetDamage(1.3f * Soldier.GetDamage());
+        }
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
+        {
+            Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        List<ResourceBatch> batchesToRemove = new List<ResourceBatch>();
-        for (int i = 0; i < recentBatches.Count; i++)
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            recentBatches[i].AddTime(Time.deltaTime);
-            if (recentBatches[i].age >= batchMaxAge)
-            {
-                batchesToRemove.Add(recentBatches[i]);
-            }
+            repairAll = true;
+            RepairAll();
         }
-        foreach (ResourceBatch batch in batchesToRemove)
-        {
-            recentBatches.Remove(batch);
-        }
+
         if (!tutorialDone)
         {
             tutorialDelay -= Time.deltaTime;
@@ -508,29 +478,55 @@ public class GameManager : MonoBehaviour
         {
             panelRefreshTimer = panelRefreshCooldown;
             // do refresh
-            for (int i = 1; i <= 9; i++)
+            for (int i = 1; i <= 12; i++)
             {
-                if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Catapult)
+                BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
+
+                switch (buildingI)
                 {
-                    if (!superMan.GetResearchComplete(SuperManager.Catapult))
-                    {
-                        continue;
-                    }
+                    case BuildPanel.Buildings.Catapult:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.Barracks:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Barracks))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.FreezeTower:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTower))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.ShockwaveTower:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.ShockwaveTower))
+                        {
+                            continue;
+                        }
+                        break;
+                    case BuildPanel.Buildings.LightningTower:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTower))
+                        {
+                            continue;
+                        }
+                        break;
+                    default:
+                        break;
                 }
-                if ((BuildPanel.Buildings)i == BuildPanel.Buildings.Barracks)
-                {
-                    if (!superMan.GetResearchComplete(SuperManager.Barracks))
-                    {
-                        continue;
-                    }
-                }
-                buildPanel.SetButtonColour((BuildPanel.Buildings)i, playerResources.CanAfford(structMan.structureCosts[StructureManager.StructureNames[(BuildPanel.Buildings)i]]) ? Color.white : buildPanel.cannotAfford);
+                ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
+                bool playerCanAfford = playerResources.CanAfford(cost);
+                Color colour = playerCanAfford ? Color.white : buildPanel.cannotAfford;
+                buildPanel.SetButtonColour(buildingI, colour);
             }
         }
 
         if (!gameover)
         {
-            if (longhausDead == true)
+            if (longhausDead)
             {
                 gameover = true;
                 victory = false;
@@ -538,17 +534,91 @@ public class GameManager : MonoBehaviour
                 GetComponents<AudioSource>()[0].DOFade(0f, 1f);
                 CreateAudioEffect("lose", Vector3.zero, 1f, false);
             }
-            else if (WinConditionIsMet() && !superMan.GetSavedMatch().matchWon)
+            else
             {
-                gameover = true;
-                victory = true;
-                superMan.OnLevelComplete();
-                messageBox.ShowMessage("You Win!", 5f);
-                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
-                CreateAudioEffect("win", Vector3.zero, 1f, false);
-            }
+                if (CheckNextWinConditionIsMet())
+                {
+                    objectivesCompleted++;
+                    EnemyManager.GetInstance().OnObjectiveComplete();
+                    foodSinceObjective = 0;
+                    lumberSinceObjective = 0;
+                    metalSinceObjective = 0;
+                }
+                bool gameAlreadyWon = false;
+                SuperManager.MatchSaveData match = SuperManager.GetInstance().GetSavedMatch();
+                if (match.match)
+                {
+                    if (match.matchWon)
+                    {
+                        gameAlreadyWon = true;
+                    }
+                }
+                if (AllObjectivesCompleted() && !gameAlreadyWon)
+                {
+                    gameover = true;
+                    victory = true;
+                    SuperManager.GetInstance().OnLevelComplete();
+                    messageBox.ShowMessage("You Win!", 5f);
+                    GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                    CreateAudioEffect("win", Vector3.zero, 1f, false);
+                }
+            }            
         }
 
+        if (objectivesCompleted < objectives.Count)
+        {
+            string completion = "(" + (objectivesCompleted).ToString() + "/" + objectives.Count.ToString() + ") ";
+            string name = completion + SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].name;
+            string desc = SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].description;
+            string objCompletion = "";
+            switch (objectives[objectivesCompleted])
+            {
+                case SuperManager.Slaughter:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/20)";
+                    break;
+                case SuperManager.SlaughterII:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/50)";
+                    break;
+                case SuperManager.SlaughterIII:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
+                    break;
+                case SuperManager.Food:
+                    objCompletion = " (" + foodSinceObjective.ToString() + "/1000)";
+                    break;
+                case SuperManager.FoodII:
+                    objCompletion = " (" + foodSinceObjective.ToString() + "/2000)";
+                    break;
+                case SuperManager.FoodIII:
+                    objCompletion = " (" + foodSinceObjective.ToString() + "/3000)";
+                    break;
+                case SuperManager.Lumber:
+                    objCompletion = " (" + lumberSinceObjective.ToString() + "/1000)";
+                    break;
+                case SuperManager.LumberII:
+                    objCompletion = " (" + lumberSinceObjective.ToString() + "/2000)";
+                    break;
+                case SuperManager.LumberIII:
+                    objCompletion = " (" + lumberSinceObjective.ToString() + "/3000)";
+                    break;
+                case SuperManager.Metal:
+                    objCompletion = " (" + metalSinceObjective.ToString() + "/1000)";
+                    break;
+                case SuperManager.MetalII:
+                    objCompletion = " (" + metalSinceObjective.ToString() + "/2000)";
+                    break;
+                case SuperManager.MetalIII:
+                    objCompletion = " (" + metalSinceObjective.ToString() + "/3000)";
+                    break;
+                default:
+                    break;
+            }
+
+            HUDManager.GetInstance().SetVictoryInfo(name, desc + objCompletion);
+        }
+        else if (objectivesCompleted == objectives.Count)
+        {
+            HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
+        }
 
         if (gameover)
         {
@@ -578,45 +648,77 @@ public class GameManager : MonoBehaviour
                     switchingScene = true;
                 }
             }
-            
         }
-    }
-
+    }
     public void SaveMatch()
     {
-        superMan.SaveCurrentMatch();
+        SuperManager.GetInstance().SaveCurrentMatch();
     }
 
     public void OnRestart()
     {
+        SuperManager superMan = SuperManager.GetInstance();
         superMan.ClearCurrentMatch();
+        superMan.PlayLevel(superMan.GetCurrentLevel());
     }
 
-    public bool WinConditionIsMet()
+    public bool AllObjectivesCompleted()
     {
-        int winCondition = superMan.GetCurrentWinCondition();
-        switch (winCondition)
+        return objectives.Count == objectivesCompleted;
+    }
+
+    private bool CheckNextWinConditionIsMet()
+    {
+        if (objectives.Count > objectivesCompleted)
         {
-            case SuperManager.Accumulate:
-                return playerResources.Get(ResourceType.Metal) >= 1500 && playerResources.Get(ResourceType.Food) >= 1500 && playerResources.Get(ResourceType.Wood) >= 1500;
-            case SuperManager.AccumulateII:
-                return playerResources.Get(ResourceType.Metal) >= 2500 && playerResources.Get(ResourceType.Food) >= 2500 && playerResources.Get(ResourceType.Wood) >= 2500;
-            case SuperManager.AccumulateIII:
-                return playerResources.Get(ResourceType.Metal) >= 7500 && playerResources.Get(ResourceType.Food) >= 7500 && playerResources.Get(ResourceType.Wood) >= 7500;
-            case SuperManager.Slaughter:
-                return enemySpawner.GetKillCount() > 300;
-            case SuperManager.SlaughterII:
-                return enemySpawner.GetKillCount() > 800;
-            case SuperManager.SlaughterIII:
-                return enemySpawner.GetKillCount() > 2000;
-            case SuperManager.Survive:
-                return enemySpawner.GetWaveCurrent() == 25 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 25;
-            case SuperManager.SurviveII:
-                return enemySpawner.GetWaveCurrent() == 50 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 50;
-            case SuperManager.SurviveIII:
-                return enemySpawner.GetWaveCurrent() == 100 && enemySpawner.enemyCount == 0 || enemySpawner.GetWaveCurrent() > 100;
-            default:
-                break;
+            int currentWinCondition = objectives[objectivesCompleted];
+            switch (currentWinCondition)
+            {
+                case SuperManager.Accumulate:
+                    return playerResources.AllGreaterOrEqualTo(1500);
+                case SuperManager.AccumulateII:
+                    return playerResources.AllGreaterOrEqualTo(2500);
+                case SuperManager.AccumulateIII:
+                    return playerResources.AllGreaterOrEqualTo(5000);
+                case SuperManager.Slaughter:
+                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 20;
+                case SuperManager.SlaughterII:
+                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 50;
+                case SuperManager.SlaughterIII:
+                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
+                case SuperManager.Survive:
+                    return EnemyManager.GetInstance().GetWaveSurvived(5);
+                case SuperManager.SurviveII:
+                    return EnemyManager.GetInstance().GetWaveSurvived(10);
+                case SuperManager.SurviveIII:
+                    return EnemyManager.GetInstance().GetWaveSurvived(15);
+                case SuperManager.Food:
+                    return foodSinceObjective >= 1000;
+                case SuperManager.FoodII:
+                    return foodSinceObjective >= 2000;
+                case SuperManager.FoodIII:
+                    return foodSinceObjective >= 3000;
+                case SuperManager.Lumber:
+                    return lumberSinceObjective >= 1000;
+                case SuperManager.LumberII:
+                    return lumberSinceObjective >= 2000;
+                case SuperManager.LumberIII:
+                    return lumberSinceObjective >= 3000;
+                case SuperManager.Metal:
+                    return metalSinceObjective >= 1000;
+                case SuperManager.MetalII:
+                    return metalSinceObjective >= 2000;
+                case SuperManager.MetalIII:
+                    return metalSinceObjective >= 3000;
+                case SuperManager.Villagers:
+                    return VillagerManager.GetInstance().GetVillagers() >= 15;
+                case SuperManager.VillagersII:
+                    return VillagerManager.GetInstance().GetVillagers() >= 35;
+                case SuperManager.VillagersIII:
+                    return VillagerManager.GetInstance().GetVillagers() >= 65;
+                default:
+                    break;
+            }
         }
         return false;
     }

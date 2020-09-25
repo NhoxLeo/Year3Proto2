@@ -13,13 +13,6 @@ public class LevelEndscreen : MonoBehaviour
     private bool showingVictory;
     private bool showingDefeat;
 
-    private SuperManager superMan;
-
-    private void Start()
-    {
-        superMan = SuperManager.GetInstance();
-    }
-
     void Update()
     {
         /*
@@ -38,14 +31,15 @@ public class LevelEndscreen : MonoBehaviour
     private void GetVictoryInfo()
     {
         List<MapScreen.Level> levels = new List<MapScreen.Level>();
+        SuperManager superMan = SuperManager.GetInstance();
         superMan.GetLevelData(ref levels);
+        int currentLevel = superMan.GetCurrentLevel();
+        transform.Find("Victory/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[currentLevel].victoryTitle;
+        transform.Find("Victory/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[currentLevel].victoryDescription;
+        transform.Find("Victory/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[currentLevel].victoryValue.ToString();
 
-        transform.Find("Victory/LevelModCard/Title").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryTitle;
-        transform.Find("Victory/LevelModCard/Description").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryDescription;
-        transform.Find("Victory/LevelModCard/Price").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].victoryValue.ToString();
-
-        transform.Find("Victory/ModBonus").GetComponent<TMP_Text>().text = "+" + levels[superMan.currentLevel].GetTotalCoefficient() * 100 + "%";
-        transform.Find("Victory/Reward").GetComponent<TMP_Text>().text = levels[superMan.currentLevel].reward.ToString();
+        transform.Find("Victory/ModBonus").GetComponent<TMP_Text>().text = "+" + levels[currentLevel].GetTotalCoefficient() * 100 + "%";
+        transform.Find("Victory/Reward").GetComponent<TMP_Text>().text = levels[currentLevel].reward.ToString();
     }
 
     public void ShowVictoryScreen()
@@ -83,8 +77,15 @@ public class LevelEndscreen : MonoBehaviour
         FindObjectOfType<HUDManager>().doShowHUD = true;
     }
 
-    public void SaveCurrentMatch()
+    public void DefeatGoToLevelSelect()
+    {
+        SuperManager.GetInstance().ClearCurrentMatch();
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("LevelSelect");
+    }
+
+    public void VictoryGoToLevelSelect()
     {
         SuperManager.GetInstance().SaveCurrentMatch();
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("ResearchTree");
     }
 }

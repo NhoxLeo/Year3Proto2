@@ -224,11 +224,8 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
-  consumptionTime: 2
   arrow: {fileID: 1147110280109721153, guid: 2d84c91535cfd2747988038d60f7ad23, type: 3}
   ballista: {fileID: 5853393773172578223}
-  arrowDamage: 5
-  fireRate: 0
 --- !u!64 &1413963230254588248
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -392,7 +389,7 @@ PrefabInstance:
     - target: {fileID: 1237324891837294363, guid: d7b9248bf76aa094cbe1cf729d24f5b0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.012236774
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1237324891837294363, guid: d7b9248bf76aa094cbe1cf729d24f5b0,
         type: 3}
@@ -402,7 +399,7 @@ PrefabInstance:
     - target: {fileID: 1237324891837294363, guid: d7b9248bf76aa094cbe1cf729d24f5b0,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.010773838
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1237324891837294363, guid: d7b9248bf76aa094cbe1cf729d24f5b0,
         type: 3}
