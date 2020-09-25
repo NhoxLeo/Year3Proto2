@@ -163,7 +163,7 @@ public class Invader : Enemy
         scale = _scale;
         transform.localScale *= _scale + 0.3f;
         baseDamage = _scale * 2.0f;
-        baseHealth = _scale * 10f;
+        baseHealth = _scale * 15f;
         finalSpeed = 0.4f + ((1f / _scale) / 10.0f);
 
         currentSpeed = finalSpeed;

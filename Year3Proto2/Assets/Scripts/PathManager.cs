@@ -705,9 +705,12 @@ public class PathManager : MonoBehaviour
     private void Update()
     {
         // toggle debugger
-        if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.P))
+        if (SuperManager.DevMode)
         {
-            debugText.gameObject.SetActive(!debugText.gameObject.activeSelf);
+            if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.P))
+            {
+                debugText.gameObject.SetActive(!debugText.gameObject.activeSelf);
+            }
         }
 
         if (activeJobDict.Count > 0) // there is one pathfinding job active

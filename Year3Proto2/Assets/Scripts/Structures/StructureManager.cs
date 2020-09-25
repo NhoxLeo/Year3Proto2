@@ -201,7 +201,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.FreezeTower, "Sprays enemies with ice to slow them down." },
         { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
         { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies." },
-        { BuildPanel.Buildings.Farm, "Collects Food from nearby plains tiles. Bonus if constructed on plains." },
+        { BuildPanel.Buildings.Farm, "Collects Food from nearby field tiles. Bonus if constructed on field." },
         { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
         { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
         { BuildPanel.Buildings.LumberPile, "Increases maximum Wood storage capacity." },
@@ -788,7 +788,7 @@ public class StructureManager : MonoBehaviour
         StructureType structType = structure.GetStructureType();
         if ((structureFromStore && BuyBuilding()) || !structureFromStore)
         {
-            GameManager.CreateAudioEffect("build", structure.transform.position);
+            GameManager.CreateAudioEffect("build", structure.transform.position, 0.6f);
             SetStructureColour(Color.white);
             // Attach the structure to the tile and vica versa
             if (attached) { attached.attachedTile.Detach(); }

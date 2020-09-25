@@ -86,7 +86,7 @@ public class CatapultTower : AttackStructure
         boulderBehaviour.damage = boulderDamage;
         boulderBehaviour.speed = boulderSpeed;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
-        GameManager.CreateAudioEffect("catapultFire", transform.position);
+        GameManager.CreateAudioEffect("catapultFire", transform.position, 0.6f);
     }
 
     public override void OnPlace()
