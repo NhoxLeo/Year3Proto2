@@ -318,7 +318,7 @@ public class BuildingInfo : MonoBehaviour
             headingTextFloating.text = shortenedName + levelSuffix;
 
             upgradeButton.gameObject.SetActive(true);
-            upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+            upgradeButton.interactable = defenseStructure.GetLevel() < 3;
         }
         else
         {
@@ -401,8 +401,8 @@ public class BuildingInfo : MonoBehaviour
             {
                 costComponent.SetActive(true);
                 upgradeButton.interactable = true;
-                woodText.text = upgradeCost.wood.ToString();
-                metalText.text = upgradeCost.metal.ToString();
+                woodText.text = ((int)upgradeCost.wood).ToString();
+                metalText.text = ((int)upgradeCost.metal).ToString();
 
                 tooltipDescription.gameObject.SetActive(true);
                 tooltipDescription.text = "Fully repairs tower. Increases durability and damage.";
@@ -426,8 +426,8 @@ public class BuildingInfo : MonoBehaviour
         if (repairCost.wood + repairCost.metal != 0)
         {
             costComponent.SetActive(true);
-            woodText.text = repairCost.wood.ToString();
-            metalText.text = repairCost.metal.ToString();
+            woodText.text = ((int)repairCost.wood).ToString();
+            metalText.text = ((int)repairCost.metal).ToString();
 
             tooltipDescription.gameObject.SetActive(true);
             tooltipDescription.text = repairButton.interactable ? "" : "Cannot repair while recently damaged";
@@ -449,8 +449,8 @@ public class BuildingInfo : MonoBehaviour
         tooltipHeading.text = "Destroy Building";
 
         costComponent.SetActive(true);
-        woodText.text = "+" + compensation.wood;
-        metalText.text = "+" + compensation.metal;
+        woodText.text = "+" + (int)compensation.wood;
+        metalText.text = "+" + (int)compensation.metal;
         tooltipDescription.gameObject.SetActive(true);
         tooltipDescription.text = "Villagers will be evacuated";
 
@@ -468,7 +468,6 @@ public class BuildingInfo : MonoBehaviour
                 {
                     HUDManager.GetInstance().ShowResourceDelta(cost, true);
                     defenseStructure.LevelUp();
-                    upgradeButton.enabled = defenseStructure.GetLevel() < 3;
                     SetInfo();
                 }
             }
