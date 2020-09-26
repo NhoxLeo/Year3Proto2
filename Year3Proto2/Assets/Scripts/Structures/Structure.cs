@@ -335,8 +335,6 @@ public abstract class Structure : MonoBehaviour
         healthBar.target = gameObject;
         healthBar.fillAmount = 1.0f;
         healthBarInst.SetActive(false);
-        // health is set in awake, so this is called after and will affect all structures
-        //if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber)) { health = GetBaseMaxHealth() * 0.5f; }
     }
 
     protected virtual void Update()
