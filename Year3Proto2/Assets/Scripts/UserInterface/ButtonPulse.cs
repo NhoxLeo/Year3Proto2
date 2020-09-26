@@ -12,10 +12,10 @@ public class ButtonPulse : MonoBehaviour
     private void SetSound()
     {
         audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
         audioSource.volume = 0.825f;
         clickSound = FindObjectOfType<SceneSwitcher>().clickSound;
         audioSource.clip = clickSound;
-        audioSource.playOnAwake = false;
 
         soundSet = true;
     }
@@ -31,6 +31,5 @@ public class ButtonPulse : MonoBehaviour
         }
 
         audioSource.Play();
-
     }
 }

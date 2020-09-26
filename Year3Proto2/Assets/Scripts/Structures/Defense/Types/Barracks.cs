@@ -130,7 +130,7 @@ public class Barracks : DefenseStructure
 
         soldiers.Add(newSoldier);
 
-        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, 0.3f);
+        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, 0.6f);
     }
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
@@ -160,7 +160,7 @@ public class Barracks : DefenseStructure
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        Soldier.SetDamage(GetBaseDamage() * Mathf.Pow(1.25f, level - 1));
+        Soldier.SetDamage(GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1));
         health = GetTrueMaxHealth();
     }
 
@@ -181,7 +181,7 @@ public class Barracks : DefenseStructure
         }
 
         // level
-        maxHealth *= Mathf.Pow(1.25f, level - 1);
+        maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
         if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))

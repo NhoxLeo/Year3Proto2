@@ -86,6 +86,6 @@ public class LevelEndscreen : MonoBehaviour
     public void VictoryGoToLevelSelect()
     {
         SuperManager.GetInstance().SaveCurrentMatch();
-        FindObjectOfType<SceneSwitcher>().SceneSwitch("LevelSelect");
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("ResearchTree");
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class FreezeTowerCannon : MonoBehaviour
@@ -27,7 +26,7 @@ public class FreezeTowerCannon : MonoBehaviour
 
     private void Update()
     {
-        if(targets.Count > 0 && damageEnemies)
+        if (targets.Count > 0 && damageEnemies)
         {
             time -= Time.deltaTime;
             if (time <= 0.0f)
@@ -42,8 +41,9 @@ public class FreezeTowerCannon : MonoBehaviour
                 });
                 time = damageDelay;
             }
-            targets.RemoveAll(target => !target);
         }
+
+        targets.RemoveAll(target => !target);
         if (targets.Count > 0 && !particlesPlaying)
         {
             particle.Play();
@@ -54,6 +54,7 @@ public class FreezeTowerCannon : MonoBehaviour
             particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             particlesPlaying = false;
         }
+
     } 
 
     private void OnTriggerEnter(Collider other)

@@ -9,8 +9,9 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     // CONSTANTS
-    public const string Version = "0.9.9b";
-    public static bool DevMode = true;
+    public const string Version = "1.0.0.1";
+    public const float ScalingFactor = 1.33f;
+    public static bool DevMode = false;
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -254,10 +255,10 @@ public class SuperManager : MonoBehaviour
         public int nextStructureID;
         public int villagers;
         public int availableVillagers;
-        public int starveTicks;
-        public int tempFood;
-        public int tempLumber;
-        public int tempMetal;
+        public float starveTicks;
+        public float tempFood;
+        public float tempLumber;
+        public float tempMetal;
     }
 
     [Serializable]

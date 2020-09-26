@@ -154,8 +154,8 @@ public class FlyingInvader : Enemy
 
     public void Initialize(int _level)
     {
-        baseHealth = 25f;
-        baseDamage = 25f;
+        baseHealth = 45f;
+        baseDamage = 100f;
         SetLevel(_level);
         finalSpeed = 0.25f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;

@@ -10,9 +10,8 @@ public class VillagerManager : MonoBehaviour
     private int villagers = 0;
     private int availableVillagers = 0;
     private int villagersManAllocated = 0;
-    private int starveTicks = 0;
-    [SerializeField]
-    private int villagerHungerModifier = 1;
+    private float starveTicks = 0;
+    private float villagerHungerModifier = 2;
     private Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
 
     private void Awake()
@@ -429,17 +428,17 @@ public class VillagerManager : MonoBehaviour
         return lowest;
     }
 
-    public int GetStarveTicks()
+    public float GetStarveTicks()
     {
         return starveTicks;
     }
 
-    public void SetStarveTicks(int _ticks)
+    public void SetStarveTicks(float _ticks)
     {
         starveTicks = _ticks;
     }
 
-    public void AddStarveTicks(int _ticks)
+    public void AddStarveTicks(float _ticks)
     {
         starveTicks += _ticks;
         if (starveTicks >= 100)
@@ -544,7 +543,7 @@ public class VillagerManager : MonoBehaviour
         return villagers * villagerHungerModifier / Longhaus.productionTime;
     }
 
-    public int GetRationCost()
+    public float GetRationCost()
     {
         return villagers * -villagerHungerModifier;
     }

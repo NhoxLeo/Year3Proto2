@@ -39,52 +39,52 @@ public enum Priority
 [Serializable]
 public struct ResourceBundle
 {
-    public int woodCost;
-    public int metalCost;
-    public int foodCost;
-    public ResourceBundle(int _wCost, int _mCost, int _fCost)
+    public float food;
+    public float wood;
+    public float metal;
+    public ResourceBundle(float _fCost, float _wCost, float _mCost)
     {
-        woodCost = _wCost;
-        metalCost = _mCost;
-        foodCost = _fCost;
+        food = _fCost;
+        wood = _wCost;
+        metal = _mCost;
     }
     public static ResourceBundle operator *(ResourceBundle _kStructureDefinition, float _otherHS)
     {
         ResourceBundle newStructure = _kStructureDefinition;
-        newStructure.woodCost = Mathf.RoundToInt(newStructure.woodCost * _otherHS);
-        newStructure.metalCost = Mathf.RoundToInt(newStructure.metalCost * _otherHS);
-        newStructure.foodCost = Mathf.RoundToInt(newStructure.foodCost * _otherHS);
+        newStructure.food *= _otherHS;
+        newStructure.wood *= _otherHS;
+        newStructure.metal *= _otherHS;
         return newStructure;
     }
 
     public static implicit operator Vector3(ResourceBundle _rb)
     {
         Vector3 vec;
-        vec.x = _rb.woodCost;
-        vec.y = _rb.metalCost;
-        vec.z = _rb.foodCost;
+        vec.x = _rb.food;
+        vec.y = _rb.wood;
+        vec.z = _rb.metal;
         return vec;
     }
 
     public static ResourceBundle operator + (ResourceBundle _LHS, ResourceBundle _RHS)
     {
         ResourceBundle sum;
-        sum.woodCost = _LHS.woodCost + _RHS.woodCost;
-        sum.metalCost = _LHS.metalCost + _RHS.metalCost;
-        sum.foodCost = _LHS.foodCost + _RHS.foodCost;
+        sum.food = _LHS.food + _RHS.food;
+        sum.wood = _LHS.wood + _RHS.wood;
+        sum.metal = _LHS.metal + _RHS.metal;
         return sum;
     }
 
     public ResourceBundle(Vector3 _vec)
     {
-        woodCost = (int)_vec.x;
-        metalCost = (int)_vec.y;
-        foodCost = (int)_vec.z;
+        food = _vec.x;
+        wood = _vec.y;
+        metal = _vec.z;
     }
 
     public bool IsEmpty()
     {
-        return woodCost == 0 && metalCost == 0 && foodCost == 0;
+        return wood == 0 && metal == 0 && food == 0;
     }
 }
 
@@ -201,7 +201,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.FreezeTower, "Sprays enemies with ice to slow them down." },
         { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
         { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies." },
-        { BuildPanel.Buildings.Farm, "Collects Food from nearby plains tiles. Bonus if constructed on plains." },
+        { BuildPanel.Buildings.Farm, "Collects Food from nearby field tiles. Bonus if constructed on field." },
         { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
         { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
         { BuildPanel.Buildings.LumberPile, "Increases maximum Wood storage capacity." },
@@ -241,21 +241,21 @@ public class StructureManager : MonoBehaviour
     };
     public Dictionary<string, ResourceBundle> structureCosts = new Dictionary<string, ResourceBundle>
     {
-        // NAME                                                wC       mC      fC
-        { StructureNames.Ballista,          new ResourceBundle(150,     50,     0) },
-        { StructureNames.Catapult,          new ResourceBundle(200,     250,    0) },
-        { StructureNames.Barracks,          new ResourceBundle(200,     100,    0) },
-        { StructureNames.FreezeTower,       new ResourceBundle(200,     50,     0) },
-        { StructureNames.ShockwaveTower,    new ResourceBundle(200,     200,    0) },
-        { StructureNames.LightningTower,    new ResourceBundle(200,     100,    0) },
+        // NAME                                                fC       wC       mC      
+        { StructureNames.Ballista,          new ResourceBundle(0,       150,     50) },
+        { StructureNames.Catapult,          new ResourceBundle(0,       200,     250) },
+        { StructureNames.Barracks,          new ResourceBundle(0,       200,     100) },
+        { StructureNames.FreezeTower,       new ResourceBundle(0,       200,     50) },
+        { StructureNames.ShockwaveTower,    new ResourceBundle(0,       200,     200) },
+        { StructureNames.LightningTower,    new ResourceBundle(0,       200,     100) },
 
-        { StructureNames.FoodResource,      new ResourceBundle(40,      0,      0) },
-        { StructureNames.LumberResource,    new ResourceBundle(60,      20,     0) },
-        { StructureNames.MetalResource,     new ResourceBundle(100,     20,     0) },
+        { StructureNames.FoodResource,      new ResourceBundle(0,       40,      0) },
+        { StructureNames.LumberResource,    new ResourceBundle(0,       60,      20) },
+        { StructureNames.MetalResource,     new ResourceBundle(0,       100,     20) },
 
-        { StructureNames.FoodStorage,       new ResourceBundle(120,     0,      0) },
-        { StructureNames.LumberStorage,     new ResourceBundle(120,     0,      0) },
-        { StructureNames.MetalStorage,      new ResourceBundle(120,     80,     0) }
+        { StructureNames.FoodStorage,       new ResourceBundle(0,       120,     0) },
+        { StructureNames.LumberStorage,     new ResourceBundle(0,       120,     0) },
+        { StructureNames.MetalStorage,      new ResourceBundle(0,       120,     80) }
     };
     private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
     [HideInInspector]
@@ -302,28 +302,28 @@ public class StructureManager : MonoBehaviour
     {
         structureDict = new Dictionary<string, StructureDefinition>
         {
-            // NAME                                                                    NAME                                                                        wC       mC      fC
-            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(600,     200,    0)) },
+            // NAME                                                                    NAME                                                                        fC       wC       mC      
+            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(0,       600,     200)) },
 
-            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(150,     50,     0)) },
-            { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower")     as GameObject,  new ResourceBundle(200,     250,    0)) },
-            { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(200,     250,    0)) },
-            { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(200,     200,    0)) },
-            { StructureNames.ShockwaveTower,    new StructureDefinition(Resources.Load("Structures/Defense/Shockwave Tower")    as GameObject,  new ResourceBundle(200,     200,    0)) },
-            { StructureNames.LightningTower,    new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")    as GameObject,  new ResourceBundle(200,     200,    0)) },
+            { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(0,       150,     50)) },
+            { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower")     as GameObject,  new ResourceBundle(0,       200,     250)) },
+            { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(0,       200,     250)) },
+            { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(0,       200,     200)) },
+            { StructureNames.ShockwaveTower,    new StructureDefinition(Resources.Load("Structures/Defense/Shockwave Tower")    as GameObject,  new ResourceBundle(0,       200,     200)) },
+            { StructureNames.LightningTower,    new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")    as GameObject,  new ResourceBundle(0,       200,     200)) },
 
 
-            { StructureNames.FoodResource,      new StructureDefinition(Resources.Load("Structures/Resource/Farm")              as GameObject,  new ResourceBundle(40,      0,      0)) },
-            { StructureNames.LumberResource,    new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")       as GameObject,  new ResourceBundle(60,      20,     0)) },
-            { StructureNames.MetalResource,     new StructureDefinition(Resources.Load("Structures/Resource/Mine")              as GameObject,  new ResourceBundle(100,     20,     0)) },
+            { StructureNames.FoodResource,      new StructureDefinition(Resources.Load("Structures/Resource/Farm")              as GameObject,  new ResourceBundle(0,       40,      0)) },
+            { StructureNames.LumberResource,    new StructureDefinition(Resources.Load("Structures/Resource/Lumber Mill")       as GameObject,  new ResourceBundle(0,       60,      20)) },
+            { StructureNames.MetalResource,     new StructureDefinition(Resources.Load("Structures/Resource/Mine")              as GameObject,  new ResourceBundle(0,       100,     20)) },
 
-            { StructureNames.FoodStorage,       new StructureDefinition(Resources.Load("Structures/Storage/Granary")            as GameObject,  new ResourceBundle(120,     0,      0)) },
-            { StructureNames.LumberStorage,     new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")        as GameObject,  new ResourceBundle(120,     0,      0)) },
-            { StructureNames.MetalStorage,      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")      as GameObject,  new ResourceBundle(120,     80,     0)) },
+            { StructureNames.FoodStorage,       new StructureDefinition(Resources.Load("Structures/Storage/Granary")            as GameObject,  new ResourceBundle(0,       120,     0)) },
+            { StructureNames.LumberStorage,     new StructureDefinition(Resources.Load("Structures/Storage/Lumber Pile")        as GameObject,  new ResourceBundle(0,       120,     0)) },
+            { StructureNames.MetalStorage,      new StructureDefinition(Resources.Load("Structures/Storage/Metal Storage")      as GameObject,  new ResourceBundle(0,       120,     80)) },
 
-            { StructureNames.LumberEnvironment, new StructureDefinition(Resources.Load("Structures/Environment/Forest")         as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Structures/Environment/Hills")          as GameObject,  new ResourceBundle(0,       0,      0)) },
-            { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Structures/Environment/Plains")         as GameObject,  new ResourceBundle(0,       0,      0)) },
+            { StructureNames.LumberEnvironment, new StructureDefinition(Resources.Load("Structures/Environment/Forest")         as GameObject,  new ResourceBundle(0,       0,       0)) },
+            { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Structures/Environment/Hills")          as GameObject,  new ResourceBundle(0,       0,       0)) },
+            { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Structures/Environment/Plains")         as GameObject,  new ResourceBundle(0,       0,       0)) },
         };
     }
 
@@ -423,6 +423,9 @@ public class StructureManager : MonoBehaviour
                 {
                     ProceduralGeneration(useSeed, seed);
                 }
+
+                // add the Longhaus to the player structure dictionary
+                playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
             }
         }
     }
@@ -788,7 +791,7 @@ public class StructureManager : MonoBehaviour
         StructureType structType = structure.GetStructureType();
         if ((structureFromStore && BuyBuilding()) || !structureFromStore)
         {
-            GameManager.CreateAudioEffect("build", structure.transform.position);
+            GameManager.CreateAudioEffect("build", structure.transform.position, 0.6f);
             SetStructureColour(Color.white);
             // Attach the structure to the tile and vica versa
             if (attached) { attached.attachedTile.Detach(); }
@@ -880,7 +883,7 @@ public class StructureManager : MonoBehaviour
             return new ResourceBundle(0, 0, 0);
         }
         int cost = 200 * level;
-        ResourceBundle result = new ResourceBundle(cost, cost, 0);
+        ResourceBundle result = new ResourceBundle(0, cost, cost);
         return result;
     }
 

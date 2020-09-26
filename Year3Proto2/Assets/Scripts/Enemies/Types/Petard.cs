@@ -173,7 +173,7 @@ public class Petard : Enemy
     public void Initialize(int _level)
     {
         baseHealth = 15f;
-        baseDamage = 60f;
+        baseDamage = 100f;
         SetLevel(_level);
         finalSpeed = 0.4f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;

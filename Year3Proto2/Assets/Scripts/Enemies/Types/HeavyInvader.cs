@@ -203,11 +203,11 @@ public class HeavyInvader : Enemy
         lowPoly.GetChild(3).GetComponent<SkinnedMeshRenderer>().enabled = equipment[2];
         lowPoly.GetChild(4).GetComponent<SkinnedMeshRenderer>().enabled = equipment[3];
 
-        baseHealth = 65f;
+        baseHealth = 105f;
         finalSpeed = 0.35f;
 
-        if (equipment[2]) { baseHealth += 10f; finalSpeed -= 0.035f; }
-        if (equipment[3]) { baseHealth += 5f; finalSpeed -= 0.0175f; }
+        if (equipment[2]) { baseHealth += 20f; finalSpeed -= 0.035f; }
+        if (equipment[3]) { baseHealth += 10f; finalSpeed -= 0.0175f; }
 
         currentSpeed = finalSpeed;
     }

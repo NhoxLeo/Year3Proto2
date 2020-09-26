@@ -29,7 +29,7 @@ public class Ballista : ProjectileDefenseStructure
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
         arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        attackCost = new ResourceBundle(0, 0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost);
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
@@ -57,7 +57,7 @@ public class Ballista : ProjectileDefenseStructure
         GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
         BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
         arrowBehaviour.Initialize(_target, damage, ArrowSpeed, arrowPierce);
-        GameManager.CreateAudioEffect("arrow", transform.position);
+        GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
         /*
         Vector3 position = transform.position;
         position.y = 1.25f;
@@ -83,14 +83,14 @@ public class Ballista : ProjectileDefenseStructure
         if (allocatedVillagers != 0)
         {
             projectileDelay = 1f / projectileRate;
-            projectileAmount = allocatedVillagers;
+            //projectileAmount = allocatedVillagers;
         }
     }
 
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        damage = GetBaseDamage() * Mathf.Pow(1.25f, level - 1);
+        damage = GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
         health = GetTrueMaxHealth();
     }
 
@@ -111,7 +111,7 @@ public class Ballista : ProjectileDefenseStructure
         }
 
         // level
-        maxHealth *= Mathf.Pow(1.25f, level - 1);
+        maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
         if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))

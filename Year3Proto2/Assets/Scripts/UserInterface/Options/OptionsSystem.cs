@@ -31,15 +31,28 @@ public class OptionsSystem : MonoBehaviour
     private List<OptionObject> optionObjects = new List<OptionObject>();
     private void Awake()
     {
+        // TOGGLES
+
+        OptionToggleData fullscreenData = new OptionToggleData(true, true);
+        fullscreenData.CallBack(() => Screen.fullScreenMode = fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+
+        /*
+        OptionToggleData mouseCameraControlData = new OptionToggleData(true, false);
+        mouseCameraControlData.CallBack(() => { });
+        optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", mouseCameraControlData, togglePrefab, controlsPanel));
+        */
+
+        /*OptionToggleData vSyncData = new OptionToggleData(false, false);
+        vSyncData.CallBack(() => QualitySettings.vSyncCount = vSyncData.value ? 1 : 0);
+        */
 
         // SWITCHERS
-        OptionSwitcherData resolutionData = new OptionSwitcherData(0, 0, Screen.resolutions.Select(o => o.ToString()).ToArray());
+        OptionSwitcherData resolutionData = new OptionSwitcherData(Screen.resolutions.Length - 1, 0, Screen.resolutions.Select(o => o.ToString()).ToArray());
         resolutionData.CallBack(() => 
         {
             Resolution resolution = Screen.resolutions[resolutionData.value];
-            Screen.SetResolution(resolution.width, resolution.height, true);
+            Screen.SetResolution(resolution.width, resolution.height, fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
         });
-        optionObjects.Add(InstantiateOption("RESOLUTION", resolutionData, switcherPrefab, displayPanel));
 
         /*
         OptionSwitcherData textureQualityData = new OptionSwitcherData(0, 0, new string[] { "High", "Medium", "Low" });
@@ -54,7 +67,6 @@ public class OptionsSystem : MonoBehaviour
         // SLIDERS
         OptionSliderData masterVolumeData = new OptionSliderData(0.5f, 0.5f);
         masterVolumeData.CallBack(() => AudioListener.volume = masterVolumeData.value);
-        optionObjects.Add(InstantiateOption("MASTER_VOLUME", masterVolumeData, sliderPrefab, audioPanel));
 
         /*
         OptionSliderData soundEffectData = new OptionSliderData(0.5f, 0.5f);
@@ -76,27 +88,21 @@ public class OptionsSystem : MonoBehaviour
         optionObjects.Add(InstantiateOption("CAMERA_MOVEMENT_SENSITIVITY", cameraMovementData, sliderPrefab, controlsPanel));
         */
 
+        // DISPLAY OPTIONS
 
-        // TOGGLES
-
-        OptionToggleData fullscreenData = new OptionToggleData(true, true);
-        fullscreenData.CallBack(() => Screen.fullScreenMode = fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        optionObjects.Add(InstantiateOption("RESOLUTION", resolutionData, switcherPrefab, displayPanel));
         optionObjects.Add(InstantiateOption("FULL_SCREEN_MODE", fullscreenData, togglePrefab, displayPanel));
+        //optionObjects.Add(InstantiateOption("V_SYNC", vSyncData, togglePrefab, displayPanel));
 
-        /*
-        OptionToggleData mouseCameraControlData = new OptionToggleData(true, false);
-        mouseCameraControlData.CallBack(() => { });
-        optionObjects.Add(InstantiateOption("MOUSE_EDGE_CAMERA_CONTROL", mouseCameraControlData, togglePrefab, controlsPanel));
-        */
+        // AUDIO
 
-        OptionToggleData vSyncData = new OptionToggleData(false, false);
-        vSyncData.CallBack(() => QualitySettings.vSyncCount = vSyncData.value ? 1 : 0);
-        optionObjects.Add(InstantiateOption("V_SYNC", vSyncData, togglePrefab, displayPanel));
+        optionObjects.Add(InstantiateOption("MASTER_VOLUME", masterVolumeData, sliderPrefab, audioPanel));
+
+
     }
 
     private void Start()
     {
-        PlayerPrefs.DeleteAll();
         optionObjects.ForEach(optionObject => optionObject.Deserialize());
     }
 

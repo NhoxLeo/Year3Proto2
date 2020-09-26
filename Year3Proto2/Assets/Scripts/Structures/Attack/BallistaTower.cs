@@ -38,7 +38,7 @@ public class BallistaTower : AttackStructure
         }
         bool efficiencyUpgrade = superMan.GetResearchComplete(SuperManager.BallistaEfficiency);
         int woodCost = efficiencyUpgrade ? (CostArrowBase / 2) : CostArrowBase;
-        attackCost = new ResourceBundle(woodCost, 0, 0);
+        attackCost = new ResourceBundle(0, woodCost, 0);
         arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
         if (superMan.GetResearchComplete(SuperManager.BallistaPower))
         {
@@ -76,23 +76,13 @@ public class BallistaTower : AttackStructure
         }
     }
 
-    public override void OnPlace()
-    {
-        base.OnPlace();
-        BallistaTower[] ballistaTowers = FindObjectsOfType<BallistaTower>();
-        if (ballistaTowers.Length >= 2)
-        {
-            BallistaTower other = (ballistaTowers[0] == this) ? ballistaTowers[1] : ballistaTowers[0];
-        }
-    }
-
     void Fire()
     {
         fireCooldown = 0;
         GameObject newArrow = Instantiate(arrow, ballista.transform.position, Quaternion.identity, transform);
         BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
         arrowBehaviour.Initialize(target.transform, arrowDamage, arrowSpeed, arrowPierce);
-        GameManager.CreateAudioEffect("arrow", transform.position);
+        GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
     }
 
     void SetFirerate()
