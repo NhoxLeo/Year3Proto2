@@ -40,10 +40,10 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                gameMan.AddBatch(new ResourceBatch(metalGen, ResourceType.Metal));
-                gameMan.AddBatch(new ResourceBatch(lumberGen, ResourceType.Wood));
-                gameMan.AddBatch(new ResourceBatch(foodGen, ResourceType.Food));
-                gameMan.AddBatch(new ResourceBatch(VillagerManager.GetInstance().GetRationCost(), ResourceType.Food));
+                //gameMan.AddBatch(new ResourceBatch(metalGen, ResourceType.Metal));
+                //gameMan.AddBatch(new ResourceBatch(lumberGen, ResourceType.Wood));
+                //gameMan.AddBatch(new ResourceBatch(foodGen, ResourceType.Food));
+                //gameMan.AddBatch(new ResourceBatch(VillagerManager.GetInstance().GetRationCost(), ResourceType.Food));
             }
 
         }
@@ -56,7 +56,7 @@ public class Longhaus : Structure
 
     public static void TrainVillager()
     {
-        ResourceBundle cost = new ResourceBundle(0, 0, 100);
+        ResourceBundle cost = new ResourceBundle(100, 0, 0);
         if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
         {
             VillagerManager villMan = VillagerManager.GetInstance();
@@ -70,7 +70,7 @@ public class Longhaus : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
-        resourceDelta += new Vector3(lumberGen / productionTime, metalGen / productionTime, foodGen / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec());
+        resourceDelta += new Vector3(foodGen / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec(), lumberGen / productionTime, metalGen / productionTime);
 
         return resourceDelta;
     }

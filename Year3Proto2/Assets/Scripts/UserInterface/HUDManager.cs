@@ -23,7 +23,7 @@ public class HUDManager : MonoBehaviour
 {
     private static HUDManager instance;
 
-    private float updateInterval = 0.5f;
+    private float updateInterval = 0.0083f;
     private float updateTimer;
 
     UIAnimator animator;
@@ -167,27 +167,27 @@ public class HUDManager : MonoBehaviour
 
         Vector3 velocity = GameManager.GetInstance().GetResourceVelocity();
 
-        float foodVel = velocity.z;
+        float foodVel = velocity.x;
         string foodVelDP = AddSign(Mathf.Round(foodVel));
-        foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + ")";
+        foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString("0") + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString("0") + " (" + foodVelDP + ")";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Food))
         {
             foodText.color = fullColour;
         }
 
-        float woodVel = velocity.x;
+        float woodVel = velocity.y;
         string woodVelDP = AddSign(Mathf.Round(woodVel));
-        woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + ")";
+        woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString("0") + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString("0") + " (" + woodVelDP + ")";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Wood))
         {
             woodText.color = fullColour;
         }
 
-        float metalVel = velocity.y;
+        float metalVel = velocity.z;
         string metalVelDP = AddSign(Mathf.Round(metalVel));
-        metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + ")";
+        metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString("0") + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString("0") + " (" + metalVelDP + ")";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
         if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Metal))
         {
@@ -232,11 +232,11 @@ public class HUDManager : MonoBehaviour
     {
         if (_makeNegative)
         {
-            ShowResourceDelta(-_resourceDelta.foodCost, -_resourceDelta.woodCost, -_resourceDelta.metalCost);
+            ShowResourceDelta((int)-_resourceDelta.food, (int)-_resourceDelta.wood, (int)-_resourceDelta.metal);
         }
         else
         {
-            ShowResourceDelta(_resourceDelta.foodCost, _resourceDelta.woodCost, _resourceDelta.metalCost);
+            ShowResourceDelta((int)_resourceDelta.food, (int)_resourceDelta.wood, (int)_resourceDelta.metal);
         }
     }
 
