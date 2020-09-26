@@ -7,6 +7,7 @@ using TMPro;
 public class VillagerAllocation : MonoBehaviour
 {
     public Structure target;
+    private StructureManager structMan;
     [SerializeField] private GameObject autoIndicator;
     [SerializeField] private GameObject manualIndicator;
     [SerializeField] private Transform allocationButtons;
@@ -58,9 +59,7 @@ public class VillagerAllocation : MonoBehaviour
         if (_value >= 0)
         {
             autoIndicator.SetActive(true);
-            Vector3 pos = autoIndicator.transform.position;
-            pos.x = allocationButtons.GetChild(_value).position.x;
-            autoIndicator.transform.position = pos;
+            autoIndicator.transform.localPosition = allocationButtons.GetChild(_value).localPosition;
         }
         else
         {
@@ -73,9 +72,7 @@ public class VillagerAllocation : MonoBehaviour
         if (_value >= 0)
         {
             manualIndicator.SetActive(true);
-            Vector3 pos = manualIndicator.transform.position;
-            pos.x = allocationButtons.GetChild(_value).position.x;
-            manualIndicator.transform.position = pos;
+            manualIndicator.transform.localPosition = allocationButtons.GetChild(_value).localPosition;
         }
         else
         {
