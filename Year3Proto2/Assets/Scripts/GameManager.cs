@@ -24,30 +24,6 @@ public struct PlayerResources
         foodMax = _maxAmount;
     }
 
-    public void AddBatch(ResourceBatch _batch)
-    {
-        switch (_batch.type)
-        {
-            case ResourceType.Wood:
-                wood += _batch.amount;
-                if (wood > woodMax) { wood = woodMax; }
-                break;
-            case ResourceType.Metal:
-                metal += _batch.amount;
-                if (metal > metalMax) { metal = metalMax; }
-                break;
-            case ResourceType.Food:
-                food += _batch.amount;
-                if (food > foodMax) { food = foodMax; }
-                if (food < 0)
-                {
-                    VillagerManager.GetInstance().AddStarveTicks(-food);
-                    food = 0;
-                }
-                break;
-        }
-    }
-
     public bool AttemptPurchase(ResourceBundle _cost)
     {
         if (CanAfford(_cost))
@@ -65,22 +41,6 @@ public struct PlayerResources
         return (wood >= _cost.wood || _cost.wood <= 0) && (metal >= _cost.metal || _cost.metal <= 0) && (food >= _cost.food || _cost.food <= 0);
     }
 
-    public void DeductResource(ResourceType _type, float _deduction)
-    {
-        switch (_type)
-        {
-            case ResourceType.Wood:
-                wood -= _deduction;
-                break;
-            case ResourceType.Metal:
-                metal -= _deduction;
-                break;
-            case ResourceType.Food:
-                food -= _deduction;
-                break;
-        }
-    }
-
     public void DeductResourceBundle(ResourceBundle _bundle)
     {
         wood -= _bundle.wood;
@@ -90,43 +50,14 @@ public struct PlayerResources
 
     public void AddResourceBundle(ResourceBundle _bundle)
     {
-        wood += _bundle.wood;
-        metal += _bundle.metal;
         food += _bundle.food;
-    }
+        if (food > foodMax) { food = foodMax; }
 
-    public float Get(ResourceType _type)
-    {
-        float value = 0;
-        switch (_type)
-        {
-            case ResourceType.Wood:
-                value = wood;
-                break;
-            case ResourceType.Metal:
-                value = metal;
-                break;
-            case ResourceType.Food:
-                value = food;
-                break;
-        }
-        return value;
-    }
+        wood += _bundle.wood;
+        if (wood > woodMax) { wood = woodMax; }
 
-    public float GetResourceMax(ResourceType _type)
-    {
-        switch (_type)
-        {
-            case ResourceType.Wood:
-                return woodMax;
-            case ResourceType.Metal:
-                return metalMax;
-            case ResourceType.Food:
-                return foodMax;
-            default:
-                break;
-        }
-        return 0;
+        metal += _bundle.metal;
+        if (metal > metalMax) { metal = metalMax; }
     }
 
     public bool ResourceIsFull(ResourceType _type)
@@ -161,9 +92,21 @@ public struct PlayerResources
         }
     }
 
-    public bool AllGreaterOrEqualTo(float _amount)
+    public Vector3 GetResources()
     {
-        return wood >= _amount && metal >= _amount && food >= _amount;
+        return new Vector3(food, wood, metal);
+    }
+
+    public Vector3 GetCapacity()
+    {
+        return new Vector3(foodMax, woodMax, metalMax);
+    }
+
+    public void CheatSetMaxed()
+    {
+        food = foodMax;
+        wood = woodMax;
+        metal = metalMax;
     }
 }
 
@@ -212,8 +155,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool repairMessage = false;
     [HideInInspector]
-    public bool longhausDead;
-    [HideInInspector]
     public bool repairAll = false;
     private float volumeFull;
     private float panelRefreshTimer = 0.0f;
@@ -225,6 +166,7 @@ public class GameManager : MonoBehaviour
     public float foodSinceObjective = 0;
     public float lumberSinceObjective = 0;
     public float metalSinceObjective = 0;
+    public bool cheatAlwaysMaxed = false;
 
     public static GameManager GetInstance()
     {
@@ -250,28 +192,6 @@ public class GameManager : MonoBehaviour
     public static void IncrementRepairCount()
     {
         repairCount++;
-    }
-
-    public void AddBatch(ResourceBatch _newBatch)
-    {
-        playerResources.AddBatch(_newBatch);
-        if (_newBatch.amount < 0)
-        {
-            switch (_newBatch.type)
-            {
-                case ResourceType.Wood:
-                    lumberSinceObjective += _newBatch.amount;
-                    break;
-                case ResourceType.Metal:
-                    metalSinceObjective += _newBatch.amount;
-                    break;
-                case ResourceType.Food:
-                    foodSinceObjective += _newBatch.amount;
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     public void CalculateStorageMaximum()
@@ -450,7 +370,26 @@ public class GameManager : MonoBehaviour
         lumberSinceObjective += Mathf.Clamp(resourcesThisFrame.wood, 0f, resourcesThisFrame.wood);
         metalSinceObjective += Mathf.Clamp(resourcesThisFrame.metal, 0f, resourcesThisFrame.metal);
         playerResources.AddResourceBundle(resourcesThisFrame);
-        
+
+
+        // Hold both mouse buttons
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+        {
+            if (SuperManager.DevMode)
+            {
+                // Press M
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    cheatAlwaysMaxed = !cheatAlwaysMaxed;
+                }
+            }
+        }
+
+        if (SuperManager.DevMode && cheatAlwaysMaxed)
+        {
+            playerResources.CheatSetMaxed();
+        }
+
 
         if (!tutorialDone)
         {
@@ -536,7 +475,7 @@ public class GameManager : MonoBehaviour
 
         if (!gameover)
         {
-            if (longhausDead)
+            if (GlobalData.longhausDead)
             {
                 gameover = true;
                 victory = false;
@@ -685,11 +624,11 @@ public class GameManager : MonoBehaviour
             switch (currentWinCondition)
             {
                 case SuperManager.Accumulate:
-                    return playerResources.AllGreaterOrEqualTo(1500);
+                    return playerResources.CanAfford(new ResourceBundle(1500f, 1500f, 1500f));
                 case SuperManager.AccumulateII:
-                    return playerResources.AllGreaterOrEqualTo(2500);
+                    return playerResources.CanAfford(new ResourceBundle(2500f, 2500f, 2500f));
                 case SuperManager.AccumulateIII:
-                    return playerResources.AllGreaterOrEqualTo(5000);
+                    return playerResources.CanAfford(new ResourceBundle(5000f, 5000f, 5000f));
                 case SuperManager.Slaughter:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 20;
                 case SuperManager.SlaughterII:

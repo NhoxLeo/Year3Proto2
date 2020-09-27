@@ -492,9 +492,13 @@ public class VillagerManager : MonoBehaviour
         availableVillagers++;
     }
 
-    public void RemoveVillagers(int _villagers)
+    public void RemoveVillagers(int _villagers, bool _wereManual)
     {
         villagers -= _villagers;
+        if (_wereManual)
+        {
+            villagersManAllocated -= _villagers;
+        }
     }
 
     public int GetAvailable()
@@ -522,15 +526,13 @@ public class VillagerManager : MonoBehaviour
         availableVillagers++;
     }
 
-    public void ReturnVillagers(int _villagers)
+    public void ReturnVillagers(int _villagers, bool _wereManual)
     {
         availableVillagers += _villagers;
-    }
-
-    public void ReturnFromManual(int _villagers)
-    {
-        ReturnVillagers(_villagers);
-        villagersManAllocated -= _villagers;
+        if (_wereManual)
+        {
+            villagersManAllocated -= _villagers;
+        }
     }
 
     public void MarkAsAllocated(int _villagers)
@@ -551,6 +553,11 @@ public class VillagerManager : MonoBehaviour
     public int GetManuallyAllocated()
     {
         return villagersManAllocated;
+    }
+
+    public void SetManuallyAllocated(int _allocated)
+    {
+        villagersManAllocated = _allocated;
     }
 
     public void MarkVillagersAsManAlloc(int _manuallyAllocated)
