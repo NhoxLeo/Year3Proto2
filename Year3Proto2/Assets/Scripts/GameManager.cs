@@ -155,8 +155,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool repairMessage = false;
     [HideInInspector]
-    public bool longhausDead;
-    [HideInInspector]
     public bool repairAll = false;
     private float volumeFull;
     private float panelRefreshTimer = 0.0f;
@@ -477,7 +475,7 @@ public class GameManager : MonoBehaviour
 
         if (!gameover)
         {
-            if (longhausDead)
+            if (GlobalData.longhausDead)
             {
                 gameover = true;
                 victory = false;
