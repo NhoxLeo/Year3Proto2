@@ -787,6 +787,7 @@ public class StructureManager : MonoBehaviour
 
     public void AttemptPlaceStructure(TileBehaviour _tile)
     {
+        GameManager gameMan = GameManager.GetInstance();
         Structure attached = _tile.GetAttached();
         StructureType structType = structure.GetStructureType();
         if ((structureFromStore && BuyBuilding()) || !structureFromStore)
@@ -805,17 +806,17 @@ public class StructureManager : MonoBehaviour
                 string structName = structure.GetStructureName();
                 if (attachedName == StructureNames.FoodEnvironment && structName == StructureNames.FoodResource)
                 {
-                    GameManager.GetInstance().AddBatch(new ResourceBatch(50, ResourceType.Food));
+                    gameMan.playerResources.AddResourceBundle(new ResourceBundle(50f, 0f, 0f));
                     structure.GetComponent<Farm>().wasPlacedOnPlains = true;
                 }
                 else if (attachedName == StructureNames.LumberEnvironment && structName == StructureNames.LumberResource)
                 {
-                    GameManager.GetInstance().AddBatch(new ResourceBatch(50, ResourceType.Wood));
+                    gameMan.playerResources.AddResourceBundle(new ResourceBundle(0f, 50f, 0f));
                     structure.GetComponent<LumberMill>().wasPlacedOnForest = true;
                 }
                 else if (attachedName == StructureNames.MetalEnvironment && structName == StructureNames.MetalResource)
                 {
-                    GameManager.GetInstance().AddBatch(new ResourceBatch(50, ResourceType.Metal));
+                    gameMan.playerResources.AddResourceBundle(new ResourceBundle(0f, 0f, 50f));
                     structure.GetComponent<Mine>().wasPlacedOnHills = true;
                 }
                 Destroy(attached.gameObject);
@@ -845,7 +846,7 @@ public class StructureManager : MonoBehaviour
                 structure.SetAllocationWidget(villagerAllocation);
             }
             playerStructureDict.Add(structure.GetID(), structure);
-            GameManager.GetInstance().OnStructurePlaced();
+            gameMan.OnStructurePlaced();
             PathManager.GetInstance().ClearPaths();
             VillagerManager.GetInstance().RedistributeVillagers();
             SelectStructure(structure);
