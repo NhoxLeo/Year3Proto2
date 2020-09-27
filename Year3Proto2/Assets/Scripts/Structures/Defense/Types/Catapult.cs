@@ -8,7 +8,7 @@ public class Catapult : ProjectileDefenseStructure
 
     private const float BoulderSpeed = 1f;
     private const float BaseMaxHealth = 450f;
-    private const float BaseDamage = 5f;
+    private const float BaseDamage = 15f;
 
     private float damage;
     private float boulderExplosionRadius = 0.375f;
@@ -31,7 +31,7 @@ public class Catapult : ProjectileDefenseStructure
         {
             boulderExplosionRadius *= 1.5f;
         }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        attackCost = new ResourceBundle(0, 0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost);
         
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
@@ -51,7 +51,7 @@ public class Catapult : ProjectileDefenseStructure
         boulderBehaviour.damage = damage;
         boulderBehaviour.speed = BoulderSpeed;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
-        GameManager.CreateAudioEffect("catapultFire", transform.position);
+        GameManager.CreateAudioEffect("catapultFire", transform.position, 0.6f);
 
         /*
         Vector3 position = transform.position;
@@ -74,7 +74,7 @@ public class Catapult : ProjectileDefenseStructure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        projectileRate = allocatedVillagers * 0.167f;
+        projectileRate = 0.2f + (allocatedVillagers * 0.1f);
         if (allocatedVillagers != 0)
         {
             projectileDelay = 1f / projectileRate;

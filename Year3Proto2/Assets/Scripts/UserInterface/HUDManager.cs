@@ -23,7 +23,7 @@ public class HUDManager : MonoBehaviour
 {
     private static HUDManager instance;
 
-    private float updateInterval = 0.5f;
+    private float updateInterval = 0.0083f;
     private float updateTimer;
 
     UIAnimator animator;
@@ -160,36 +160,41 @@ public class HUDManager : MonoBehaviour
 
     public void RefreshResources()
     {
+        GameManager gameMan = GameManager.GetInstance();
+        VillagerManager villagerMan = VillagerManager.GetInstance();
+
         // available out of total
-        string availableVillagers = VillagerManager.GetInstance().GetAvailable().ToString("0");
-        string villagers = VillagerManager.GetInstance().GetVillagers().ToString("0");
+        string availableVillagers = villagerMan.GetAvailable().ToString("0");
+        string villagers = villagerMan.GetVillagers().ToString("0");
         villagerText.text = availableVillagers + "/" + villagers;
 
-        Vector3 velocity = GameManager.GetInstance().GetResourceVelocity();
+        Vector3 resources = gameMan.playerResources.GetResources();
+        Vector3 capacity = gameMan.playerResources.GetCapacity();
+        Vector3 velocity = gameMan.GetResourceVelocity();
 
-        float foodVel = velocity.z;
+        float foodVel = velocity.x;
         string foodVelDP = AddSign(Mathf.Round(foodVel));
-        foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + ")";
+        foodText.text = resources.x.ToString("0") + "/" + capacity.x.ToString("0") + " (" + foodVelDP + ")";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
-        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Food))
+        if (gameMan.playerResources.ResourceIsFull(ResourceType.Food))
         {
             foodText.color = fullColour;
         }
 
-        float woodVel = velocity.x;
+        float woodVel = velocity.y;
         string woodVelDP = AddSign(Mathf.Round(woodVel));
-        woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + ")";
+        woodText.text = resources.y.ToString("0") + "/" + capacity.y.ToString("0") + " (" + woodVelDP + ")";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
-        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Wood))
+        if (gameMan.playerResources.ResourceIsFull(ResourceType.Wood))
         {
             woodText.color = fullColour;
         }
 
-        float metalVel = velocity.y;
+        float metalVel = velocity.z;
         string metalVelDP = AddSign(Mathf.Round(metalVel));
-        metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + ")";
+        metalText.text = resources.z.ToString("0") + "/" + capacity.z.ToString("0") + " (" + metalVelDP + ")";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
-        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Metal))
+        if (gameMan.playerResources.ResourceIsFull(ResourceType.Metal))
         {
             metalText.color = fullColour;
         }
@@ -232,11 +237,11 @@ public class HUDManager : MonoBehaviour
     {
         if (_makeNegative)
         {
-            ShowResourceDelta(-_resourceDelta.foodCost, -_resourceDelta.woodCost, -_resourceDelta.metalCost);
+            ShowResourceDelta((int)-_resourceDelta.food, (int)-_resourceDelta.wood, (int)-_resourceDelta.metal);
         }
         else
         {
-            ShowResourceDelta(_resourceDelta.foodCost, _resourceDelta.woodCost, _resourceDelta.metalCost);
+            ShowResourceDelta((int)_resourceDelta.food, (int)_resourceDelta.wood, (int)_resourceDelta.metal);
         }
     }
 

@@ -36,7 +36,7 @@ public class CatapultTower : AttackStructure
         {
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);
+        //attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? 4 : 8, 0);
         if (superMan.GetResearchComplete(SuperManager.CatapultPower))
         {
             boulderDamage *= 1.3f;
@@ -69,10 +69,12 @@ public class CatapultTower : AttackStructure
         fireCooldown += Time.deltaTime;
         if (fireCooldown >= fireDelay)
         {
+            /*
             if (GameManager.GetInstance().playerResources.AttemptPurchase(new ResourceBundle(0, 15, 0)))
             {
                 Fire();
             }
+            */
         }
     }
 
@@ -86,17 +88,7 @@ public class CatapultTower : AttackStructure
         boulderBehaviour.damage = boulderDamage;
         boulderBehaviour.speed = boulderSpeed;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
-        GameManager.CreateAudioEffect("catapultFire", transform.position);
-    }
-
-    public override void OnPlace()
-    {
-        base.OnPlace();
-        CatapultTower[] catapultTowers = FindObjectsOfType<CatapultTower>();
-        if (catapultTowers.Length >= 2)
-        {
-            CatapultTower other = (catapultTowers[0] == this) ? catapultTowers[1] : catapultTowers[0];
-        }
+        GameManager.CreateAudioEffect("catapultFire", transform.position, 0.6f);
     }
 
     void SetFirerate()

@@ -16,6 +16,11 @@ public class Longhaus : Structure
 
     private const float BaseMaxHealth = 500f;
 
+    private const int foodGen = 16;
+    private const int lumberGen = 6;
+    private const int metalGen = 3;
+
+
     protected override void Awake()
     {
         base.Awake();
@@ -35,10 +40,10 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                gameMan.AddBatch(new ResourceBatch(3, ResourceType.Metal));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Wood));
-                gameMan.AddBatch(new ResourceBatch(7, ResourceType.Food));
-                gameMan.AddBatch(new ResourceBatch(VillagerManager.GetInstance().GetRationCost(), ResourceType.Food));
+                //gameMan.AddBatch(new ResourceBatch(metalGen, ResourceType.Metal));
+                //gameMan.AddBatch(new ResourceBatch(lumberGen, ResourceType.Wood));
+                //gameMan.AddBatch(new ResourceBatch(foodGen, ResourceType.Food));
+                //gameMan.AddBatch(new ResourceBatch(VillagerManager.GetInstance().GetRationCost(), ResourceType.Food));
             }
 
         }
@@ -51,7 +56,7 @@ public class Longhaus : Structure
 
     public static void TrainVillager()
     {
-        ResourceBundle cost = new ResourceBundle(0, 0, 100);
+        ResourceBundle cost = new ResourceBundle(100, 0, 0);
         if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
         {
             VillagerManager villMan = VillagerManager.GetInstance();
@@ -65,7 +70,7 @@ public class Longhaus : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
-        resourceDelta += new Vector3(7f / productionTime, 3f / productionTime, 7f / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec());
+        resourceDelta += new Vector3(foodGen / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec(), lumberGen / productionTime, metalGen / productionTime);
 
         return resourceDelta;
     }
@@ -87,5 +92,11 @@ public class Longhaus : Structure
         }
 
         return maxHealth;
+    }
+
+    protected override void OnDestroyed()
+    {
+        base.OnDestroyed();
+        GlobalData.longhausDead = true;
     }
 }
