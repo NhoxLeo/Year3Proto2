@@ -292,7 +292,10 @@ public abstract class Structure : MonoBehaviour
         if (gameMan.playerResources.CanAfford(repairCost) && timeSinceLastHit >= 5.0f && !repairCost.IsEmpty())
         {
             GameManager.IncrementRepairCount();
-            if (!_mass) { HUDManager.GetInstance().ShowResourceDelta(repairCost, true); }
+            if (!_mass) 
+            {
+                HUDManager.GetInstance().ShowResourceDelta(repairCost, true); 
+            }
             gameMan.playerResources.DeductResourceBundle(repairCost);
             health = GetTrueMaxHealth();
             return true;

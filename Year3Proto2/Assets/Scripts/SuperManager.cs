@@ -11,7 +11,7 @@ public class SuperManager : MonoBehaviour
     // CONSTANTS
     public const string Version = "1.0.0.1";
     public const float ScalingFactor = 1.33f;
-    public static bool DevMode = false;
+    public static bool DevMode = true;
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -589,16 +589,6 @@ public class SuperManager : MonoBehaviour
                 {
                     startMaxed = true;
                     WipeReloadScene(true);
-                }
-                // Press M
-                if (Input.GetKeyDown(KeyCode.M))
-                {
-                    if (GameManager.GetInstance())
-                    {
-                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Food));
-                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Wood));
-                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Metal));
-                    }
                 }
             }
         }
