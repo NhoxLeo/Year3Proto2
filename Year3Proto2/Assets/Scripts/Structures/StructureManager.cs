@@ -1246,6 +1246,8 @@ public class StructureManager : MonoBehaviour
                 VillagerAllocation villagerAllocation = Instantiate(villagerWidgetPrefab, canvas.transform.Find("HUD/VillagerAllocationWidgets")).GetComponent<VillagerAllocation>();
                 villagerAllocation.SetTarget(newStructure);
                 newStructure.SetAllocationWidget(villagerAllocation);
+                newStructure.SetAllocated(_saveData.villagers);
+                newStructure.SetManualAllocation(_saveData.manualAllocation);
             }
         }
     }

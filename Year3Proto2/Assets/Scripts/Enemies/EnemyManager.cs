@@ -152,7 +152,7 @@ public class EnemyManager : MonoBehaviour
 
     private readonly List<Enemy> enemies = new List<Enemy>();
     private int enemiesKilled = 0;
-    private int waveCounter = 0;
+    private int wave = 0;
 
     public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
@@ -325,7 +325,7 @@ public class EnemyManager : MonoBehaviour
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
         if (airship) {
-            airship.spawnWave = waveCounter;
+            airship.spawnWave = wave;
             if (airship.GetTarget()) {
                 airship.Embark(transforms, pointerParent);
             }
@@ -354,7 +354,7 @@ public class EnemyManager : MonoBehaviour
             Vector3 location = new Vector3(Mathf.Sin(random) * distance * 0.75f, 0.0f, Mathf.Cos(random) * distance * 0.75f);
 
             FlyingInvader enemy = Instantiate(transform.gameObject, location, Quaternion.identity).GetComponent<FlyingInvader>();
-            enemy.SetSpawnWave(waveCounter);
+            enemy.SetSpawnWave(wave);
             enemy.Initialize(GetEnemyCurrentLevel(EnemyNames.FlyingInvader));
             RecordNewEnemy(enemy);
         }
@@ -386,7 +386,7 @@ public class EnemyManager : MonoBehaviour
             time -= Time.deltaTime;
             if (time <= 0f)
             {
-                waveCounter++;
+                wave++;
 
                 UpdateSpawnSettings();
 
@@ -396,7 +396,7 @@ public class EnemyManager : MonoBehaviour
                 enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
 
                 Transform[] dedicatedEnemies = DedicateEnemies((int)enemiesToSpawn);
-                waveEnemyCounts.Add(waveCounter, new WaveData(dedicatedEnemies.Length));
+                waveEnemyCounts.Add(wave, new WaveData(dedicatedEnemies.Length));
 
                 // first spawn flying invaders
                 Transform[] remaining = SpawnFlyingInvaders(dedicatedEnemies);
@@ -567,18 +567,19 @@ public class EnemyManager : MonoBehaviour
     * @Author: Samuel Fortune
     * @Parameter: SuperManager.MatchSaveData _data, the data to load information from
     * @Return: void
-    * @Description: Certain parameters of the EnemyWaveSystem, token data in particular, need to be loaded and saved.
+    * @Description: Certain parameters of the EnemyManager, token data in particular, need to be loaded and saved.
     ***************************************/
-    public void LoadSystemFromData(SuperManager.MatchSaveData _data)
+    public void LoadData(SuperManager.MatchSaveData _data)
     {
         spawning = _data.spawning;
-
-        weightageScalar = _data.waveSystemWeightageScalar;
-        tokenIncrement = _data.waveSystemTokenIncrement;
-        tokensScalar = _data.waveSystemTokenScalar;
-        time = _data.waveSystemTime;
-        timeVariance = _data.waveSystemTimeVariance;
-        tokens = _data.waveSystemTokens;
+        wave = _data.wave;
+        weightageScalar = _data.weightageScalar;
+        tokenIncrement = _data.tokenIncrement;
+        tokensScalar = _data.tokenScalar;
+        time = _data.time;
+        timeVariance = _data.timeVariance;
+        tokens = _data.tokens;
+        enemiesKilled = _data.enemiesKilled;
     }
 
     /**************************************
@@ -586,18 +587,20 @@ public class EnemyManager : MonoBehaviour
     * @Author: Samuel Fortune
     * @Parameter: ref SuperManager.MatchSaveData _data, the data to save information to
     * @Return: void
-    * @Description: Allows the SuperManager to load the state of the EnemyWaveSystem when it loads a match from file.
+    * @Description: Allows the SuperManager to load the state of the EnemyManager when it loads a match from file.
     ***************************************/
     public void SaveSystemToData(ref SuperManager.MatchSaveData _data)
     {
         _data.spawning = spawning;
-
-        _data.waveSystemWeightageScalar = weightageScalar;
-        _data.waveSystemTokenIncrement = tokenIncrement;
-        _data.waveSystemTokenScalar = tokensScalar;
-        _data.waveSystemTime = time;
-        _data.waveSystemTimeVariance = new SuperManager.SaveVector3(timeVariance);
-        _data.waveSystemTokens = tokens;
+        _data.enemiesKilled = enemiesKilled;
+        _data.spawnTime = time;
+        _data.wave = wave;
+        _data.weightageScalar = weightageScalar;
+        _data.tokenIncrement = tokenIncrement;
+        _data.tokenScalar = tokensScalar;
+        _data.time = time;
+        _data.timeVariance = new SuperManager.SaveVector3(timeVariance);
+        _data.tokens = tokens;
     }
 
     public int GetEnemiesAlive()
@@ -718,12 +721,12 @@ public class EnemyManager : MonoBehaviour
 
     public int GetWaveCurrent()
     {
-        return waveCounter;
+        return wave;
     }
 
     public void SetWave(int _wave)
     {
-        waveCounter = _wave;
+        wave = _wave;
     }
 
     public float GetTime()
@@ -742,7 +745,7 @@ public class EnemyManager : MonoBehaviour
         {
             if (setting.level == SuperManager.GetInstance().GetCurrentLevel())
             {
-                if (setting.wave <= waveCounter)
+                if (setting.wave <= wave)
                 {
                     currentSettings[setting.enemy] = (setting.enemyLevel != 0, setting.enemyLevel);
                 }
@@ -774,7 +777,7 @@ public class EnemyManager : MonoBehaviour
         }
         else
         {
-            if (waveCounter > _wave)
+            if (wave > _wave)
             {
                 return true;
             }

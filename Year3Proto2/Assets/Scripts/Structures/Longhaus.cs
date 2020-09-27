@@ -93,4 +93,10 @@ public class Longhaus : Structure
 
         return maxHealth;
     }
+
+    protected override void OnDestroyed()
+    {
+        base.OnDestroyed();
+        GlobalData.longhausDead = true;
+    }
 }
