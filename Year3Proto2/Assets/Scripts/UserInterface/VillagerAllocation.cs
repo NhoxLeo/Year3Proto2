@@ -1,14 +1,11 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
-using TMPro;
 
 public class VillagerAllocation : MonoBehaviour
 {
     public Structure target;
     private StructureManager structMan;
-    private int allocationLevel;
     private bool hovering;
     private bool collapseWidget;
     private bool widgetCollapsed;
@@ -77,30 +74,14 @@ public class VillagerAllocation : MonoBehaviour
     {
         UpdateButtonActive();
 
-        if (_value >= 0)
-        {
-            autoIndicator.SetActive(true);
-            autoIndicator.transform.localPosition = allocationButtons.GetChild(_value).localPosition;
-        }
-        else
-        {
-            autoIndicator.SetActive(false);
-        }
+        if (_value >= 0) { autoIndicator.transform.localPosition = allocationButtons.GetChild(_value).localPosition; }
     }
 
     public void SetManualIndicator(int _value)
     {
         UpdateButtonActive();
 
-        if (_value >= 0)
-        {
-            manualIndicator.SetActive(true);
-            manualIndicator.transform.localPosition = allocationButtons.GetChild(_value).localPosition;
-        }
-        else
-        {
-            manualIndicator.SetActive(false);
-        }
+        if (_value >= 0) { manualIndicator.transform.localPosition = allocationButtons.GetChild(_value).localPosition; }
     }
 
     public void SetVisibility(bool _visible)
@@ -125,6 +106,8 @@ public class VillagerAllocation : MonoBehaviour
         {
             allocationButtons.GetChild(i).gameObject.SetActive((target.GetAllocated() == i) || !collapseWidget);
         }
+        manualIndicator.SetActive(target.GetManualAllocation());
+        autoIndicator.SetActive(!target.GetManualAllocation());
     }
 
     public void SetHovering(bool _hovering)
