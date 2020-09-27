@@ -42,7 +42,7 @@ public abstract class Structure : MonoBehaviour
         if (allocatedVillagers == _villagers && manualAllocation)
         {
             VillagerManager villMan = VillagerManager.GetInstance();
-            villMan.ReturnFromManual(allocatedVillagers);
+            villMan.ReturnVillagers(allocatedVillagers, true);
             allocatedVillagers = 0;
             manualAllocation = false;
             RefreshWidget();
@@ -62,14 +62,7 @@ public abstract class Structure : MonoBehaviour
         if (change < 0)
         {
             // we are returning villagers to the manager's control.
-            if (previousManualAllocation)
-            {
-                villMan.ReturnFromManual(-change);
-            }
-            else
-            {
-                villMan.ReturnVillagers(-change);
-            }
+            villMan.ReturnVillagers(-change, previousManualAllocation);
             allocatedVillagers = _villagers;
             villMan.RedistributeVillagers();
         }
@@ -94,6 +87,11 @@ public abstract class Structure : MonoBehaviour
         }
         OnAllocation();
         RefreshWidget();
+    }
+
+    public void SetManualAllocation(bool _manualAllocation)
+    {
+        manualAllocation = _manualAllocation;
     }
 
     public void RefreshWidget()
@@ -146,7 +144,7 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void DeallocateAll()
     {
-        VillagerManager.GetInstance().ReturnVillagers(allocatedVillagers);
+        VillagerManager.GetInstance().ReturnVillagers(allocatedVillagers, manualAllocation);
         allocatedVillagers = 0;
         OnAllocation();
         RefreshWidget();
@@ -175,21 +173,8 @@ public abstract class Structure : MonoBehaviour
         health -= amount;
         if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
-        
+
         GameManager.CreateAudioEffect("buildingHit", transform.position, 0.6f);
-
-        if (structureType == StructureType.Defense)
-        {
-            DefenseStructure defenseStructure = GetComponent<DefenseStructure>();
-            //if (defenseStructure.GetEnemies().Count == 0) defenseStructure.DetectEnemies();
-        }
-
-        if (health <= 0f)
-        {
-            VillagerManager.GetInstance().RemoveVillagers(allocatedVillagers);
-            GameObject destroyedVFX = Instantiate(DestructionEffect);
-            destroyedVFX.transform.position = transform.position;
-        }
 
         return health <= 0f;
     }
@@ -292,7 +277,10 @@ public abstract class Structure : MonoBehaviour
         if (gameMan.playerResources.CanAfford(repairCost) && timeSinceLastHit >= 5.0f && !repairCost.IsEmpty())
         {
             GameManager.IncrementRepairCount();
-            if (!_mass) { HUDManager.GetInstance().ShowResourceDelta(repairCost, true); }
+            if (!_mass) 
+            {
+                HUDManager.GetInstance().ShowResourceDelta(repairCost, true); 
+            }
             gameMan.playerResources.DeductResourceBundle(repairCost);
             health = GetTrueMaxHealth();
             return true;
@@ -335,8 +323,6 @@ public abstract class Structure : MonoBehaviour
         healthBar.target = gameObject;
         healthBar.fillAmount = 1.0f;
         healthBarInst.SetActive(false);
-        // health is set in awake, so this is called after and will affect all structures
-        //if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber)) { health = GetBaseMaxHealth() * 0.5f; }
     }
 
     protected virtual void Update()
@@ -352,11 +338,13 @@ public abstract class Structure : MonoBehaviour
             timeSinceLastHit += Time.deltaTime;
             if (health <= 0.0f)
             {
-                if (GetStructureType() == StructureType.Longhaus) { GameManager.GetInstance().longhausDead = true; GlobalData.longhausDead = true; }
                 OnDestroyed();
                 attachedTile.Detach();
                 GameManager.CreateAudioEffect("buildingDestroy", transform.position, 0.6f);
                 StructureManager.GetInstance().OnStructureDestroyed(this);
+                VillagerManager.GetInstance().RemoveVillagers(allocatedVillagers, manualAllocation);
+                GameObject destroyedVFX = Instantiate(DestructionEffect);
+                destroyedVFX.transform.position = transform.position;
                 Destroy(gameObject);
             }
             else

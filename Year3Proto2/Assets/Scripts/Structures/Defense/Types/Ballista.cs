@@ -29,7 +29,7 @@ public class Ballista : ProjectileDefenseStructure
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
         arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        attackCost = new ResourceBundle(0, 0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost);
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);

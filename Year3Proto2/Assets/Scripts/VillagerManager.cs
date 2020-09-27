@@ -10,8 +10,8 @@ public class VillagerManager : MonoBehaviour
     private int villagers = 0;
     private int availableVillagers = 0;
     private int villagersManAllocated = 0;
-    private int starveTicks = 0;
-    private int villagerHungerModifier = 2;
+    private float starveTicks = 0;
+    private float villagerHungerModifier = 2;
     private Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
 
     private void Awake()
@@ -428,17 +428,17 @@ public class VillagerManager : MonoBehaviour
         return lowest;
     }
 
-    public int GetStarveTicks()
+    public float GetStarveTicks()
     {
         return starveTicks;
     }
 
-    public void SetStarveTicks(int _ticks)
+    public void SetStarveTicks(float _ticks)
     {
         starveTicks = _ticks;
     }
 
-    public void AddStarveTicks(int _ticks)
+    public void AddStarveTicks(float _ticks)
     {
         starveTicks += _ticks;
         if (starveTicks >= 100)
@@ -492,9 +492,13 @@ public class VillagerManager : MonoBehaviour
         availableVillagers++;
     }
 
-    public void RemoveVillagers(int _villagers)
+    public void RemoveVillagers(int _villagers, bool _wereManual)
     {
         villagers -= _villagers;
+        if (_wereManual)
+        {
+            villagersManAllocated -= _villagers;
+        }
     }
 
     public int GetAvailable()
@@ -522,15 +526,13 @@ public class VillagerManager : MonoBehaviour
         availableVillagers++;
     }
 
-    public void ReturnVillagers(int _villagers)
+    public void ReturnVillagers(int _villagers, bool _wereManual)
     {
         availableVillagers += _villagers;
-    }
-
-    public void ReturnFromManual(int _villagers)
-    {
-        ReturnVillagers(_villagers);
-        villagersManAllocated -= _villagers;
+        if (_wereManual)
+        {
+            villagersManAllocated -= _villagers;
+        }
     }
 
     public void MarkAsAllocated(int _villagers)
@@ -543,7 +545,7 @@ public class VillagerManager : MonoBehaviour
         return villagers * villagerHungerModifier / Longhaus.productionTime;
     }
 
-    public int GetRationCost()
+    public float GetRationCost()
     {
         return villagers * -villagerHungerModifier;
     }
@@ -551,6 +553,11 @@ public class VillagerManager : MonoBehaviour
     public int GetManuallyAllocated()
     {
         return villagersManAllocated;
+    }
+
+    public void SetManuallyAllocated(int _allocated)
+    {
+        villagersManAllocated = _allocated;
     }
 
     public void MarkVillagersAsManAlloc(int _manuallyAllocated)

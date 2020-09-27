@@ -9,9 +9,11 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     // CONSTANTS
-    public const string Version = "1.0.0";
+    public const string Version = "1.0.0.3";
+    public static bool DevMode = true;
+
     public const float ScalingFactor = 1.33f;
-    public static bool DevMode = false;
+
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -210,6 +212,7 @@ public class SuperManager : MonoBehaviour
         public StructureType type;
         public SaveVector3 position;
         public int villagers;
+        public bool manualAllocation;
 
         // resource structures
         public bool wasPlacedOn;
@@ -242,12 +245,12 @@ public class SuperManager : MonoBehaviour
         public int enemiesKilled;
         public float spawnTime;
         public bool spawning;
-        public float waveSystemWeightageScalar;
-        public float waveSystemTokenIncrement;
-        public float waveSystemTokenScalar;
-        public float waveSystemTime;
-        public SaveVector3 waveSystemTimeVariance;
-        public float waveSystemTokens;
+        public float weightageScalar;
+        public float tokenIncrement;
+        public float tokenScalar;
+        public float time;
+        public SaveVector3 timeVariance;
+        public float tokens;
         public int wave;
         public bool tutorialDone;
         public bool repairMessage;
@@ -255,10 +258,12 @@ public class SuperManager : MonoBehaviour
         public int nextStructureID;
         public int villagers;
         public int availableVillagers;
-        public int starveTicks;
-        public int tempFood;
-        public int tempLumber;
-        public int tempMetal;
+        public int manuallyAllocated;
+        public float starveTicks;
+        public float tempFood;
+        public float tempLumber;
+        public float tempMetal;
+        public float longhausHealth;
     }
 
     [Serializable]
@@ -590,16 +595,6 @@ public class SuperManager : MonoBehaviour
                     startMaxed = true;
                     WipeReloadScene(true);
                 }
-                // Press M
-                if (Input.GetKeyDown(KeyCode.M))
-                {
-                    if (GameManager.GetInstance())
-                    {
-                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Food));
-                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Wood));
-                        GameManager.GetInstance().AddBatch(new ResourceBatch(500, ResourceType.Metal));
-                    }
-                }
             }
         }
     }
@@ -636,27 +631,29 @@ public class SuperManager : MonoBehaviour
             return false;
         }
 
+        GameManager gameMan = GameManager.GetInstance();
+        StructureManager structMan = StructureManager.GetInstance();
+        VillagerManager villagerMan = VillagerManager.GetInstance();
+        EnemyManager enemyMan = EnemyManager.GetInstance();
+
         // easy stuff
-        GameManager.GetInstance().repairAll = _matchData.repairAll;
-        GameManager.GetInstance().repairMessage = _matchData.repairMessage;
-        GameManager.GetInstance().tutorialDone = _matchData.tutorialDone;
-        StructureManager.GetInstance().structureCosts = _matchData.structureCosts;
-        StructureManager.GetInstance().structureCounts = _matchData.structureCounts;
-        StructureManager.GetInstance().SetNextStructureID(_matchData.nextStructureID);
-        GameManager.GetInstance().playerResources = _matchData.playerResources;
-        EnemyManager.GetInstance().SetSpawning(_matchData.spawning);
-        EnemyManager.GetInstance().SetWave(_matchData.wave);
-        EnemyManager.GetInstance().SetTime(_matchData.spawnTime);
-        EnemyManager.GetInstance().SetEnemiesKilled(_matchData.enemiesKilled);
-        GameManager.GetInstance().gameAlreadyWon = _matchData.matchWon;
-        GameManager.GetInstance().objectivesCompleted = _matchData.objectivesCompleted;
-        VillagerManager.GetInstance().SetVillagers(_matchData.villagers);
-        VillagerManager.GetInstance().SetAvailable(_matchData.availableVillagers);
-        EnemyManager.GetInstance().LoadSystemFromData(_matchData);
-        VillagerManager.GetInstance().SetStarveTicks(_matchData.starveTicks);
-        GameManager.GetInstance().foodSinceObjective = _matchData.tempFood;
-        GameManager.GetInstance().lumberSinceObjective = _matchData.tempLumber;
-        GameManager.GetInstance().metalSinceObjective = _matchData.tempMetal;
+        enemyMan.LoadData(_matchData);
+        gameMan.repairAll = _matchData.repairAll;
+        gameMan.repairMessage = _matchData.repairMessage;
+        gameMan.tutorialDone = _matchData.tutorialDone;
+        gameMan.playerResources = _matchData.playerResources;
+        gameMan.gameAlreadyWon = _matchData.matchWon;
+        gameMan.objectivesCompleted = _matchData.objectivesCompleted;
+        gameMan.foodSinceObjective = _matchData.tempFood;
+        gameMan.lumberSinceObjective = _matchData.tempLumber;
+        gameMan.metalSinceObjective = _matchData.tempMetal;
+        structMan.structureCosts = _matchData.structureCosts;
+        structMan.structureCounts = _matchData.structureCounts;
+        structMan.SetNextStructureID(_matchData.nextStructureID);
+        villagerMan.SetVillagers(_matchData.villagers);
+        villagerMan.SetAvailable(_matchData.availableVillagers);
+        villagerMan.SetStarveTicks(_matchData.starveTicks);
+        villagerMan.SetManuallyAllocated(_matchData.manuallyAllocated);
         // not so easy stuff...
 
         // structures
@@ -683,31 +680,31 @@ public class SuperManager : MonoBehaviour
         // invaders
         foreach (InvaderSaveData saveData in _matchData.invaders)
         {
-            EnemyManager.GetInstance().LoadInvader(saveData);
+            enemyMan.LoadInvader(saveData);
         }
 
         // heavies
         foreach (HeavyInvaderSaveData saveData in _matchData.heavyInvaders)
         {
-            EnemyManager.GetInstance().LoadHeavyInvader(saveData);
+            enemyMan.LoadHeavyInvader(saveData);
         }
 
         // flying invaders
         foreach (EnemySaveData saveData in _matchData.flyingInvaders)
         {
-            EnemyManager.GetInstance().LoadFlyingInvader(saveData);
+            enemyMan.LoadFlyingInvader(saveData);
         }
 
         // petards
         foreach (EnemySaveData saveData in _matchData.petards)
         {
-            EnemyManager.GetInstance().LoadPetard(saveData);
+            enemyMan.LoadPetard(saveData);
         }
 
         // rams
         foreach (EnemySaveData saveData in _matchData.rams)
         {
-            EnemyManager.GetInstance().LoadRam(saveData);
+            enemyMan.LoadRam(saveData);
         }
 
         // soldiers
@@ -718,17 +715,13 @@ public class SuperManager : MonoBehaviour
             {
                 if (barr.GetID() == saveData.barracksID)
                 {
-                    //barr.LoadSoldier(saveData);
+                    barr.LoadSoldier(saveData);
                     break;
                 }
             }
         }
 
-        // enemies are spawned, let the towers detect them
-        foreach (AttackStructure attackStructure in FindObjectsOfType<AttackStructure>())
-        {
-            attackStructure.DetectEnemies();
-        }
+        FindObjectOfType<Longhaus>().SetHealth(_matchData.longhausHealth);
 
         return true;
     }
@@ -741,18 +734,21 @@ public class SuperManager : MonoBehaviour
 
     private MatchSaveData SaveMatch()
     {
+        GameManager gameMan = GameManager.GetInstance();
+        StructureManager structMan = StructureManager.GetInstance();
+        VillagerManager villMan = VillagerManager.GetInstance();
+
         // define a MatchSaveData with the current game state
         MatchSaveData save = new MatchSaveData
         {
             match = true,
             levelID = currentLevel,
-            repairAll = GameManager.GetInstance().repairAll,
-            repairMessage = GameManager.GetInstance().repairMessage,
-            tutorialDone = GameManager.GetInstance().tutorialDone,
-            structureCosts = StructureManager.GetInstance().structureCosts,
-            structureCounts = StructureManager.GetInstance().structureCounts,
-            playerResources = GameManager.GetInstance().playerResources,
-            wave = EnemyManager.GetInstance().GetWaveCurrent(),
+            repairAll = gameMan.repairAll,
+            repairMessage = gameMan.repairMessage,
+            tutorialDone = gameMan.tutorialDone,
+            structureCosts = structMan.structureCosts,
+            structureCounts = structMan.structureCounts,
+            playerResources = gameMan.playerResources,
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
             flyingInvaders = new List<EnemySaveData>(),
@@ -760,21 +756,22 @@ public class SuperManager : MonoBehaviour
             rams = new List<EnemySaveData>(),
             soldiers = new List<SoldierSaveData>(),
             structures = new List<StructureSaveData>(),
-            enemiesKilled = EnemyManager.GetInstance().GetEnemiesKilled(),
-            matchWon = GameManager.GetInstance().AllObjectivesCompleted() || GameManager.GetInstance().gameAlreadyWon,
-            objectivesCompleted = GameManager.GetInstance().objectivesCompleted,
-            nextStructureID = StructureManager.GetInstance().GetNextStructureID(),
-            villagers = VillagerManager.GetInstance().GetVillagers(),
-            availableVillagers = VillagerManager.GetInstance().GetAvailable(),
-            spawnTime = EnemyManager.GetInstance().GetTime(),
-            starveTicks = VillagerManager.GetInstance().GetStarveTicks(),
-            tempFood = GameManager.GetInstance().foodSinceObjective,
-            tempLumber = GameManager.GetInstance().lumberSinceObjective,
-            tempMetal = GameManager.GetInstance().metalSinceObjective
+            matchWon = gameMan.AllObjectivesCompleted() || gameMan.gameAlreadyWon,
+            objectivesCompleted = gameMan.objectivesCompleted,
+            nextStructureID = structMan.GetNextStructureID(),
+            villagers = villMan.GetVillagers(),
+            availableVillagers = villMan.GetAvailable(),
+            starveTicks = villMan.GetStarveTicks(),
+            tempFood = gameMan.foodSinceObjective,
+            tempLumber = gameMan.lumberSinceObjective,
+            tempMetal = gameMan.metalSinceObjective,
+            longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
+            manuallyAllocated = villMan.GetManuallyAllocated()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
         
+
         // not so easy stuff...
         // invaders
         foreach (Invader invader in FindObjectsOfType<Invader>())
@@ -892,7 +889,8 @@ public class SuperManager : MonoBehaviour
                     position = new SaveVector3(structure.transform.position),
                     villagers = structure.GetAllocated(),
                     health = structure.GetHealth(),
-                    ID = structure.GetID()
+                    ID = structure.GetID(),
+                    manualAllocation = structure.GetManualAllocation()
                 };
                 if (saveData.type == StructureType.Environment)
                 {

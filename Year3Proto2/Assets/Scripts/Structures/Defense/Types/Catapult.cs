@@ -31,7 +31,7 @@ public class Catapult : ProjectileDefenseStructure
         {
             boulderExplosionRadius *= 1.5f;
         }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        attackCost = new ResourceBundle(0, 0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost);
         
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);

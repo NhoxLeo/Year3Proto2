@@ -318,7 +318,7 @@ public class BuildingInfo : MonoBehaviour
             headingTextFloating.text = shortenedName + levelSuffix;
 
             upgradeButton.gameObject.SetActive(true);
-            upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+            upgradeButton.interactable = defenseStructure.GetLevel() < 3;
         }
         else
         {
@@ -397,12 +397,12 @@ public class BuildingInfo : MonoBehaviour
         if (targetStructure.GetStructureType() == StructureType.Defense)
         {
             ResourceBundle upgradeCost = structMan.QuoteUpgradeCostFor(defenseStructure);
-            if (upgradeCost.foodCost + upgradeCost.woodCost + upgradeCost.metalCost != 0)
+            if (upgradeCost.food + upgradeCost.wood + upgradeCost.metal != 0)
             {
                 costComponent.SetActive(true);
                 upgradeButton.interactable = true;
-                woodText.text = upgradeCost.woodCost.ToString();
-                metalText.text = upgradeCost.metalCost.ToString();
+                woodText.text = ((int)upgradeCost.wood).ToString();
+                metalText.text = ((int)upgradeCost.metal).ToString();
 
                 tooltipDescription.gameObject.SetActive(true);
                 tooltipDescription.text = "Fully repairs tower. Increases durability and damage.";
@@ -423,11 +423,11 @@ public class BuildingInfo : MonoBehaviour
         tooltipHeading.text = "Repair (R: Mass Repair)";
         ResourceBundle repairCost = targetStructure.RepairCost();
 
-        if (repairCost.woodCost + repairCost.metalCost != 0)
+        if (repairCost.wood + repairCost.metal != 0)
         {
             costComponent.SetActive(true);
-            woodText.text = repairCost.woodCost.ToString();
-            metalText.text = repairCost.metalCost.ToString();
+            woodText.text = ((int)repairCost.wood).ToString();
+            metalText.text = ((int)repairCost.metal).ToString();
 
             tooltipDescription.gameObject.SetActive(true);
             tooltipDescription.text = repairButton.interactable ? "" : "Cannot repair while recently damaged";
@@ -449,8 +449,8 @@ public class BuildingInfo : MonoBehaviour
         tooltipHeading.text = "Destroy Building";
 
         costComponent.SetActive(true);
-        woodText.text = "+" + compensation.woodCost;
-        metalText.text = "+" + compensation.metalCost;
+        woodText.text = "+" + (int)compensation.wood;
+        metalText.text = "+" + (int)compensation.metal;
         tooltipDescription.gameObject.SetActive(true);
         tooltipDescription.text = "Villagers will be evacuated";
 
@@ -468,7 +468,6 @@ public class BuildingInfo : MonoBehaviour
                 {
                     HUDManager.GetInstance().ShowResourceDelta(cost, true);
                     defenseStructure.LevelUp();
-                    upgradeButton.enabled = defenseStructure.GetLevel() < 3;
                     SetInfo();
                 }
             }
