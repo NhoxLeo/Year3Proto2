@@ -31,8 +31,14 @@ public class CameraController : MonoBehaviour
     [SerializeField] [Tooltip("Rate of movement for the camera")]
     private float sensitivity;
 
+    [SerializeField] [Tooltip("Multiplier for movement with keyboard")]
+    private float keyboardSpeed = 30.0f;
+
     [SerializeField] [Tooltip("Rate at which camera lerps movement")]
     private float lerpSpeed = 10.0f;
+
+    [SerializeField] [Tooltip("Rate at which camera lerps movement")]
+    private float inertiaFalloffSpeed = 5.0f;
 
     private float xAxisMax;
     private float xAxisMin;
@@ -45,6 +51,8 @@ public class CameraController : MonoBehaviour
     private Vector3 east;
     private Vector3 south;
     private Vector3 west;
+
+    private Vector2 inertia;
 
     private float scrollOffset = 0f;
 
@@ -72,6 +80,8 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        inertia = Vector2.Lerp(inertia, Vector2.zero, inertiaFalloffSpeed * Time.smoothDeltaTime);
+
         float mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
         scrollOffset += mouseScroll;
 
@@ -87,11 +97,22 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
+            inertia = Vector2.zero;
             cameraZoomMidPoint += north * movementCoeff * (lastFrameMousePos.y - mp.y);
             cameraZoomMidPoint += east * movementCoeff * (lastFrameMousePos.x - mp.x);
         }
+        else if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
+        {
+            inertia = Vector2.ClampMagnitude(lastFrameMousePos - mp, 500.0f);
+
+        }
         else
         {
+            // Inertia motion
+            cameraZoomMidPoint += east * movementCoeff * inertia.x;
+            cameraZoomMidPoint += north * movementCoeff * inertia.y;
+
+            // Keyboard and mouse edge motion
             float northKey = Input.GetKey(moveNorth) ? 1.0f : 0.0f;
             float northMouse = Mathf.Clamp((mp.y - (Screen.height - mouseYBuffer)) / mouseYBuffer, 0.0f, 1.0f) * mouseMult;
             float northMove = Mathf.Max(northKey, northMouse);
@@ -108,10 +129,10 @@ public class CameraController : MonoBehaviour
             float westMouse = Mathf.Clamp(1.0f - (mp.x / mouseXBuffer), 0.0f, 1.0f) * mouseMult;
             float westMove = Mathf.Max(westKey, westMouse);
 
-            cameraZoomMidPoint += northMove * north * movementCoeff;
-            cameraZoomMidPoint += eastMove * east * movementCoeff;
-            cameraZoomMidPoint += southMove * south * movementCoeff;
-            cameraZoomMidPoint += westMove * west * movementCoeff;
+            cameraZoomMidPoint += northMove * north * movementCoeff * keyboardSpeed;
+            cameraZoomMidPoint += eastMove * east * movementCoeff * keyboardSpeed;
+            cameraZoomMidPoint += southMove * south * movementCoeff * keyboardSpeed;
+            cameraZoomMidPoint += westMove * west * movementCoeff * keyboardSpeed;
         }
 
 

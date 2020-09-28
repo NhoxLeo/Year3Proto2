@@ -208,11 +208,7 @@ MonoBehaviour:
   mouseEdgeMove: 0
   mouseXBuffer: 64
   mouseYBuffer: 64
-  sensitivity: 3
+  sensitivity: 4
+  keyboardSpeed: 30
   lerpSpeed: 10
-  xAxisMax: 6
-  xAxisMin: -14
-  zAxisMax: 6
-  zAxisMin: -14
-  scrollMax: 10
-  scrollMin: -2
+  inertiaFalloffSpeed: 6
