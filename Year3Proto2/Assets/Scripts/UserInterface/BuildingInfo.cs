@@ -44,9 +44,6 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
     [SerializeField] private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
 
-    [SerializeField] private Tooltip trainVillagerButton;        // Button to train a new villager for the Longhaus
-    [SerializeField] private TMP_Text trainVillagerCost;         // Cost to train a new villager for the Longhaus
-
     [Header("Tooltip")]                                          // Repair and Destroy tooltips
     [SerializeField] private RectTransform tooltipTransform;
 
@@ -123,7 +120,6 @@ public class BuildingInfo : MonoBehaviour
         repairButton.gameObject.SetActive(true);
         repairButton.interactable = false;
         destroyButton.gameObject.SetActive(false);
-        trainVillagerButton.showTooltip = false;
 
         if (targetBuilding == null)
         {
@@ -271,7 +267,6 @@ public class BuildingInfo : MonoBehaviour
                 statValueText.text = "Protect me!";
                 statInfoText.text = "";
 
-                trainVillagerButton.showTooltip = true;
                 repairButton.interactable = haus.CanBeRepaired();
                 break;
 
@@ -504,14 +499,9 @@ public class BuildingInfo : MonoBehaviour
         destroyButtonConfirm.showTooltip = showDestroyConfirm;
     }
 
-    public void TrainVillager()
-    {
-        VillagerManager.GetInstance().TrainVillager();
-    }
-
     public void SetVillagerCost(int _cost)
     {
-        trainVillagerCost.text = _cost.ToString("0");
+        //trainVillagerCost.text = _cost.ToString("0");
     }
 
     public void SetVisibility(bool visible)

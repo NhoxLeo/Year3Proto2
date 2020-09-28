@@ -23,7 +23,7 @@ public class HUDManager : MonoBehaviour
 {
     private static HUDManager instance;
 
-    private float updateInterval = 0.0083f;
+    private float updateInterval = 0.125f;
     private float updateTimer;
 
     UIAnimator animator;
@@ -54,7 +54,9 @@ public class HUDManager : MonoBehaviour
 
     [Header("Misc")]
     [SerializeField] private TMP_Text victoryProgress;
+    [SerializeField] private TMP_Text villagerCost;
     [SerializeField] private Transform villAlloc;
+    private VillagerManager villMan;
     [SerializeField] private GameObject helpScreen;
     [SerializeField] private BuildPanel buildPanel;
 
@@ -71,6 +73,7 @@ public class HUDManager : MonoBehaviour
     void Start()
     {
         animator = GetComponent<UIAnimator>();
+        villMan = VillagerManager.GetInstance();
         RefreshResources();
         GetVictoryInfo();
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
@@ -305,10 +308,12 @@ public class HUDManager : MonoBehaviour
     public void FetchVillagerInfo()
     {
         // Get info about the cost to train a Villager
+        villagerCost.text = ((int)villMan.GetVillagerTrainCost().food).ToString();
     }
 
     public void TrainVillager()
     {
-        Longhaus.TrainVillager();
+        villMan.TrainVillager();
+        FetchVillagerInfo();
     }
 }
