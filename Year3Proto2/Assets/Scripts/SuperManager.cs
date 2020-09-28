@@ -9,7 +9,6 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     // CONSTANTS
-    public const string Version = "1.0.4";
     public static bool DevMode = true;
 
     public const float ScalingFactor = 1.33f;
@@ -576,12 +575,12 @@ public class SuperManager : MonoBehaviour
         if (startMaxed) { StartNewGame(false); }
         else { ReadGameData(); }
 
-        if (saveData.gameVersion != Version)
+        if (saveData.gameVersion != Application.version)
         {
             ClearCurrentMatch();
         }
 
-        saveData.gameVersion = Version;
+        saveData.gameVersion = Application.version;
     }
 
     private void Update()

@@ -486,7 +486,6 @@ public class VillagerManager : MonoBehaviour
     {
         villagers++;
         availableVillagers++;
-        buildingInfo.SetVillagerCost((int)GetVillagerTrainCost().food);
     }
 
     public void RemoveVillagers(int _villagers, bool _wereManual)
@@ -507,7 +506,6 @@ public class VillagerManager : MonoBehaviour
         {
             villagersManAllocated -= _villagers;
         }
-        buildingInfo.SetVillagerCost((int)GetVillagerTrainCost().food);
     }
 
     public int GetAvailable()
