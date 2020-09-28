@@ -476,7 +476,6 @@ public class StructureManager : MonoBehaviour
         }
 
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
 
         //envInfo.SetVisibility(false);
         if (!isOverUI)
@@ -909,7 +908,8 @@ public class StructureManager : MonoBehaviour
         if (structureCosts.ContainsKey(_structureName))
         {
             structureCounts[StructureIDs[_structureName]]++;
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = CalculateStructureCost(_structureName);
+            Vector3 cost = CalculateStructureCost(_structureName);
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = new Vector2(cost.y, cost.z);
         }
     }
 
@@ -918,18 +918,16 @@ public class StructureManager : MonoBehaviour
         if (structureCosts.ContainsKey(_structureName))
         {
             structureCounts[StructureIDs[_structureName]]--;
-            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = CalculateStructureCost(_structureName);
+            Vector3 cost = CalculateStructureCost(_structureName);
+            panel.GetToolInfo().cost[(int)StructureIDs[_structureName]] = new Vector2(cost.y, cost.z);
         }
     }
 
     private Vector3 CalculateStructureCost(string _structureName)
     {
-        //float increaseCoefficient = superMan.CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SnoballPrices))
-        {
-            Vector3 newCost = (4f + structureCounts[StructureIDs[_structureName]]) / 4f * (Vector3)structureDict[_structureName].originalCost;
-            structureCosts[_structureName] = new ResourceBundle(newCost);
-        }
+        float increaseCoefficient = SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
+        Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
+        structureCosts[_structureName] = new ResourceBundle(newCost);
         return structureCosts[_structureName];
     }
 
