@@ -499,11 +499,6 @@ public class BuildingInfo : MonoBehaviour
         destroyButtonConfirm.showTooltip = showDestroyConfirm;
     }
 
-    public void SetVillagerCost(int _cost)
-    {
-        //trainVillagerCost.text = _cost.ToString("0");
-    }
-
     public void SetVisibility(bool visible)
     {
         showPanel = visible;

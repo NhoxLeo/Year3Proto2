@@ -34,19 +34,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] [Tooltip("Rate at which camera lerps movement")]
     private float lerpSpeed = 10.0f;
 
-    [Header("Motion Limits")]
-
-    [SerializeField] [Tooltip("xAxis maximum")]
     private float xAxisMax;
-
-    [SerializeField] [Tooltip("xAxis minimum")]
     private float xAxisMin;
-
-    [SerializeField] [Tooltip("zAxis maximum")]
     private float zAxisMax;
-
-    [SerializeField] [Tooltip("zAxis minimum")]
     private float zAxisMin;
+    private float scrollMax;
+    private float scrollMin;
 
     private Vector3 north;
     private Vector3 east;
@@ -54,14 +47,6 @@ public class CameraController : MonoBehaviour
     private Vector3 west;
 
     private float scrollOffset = 0f;
-
-    [Header("Zoom Limits")]
-
-    [SerializeField] [Tooltip("Zoom Max")]
-    private float scrollMax = 3f;
-
-    [SerializeField] [Tooltip("Zoom Min")]
-    private float scrollMin = -10f;
 
     private Vector3 cameraZoomMidPoint;
 
@@ -76,9 +61,16 @@ public class CameraController : MonoBehaviour
         west = Vector3.RotateTowards(Vector3.forward, Vector3.left, quarterPi, 5f).normalized;
         cameraZoomMidPoint = transform.position;
         lastFrameMousePos = Vector2.zero;
+        (Vector4, Vector2) settings = SuperManager.GetInstance().GetCurrentCamSettings();
+        zAxisMax = settings.Item1.x;
+        zAxisMin = settings.Item1.y;
+        xAxisMax = settings.Item1.z;
+        xAxisMin = settings.Item1.w;
+        scrollMin = settings.Item2.x;
+        scrollMax = settings.Item2.y;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         float mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
         scrollOffset += mouseScroll;
@@ -91,7 +83,7 @@ public class CameraController : MonoBehaviour
         Vector2 mp = Input.mousePosition;
         float mouseMult = (StructureManager.GetInstance().isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
 
-        float movementCoeff = Time.deltaTime * sensitivity * scrollMoveBonus;
+        float movementCoeff = Time.fixedDeltaTime * sensitivity * scrollMoveBonus;
 
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {

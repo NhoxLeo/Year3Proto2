@@ -26,29 +26,42 @@ public class FlyingInvaderBarrel : MonoBehaviour
 
         if (transform.position.y <= 0.51f)
         {
-            RaycastHit[] hitStructures = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("Structure"));
-            GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
-            explosion.transform.localScale *= 2f * explosionRadius;
-            foreach (RaycastHit structureHit in hitStructures)
-            {
-                Structure structure = structureHit.transform.GetComponent<Structure>();
-                if (structure)
-                {
-                    if (structure.GetStructureType() == StructureType.Environment)
-                    {
-                        continue;
-                    }
-                    float damageToThisStructure = damage * (transform.position - structure.transform.position).magnitude / explosionRadius;
-                    structure.Damage(damageToThisStructure);
-                }
-            }
-            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
-            Destroy(gameObject);
+            SetOff();
         }
     }
 
     public void Initialize(float _damage)
     {
         damage = _damage;
+    }
+
+    public void SetOff()
+    {
+        RaycastHit[] hitStructures = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("Structure"));
+        GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+        explosion.transform.localScale *= 2f * explosionRadius;
+        foreach (RaycastHit structureHit in hitStructures)
+        {
+            Structure structure = structureHit.transform.GetComponent<Structure>();
+            if (structure)
+            {
+                if (structure.GetStructureType() == StructureType.Environment)
+                {
+                    continue;
+                }
+                float damageToThisStructure = damage * (transform.position - structure.transform.position).magnitude / explosionRadius;
+                structure.Damage(damageToThisStructure);
+            }
+        }
+        GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
+        Destroy(gameObject);
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Structure"))
+        {
+            SetOff();
+        }
     }
 }

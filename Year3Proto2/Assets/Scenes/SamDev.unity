@@ -21660,6 +21660,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: bac84dc5e6950ee4f8412917a8b040bd,
         type: 3}
+    - target: {fileID: 7158009794963219459, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: trainVillagerCostTooltip
+      value: 
+      objectReference: {fileID: 2023822530}
+    - target: {fileID: 7158009794963219459, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: trainVillagerCost
+      value: 
+      objectReference: {fileID: 848091759}
     - target: {fileID: 7163972953153234021, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -23559,6 +23569,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 846817329}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &848091759 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2260484512853061937, guid: baca440b2bf69734497f80ed08a4d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 817593755}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &851692713 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5341910814397929026, guid: 4e9f2f5f61448494193a47ec524751b6,
@@ -49049,6 +49071,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b7f5adb8538af945bd8bccad553954f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2023822530 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1796737935907156471, guid: baca440b2bf69734497f80ed08a4d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 817593755}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &2024961965 stripped
