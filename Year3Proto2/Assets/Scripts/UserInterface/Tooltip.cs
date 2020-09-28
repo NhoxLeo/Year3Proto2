@@ -5,7 +5,7 @@ public class Tooltip : MonoBehaviour
 {
     public bool showTooltip;
     private bool tipShown;
-    private bool interactable = true;
+    [SerializeField] private bool interactable = true;
 
     private CanvasGroup canvas;
     private RectTransform rTransform;
