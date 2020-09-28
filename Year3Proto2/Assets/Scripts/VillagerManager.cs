@@ -461,13 +461,8 @@ public class VillagerManager : MonoBehaviour
                     Structure structure = populated[Random.Range(0, populated.Count)];
                     structure.ManuallyAllocate(structure.GetAllocated() - 1);
                 }
-                RemoveVillagers(1, false);
             }
-            else
-            {
-                villagers--;
-                availableVillagers--;
-            }
+            RemoveVillagers(1, false);
         }
         RedistributeVillagers();
     }
@@ -491,17 +486,26 @@ public class VillagerManager : MonoBehaviour
     {
         villagers++;
         availableVillagers++;
-        buildingInfo.SetVillagerCost((int)GetVillagerTrainCost().food);
     }
 
     public void RemoveVillagers(int _villagers, bool _wereManual)
     {
+        if (availableVillagers > 0)
+        {
+            if (availableVillagers >= _villagers)
+            {
+                availableVillagers -= _villagers;
+            }
+            else
+            {
+                availableVillagers = 0;
+            }
+        }
         villagers -= _villagers;
         if (_wereManual)
         {
             villagersManAllocated -= _villagers;
         }
-        buildingInfo.SetVillagerCost((int)GetVillagerTrainCost().food);
     }
 
     public int GetAvailable()

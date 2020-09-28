@@ -78,7 +78,7 @@ public class TitleScreen : MonoBehaviour
         startText.text = SuperManager.GetInstance().GetSavedMatch().match ? "CONTINUE" : "NEW GAME";
         Debug.Log(SuperManager.GetInstance().GetCurrentLevel());
 
-        version.text = "v" + SuperManager.Version;
+        version.text = "v" + Application.version;
     }
 
     /*
