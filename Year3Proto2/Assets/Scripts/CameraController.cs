@@ -70,7 +70,7 @@ public class CameraController : MonoBehaviour
         scrollMax = settings.Item2.y;
     }
 
-    void FixedUpdate()
+    void Update()
     {
         float mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
         scrollOffset += mouseScroll;
@@ -78,17 +78,17 @@ public class CameraController : MonoBehaviour
         if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }
         if (scrollOffset < scrollMin) { scrollOffset = scrollMin; }
 
-        float scrollMoveBonus = 1f + (-scrollOffset + 10f) * 0.15f;
 
         Vector2 mp = Input.mousePosition;
         float mouseMult = (StructureManager.GetInstance().isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
 
-        float movementCoeff = Time.fixedDeltaTime * sensitivity * scrollMoveBonus;
+        float scrollMoveCoeff = 1f + (-scrollOffset + 10f) * 0.15f;
+        float movementCoeff = sensitivity * scrollMoveCoeff * .0007f;
 
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
-            cameraZoomMidPoint += north * movementCoeff * (lastFrameMousePos.y - mp.y) * .07f;
-            cameraZoomMidPoint += east * movementCoeff * (lastFrameMousePos.x - mp.x) * .07f;
+            cameraZoomMidPoint += north * movementCoeff * (lastFrameMousePos.y - mp.y);
+            cameraZoomMidPoint += east * movementCoeff * (lastFrameMousePos.x - mp.x);
         }
         else
         {
