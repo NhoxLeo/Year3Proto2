@@ -161,7 +161,7 @@ public class BatteringRam : Enemy
 
     public void Initialize(int _level)
     {
-        baseHealth = 100f;
+        baseHealth = 300f;
         baseDamage = 30f;
         SetLevel(_level);
         finalSpeed = 0.25f;

@@ -50,19 +50,7 @@ public class Longhaus : Structure
 
         if (Input.GetKeyDown(KeyCode.N) && StructureManager.GetInstance().StructureIsSelected(this))
         {
-            TrainVillager();
-        }
-    }
-
-    public static void TrainVillager()
-    {
-        ResourceBundle cost = new ResourceBundle(100, 0, 0);
-        if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
-        {
-            VillagerManager villMan = VillagerManager.GetInstance();
-            villMan.AddNewVillager();
-            HUDManager.GetInstance().ShowResourceDelta(cost, true);
-            villMan.RedistributeVillagers();
+            VillagerManager.GetInstance().TrainVillager();
         }
     }
 

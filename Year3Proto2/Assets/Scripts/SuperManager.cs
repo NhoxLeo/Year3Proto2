@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     // CONSTANTS
-    public const string Version = "1.0.0.3";
+    public const string Version = "1.0.4";
     public static bool DevMode = true;
 
     public const float ScalingFactor = 1.33f;
@@ -407,7 +407,7 @@ public class SuperManager : MonoBehaviour
     public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
     { 
         // ID, Name, Description, Coefficient
-        new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structures cost more as you place them.", 0.5f),
+        new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure Cost Acceleration hits twice as hard.", 0.5f),
         new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
         new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
         new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),

@@ -13,6 +13,7 @@ public class VillagerManager : MonoBehaviour
     private float starveTicks = 0;
     private float villagerHungerModifier = 2;
     private Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
+    private BuildingInfo buildingInfo;
 
     private void Awake()
     {
@@ -29,6 +30,7 @@ public class VillagerManager : MonoBehaviour
     {
         villagers = 5;
         availableVillagers = 5;
+        buildingInfo = FindObjectOfType<BuildingInfo>();
     }
 
     // Update is called once per frame
@@ -459,8 +461,7 @@ public class VillagerManager : MonoBehaviour
                     Structure structure = populated[Random.Range(0, populated.Count)];
                     structure.ManuallyAllocate(structure.GetAllocated() - 1);
                 }
-                villagers--;
-                availableVillagers--;
+                RemoveVillagers(1, false);
             }
             else
             {
@@ -490,6 +491,7 @@ public class VillagerManager : MonoBehaviour
     {
         villagers++;
         availableVillagers++;
+        buildingInfo.SetVillagerCost((int)GetVillagerTrainCost().food);
     }
 
     public void RemoveVillagers(int _villagers, bool _wereManual)
@@ -499,6 +501,7 @@ public class VillagerManager : MonoBehaviour
         {
             villagersManAllocated -= _villagers;
         }
+        buildingInfo.SetVillagerCost((int)GetVillagerTrainCost().food);
     }
 
     public int GetAvailable()
@@ -605,5 +608,21 @@ public class VillagerManager : MonoBehaviour
                 return result;
             }
         }
+    }
+
+    public void TrainVillager()
+    {
+        ResourceBundle cost = GetVillagerTrainCost();
+        if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
+        {
+            HUDManager.GetInstance().ShowResourceDelta(cost, true);
+            AddNewVillager();
+            RedistributeVillagers();
+        }
+    }
+
+    public ResourceBundle GetVillagerTrainCost()
+    {
+        return new ResourceBundle(50 + 10 * villagers, 0, 0);
     }
 }
