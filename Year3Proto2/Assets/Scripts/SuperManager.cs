@@ -443,6 +443,13 @@ public class SuperManager : MonoBehaviour
         new WinConditionDefinition(VillagersII, "Villagers II", "Train a total of 35 villagers."),
         new WinConditionDefinition(VillagersIII, "Villagers III", "Train a total of 65 villagers."),
     };
+    public static Dictionary<int, (Vector4, Vector2)> CameraSettings = new Dictionary<int, (Vector4, Vector2)>()
+    {
+        {0, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
+        {1, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
+        {2, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
+        {3, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) }
+    };
     private int currentLevel;
     [SerializeField]
     private bool startMaxed;
@@ -1119,4 +1126,10 @@ public class SuperManager : MonoBehaviour
     {
         return saveData.showTutorial;
     }
+
+    public (Vector4, Vector2) GetCurrentCamSettings()
+    {
+        return CameraSettings[currentLevel];
+    }
+
 }
