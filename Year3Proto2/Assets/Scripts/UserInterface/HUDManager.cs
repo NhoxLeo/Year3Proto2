@@ -301,4 +301,14 @@ public class HUDManager : MonoBehaviour
         }
         Debug.Log(villAlloc.transform.childCount);
     }
+
+    public void FetchVillagerInfo()
+    {
+        // Get info about the cost to train a Villager
+    }
+
+    public void TrainVillager()
+    {
+        Longhaus.TrainVillager();
+    }
 }
