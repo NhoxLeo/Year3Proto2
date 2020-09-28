@@ -45,6 +45,7 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
 
     [SerializeField] private Tooltip trainVillagerButton;        // Button to train a new villager for the Longhaus
+    [SerializeField] private TMP_Text trainVillagerCost;         // Cost to train a new villager for the Longhaus
 
     [Header("Tooltip")]                                          // Repair and Destroy tooltips
     [SerializeField] private RectTransform tooltipTransform;
@@ -505,7 +506,12 @@ public class BuildingInfo : MonoBehaviour
 
     public void TrainVillager()
     {
-        Longhaus.TrainVillager();
+        VillagerManager.GetInstance().TrainVillager();
+    }
+
+    public void SetVillagerCost(int _cost)
+    {
+        trainVillagerCost.text = _cost.ToString("0");
     }
 
     public void SetVisibility(bool visible)
