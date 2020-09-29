@@ -12,7 +12,7 @@ public class LightningTower : DefenseStructure
     [SerializeField] private float lightningStartDelay = 0.6f;
     [SerializeField] private Transform lightningStartPosition;
 
-    private const float BaseMaxHealth = 300f;
+    private const float BaseMaxHealth = 400f;
     private const float BaseDamage = 5f;
 
     private float damage;
@@ -148,10 +148,7 @@ public class LightningTower : DefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

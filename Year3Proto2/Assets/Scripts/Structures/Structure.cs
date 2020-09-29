@@ -234,7 +234,10 @@ public abstract class Structure : MonoBehaviour
         {
             if (healthBar)
             {
-                healthBar.gameObject.SetActive(false);
+                if (health == GetTrueMaxHealth())
+                {
+                    healthBar.gameObject.SetActive(false);
+                }
             }
             ShowRangeDisplay(false);
             if (villagerWidget)
