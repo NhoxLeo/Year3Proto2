@@ -61,7 +61,7 @@ public class ShockWaveTower : DefenseStructure
                 if (enemies.Count > 0 && timer <= 0.0f)
                 {
                     timer = delay;
-                    GameManager.CreateAudioEffect("Thud", transform.position, 0.6f);
+                    GameManager.CreateAudioEffect("Thud", transform.position, SoundType.SoundEffect, 0.6f);
                     Instantiate(particle, transform.position, particle.rotation);
                     enemies.ForEach(transform => {
                         Enemy enemy = transform.GetComponent<Enemy>();
@@ -69,6 +69,10 @@ public class ShockWaveTower : DefenseStructure
                         {
                             if (enemy.enemyName != EnemyNames.BatteringRam)
                             {
+                                if (enemy.enemyName == EnemyNames.Petard)
+                                {
+                                    enemy.GetComponent<Petard>().SetOffBarrel();
+                                }
                                 float distance = (this.transform.position - transform.position).magnitude;
                                 float damage = 5.0f * (1.0f / distance);
                                 enemy.Stun(damage);

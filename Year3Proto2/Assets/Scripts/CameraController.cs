@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour
     private float mouseYBuffer = 50.0f;
 
     [SerializeField] [Tooltip("Rate of movement for the camera")]
-    private float sensitivity;
+    private float sensitivity = 4.0f;
 
     [SerializeField] [Tooltip("Multiplier for movement with keyboard")]
     private float keyboardSpeed = 30.0f;
@@ -76,6 +76,8 @@ public class CameraController : MonoBehaviour
         xAxisMin = settings.Item1.w;
         scrollMin = settings.Item2.x;
         scrollMax = settings.Item2.y;
+
+        sensitivity = SuperManager.CameraSensitivity;
     }
 
     void Update()

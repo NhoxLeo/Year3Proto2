@@ -130,7 +130,7 @@ public class Barracks : DefenseStructure
 
         soldiers.Add(newSoldier);
 
-        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, 0.6f);
+        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, SoundType.SoundEffect, 0.6f);
     }
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)

@@ -106,7 +106,7 @@ public class LightningTower : DefenseStructure
         LightningBolt lightningBolt = Instantiate(lightning, lightningStartPosition.position, Quaternion.identity);
         lightningBolt.Initialize(_target, damage, sparkDamage);
         lightningBolt.Fire();
-        GameManager.CreateAudioEffect("Zap", _target.position, 0.6f);
+        GameManager.CreateAudioEffect("Zap", _target.position, SoundType.SoundEffect, 0.6f);
     }
 
     public float GetFireRate()
