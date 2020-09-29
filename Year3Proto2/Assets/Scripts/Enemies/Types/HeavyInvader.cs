@@ -15,6 +15,8 @@ using UnityEngine;
 
 public class HeavyInvader : Enemy
 {
+    private const float BaseHealth = 105f;
+    private const float BaseDamage = 10f;
     private bool[] equipment = new bool[4];
 
     protected override void Awake()
@@ -27,6 +29,12 @@ public class HeavyInvader : Enemy
             StructureType.Longhaus,
             StructureType.Defense
         };
+
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthBarInst.SetActive(false);
     }
 
     protected override void LookAtPosition(Vector3 _position)
@@ -187,14 +195,14 @@ public class HeavyInvader : Enemy
         Transform lowPoly = transform.GetChild(1);
         if (equipment[0]) // if sword
         {
-            baseDamage = 10f;
+            baseDamage = BaseDamage;
             animator.SetFloat("AttackSpeed", 1.2f);
             // disable axe
             lowPoly.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
         else // !sword means axe
         {
-            baseDamage = 12f;
+            baseDamage = BaseDamage * 1.2f;
             animator.SetFloat("AttackSpeed", 1.0f);
             // disable sword
             lowPoly.GetChild(2).GetComponent<SkinnedMeshRenderer>().enabled = false;
@@ -203,7 +211,7 @@ public class HeavyInvader : Enemy
         lowPoly.GetChild(3).GetComponent<SkinnedMeshRenderer>().enabled = equipment[2];
         lowPoly.GetChild(4).GetComponent<SkinnedMeshRenderer>().enabled = equipment[3];
 
-        baseHealth = 105f;
+        baseHealth = BaseHealth;
         finalSpeed = 0.35f;
 
         if (equipment[2]) { baseHealth += 20f; finalSpeed -= 0.035f; }

@@ -167,6 +167,7 @@ public class GameManager : MonoBehaviour
     public float lumberSinceObjective = 0;
     public float metalSinceObjective = 0;
     public bool cheatAlwaysMaxed = false;
+    public static bool ShowEnemyHealthbars = true;
 
     public static GameManager GetInstance()
     {
@@ -362,6 +363,11 @@ public class GameManager : MonoBehaviour
         {
             repairAll = true;
             RepairAll();
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ShowEnemyHealthbars = !ShowEnemyHealthbars;
         }
 
         // get resourceDelta

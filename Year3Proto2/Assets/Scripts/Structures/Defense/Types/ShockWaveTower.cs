@@ -69,6 +69,10 @@ public class ShockWaveTower : DefenseStructure
                         {
                             if (enemy.enemyName != EnemyNames.BatteringRam)
                             {
+                                if (enemy.enemyName == EnemyNames.Petard)
+                                {
+                                    enemy.GetComponent<Petard>().SetOffBarrel();
+                                }
                                 float distance = (this.transform.position - transform.position).magnitude;
                                 float damage = 5.0f * (1.0f / distance);
                                 enemy.Stun(damage);

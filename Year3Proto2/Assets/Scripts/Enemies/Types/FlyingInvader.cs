@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FlyingInvader : Enemy
 {
+    private const float BaseHealth = 45f;
+    private const float BaseDamage = 100f;
     private float barrelDropDelay = 4.0f;
     private float barrelDropTimer = 0.0f;
     private static GameObject Barrel = null;
@@ -21,6 +23,12 @@ public class FlyingInvader : Enemy
         {
             Barrel = Resources.Load("FlyingInvaderBarrel") as GameObject;
         }
+
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthBarInst.SetActive(false);
     }
 
     // Update is called once per frame
@@ -154,8 +162,8 @@ public class FlyingInvader : Enemy
 
     public void Initialize(int _level)
     {
-        baseHealth = 45f;
-        baseDamage = 100f;
+        baseHealth = BaseHealth;
+        baseDamage = BaseDamage;
         SetLevel(_level);
         finalSpeed = 0.25f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
