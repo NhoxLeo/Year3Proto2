@@ -2,7 +2,7 @@
 
 public class BoltBehaviour : MonoBehaviour
 {
-    private Transform target;
+    private Vector3 targetPosition;
     private float damage;
     private float speed;
     private bool pierce;
@@ -10,9 +10,9 @@ public class BoltBehaviour : MonoBehaviour
     private bool endPositionReached = false;
     private bool damageDealt = false;
 
-    public void Initialize(Transform _target, float _damage, float _speed, bool _pierce)
+    public void Initialize(Vector3 _targetPosition, float _damage, float _speed, bool _pierce)
     {
-        target = _target;
+        targetPosition = _targetPosition;
         damage = _damage;
         speed = _speed;
         pierce = _pierce;
@@ -21,14 +21,14 @@ public class BoltBehaviour : MonoBehaviour
     private void Start()
     {
         Vector3 invaderMidPointOffset = new Vector3(0f, 0.065f, 0f);
-        transform.LookAt(target.position + invaderMidPointOffset);
-        if (Physics.Raycast(transform.position, (target.position + invaderMidPointOffset - transform.position).normalized, out RaycastHit _hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        transform.LookAt(targetPosition + invaderMidPointOffset);
+        if (Physics.Raycast(transform.position, (targetPosition + invaderMidPointOffset - transform.position).normalized, out RaycastHit _hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
         {
             endPosition = _hit.point;
         }
         else
         {
-            endPosition = (target.position + invaderMidPointOffset - transform.position).normalized * 1000f;
+            endPosition = (targetPosition + invaderMidPointOffset - transform.position).normalized * 1000f;
         }
     }
 
