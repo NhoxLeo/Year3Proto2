@@ -20,7 +20,6 @@ using UnityEngine.UI;
 
 public class VillagerPriority : MonoBehaviour
 {
-    public bool showPanel = false;
     private bool panelShown = false;
     public bool reorderCards = false;
 
@@ -74,13 +73,13 @@ public class VillagerPriority : MonoBehaviour
 
     private void Update()
     {
-        if (showPanel && !panelShown)
+        if (SuperManager.ShowPriortyPanel && !panelShown)
         {
             ShowPanel();
             panelShown = true;
         }
 
-        if (!showPanel && panelShown)
+        if (!SuperManager.ShowPriortyPanel && panelShown)
         {
             HidePanel();
             panelShown = false;
@@ -156,7 +155,7 @@ public class VillagerPriority : MonoBehaviour
 
     public void TogglePanel()
     {
-        showPanel = !showPanel;
+        SuperManager.ShowPriortyPanel = !SuperManager.ShowPriortyPanel;
     }
 
     private void ShowPanel()

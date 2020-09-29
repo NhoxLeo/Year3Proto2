@@ -158,8 +158,8 @@ public class EnemyManager : MonoBehaviour
     {
         { EnemyNames.Invader, new EnemyDefinition(1.0f, 1) },
         { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) },
-        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 2) },
-        { EnemyNames.Petard, new EnemyDefinition(0.25f, 2) },
+        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 4) },
+        { EnemyNames.Petard, new EnemyDefinition(0.2f, 6) },
         { EnemyNames.BatteringRam, new EnemyDefinition(0.1f, 8) },
     };
 
@@ -174,6 +174,18 @@ public class EnemyManager : MonoBehaviour
         
         // wave 5
         new LevelSetting(0, 5, EnemyNames.Invader,         2),
+        new LevelSetting(0, 5, EnemyNames.HeavyInvader,    0),
+        new LevelSetting(0, 5, EnemyNames.Petard,          1),
+
+        // wave 7
+        new LevelSetting(0, 7, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(0, 7, EnemyNames.Petard,          0),
+        
+        // wave 11
+        new LevelSetting(0, 11, EnemyNames.Petard,         1),
+
+        // wave 15
+        new LevelSetting(0, 15, EnemyNames.BatteringRam,   1),
 
         // Level 2 --------------------------------
         // wave 1
@@ -182,13 +194,28 @@ public class EnemyManager : MonoBehaviour
         
         // wave 3
         new LevelSetting(1, 3, EnemyNames.Invader,         2),
+        new LevelSetting(1, 3, EnemyNames.HeavyInvader,    0),
         new LevelSetting(1, 3, EnemyNames.Petard,          1),
         
         // wave 5
+        new LevelSetting(1, 5, EnemyNames.Invader,         0),
         new LevelSetting(1, 5, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(1, 5, EnemyNames.Petard,          0),
+        new LevelSetting(1, 5, EnemyNames.FlyingInvader,   1),
         
         // wave 7
+        new LevelSetting(1, 7, EnemyNames.Invader,         3),
         new LevelSetting(1, 7, EnemyNames.Petard,          2),
+
+        // wave 9
+        new LevelSetting(1, 9, EnemyNames.FlyingInvader,   2),
+        new LevelSetting(1, 9, EnemyNames.BatteringRam,    1),
+        
+        // wave 11
+        new LevelSetting(1, 11, EnemyNames.HeavyInvader,   3),
+        
+        // wave 13
+        new LevelSetting(1, 13, EnemyNames.BatteringRam,   2),
 
         // Level 3 --------------------------------
         // wave 1
@@ -197,7 +224,7 @@ public class EnemyManager : MonoBehaviour
         new LevelSetting(2, 1, EnemyNames.Petard,          1),
         
         // wave 3
-        new LevelSetting(2, 3, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(2, 3, EnemyNames.HeavyInvader,    0),
         new LevelSetting(2, 3, EnemyNames.FlyingInvader,   1),
         
         // wave 5
@@ -207,10 +234,18 @@ public class EnemyManager : MonoBehaviour
         
         // wave 7
         new LevelSetting(2, 7, EnemyNames.HeavyInvader,    3),
+        new LevelSetting(2, 7, EnemyNames.Petard,          0),
         new LevelSetting(2, 7, EnemyNames.FlyingInvader,   2),
         
         // wave 9
+        new LevelSetting(2, 9, EnemyNames.Invader,         0),
+        new LevelSetting(2, 9, EnemyNames.Petard,          3),
+        new LevelSetting(2, 9, EnemyNames.FlyingInvader,   0),
         new LevelSetting(2, 9, EnemyNames.BatteringRam,    2),
+        
+        // wave 11
+        new LevelSetting(2, 11, EnemyNames.Invader,        3),
+        new LevelSetting(2, 11, EnemyNames.FlyingInvader,  3),
 
         // Level 4 --------------------------------
         // wave 1
@@ -236,9 +271,16 @@ public class EnemyManager : MonoBehaviour
         // wave 9
         new LevelSetting(3, 9, EnemyNames.BatteringRam,    3),
     };
+    private readonly Dictionary<int, List<LevelSetting>> sortedLevelSettings = new Dictionary<int, List<LevelSetting>>()
+    {
+        {0, new List<LevelSetting>() },
+        {1, new List<LevelSetting>() },
+        {2, new List<LevelSetting>() },
+        {3, new List<LevelSetting>() }
+    };
 
-    private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
-    private Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
+    private readonly Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
+    private readonly Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
 
     public static EnemyManager GetInstance()
     {
@@ -261,6 +303,33 @@ public class EnemyManager : MonoBehaviour
             temp.SetPrefab(Resources.Load("Enemies/" + key) as GameObject);
             Enemies[key] = temp;
             currentSettings.Add(key, (false, 0));
+        }
+
+        int index = 0;
+        // sort level settings
+        for (int i = 0; i < 4; i++)
+        {
+            List<LevelSetting> levelI = sortedLevelSettings[i];
+            bool loopCondition = true;
+            while (loopCondition)
+            {
+                if (index < levelSettings.Count)
+                {
+                    if (levelSettings[index].level == i)
+                    {
+                        levelI.Add(levelSettings[index++]);
+                    }
+                    else
+                    {
+                        loopCondition = false;
+                    }
+                }
+                else
+                {
+                    loopCondition = false;
+                }
+            }
+            sortedLevelSettings[i] = levelI;
         }
     }
 
@@ -741,14 +810,12 @@ public class EnemyManager : MonoBehaviour
 
     private void UpdateSpawnSettings()
     {
-        foreach (LevelSetting setting in levelSettings)
+        int currentLevel = SuperManager.GetInstance().GetCurrentLevel();
+        foreach (LevelSetting setting in sortedLevelSettings[currentLevel])
         {
-            if (setting.level == SuperManager.GetInstance().GetCurrentLevel())
+            if (setting.wave <= wave)
             {
-                if (setting.wave <= wave)
-                {
-                    currentSettings[setting.enemy] = (setting.enemyLevel != 0, setting.enemyLevel);
-                }
+                currentSettings[setting.enemy] = (setting.enemyLevel != 0, setting.enemyLevel);
             }
         }
     }

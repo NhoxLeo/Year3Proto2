@@ -28,7 +28,6 @@ public class HUDManager : MonoBehaviour
 
     UIAnimator animator;
     public bool doShowHUD = true;
-    public bool buildMode = true;
 
     [Header("Resource Cards")]
     [SerializeField] private UIAnimator resourceBar;
@@ -56,9 +55,10 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TMP_Text victoryProgress;
     [SerializeField] private TMP_Text villagerCost;
     [SerializeField] private Transform villAlloc;
-    private VillagerManager villMan;
     [SerializeField] private GameObject helpScreen;
     [SerializeField] private BuildPanel buildPanel;
+
+    [SerializeField] private Toggle showVillagerWidgets;
 
     public static HUDManager GetInstance()
     {
@@ -73,13 +73,13 @@ public class HUDManager : MonoBehaviour
     void Start()
     {
         animator = GetComponent<UIAnimator>();
-        villMan = VillagerManager.GetInstance();
         RefreshResources();
         GetVictoryInfo();
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
         resourceBar.SetVisibility(!showTutorial);
         buildPanel.showPanel = !showTutorial;
         helpScreen.SetActive(showTutorial);
+        UpdateVillagerWidgetMode();
     }
 
     void LateUpdate()
@@ -274,16 +274,15 @@ public class HUDManager : MonoBehaviour
         helpScreen.SetActive(false);
     }
 
-    public void ToggleHUDMode()
+    public void UpdateVillagerWidgetMode()
     {
-        buildMode = !buildMode;
-        SetAllVillagerWidgets(!buildMode);
+        SetHudMode(showVillagerWidgets.isOn);
     }
 
     public void SetHudMode(bool _buildMode)
     {
-        buildMode = _buildMode;
-        SetAllVillagerWidgets(!buildMode);
+        SuperManager.ShowVillagerWidgets = _buildMode;
+        SetAllVillagerWidgets(SuperManager.ShowVillagerWidgets);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
@@ -308,12 +307,12 @@ public class HUDManager : MonoBehaviour
     public void FetchVillagerInfo()
     {
         // Get info about the cost to train a Villager
-        villagerCost.text = ((int)villMan.GetVillagerTrainCost().food).ToString();
+        villagerCost.text = ((int)VillagerManager.GetInstance().GetVillagerTrainCost().food).ToString();
     }
 
     public void TrainVillager()
     {
-        villMan.TrainVillager();
+        VillagerManager.GetInstance().TrainVillager();
         FetchVillagerInfo();
     }
 }
