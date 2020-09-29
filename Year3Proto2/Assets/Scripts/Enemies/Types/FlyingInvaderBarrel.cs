@@ -59,7 +59,7 @@ public class FlyingInvaderBarrel : MonoBehaviour
             }
         }
         _hitStructure.Damage(damage);
-        GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
+        GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, 0.6f);
         Destroy(gameObject);
     }
 

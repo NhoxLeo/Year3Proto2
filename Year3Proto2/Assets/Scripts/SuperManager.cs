@@ -9,9 +9,9 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     // AUDIO
-    public static float AmbientVolume = 0.5f;
-    public static float MusicVolume = 0.5f;
-    public static float EffectsVolume = 0.5f;
+    public static float AmbientVolume = 1.0f;
+    public static float MusicVolume = 1.0f;
+    public static float EffectsVolume = 1.0f;
 
     // CONSTANTS
     public static bool DevMode = true;

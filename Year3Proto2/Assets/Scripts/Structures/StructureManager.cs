@@ -791,7 +791,7 @@ public class StructureManager : MonoBehaviour
         StructureType structType = structure.GetStructureType();
         if ((structureFromStore && BuyBuilding()) || !structureFromStore)
         {
-            GameManager.CreateAudioEffect("build", structure.transform.position, 0.6f);
+            GameManager.CreateAudioEffect("build", structure.transform.position, SoundType.SoundEffect, 0.6f);
             SetStructureColour(Color.white);
             // Attach the structure to the tile and vica versa
             if (attached) { attached.attachedTile.Detach(); }

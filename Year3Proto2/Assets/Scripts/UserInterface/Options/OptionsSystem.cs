@@ -75,7 +75,7 @@ public class OptionsSystem : MonoBehaviour
         ambientEffectsData.CallBack(() => SuperManager.AmbientVolume = ambientEffectsData.value);
 
         OptionSliderData musicEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
-        ambientEffectsData.CallBack(() => SuperManager.MusicVolume = musicEffectsData.value);
+        musicEffectsData.CallBack(() => SuperManager.MusicVolume = musicEffectsData.value);
 
         OptionSliderData cameraMovementData = new OptionSliderData(new Vector2(2.0f, 6.0f), 0.5f, 0.5f);
         cameraMovementData.CallBack(() => SuperManager.CameraSensitivity = cameraMovementData.value);
@@ -90,7 +90,7 @@ public class OptionsSystem : MonoBehaviour
         // AUDIO
 
         optionObjects.Add(InstantiateOption("MASTER_VOLUME", masterVolumeData, sliderPrefab, audioPanel));
-        optionObjects.Add(InstantiateOption("MUSIC_VOLUME", ambientEffectsData, sliderPrefab, audioPanel));
+        optionObjects.Add(InstantiateOption("MUSIC_VOLUME", musicEffectsData, sliderPrefab, audioPanel));
         optionObjects.Add(InstantiateOption("SOUND_EFFECTS_VOLUME", soundEffectData, sliderPrefab, audioPanel));
         optionObjects.Add(InstantiateOption("AMBIENT_EFFECTS_VOLUME", ambientEffectsData, sliderPrefab, audioPanel));
 

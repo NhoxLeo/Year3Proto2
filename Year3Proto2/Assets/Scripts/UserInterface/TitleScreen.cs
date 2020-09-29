@@ -18,6 +18,9 @@ public class TitleScreen : MonoBehaviour
 
     [SerializeField] TMP_Text version;
 
+    private AudioSource music;
+    private float musicVolume;
+
     void Start()
     {
         Time.timeScale = 1.0f;
@@ -79,17 +82,21 @@ public class TitleScreen : MonoBehaviour
         Debug.Log(SuperManager.GetInstance().GetCurrentLevel());
 
         version.text = "v" + Application.version;
+
+        music = GameObject.Find("Music").GetComponent<AudioSource>();
+        musicVolume = music.volume;
     }
 
-    /*
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
+        /*if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
         {
             titleSequence.Complete();
-        }
+        }*/
+
+        music.volume = musicVolume * SuperManager.MusicVolume;
+        Debug.Log(SuperManager.MusicVolume);
     }
-    */
 
     public void PlayButton()
     {

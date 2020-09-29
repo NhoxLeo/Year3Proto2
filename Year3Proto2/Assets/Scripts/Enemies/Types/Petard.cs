@@ -163,7 +163,7 @@ public class Petard : Enemy
                     structure.Damage(clamped);
                 }
             }
-            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
+            GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, 0.6f);
             barrelExploded = true;
             _hitStructure.Damage(damage);
             Damage(health);
