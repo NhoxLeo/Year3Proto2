@@ -50,7 +50,8 @@ public class FlyingInvaderBarrel : MonoBehaviour
                     continue;
                 }
                 float damageToThisStructure = damage * (transform.position - structure.transform.position).magnitude / explosionRadius;
-                structure.Damage(damageToThisStructure);
+                float clamped = Mathf.Clamp(damageToThisStructure, damage * 0.3f, damage);
+                structure.Damage(clamped);
             }
         }
         GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
