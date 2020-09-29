@@ -90,7 +90,7 @@ public class VillagerAllocation : MonoBehaviour
         if (!_visible)
         {
             // and the HUDMan is not in build mode (aka showing all widgets currently)
-            if (!HUDManager.GetInstance().buildMode)
+            if (!SuperManager.ShowVillagerWidgets)
             {
                 // don't set the visibility.
                 return;

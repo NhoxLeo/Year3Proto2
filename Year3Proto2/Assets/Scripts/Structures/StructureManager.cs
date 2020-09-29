@@ -925,7 +925,7 @@ public class StructureManager : MonoBehaviour
 
     private Vector3 CalculateStructureCost(string _structureName)
     {
-        float increaseCoefficient = SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
+        float increaseCoefficient = SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 4f : 10f;
         Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
         structureCosts[_structureName] = new ResourceBundle(newCost);
         return structureCosts[_structureName];
