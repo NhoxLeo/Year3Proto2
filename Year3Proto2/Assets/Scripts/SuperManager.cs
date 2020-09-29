@@ -8,8 +8,14 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
+    // AUDIO
+    public static float AmbientVolume = 0.5f;
+    public static float MusicVolume = 0.5f;
+    public static float EffectsVolume = 0.5f;
+
     // CONSTANTS
     public static bool DevMode = true;
+    public static float CameraSensitivity = 4.0f;
 
     public const float ScalingFactor = 1.33f;
 

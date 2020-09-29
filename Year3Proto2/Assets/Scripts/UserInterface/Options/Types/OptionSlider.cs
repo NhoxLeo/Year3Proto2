@@ -18,9 +18,12 @@ public class OptionSliderData : OptionData
     public float defaultValue;
     public float value;
 
-    public OptionSliderData(float _defaultValue, float _value)
+    public Vector3 range;
+
+    public OptionSliderData(Vector3 _range, float _defaultValue, float _value)
     {
         value = _value;
+        range = _range;
         defaultValue = _defaultValue;
     }
 }
@@ -34,6 +37,8 @@ public class OptionSlider : OptionObject, OptionDataBase
     {
         data.value = PlayerPrefs.GetFloat(key, data.defaultValue);
         slider.value = data.value;
+        slider.minValue = data.range.x;
+        slider.maxValue = data.range.y;
         data.GetCallback().Invoke();
     }
 

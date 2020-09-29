@@ -52,27 +52,40 @@ public class Ballista : ProjectileDefenseStructure
         }
     }
 
-    public override void Launch(Transform _target)
-    {
-        GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
-        BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
-        arrowBehaviour.Initialize(_target, damage, ArrowSpeed, arrowPierce);
-        GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
-        /*
-        Vector3 position = transform.position;
-        position.y = 1.25f;
-
-        Transform projectile = Instantiate(projectilePrefab, position, Quaternion.identity);
-        Arrow arrow = projectile.GetComponent<Arrow>();
-        if (arrow)
+    /*
+     for (int i = 0; i < (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper) ? 3 : 1); i++)
         {
             float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
+            targetPosition.x += projectileOffset;
+            targetPosition.z += projectileOffset;
 
             arrow.Pierce = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper);
             arrow.SetDamage(arrow.GetDamage() * damageFactor * level);
             arrow.SetTarget(_target);
+            GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
+            BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
+            arrowBehaviour.Initialize(targetPosition, damage, ArrowSpeed, arrowPierce);
+            GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
         }
-        */
+     */
+
+    public override void Launch(Transform _target)
+    {
+        float projectileOffset = 0.2f;
+        Vector3 targetPosition = _target.position;
+        targetPosition.x -= projectileOffset * 2.0f;
+        targetPosition.z -= projectileOffset * 2.0f;
+
+        for (int i = 0; i < (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper) ? 3 : 1); i++)
+        {
+            targetPosition.x += projectileOffset;
+            targetPosition.z += projectileOffset;
+
+            GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
+            BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
+            arrowBehaviour.Initialize(targetPosition, damage, ArrowSpeed, arrowPierce);
+            GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
+        }
     }
 
 
