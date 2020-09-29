@@ -69,6 +69,10 @@ public class ShockWaveTower : DefenseStructure
                         {
                             if (enemy.enemyName != EnemyNames.BatteringRam)
                             {
+                                if (enemy.enemyName == EnemyNames.Petard)
+                                {
+                                    enemy.GetComponent<Petard>().SetOffBarrel();
+                                }
                                 float distance = (this.transform.position - transform.position).magnitude;
                                 float damage = 5.0f * (1.0f / distance);
                                 enemy.Stun(damage);
@@ -121,10 +125,7 @@ public class ShockWaveTower : DefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

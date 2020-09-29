@@ -7,7 +7,7 @@ public abstract class StorageStructure : Structure
 {
     protected ResourceType resourceType;
     public int storage = 500;
-    protected const float BaseMaxHealth = 200f;
+    protected const float BaseMaxHealth = 300f;
 
     protected override void Awake()
     {
@@ -41,12 +41,9 @@ public abstract class StorageStructure : Structure
     {
         // get base health
         float maxHealth = GetBaseMaxHealth();
-
+        
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

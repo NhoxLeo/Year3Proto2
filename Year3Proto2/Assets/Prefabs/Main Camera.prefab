@@ -211,4 +211,4 @@ MonoBehaviour:
   sensitivity: 4
   keyboardSpeed: 30
   lerpSpeed: 10
-  inertiaFalloffSpeed: 6
+  inertiaFalloffSpeed: 7

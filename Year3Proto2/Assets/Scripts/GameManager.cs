@@ -167,6 +167,7 @@ public class GameManager : MonoBehaviour
     public float lumberSinceObjective = 0;
     public float metalSinceObjective = 0;
     public bool cheatAlwaysMaxed = false;
+    public static bool ShowEnemyHealthbars = true;
 
     public static GameManager GetInstance()
     {
@@ -365,6 +366,11 @@ public class GameManager : MonoBehaviour
             RepairAll();
         }
 
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ShowEnemyHealthbars = !ShowEnemyHealthbars;
+        }
+
         // get resourceDelta
         ResourceBundle resourcesThisFrame = new ResourceBundle(GetResourceVelocity() * Time.deltaTime);
         foodSinceObjective += Mathf.Clamp(resourcesThisFrame.food, 0f, resourcesThisFrame.food);
@@ -533,31 +539,31 @@ public class GameManager : MonoBehaviour
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
                     break;
                 case SuperManager.Food:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.FoodII:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.FoodIII:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/3000)";
                     break;
                 case SuperManager.Lumber:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.LumberII:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.LumberIII:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/3000)";
                     break;
                 case SuperManager.Metal:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.MetalII:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.MetalIII:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/3000)";
                     break;
                 default:
                     break;

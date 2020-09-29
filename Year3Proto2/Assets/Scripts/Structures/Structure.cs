@@ -234,7 +234,10 @@ public abstract class Structure : MonoBehaviour
         {
             if (healthBar)
             {
-                healthBar.gameObject.SetActive(false);
+                if (health == GetTrueMaxHealth())
+                {
+                    healthBar.gameObject.SetActive(false);
+                }
             }
             ShowRangeDisplay(false);
             if (villagerWidget)
@@ -318,7 +321,7 @@ public abstract class Structure : MonoBehaviour
 
         StructureManager structMan = StructureManager.GetInstance();
 
-        GameObject healthBarInst = Instantiate(structMan.healthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
         SetHealthbar(healthBarInst.GetComponent<Healthbar>());
         healthBar.target = gameObject;
         healthBar.fillAmount = 1.0f;

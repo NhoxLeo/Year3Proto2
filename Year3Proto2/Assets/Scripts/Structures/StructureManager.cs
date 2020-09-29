@@ -267,7 +267,7 @@ public class StructureManager : MonoBehaviour
     [HideInInspector]
     public Canvas canvas;
     [HideInInspector]
-    public GameObject healthBarPrefab;
+    public static GameObject HealthBarPrefab;
     [HideInInspector]
     public GameObject villagerWidgetPrefab;
     private BuildPanel panel;
@@ -338,7 +338,7 @@ public class StructureManager : MonoBehaviour
         canvas = FindObjectOfType<Canvas>();
         messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
-        healthBarPrefab = Resources.Load("BuildingHP") as GameObject;
+        HealthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
         buildingPuff = Resources.Load("BuildEffect") as GameObject;
         GlobalData.longhausDead = false;
@@ -925,7 +925,7 @@ public class StructureManager : MonoBehaviour
 
     private Vector3 CalculateStructureCost(string _structureName)
     {
-        float increaseCoefficient = SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 2f : 4f;
+        float increaseCoefficient = SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SnoballPrices) ? 4f : 10f;
         Vector3 newCost = (increaseCoefficient + structureCounts[StructureIDs[_structureName]]) / increaseCoefficient * (Vector3)structureDict[_structureName].originalCost;
         structureCosts[_structureName] = new ResourceBundle(newCost);
         return structureCosts[_structureName];

@@ -65,6 +65,7 @@ public abstract class Enemy : MonoBehaviour
     protected float updatePathDelay = 1.5f;
     private EnemyPathSignature signature;
     protected int level;
+    protected Healthbar healthbar;
 
     // Stun
     protected bool stunned = false;
@@ -185,6 +186,17 @@ public abstract class Enemy : MonoBehaviour
             {
                 stunned = false;
                 animator.enabled = true;
+            }
+        }
+
+        if (healthbar)
+        {
+            if (!GameManager.ShowEnemyHealthbars)
+            {
+                if (healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(false);
+                }
             }
         }
 
@@ -359,6 +371,15 @@ public abstract class Enemy : MonoBehaviour
     public bool Damage(float _damage)
     {
         health -= _damage;
+        if (healthbar && GameManager.ShowEnemyHealthbars)
+        {
+            if (health < GetTrueMaxHealth())
+            {
+                healthbar.gameObject.SetActive(true);
+                healthbar.fillAmount = health / GetTrueMaxHealth();
+            }
+        }
+
         if (health <= 0f)
         {
             OnKill();
@@ -427,5 +448,18 @@ public abstract class Enemy : MonoBehaviour
     public float GetDamage()
     {
         return damage;
+    }
+
+    public float GetTrueMaxHealth()
+    {
+        return baseHealth * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
+    }
+
+    private void OnDestroy()
+    {
+        if (healthbar)
+        {
+            Destroy(healthbar.gameObject);
+        }
     }
 }

@@ -7,7 +7,7 @@ public class Ballista : ProjectileDefenseStructure
     [SerializeField] private GameObject arrowPrefab;
 
     private const int MetalCost = 2;
-    private const float BaseMaxHealth = 350f;
+    private const float BaseMaxHealth = 500f;
     private const float BaseDamage = 10f;
     private const float ArrowSpeed = 12.5f;
 
@@ -127,10 +127,7 @@ public class Ballista : ProjectileDefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

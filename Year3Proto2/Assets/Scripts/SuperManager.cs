@@ -18,6 +18,10 @@ public class SuperManager : MonoBehaviour
     public static float CameraSensitivity = 4.0f;
 
     public const float ScalingFactor = 1.33f;
+    public const float PoorTimberFactor = 0.75f;
+    public static bool ShowPriortyPanel = false;
+    public static bool ShowVillagerWidgets = false;
+
 
     public const int NoRequirement = -1;
 
@@ -280,6 +284,8 @@ public class SuperManager : MonoBehaviour
         public MatchSaveData currentMatch;
         public bool showTutorial;
         public string gameVersion;
+        public bool showWidgets;
+        public bool showPriority;
     }
 
     [Serializable]
@@ -412,10 +418,10 @@ public class SuperManager : MonoBehaviour
     public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
     { 
         // ID, Name, Description, Coefficient
-        new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure Cost Acceleration hits twice as hard.", 0.5f),
+        new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure Cost Acceleration hits harder.", 0.5f),
         new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
         new ModifierDefinition(DryFields, "Dry Fields", "Food production is halved.", 0.35f),
-        new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 50% of their standard durability.", 0.4f),
+        new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 75% of their standard durability.", 0.4f),
     };
     public static List<WinConditionDefinition> WinConditionDefinitions = new List<WinConditionDefinition>()
     { 
@@ -1046,6 +1052,8 @@ public class SuperManager : MonoBehaviour
 
     public void WriteGameData()
     {
+        saveData.showPriority = ShowPriortyPanel;
+        saveData.showWidgets = ShowVillagerWidgets;
         BinaryFormatter bf = new BinaryFormatter();
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
@@ -1068,6 +1076,8 @@ public class SuperManager : MonoBehaviour
             file.Close();
 
             saveData = data;
+            ShowPriortyPanel = saveData.showPriority;
+            ShowVillagerWidgets = saveData.showWidgets;
         }
         else
         {
@@ -1137,4 +1147,9 @@ public class SuperManager : MonoBehaviour
         return CameraSettings[currentLevel];
     }
 
+    public float GetPoorTimberFactor()
+    {
+        bool poorTimber = CurrentLevelHasModifier(PoorTimber);
+        return poorTimber ? PoorTimberFactor : 1.0f;
+    }
 }

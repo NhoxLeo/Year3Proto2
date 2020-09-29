@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BatteringRam : Enemy
 {
+    private const float BaseHealth = 300f;
+    private const float BaseDamage = 30f;
 
     protected override void Awake()
     {
@@ -16,6 +18,12 @@ public class BatteringRam : Enemy
             StructureType.Longhaus,
             StructureType.Defense
         };
+
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthBarInst.SetActive(false);
     }
 
     private void FixedUpdate()
@@ -161,8 +169,8 @@ public class BatteringRam : Enemy
 
     public void Initialize(int _level)
     {
-        baseHealth = 300f;
-        baseDamage = 30f;
+        baseHealth = BaseHealth;
+        baseDamage = BaseDamage;
         SetLevel(_level);
         finalSpeed = 0.25f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;
