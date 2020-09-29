@@ -48,7 +48,7 @@ public class BoulderBehaviour : MonoBehaviour
                 }
             }
             Destroy(gameObject);
-            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
+            GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, 0.6f);
         }
     }
 }

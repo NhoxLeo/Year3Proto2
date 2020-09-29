@@ -174,7 +174,7 @@ public abstract class Structure : MonoBehaviour
         if (setInfo) { buildingInfo.SetInfo(); }
         if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
 
-        GameManager.CreateAudioEffect("buildingHit", transform.position, 0.6f);
+        GameManager.CreateAudioEffect("buildingHit", transform.position, SoundType.SoundEffect, 0.6f);
 
         return health <= 0f;
     }
@@ -343,7 +343,7 @@ public abstract class Structure : MonoBehaviour
             {
                 OnDestroyed();
                 attachedTile.Detach();
-                GameManager.CreateAudioEffect("buildingDestroy", transform.position, 0.6f);
+                GameManager.CreateAudioEffect("buildingDestroy", transform.position, SoundType.SoundEffect, 0.6f);
                 StructureManager.GetInstance().OnStructureDestroyed(this);
                 VillagerManager.GetInstance().RemoveVillagers(allocatedVillagers, manualAllocation);
                 GameObject destroyedVFX = Instantiate(DestructionEffect);

@@ -120,7 +120,7 @@ public class Airship : MonoBehaviour
     
     private IEnumerator Deploy(float seconds)
     {
-        GameManager.CreateAudioEffect("horn", transform.position, 0.6f);
+        GameManager.CreateAudioEffect("horn", transform.position, SoundType.SoundEffect, 0.6f);
         WaitForSeconds wait = new WaitForSeconds(seconds);
         List<Vector3> spawnPoints = GenerateSpawnPoints();
         for (int i = 0; i < transforms.Length; i++)
