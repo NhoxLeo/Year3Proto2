@@ -209,6 +209,6 @@ MonoBehaviour:
   mouseXBuffer: 64
   mouseYBuffer: 64
   sensitivity: 4
-  keyboardSpeed: 30
+  keyboardSpeed: 25
   lerpSpeed: 10
-  inertiaFalloffSpeed: 7
+  inertiaFalloffSpeed: 7.5
