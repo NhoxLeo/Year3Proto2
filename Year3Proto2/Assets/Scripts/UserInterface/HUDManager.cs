@@ -55,7 +55,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TMP_Text victoryProgress;
     [SerializeField] private TMP_Text villagerCost;
     [SerializeField] private Transform villAlloc;
-    [SerializeField] private GameObject helpScreen;
+    [SerializeField] private UIAnimator helpScreen;
     [SerializeField] private BuildPanel buildPanel;
 
     [SerializeField] private Toggle showVillagerWidgets;
@@ -78,7 +78,7 @@ public class HUDManager : MonoBehaviour
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
         resourceBar.SetVisibility(!showTutorial);
         buildPanel.showPanel = !showTutorial;
-        helpScreen.SetActive(showTutorial);
+        helpScreen.SetVisibility(showTutorial);
         UpdateVillagerWidgetMode();
     }
 
@@ -266,12 +266,6 @@ public class HUDManager : MonoBehaviour
     public void HideHelpScreen()
     {
         SuperManager.GetInstance().SetShowTutorial(false);
-        Invoke("DisableHelpScreen", 2.0f);
-    }
-
-    private void DisableHelpScreen()
-    {
-        helpScreen.SetActive(false);
     }
 
     public void UpdateVillagerWidgetMode()
