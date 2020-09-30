@@ -1,18 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
+
+[Serializable]
+public enum Priority
+{
+    Food,
+    Wood,
+    Metal
+}
 
 public class VillagerManager : MonoBehaviour
 {
     private static VillagerManager instance;
 
-    private List<Structure> allocationStructures = new List<Structure>();
+    private readonly List<Structure> allocationStructures = new List<Structure>();
     private int villagers = 0;
     private int availableVillagers = 0;
     private int villagersManAllocated = 0;
     private float starveTicks = 0;
-    private float villagerHungerModifier = 2;
-    private Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
+    private const float villagerHungerModifier = 2f;
+    private readonly Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
     private BuildingInfo buildingInfo;
 
     private void Awake()
@@ -458,7 +468,7 @@ public class VillagerManager : MonoBehaviour
                 }
                 if (populated.Count > 0)
                 {
-                    Structure structure = populated[Random.Range(0, populated.Count)];
+                    Structure structure = populated[UnityEngine.Random.Range(0, populated.Count)];
                     structure.ManuallyAllocate(structure.GetAllocated() - 1);
                 }
             }
@@ -628,5 +638,44 @@ public class VillagerManager : MonoBehaviour
     public ResourceBundle GetVillagerTrainCost()
     {
         return new ResourceBundle(50 + 10 * villagers, 0, 0);
+    }
+
+    public List<Priority> GetPriorities()
+    {
+        return new List<Priority>()
+        {
+            priorityOrder[0],
+            priorityOrder[1],
+            priorityOrder[2]
+        };
+    }
+
+    public void SetPriorities(List<Priority> _priorities)
+    {
+        priorityOrder[0] = _priorities[0];
+        priorityOrder[1] = _priorities[1];
+        priorityOrder[2] = _priorities[2];
+        RedistributeVillagers();
+        int food = 0;
+        int wood = 0;
+        int metal = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            switch (priorityOrder[i])
+            {
+                case Priority.Food:
+                    food = i;
+                    break;
+                case Priority.Wood:
+                    wood = i;
+                    break;
+                case Priority.Metal:
+                    metal = i;
+                    break;
+                default:
+                    break;
+            }
+        }
+        FindObjectOfType<VillagerPriority>().SetCardPriorites(food, wood, metal);
     }
 }

@@ -54,11 +54,15 @@ public class HUDManager : MonoBehaviour
     [Header("Misc")]
     [SerializeField] private TMP_Text victoryProgress;
     [SerializeField] private TMP_Text villagerCost;
+    [SerializeField] private TMP_Text nextWave;
     [SerializeField] private Transform villAlloc;
-    [SerializeField] private GameObject helpScreen;
+    [SerializeField] private UIAnimator helpScreen;
+    [SerializeField] private RectTransform nextWaveTooltip;
     [SerializeField] private BuildPanel buildPanel;
 
     [SerializeField] private Toggle showVillagerWidgets;
+
+    private bool nextWaveUpdate = false;
 
     public static HUDManager GetInstance()
     {
@@ -78,7 +82,8 @@ public class HUDManager : MonoBehaviour
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
         resourceBar.SetVisibility(!showTutorial);
         buildPanel.showPanel = !showTutorial;
-        helpScreen.SetActive(showTutorial);
+        helpScreen.SetVisibility(showTutorial);
+        showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
     }
 
@@ -142,6 +147,11 @@ public class HUDManager : MonoBehaviour
         }
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
+
+        if (nextWaveUpdate)
+        {
+            FetchNextWaveInfo();
+        }
     }
 
     private void GetVictoryInfo()
@@ -266,12 +276,6 @@ public class HUDManager : MonoBehaviour
     public void HideHelpScreen()
     {
         SuperManager.GetInstance().SetShowTutorial(false);
-        Invoke("DisableHelpScreen", 2.0f);
-    }
-
-    private void DisableHelpScreen()
-    {
-        helpScreen.SetActive(false);
     }
 
     public void UpdateVillagerWidgetMode()
@@ -281,8 +285,8 @@ public class HUDManager : MonoBehaviour
 
     public void SetHudMode(bool _buildMode)
     {
-        SuperManager.ShowVillagerWidgets = _buildMode;
-        SetAllVillagerWidgets(SuperManager.ShowVillagerWidgets);
+        SuperManager.GetInstance().SetShowWidgets(_buildMode);
+        SetAllVillagerWidgets(_buildMode);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
@@ -314,5 +318,41 @@ public class HUDManager : MonoBehaviour
     {
         VillagerManager.GetInstance().TrainVillager();
         FetchVillagerInfo();
+    }
+
+    public void SetNextWaveUpdate(bool _update)
+    {
+        nextWaveUpdate = _update;
+    }
+
+    public void FetchNextWaveInfo()
+    {
+        EnemyManager enemyMan = EnemyManager.GetInstance();
+        string start = "Press this button to spawn the next wave.";
+
+        string time = "\n\nTime until the next wave spawns naturally: " + enemyMan.GetTime().ToString("0");
+        // Time until next wave spawns:  + spawnDelay
+        // You must clear the current wave before you can spawn the next one. Remaning enemies from current wave:  + enemies
+        string remaining = "";
+        if (!enemyMan.CanSpawnNextWave())
+        {
+            remaining += "\n\nYou must clear the current wave before you can spawn the next one. Remaining enemies from current wave: " + enemyMan.GetEnemiesLeftCurrentWave();
+        }
+
+        //nextWave.text = ;
+        // enemies remaining from previous wave, necessary before spawning next wave
+        // time before next wave spawns
+        // 
+        nextWave.text = start + time + remaining;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(nextWaveTooltip);
+    }
+
+    public void NextWave()
+    {
+        EnemyManager enemyMan = EnemyManager.GetInstance();
+        if (enemyMan.CanSpawnNextWave())
+        {
+            EnemyManager.GetInstance().SpawnNextWave();
+        }
     }
 }

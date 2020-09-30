@@ -206,12 +206,24 @@ public class Invader : Enemy
                     action = true;
                 }
             }
-            else { ForgetSoldier(); }
+            else 
+            { 
+                ForgetSoldier(); 
+            }
         }
         else
         {
-            if (target.GetHealth() > 0) { action = true; }
-            else { ForgetSoldier(); }
+            if (target.GetHealth() > 0) 
+            { 
+                action = true;
+                Vector3 lookPosition = target.transform.position;
+                lookPosition.y = transform.position.y;
+                LookAtPosition(lookPosition);
+            }
+            else 
+            { 
+                ForgetSoldier(); 
+            }
         }
         
     }

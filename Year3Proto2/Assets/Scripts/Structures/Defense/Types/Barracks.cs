@@ -81,6 +81,7 @@ public class Barracks : DefenseStructure
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
 
         // soldier stuff
         if (!SoldierPrefab)
@@ -161,7 +162,9 @@ public class Barracks : DefenseStructure
     {
         base.OnSetLevel();
         Soldier.SetDamage(GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1));
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()

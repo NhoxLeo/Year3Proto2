@@ -147,7 +147,10 @@ public class BatteringRam : Enemy
     public override void Action()
     {
         if (target.GetHealth() > 0)
-        { 
+        {
+            Vector3 lookPosition = target.transform.position;
+            lookPosition.y = transform.position.y;
+            LookAtPosition(lookPosition);
             action = true; 
         }
     }
