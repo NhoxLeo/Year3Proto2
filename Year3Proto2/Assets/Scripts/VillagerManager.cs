@@ -23,7 +23,6 @@ public class VillagerManager : MonoBehaviour
     private float starveTicks = 0;
     private const float villagerHungerModifier = 2f;
     private readonly Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
-    private BuildingInfo buildingInfo;
 
     private void Awake()
     {
@@ -40,7 +39,6 @@ public class VillagerManager : MonoBehaviour
     {
         villagers = 5;
         availableVillagers = 5;
-        buildingInfo = FindObjectOfType<BuildingInfo>();
     }
 
     // Update is called once per frame
@@ -650,7 +648,7 @@ public class VillagerManager : MonoBehaviour
         };
     }
 
-    public void SetPriorities(List<Priority> _priorities)
+    public void LoadPriorities(List<Priority> _priorities)
     {
         priorityOrder[0] = _priorities[0];
         priorityOrder[1] = _priorities[1];
@@ -676,6 +674,6 @@ public class VillagerManager : MonoBehaviour
                     break;
             }
         }
-        FindObjectOfType<VillagerPriority>().SetCardPriorites(food, wood, metal);
+        FindObjectOfType<VillagerPriority>().LoadCardPriorites(food, wood, metal);
     }
 }
