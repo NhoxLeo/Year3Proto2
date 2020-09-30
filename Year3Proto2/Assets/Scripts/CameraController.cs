@@ -107,7 +107,6 @@ public class CameraController : MonoBehaviour
         {
             float maxInertia = Screen.height * 0.33f;
             inertia = Vector2.ClampMagnitude(movementCoeff * resolutionMod * (lastFrameMousePos - mp), maxInertia);
-
         }
         else
         {

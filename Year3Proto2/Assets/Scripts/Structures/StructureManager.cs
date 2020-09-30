@@ -424,9 +424,9 @@ public class StructureManager : MonoBehaviour
                     ProceduralGeneration(useSeed, seed);
                 }
 
-                // add the Longhaus to the player structure dictionary
-                playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
             }
+            // add the Longhaus to the player structure dictionary
+            playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
         }
     }
 
