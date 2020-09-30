@@ -54,6 +54,16 @@ public class VillagerPriority : MonoBehaviour
 
     private float panelYinitial;
 
+    private void Awake()
+    {
+        posSlot = new List<float>
+        {
+            foodCard.transform.localPosition.x,
+            woodCard.transform.localPosition.x,
+            metalCard.transform.localPosition.x
+        };
+    }
+
     private void Start()
     {
         panelYinitial = panel.localPosition.y;
@@ -63,25 +73,19 @@ public class VillagerPriority : MonoBehaviour
         woodText.text = (woodPriority + 1).ToString() + ".";
         metalText.text = (metalPriority + 1).ToString() + ".";
 
-        posSlot = new List<float>
-        {
-            foodCard.transform.localPosition.x,
-            woodCard.transform.localPosition.x,
-            metalCard.transform.localPosition.x
-        };
 
         ApplyCards();
     }
 
     private void Update()
     {
-        if (SuperManager.ShowPriortyPanel && !panelShown)
+        if (SuperManager.GetInstance().GetShowPriority() && !panelShown)
         {
             ShowPanel();
             panelShown = true;
         }
 
-        if (!SuperManager.ShowPriortyPanel && panelShown)
+        if (!SuperManager.GetInstance().GetShowPriority() && panelShown)
         {
             HidePanel();
             panelShown = false;
@@ -157,7 +161,7 @@ public class VillagerPriority : MonoBehaviour
 
     public void TogglePanel()
     {
-        SuperManager.ShowPriortyPanel = !SuperManager.ShowPriortyPanel;
+        SuperManager.GetInstance().ToggleShowPriority();
     }
 
     private void ShowPanel()
@@ -288,7 +292,7 @@ public class VillagerPriority : MonoBehaviour
 
     }
 
-    public void SetCardPriorites(int _food, int _wood, int _metal)
+    public void LoadCardPriorites(int _food, int _wood, int _metal)
     {
         foodPriority = _food;
         woodPriority = _wood;

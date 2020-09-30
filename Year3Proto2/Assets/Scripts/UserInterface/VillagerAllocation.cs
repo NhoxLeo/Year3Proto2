@@ -90,7 +90,7 @@ public class VillagerAllocation : MonoBehaviour
         if (!_visible)
         {
             // and ShowVillagerWidgets is true (aka showing all widgets currently)
-            if (SuperManager.ShowVillagerWidgets)
+            if (SuperManager.GetInstance().GetShowWidgets())
             {
                 // don't set the visibility.
                 return;
