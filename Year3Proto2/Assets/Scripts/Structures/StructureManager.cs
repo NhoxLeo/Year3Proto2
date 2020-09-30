@@ -192,6 +192,7 @@ public class StructureManager : MonoBehaviour
     public bool useSeed = false;
     [HideInInspector]
     public int seed = 0;
+    private Vector3 mpAtRightDown = new Vector2();
 
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -500,6 +501,10 @@ public class StructureManager : MonoBehaviour
             HideBuilding();
         }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            mpAtRightDown = Input.mousePosition;
+        }
     }
 
     private void UpdateSelecting(Ray _mouseRay)
@@ -768,19 +773,22 @@ public class StructureManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonUp(1))
         {
-            ResetBuilding();
-            panel.ResetBuildingSelected();
-            if (structureFromStore)
+            if ((Input.mousePosition - mpAtRightDown).magnitude < 20)
             {
-                DeselectStructure();
+                ResetBuilding();
+                panel.ResetBuildingSelected();
+                if (structureFromStore)
+                {
+                    DeselectStructure();
+                }
+                else
+                {
+                    SelectStructure(structure);
+                }
+                messageBox.HideMessage();
             }
-            else
-            {
-                SelectStructure(structure);
-            }
-            messageBox.HideMessage();
         }
     }
 
