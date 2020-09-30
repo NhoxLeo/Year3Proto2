@@ -446,6 +446,29 @@ public class EnemyManager : MonoBehaviour
             {
                 SpawnNextWave();
             }
+            if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.Invader);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.HeavyInvader);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.Petard);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.FlyingInvader);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha5))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.BatteringRam);
+                }
+            }
         }
         if (spawning)
         {
@@ -877,4 +900,51 @@ public class EnemyManager : MonoBehaviour
     public bool CanSpawnNextWave()    {        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;    }
 
     public int GetEnemiesLeftCurrentWave()    {        if (waveEnemyCounts.ContainsKey(wave))        {            return waveEnemyCounts[wave].enemiesRemaining;        }        return 0;    }
+
+    public void DebugSpawnEnemyAtCursor(string _enemy)
+    {
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            if (!currentSettings[_enemy].Item1)
+            {
+                currentSettings[_enemy] = (true, 1);
+            }
+
+            GameObject newEnemyObject = Instantiate(Enemies[_enemy].GetPrefab(), hitGround.transform.position + Vector3.up * 0.5f, Quaternion.identity);
+            Enemy enemy = newEnemyObject.GetComponent<Enemy>();
+            RecordNewEnemy(enemy);
+
+            Invader invader = newEnemyObject.GetComponent<Invader>();
+            if (invader)
+            {
+                invader.Initialize(GetEnemyCurrentLevel(_enemy), Random.Range(0.8f, 1.5f));
+            }
+
+            HeavyInvader heavyInvader = newEnemyObject.GetComponent<HeavyInvader>();
+            if (heavyInvader)
+            {
+                heavyInvader.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+
+            FlyingInvader flying = newEnemyObject.GetComponent<FlyingInvader>();
+            if (flying)
+            {
+                flying.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+
+            Petard pet = newEnemyObject.GetComponent<Petard>();
+            if (pet)
+            {
+                pet.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+
+            BatteringRam ram = newEnemyObject.GetComponent<BatteringRam>();
+            if (ram)
+            {
+                ram.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+            enemy.SetSpawnWave(wave);
+        }
+    }
 }
