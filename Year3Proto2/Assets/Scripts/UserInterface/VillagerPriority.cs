@@ -69,6 +69,8 @@ public class VillagerPriority : MonoBehaviour
             woodCard.transform.localPosition.x,
             metalCard.transform.localPosition.x
         };
+
+        ApplyCards();
     }
 
     private void Update()
@@ -114,13 +116,13 @@ public class VillagerPriority : MonoBehaviour
             {
                 foodPriority = woodPriority;
                 woodPriority = foodPriority + 1;
-                SetCards();
+                ApplyCards();
             }
             if (foodCard.transform.localPosition.x < metalCard.transform.localPosition.x && foodPriority >= metalPriority)
             {
                 foodPriority = metalPriority;
                 metalPriority = foodPriority + 1;
-                SetCards();
+                ApplyCards();
             }
 
             // Wood
@@ -128,13 +130,13 @@ public class VillagerPriority : MonoBehaviour
             {
                 woodPriority = foodPriority;
                 foodPriority = woodPriority + 1;
-                SetCards();
+                ApplyCards();
             }
             if (woodCard.transform.localPosition.x < metalCard.transform.localPosition.x && woodPriority >= metalPriority)
             {
                 woodPriority = metalPriority;
                 metalPriority = woodPriority + 1;
-                SetCards();
+                ApplyCards();
             }
 
             // Metal
@@ -142,13 +144,13 @@ public class VillagerPriority : MonoBehaviour
             {
                 metalPriority = foodPriority;
                 foodPriority = metalPriority + 1;
-                SetCards();
+                ApplyCards();
             }
             if (metalCard.transform.localPosition.x < woodCard.transform.localPosition.x && metalPriority >= woodPriority)
             {
                 metalPriority = woodPriority;
                 woodPriority = metalPriority + 1;
-                SetCards();
+                ApplyCards();
             }
         }
     }
@@ -210,11 +212,11 @@ public class VillagerPriority : MonoBehaviour
             }
         }
 
-        SetCards();
+        ApplyCards();
         ApplyPriority();
     }
 
-    private void SetCards()
+    private void ApplyCards()
     {
         // Set Text
         foodText.text = (foodPriority + 1).ToString() + ".";
@@ -281,19 +283,23 @@ public class VillagerPriority : MonoBehaviour
         dragging = false;
         draggedCard = "";
 
-        SetCards();
+        ApplyCards();
         ApplyPriority();
 
     }
 
-    private void ApplyPriority()
+    public void SetCardPriorites(int _food, int _wood, int _metal)
     {
-        // Apply priority in StructureManager
-        // >>> SAM <<<
+        foodPriority = _food;
+        woodPriority = _wood;
+        metalPriority = _metal;
 
-        VillagerManager.GetInstance().SetPriorities(foodPriority, woodPriority, metalPriority);
-
+        ApplyCards();
     }
 
+    private void ApplyPriority()
+    {
+        VillagerManager.GetInstance().SetPriorities(foodPriority, woodPriority, metalPriority);
+    }
 
 }
