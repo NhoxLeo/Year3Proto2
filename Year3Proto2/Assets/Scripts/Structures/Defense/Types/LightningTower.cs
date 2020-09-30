@@ -12,7 +12,7 @@ public class LightningTower : DefenseStructure
     [SerializeField] private float lightningStartDelay = 0.6f;
     [SerializeField] private Transform lightningStartPosition;
 
-    private const float BaseMaxHealth = 300f;
+    private const float BaseMaxHealth = 400f;
     private const float BaseDamage = 5f;
 
     private float damage;
@@ -106,7 +106,7 @@ public class LightningTower : DefenseStructure
         LightningBolt lightningBolt = Instantiate(lightning, lightningStartPosition.position, Quaternion.identity);
         lightningBolt.Initialize(_target, damage, sparkDamage);
         lightningBolt.Fire();
-        GameManager.CreateAudioEffect("Zap", _target.position, 0.6f);
+        GameManager.CreateAudioEffect("Zap", _target.position, SoundType.SoundEffect, 0.6f);
     }
 
     public float GetFireRate()
@@ -148,10 +148,7 @@ public class LightningTower : DefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

@@ -33,7 +33,7 @@ public class SceneSwitcher : MonoBehaviour
         Debug.Log("Current scene: " + curScene);
         clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
         //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
-
+        
 
     }
 

@@ -20,7 +20,7 @@ public class SortTileBonusDescendingHelper : IComparer
 
 public abstract class ResourceStructure : Structure
 {
-    protected const float BaseMaxHealth = 100f;
+    protected const float BaseMaxHealth = 200f;
 
     public class SortTileBonusDescendingHelper : IComparer<ResourceStructure>
     {
@@ -311,10 +311,7 @@ public abstract class ResourceStructure : Structure
         float maxHealth = GetBaseMaxHealth();
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

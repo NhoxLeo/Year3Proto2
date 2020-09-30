@@ -35,7 +35,7 @@ public class FlyingInvaderBarrel : MonoBehaviour
         damage = _damage;
     }
 
-    public void SetOff()
+    public void SetOff(Structure _hitStructure = null)
     {
         RaycastHit[] hitStructures = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("Structure"));
         GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
@@ -49,11 +49,17 @@ public class FlyingInvaderBarrel : MonoBehaviour
                 {
                     continue;
                 }
+                if (structure == _hitStructure)
+                {
+                    continue;
+                }
                 float damageToThisStructure = damage * (transform.position - structure.transform.position).magnitude / explosionRadius;
-                structure.Damage(damageToThisStructure);
+                float clamped = Mathf.Clamp(damageToThisStructure, damage * 0.3f, damage);
+                structure.Damage(clamped);
             }
         }
-        GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
+        _hitStructure.Damage(damage);
+        GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, 0.6f);
         Destroy(gameObject);
     }
 
@@ -61,7 +67,7 @@ public class FlyingInvaderBarrel : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Structure"))
         {
-            SetOff();
+            SetOff(collision.gameObject.GetComponent<Structure>());
         }
     }
 }

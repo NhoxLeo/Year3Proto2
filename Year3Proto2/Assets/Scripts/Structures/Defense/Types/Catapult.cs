@@ -7,7 +7,7 @@ public class Catapult : ProjectileDefenseStructure
     public GameObject boulder;
 
     private const float BoulderSpeed = 1f;
-    private const float BaseMaxHealth = 450f;
+    private const float BaseMaxHealth = 550f;
     private const float BaseDamage = 15f;
 
     private float damage;
@@ -51,7 +51,7 @@ public class Catapult : ProjectileDefenseStructure
         boulderBehaviour.damage = damage;
         boulderBehaviour.speed = BoulderSpeed;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
-        GameManager.CreateAudioEffect("catapultFire", transform.position, 0.6f);
+        GameManager.CreateAudioEffect("catapultFire", transform.position, SoundType.SoundEffect, 0.6f);
 
         /*
         Vector3 position = transform.position;
@@ -108,10 +108,7 @@ public class Catapult : ProjectileDefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

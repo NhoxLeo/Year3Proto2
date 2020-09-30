@@ -12,7 +12,7 @@ public class Barracks : DefenseStructure
     private float trainTime = 20f;
     private float timeTrained = 0f;
 
-    private const float BaseMaxHealth = 200f;
+    private const float BaseMaxHealth = 350f;
     private const float BaseDamage = 3f;
 
     public float GetTimeTrained()
@@ -130,7 +130,7 @@ public class Barracks : DefenseStructure
 
         soldiers.Add(newSoldier);
 
-        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, 0.6f);
+        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, SoundType.SoundEffect, 0.6f);
     }
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
@@ -184,10 +184,7 @@ public class Barracks : DefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

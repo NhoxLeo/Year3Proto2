@@ -110,23 +110,11 @@ public struct PlayerResources
     }
 }
 
-public class ResourceBatch
+public enum SoundType
 {
-    public float age;
-    public float amount;
-    public ResourceType type;
-
-    public ResourceBatch(float _amount, ResourceType _type)
-    {
-        age = 0f;
-        amount = _amount;
-        type = _type;
-    }
-
-    public void AddTime(float _time)
-    {
-        age += _time;
-    }
+    SoundEffect,
+    Music,
+    Ambient
 }
 
 public class GameManager : MonoBehaviour
@@ -167,13 +155,19 @@ public class GameManager : MonoBehaviour
     public float lumberSinceObjective = 0;
     public float metalSinceObjective = 0;
     public bool cheatAlwaysMaxed = false;
+    public static bool ShowEnemyHealthbars = true;
+
+    private AudioSource music;
+    private AudioSource ambience;
+    private float musicVolume;
+    private float ambienceVolume;
 
     public static GameManager GetInstance()
     {
         return instance;
     }
 
-    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
+    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, SoundType _type = SoundType.SoundEffect, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
         spawnAudio.transform.position = _positon;
@@ -186,7 +180,20 @@ public class GameManager : MonoBehaviour
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];
         spawnAudioComp.Play();
-        spawnAudioComp.volume = _volume;
+        switch (_type)
+        {
+            case SoundType.SoundEffect:
+            spawnAudioComp.volume = _volume * SuperManager.EffectsVolume;
+                break;
+            case SoundType.Music:
+            spawnAudioComp.volume = _volume * SuperManager.MusicVolume;
+                break;
+            case SoundType.Ambient:
+            spawnAudioComp.volume = _volume * SuperManager.AmbientVolume;
+                break;
+            default:
+                break;
+        }
     }
 
     public static void IncrementRepairCount()
@@ -329,7 +336,12 @@ public class GameManager : MonoBehaviour
             { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
             { "Zap", Resources.Load("Audio/SFX/sfxLightning") as AudioClip },
             { "Thud", Resources.Load("Audio/SFX/sfxShockwave") as AudioClip },
-        };        objectives = SuperManager.GetInstance().GetCurrentWinConditions();
+        };
+        objectives = SuperManager.GetInstance().GetCurrentWinConditions();
+        music = GetComponents<AudioSource>()[0];
+        ambience = GetComponents<AudioSource>()[1];
+        musicVolume = music.volume;
+        ambienceVolume = ambience.volume;
     }
 
     // Start is called before the first frame update
@@ -362,6 +374,11 @@ public class GameManager : MonoBehaviour
         {
             repairAll = true;
             RepairAll();
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ShowEnemyHealthbars = !ShowEnemyHealthbars;
         }
 
         // get resourceDelta
@@ -481,7 +498,7 @@ public class GameManager : MonoBehaviour
                 victory = false;
                 messageBox.ShowMessage("You Lost!", 3f);
                 GetComponents<AudioSource>()[0].DOFade(0f, 1f);
-                CreateAudioEffect("lose", Vector3.zero, 1f, false);
+                CreateAudioEffect("lose", Vector3.zero, SoundType.Music, 1f, false);
             }
             else
             {
@@ -509,7 +526,7 @@ public class GameManager : MonoBehaviour
                     SuperManager.GetInstance().OnLevelComplete();
                     messageBox.ShowMessage("You Win!", 5f);
                     GetComponents<AudioSource>()[0].DOFade(0f, 1f);
-                    CreateAudioEffect("win", Vector3.zero, 1f, false);
+                    CreateAudioEffect("win", Vector3.zero, SoundType.Music, 1f, false);
                 }
             }            
         }
@@ -532,31 +549,31 @@ public class GameManager : MonoBehaviour
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
                     break;
                 case SuperManager.Food:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.FoodII:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.FoodIII:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/3000)";
                     break;
                 case SuperManager.Lumber:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.LumberII:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.LumberIII:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/3000)";
                     break;
                 case SuperManager.Metal:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.MetalII:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.MetalIII:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/3000)";
                     break;
                 default:
                     break;
@@ -598,7 +615,11 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-    }
+
+        music.volume = musicVolume * SuperManager.MusicVolume;
+        ambience.volume = ambienceVolume * SuperManager.AmbientVolume;
+    }
+
     public void SaveMatch()
     {
         SuperManager.GetInstance().SaveCurrentMatch();
