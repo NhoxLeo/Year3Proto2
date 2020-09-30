@@ -671,6 +671,7 @@ public class SuperManager : MonoBehaviour
         villagerMan.SetAvailable(_matchData.availableVillagers);
         villagerMan.SetStarveTicks(_matchData.starveTicks);
         villagerMan.SetManuallyAllocated(_matchData.manuallyAllocated);
+        villagerMan.SetPriorities(_matchData.priorities);
         // not so easy stuff...
 
         // structures

@@ -656,5 +656,26 @@ public class VillagerManager : MonoBehaviour
         priorityOrder[1] = _priorities[1];
         priorityOrder[2] = _priorities[2];
         RedistributeVillagers();
+        int food = 0;
+        int wood = 0;
+        int metal = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            switch (priorityOrder[i])
+            {
+                case Priority.Food:
+                    food = i;
+                    break;
+                case Priority.Wood:
+                    wood = i;
+                    break;
+                case Priority.Metal:
+                    metal = i;
+                    break;
+                default:
+                    break;
+            }
+        }
+        FindObjectOfType<VillagerPriority>().SetCardPriorites(food, wood, metal);
     }
 }
