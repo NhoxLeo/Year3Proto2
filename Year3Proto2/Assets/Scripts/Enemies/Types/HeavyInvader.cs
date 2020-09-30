@@ -250,7 +250,9 @@ public class HeavyInvader : Enemy
             if (target.GetHealth() > 0)
             {
                 action = true;
-                LookAtPosition(target.transform.position);
+                Vector3 lookPosition = target.transform.position;
+                lookPosition.y = transform.position.y;
+                LookAtPosition(lookPosition);
             }
             else
             {
