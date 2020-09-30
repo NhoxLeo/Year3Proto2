@@ -649,4 +649,12 @@ public class VillagerManager : MonoBehaviour
             priorityOrder[2]
         };
     }
+
+    public void SetPriorities(List<Priority> _priorities)
+    {
+        priorityOrder[0] = _priorities[0];
+        priorityOrder[1] = _priorities[1];
+        priorityOrder[2] = _priorities[2];
+        RedistributeVillagers();
+    }
 }
