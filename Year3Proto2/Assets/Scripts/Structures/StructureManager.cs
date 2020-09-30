@@ -29,13 +29,6 @@ public enum StructManState
     Moving
 };
 
-public enum Priority
-{
-    Food,
-    Wood,
-    Metal
-}
-
 [Serializable]
 public struct ResourceBundle
 {

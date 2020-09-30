@@ -271,6 +271,7 @@ public class SuperManager : MonoBehaviour
         public float tempLumber;
         public float tempMetal;
         public float longhausHealth;
+        public List<Priority> priorities;
     }
 
     [Serializable]
@@ -782,7 +783,8 @@ public class SuperManager : MonoBehaviour
             tempLumber = gameMan.lumberSinceObjective,
             tempMetal = gameMan.metalSinceObjective,
             longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
-            manuallyAllocated = villMan.GetManuallyAllocated()
+            manuallyAllocated = villMan.GetManuallyAllocated(),
+            priorities = villMan.GetPriorities()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);

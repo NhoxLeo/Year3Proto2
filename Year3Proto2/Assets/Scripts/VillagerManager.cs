@@ -1,18 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
+
+[Serializable]
+public enum Priority
+{
+    Food,
+    Wood,
+    Metal
+}
 
 public class VillagerManager : MonoBehaviour
 {
     private static VillagerManager instance;
 
-    private List<Structure> allocationStructures = new List<Structure>();
+    private readonly List<Structure> allocationStructures = new List<Structure>();
     private int villagers = 0;
     private int availableVillagers = 0;
     private int villagersManAllocated = 0;
     private float starveTicks = 0;
-    private float villagerHungerModifier = 2;
-    private Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
+    private const float villagerHungerModifier = 2f;
+    private readonly Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
     private BuildingInfo buildingInfo;
 
     private void Awake()
@@ -458,7 +468,7 @@ public class VillagerManager : MonoBehaviour
                 }
                 if (populated.Count > 0)
                 {
-                    Structure structure = populated[Random.Range(0, populated.Count)];
+                    Structure structure = populated[UnityEngine.Random.Range(0, populated.Count)];
                     structure.ManuallyAllocate(structure.GetAllocated() - 1);
                 }
             }
@@ -628,5 +638,15 @@ public class VillagerManager : MonoBehaviour
     public ResourceBundle GetVillagerTrainCost()
     {
         return new ResourceBundle(50 + 10 * villagers, 0, 0);
+    }
+
+    public List<Priority> GetPriorities()
+    {
+        return new List<Priority>()
+        {
+            priorityOrder[0],
+            priorityOrder[1],
+            priorityOrder[2]
+        };
     }
 }
