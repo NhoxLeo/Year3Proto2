@@ -444,12 +444,7 @@ public class EnemyManager : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
             {
-                if (tokens < 10f)
-                {
-                    tokens = 10f;
-                }
-                spawning = true;
-                time = 0f;
+                SpawnNextWave();
             }
         }
         if (spawning)
@@ -864,7 +859,7 @@ public class EnemyManager : MonoBehaviour
         enemiesKilled = 0;
     }
 
-    public void SpawnNextWave()    {        if (!CanSpawnNextWave())        {            return;        }
+    public void SpawnNextWave()    {
         // get the time that would have passed
         float timeSkipped = time;        time = 0f;
 

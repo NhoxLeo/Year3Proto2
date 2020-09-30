@@ -147,7 +147,8 @@ public class BatteringRam : Enemy
     public override void Action()
     {
         if (target.GetHealth() > 0)
-        { 
+        {
+            LookAtPosition(target.transform.position);
             action = true; 
         }
     }
