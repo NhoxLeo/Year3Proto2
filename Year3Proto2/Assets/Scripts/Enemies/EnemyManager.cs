@@ -393,9 +393,11 @@ public class EnemyManager : MonoBehaviour
         Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
-        if (airship) {
+        if (airship)
+        {
             airship.spawnWave = wave;
-            if (airship.GetTarget()) {
+            if (airship.GetTarget())
+            {
                 airship.Embark(transforms, pointerParent);
             }
         }
@@ -556,7 +558,7 @@ public class EnemyManager : MonoBehaviour
                 }
             }
         }
-        
+
         while (tokensLeft >= cheapestEnemy.tokenCost) // while the system can still afford an enemy
         {
             // define randomMax
@@ -862,44 +864,22 @@ public class EnemyManager : MonoBehaviour
         enemiesKilled = 0;
     }
 
-    public void SpawnNextWave()
-    {
-        if (!CanSpawnNextWave())
-        {
-            return;
-        }
-        // get the time that would have passed
-        float timeSkipped = time;
-        time = 0f;
-
-        // get the increase of the increment that would have occured
-        float incrementIncrease = tokensScalar * timeSkipped;
-        
-        // add to tokens based on the time that's passed.
-        tokens += (tokenIncrement + (incrementIncrease / 2f)) * timeSkipped;
-
-        // increase the increment
-        tokenIncrement += incrementIncrease;
-
-        spawning = true;
-    }
+    public void SpawnNextWave()    {        if (!CanSpawnNextWave())        {            return;        }
+        // get the time that would have passed
+        float timeSkipped = time;        time = 0f;
 
-    public bool GetCurrentWaveSurvived()
-    {
-        return GetWaveSurvived(wave);
-    }
+        // get the increase of the increment that would have occured
+        float incrementIncrease = tokensScalar * timeSkipped;
 
-    public bool CanSpawnNextWave()
-    {
-        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;
-    }
+        // add to tokens based on the time that's passed.
+        tokens += (tokenIncrement + (incrementIncrease / 2f)) * timeSkipped;
 
-    public int GetEnemiesLeftCurrentWave()
-    {
-        if (waveEnemyCounts.ContainsKey(wave))
-        {
-            return waveEnemyCounts[wave].enemiesRemaining;
-        }
-        return 0;
-    }
+        // increase the increment
+        tokenIncrement += incrementIncrease;        spawning = true;    }
+
+    public bool GetCurrentWaveSurvived()    {        return GetWaveSurvived(wave);    }
+
+    public bool CanSpawnNextWave()    {        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;    }
+
+    public int GetEnemiesLeftCurrentWave()    {        if (waveEnemyCounts.ContainsKey(wave))        {            return waveEnemyCounts[wave].enemiesRemaining;        }        return 0;    }
 }

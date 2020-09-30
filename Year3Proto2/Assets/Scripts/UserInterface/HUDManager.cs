@@ -58,7 +58,6 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Transform villAlloc;
     [SerializeField] private UIAnimator helpScreen;
     [SerializeField] private RectTransform nextWaveTooltip;
-    [SerializeField] private GameObject helpScreen;
     [SerializeField] private BuildPanel buildPanel;
 
     [SerializeField] private Toggle showVillagerWidgets;
