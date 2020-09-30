@@ -72,14 +72,22 @@ public class Ballista : ProjectileDefenseStructure
     public override void Launch(Transform _target)
     {
         float projectileOffset = 0.2f;
-        Vector3 targetPosition = _target.position;
-        targetPosition.x -= projectileOffset * 2.0f;
-        targetPosition.z -= projectileOffset * 2.0f;
+        int enemyCount = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper) ? 3 : 1;
 
-        for (int i = 0; i < (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper) ? 3 : 1); i++)
+        Vector3 targetPosition = _target.position;
+        if (enemyCount > 1)
         {
-            targetPosition.x += projectileOffset;
-            targetPosition.z += projectileOffset;
+            targetPosition.x -= projectileOffset * 2.0f;
+            targetPosition.z -= projectileOffset * 2.0f;
+        }
+
+        for (int i = 0; i < enemyCount; i++)
+        {
+            if (enemyCount > 1)
+            {
+                targetPosition.x += projectileOffset;
+                targetPosition.z += projectileOffset;
+            }
 
             GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
             BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
