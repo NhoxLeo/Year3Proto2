@@ -148,7 +148,9 @@ public class BatteringRam : Enemy
     {
         if (target.GetHealth() > 0)
         {
-            LookAtPosition(target.transform.position);
+            Vector3 lookPosition = target.transform.position;
+            lookPosition.y = transform.position.y;
+            LookAtPosition(lookPosition);
             action = true; 
         }
     }

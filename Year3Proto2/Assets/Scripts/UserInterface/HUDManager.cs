@@ -58,6 +58,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Transform villAlloc;
     [SerializeField] private UIAnimator helpScreen;
     [SerializeField] private RectTransform nextWaveTooltip;
+    [SerializeField] private Button nextWaveButton;
     [SerializeField] private BuildPanel buildPanel;
 
     [SerializeField] private Toggle showVillagerWidgets;
@@ -83,6 +84,7 @@ public class HUDManager : MonoBehaviour
         resourceBar.SetVisibility(!showTutorial);
         buildPanel.showPanel = !showTutorial;
         helpScreen.SetVisibility(showTutorial);
+        showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
     }
 
@@ -147,6 +149,7 @@ public class HUDManager : MonoBehaviour
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
 
+        nextWaveButton.interactable = enemyMan.CanSpawnNextWave();
         if (nextWaveUpdate)
         {
             FetchNextWaveInfo();
@@ -284,8 +287,8 @@ public class HUDManager : MonoBehaviour
 
     public void SetHudMode(bool _buildMode)
     {
-        SuperManager.ShowVillagerWidgets = _buildMode;
-        SetAllVillagerWidgets(SuperManager.ShowVillagerWidgets);
+        SuperManager.GetInstance().SetShowWidgets(_buildMode);
+        SetAllVillagerWidgets(_buildMode);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
@@ -327,9 +330,8 @@ public class HUDManager : MonoBehaviour
     public void FetchNextWaveInfo()
     {
         EnemyManager enemyMan = EnemyManager.GetInstance();
-        string start = "Press this button to spawn the next wave.";
 
-        string time = "\n\nTime until the next wave spawns naturally: " + enemyMan.GetTime().ToString("0");
+        string time = "Time until the next wave spawns naturally: " + enemyMan.GetTime().ToString("0");
         // Time until next wave spawns:  + spawnDelay
         // You must clear the current wave before you can spawn the next one. Remaning enemies from current wave:  + enemies
         string remaining = "";
@@ -342,7 +344,7 @@ public class HUDManager : MonoBehaviour
         // enemies remaining from previous wave, necessary before spawning next wave
         // time before next wave spawns
         // 
-        nextWave.text = start + time + remaining;
+        nextWave.text = time + remaining;
         LayoutRebuilder.ForceRebuildLayoutImmediate(nextWaveTooltip);
     }
 

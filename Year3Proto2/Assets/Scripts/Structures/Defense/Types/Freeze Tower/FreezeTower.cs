@@ -69,7 +69,9 @@ public class FreezeTower : DefenseStructure
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()

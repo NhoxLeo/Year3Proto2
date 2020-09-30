@@ -85,7 +85,9 @@ public class Catapult : ProjectileDefenseStructure
     {
         base.OnSetLevel();
         damage = GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()

@@ -113,7 +113,7 @@ public abstract class ResourceStructure : Structure
                 {
                     if (adjacentsToAttached[(TileBehaviour.TileCode)i].GetPlayable())
                     {
-                        GameObject newTileHighlight = Instantiate(GetTileHighlight(), transform);
+                        GameObject newTileHighlight = Instantiate(StructureManager.GetTileHighlight(), transform);
                         tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
                         Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
                         highlightPos.y = 0.55f;
@@ -239,15 +239,6 @@ public abstract class ResourceStructure : Structure
         villagers[0] = transform.Find("Villager 1").gameObject;
         villagers[1] = transform.Find("Villager 2").gameObject;
         villagers[2] = transform.Find("Villager 3").gameObject;
-    }
-
-    private GameObject GetTileHighlight()
-    {
-        if (!TileHighlight)
-        {
-            TileHighlight = Resources.Load("TileHighlight") as GameObject;
-        }
-        return TileHighlight;
     }
 
     protected override void Update()

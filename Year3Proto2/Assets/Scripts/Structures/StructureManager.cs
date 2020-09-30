@@ -29,13 +29,6 @@ public enum StructManState
     Moving
 };
 
-public enum Priority
-{
-    Food,
-    Wood,
-    Metal
-}
-
 [Serializable]
 public struct ResourceBundle
 {
@@ -184,6 +177,7 @@ public class StructureManager : MonoBehaviour
     private TileBehaviour structureOldTile = null;
     private float hoveroverTime = 0f;
     private int nextStructureID = 0;
+    protected static GameObject TileHighlight = null;
     public Transform selectedTileHighlight = null;
     public Transform tileHighlight = null;
     [HideInInspector]
@@ -192,6 +186,7 @@ public class StructureManager : MonoBehaviour
     public bool useSeed = false;
     [HideInInspector]
     public int seed = 0;
+    private Vector3 mpAtRightDown = new Vector2();
 
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -500,6 +495,10 @@ public class StructureManager : MonoBehaviour
             HideBuilding();
         }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            mpAtRightDown = Input.mousePosition;
+        }
     }
 
     private void UpdateSelecting(Ray _mouseRay)
@@ -768,19 +767,22 @@ public class StructureManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonUp(1))
         {
-            ResetBuilding();
-            panel.ResetBuildingSelected();
-            if (structureFromStore)
+            if ((Input.mousePosition - mpAtRightDown).magnitude < 20)
             {
-                DeselectStructure();
+                ResetBuilding();
+                panel.ResetBuildingSelected();
+                if (structureFromStore)
+                {
+                    DeselectStructure();
+                }
+                else
+                {
+                    SelectStructure(structure);
+                }
+                messageBox.HideMessage();
             }
-            else
-            {
-                SelectStructure(structure);
-            }
-            messageBox.HideMessage();
         }
     }
 
@@ -1294,6 +1296,15 @@ public class StructureManager : MonoBehaviour
         {
             playerStructureDict.Remove(_structure.GetID());
         }
+    }
+
+    public static GameObject GetTileHighlight()
+    {
+        if (!TileHighlight)
+        {
+            TileHighlight = Resources.Load("TileHighlight") as GameObject;
+        }
+        return TileHighlight;
     }
 }
 

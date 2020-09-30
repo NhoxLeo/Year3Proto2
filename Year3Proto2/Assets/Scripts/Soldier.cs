@@ -233,7 +233,7 @@ public class Soldier : MonoBehaviour
             transform.position += GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime;
             Vector3 toTarget = target.transform.position - transform.position;
             toTarget.y = 0f;
-            if (toTarget.magnitude < 0.2f)
+            if (toTarget.magnitude < (target.enemyName == EnemyNames.BatteringRam ? 0.5f : 0.2f))
             {
                 state = 2;
             }
