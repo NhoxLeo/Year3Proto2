@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour
     private float mouseYBuffer = 50.0f;
 
     [SerializeField] [Tooltip("Rate of movement for the camera")]
-    private float sensitivity;
+    private float sensitivity = 4.0f;
 
     [SerializeField] [Tooltip("Multiplier for movement with keyboard")]
     private float keyboardSpeed = 30.0f;
@@ -76,6 +76,8 @@ public class CameraController : MonoBehaviour
         xAxisMin = settings.Item1.w;
         scrollMin = settings.Item2.x;
         scrollMax = settings.Item2.y;
+
+        sensitivity = SuperManager.CameraSensitivity;
     }
 
     void Update()
@@ -88,29 +90,30 @@ public class CameraController : MonoBehaviour
         if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }
         if (scrollOffset < scrollMin) { scrollOffset = scrollMin; }
 
-
         Vector2 mp = Input.mousePosition;
         float mouseMult = (StructureManager.GetInstance().isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
 
         float scrollMoveCoeff = 1f + (-scrollOffset + 10f) * 0.15f;
-        float movementCoeff = sensitivity * scrollMoveCoeff * .0007f;
+        float resolutionMod = 1080.0f / Screen.height;
+        float movementCoeff = sensitivity * scrollMoveCoeff * 0.0007f;
 
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
             inertia = Vector2.zero;
-            cameraZoomMidPoint += north * movementCoeff * (lastFrameMousePos.y - mp.y);
-            cameraZoomMidPoint += east * movementCoeff * (lastFrameMousePos.x - mp.x);
+            cameraZoomMidPoint += north * movementCoeff * resolutionMod * (lastFrameMousePos.y - mp.y);
+            cameraZoomMidPoint += east * movementCoeff * resolutionMod * (lastFrameMousePos.x - mp.x);
         }
         else if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
         {
-            inertia = Vector2.ClampMagnitude(lastFrameMousePos - mp, 500.0f);
+            float maxInertia = Screen.height * 0.33f;
+            inertia = Vector2.ClampMagnitude(movementCoeff * resolutionMod * (lastFrameMousePos - mp), maxInertia);
 
         }
         else
         {
             // Inertia motion
-            cameraZoomMidPoint += east * movementCoeff * inertia.x;
-            cameraZoomMidPoint += north * movementCoeff * inertia.y;
+            cameraZoomMidPoint += east * inertia.x;
+            cameraZoomMidPoint += north * inertia.y;
 
             // Keyboard and mouse edge motion
             float northKey = Input.GetKey(moveNorth) ? 1.0f : 0.0f;
