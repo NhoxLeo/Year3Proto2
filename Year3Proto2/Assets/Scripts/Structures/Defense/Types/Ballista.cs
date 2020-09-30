@@ -29,7 +29,7 @@ public class Ballista : ProjectileDefenseStructure
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
         arrowPierce = superMan.GetResearchComplete(SuperManager.BallistaSuper);
-        attackCost = new ResourceBundle(0, 0, superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost);
+        attackCost = new ResourceBundle(0, 0, (arrowPierce ? 3 : 1) * (superMan.GetResearchComplete(SuperManager.BallistaEfficiency) ? MetalCost / 2 : MetalCost));
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
@@ -52,27 +52,10 @@ public class Ballista : ProjectileDefenseStructure
         }
     }
 
-    /*
-     for (int i = 0; i < (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper) ? 3 : 1); i++)
-        {
-            float damageFactor = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f;
-            targetPosition.x += projectileOffset;
-            targetPosition.z += projectileOffset;
-
-            arrow.Pierce = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper);
-            arrow.SetDamage(arrow.GetDamage() * damageFactor * level);
-            arrow.SetTarget(_target);
-            GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
-            BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
-            arrowBehaviour.Initialize(targetPosition, damage, ArrowSpeed, arrowPierce);
-            GameManager.CreateAudioEffect("arrow", transform.position, 0.6f);
-        }
-     */
-
     public override void Launch(Transform _target)
     {
         float projectileOffset = 0.2f;
-        int enemyCount = SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaSuper) ? 3 : 1;
+        int enemyCount = arrowPierce ? 3 : 1;
 
         Vector3 targetPosition = _target.position;
         if (enemyCount > 1)
