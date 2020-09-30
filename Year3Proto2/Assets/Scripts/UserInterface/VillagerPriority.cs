@@ -75,13 +75,13 @@ public class VillagerPriority : MonoBehaviour
 
     private void Update()
     {
-        if (SuperManager.ShowPriortyPanel && !panelShown)
+        if (SuperManager.GetInstance().GetShowPriority() && !panelShown)
         {
             ShowPanel();
             panelShown = true;
         }
 
-        if (!SuperManager.ShowPriortyPanel && panelShown)
+        if (!SuperManager.GetInstance().GetShowPriority() && panelShown)
         {
             HidePanel();
             panelShown = false;
@@ -157,7 +157,7 @@ public class VillagerPriority : MonoBehaviour
 
     public void TogglePanel()
     {
-        SuperManager.ShowPriortyPanel = !SuperManager.ShowPriortyPanel;
+        SuperManager.GetInstance().ToggleShowPriority();
     }
 
     private void ShowPanel()

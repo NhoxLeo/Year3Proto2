@@ -29,13 +29,6 @@ public enum StructManState
     Moving
 };
 
-public enum Priority
-{
-    Food,
-    Wood,
-    Metal
-}
-
 [Serializable]
 public struct ResourceBundle
 {
@@ -184,6 +177,7 @@ public class StructureManager : MonoBehaviour
     private TileBehaviour structureOldTile = null;
     private float hoveroverTime = 0f;
     private int nextStructureID = 0;
+    protected static GameObject TileHighlight = null;
     public Transform selectedTileHighlight = null;
     public Transform tileHighlight = null;
     [HideInInspector]
@@ -1302,6 +1296,15 @@ public class StructureManager : MonoBehaviour
         {
             playerStructureDict.Remove(_structure.GetID());
         }
+    }
+
+    public static GameObject GetTileHighlight()
+    {
+        if (!TileHighlight)
+        {
+            TileHighlight = Resources.Load("TileHighlight") as GameObject;
+        }
+        return TileHighlight;
     }
 }
 

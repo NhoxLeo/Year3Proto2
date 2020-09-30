@@ -83,6 +83,7 @@ public class HUDManager : MonoBehaviour
         resourceBar.SetVisibility(!showTutorial);
         buildPanel.showPanel = !showTutorial;
         helpScreen.SetVisibility(showTutorial);
+        showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
     }
 
@@ -284,8 +285,8 @@ public class HUDManager : MonoBehaviour
 
     public void SetHudMode(bool _buildMode)
     {
-        SuperManager.ShowVillagerWidgets = _buildMode;
-        SetAllVillagerWidgets(SuperManager.ShowVillagerWidgets);
+        SuperManager.GetInstance().SetShowWidgets(_buildMode);
+        SetAllVillagerWidgets(_buildMode);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)

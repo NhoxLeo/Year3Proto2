@@ -401,7 +401,7 @@ public class BuildingInfo : MonoBehaviour
                 metalText.text = ((int)upgradeCost.metal).ToString();
 
                 tooltipDescription.gameObject.SetActive(true);
-                tooltipDescription.text = "Fully repairs tower. Increases durability and damage.";
+                tooltipDescription.text = "Increases durability and damage.";
             }
             else
             {

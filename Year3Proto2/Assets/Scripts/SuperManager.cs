@@ -19,8 +19,6 @@ public class SuperManager : MonoBehaviour
 
     public const float ScalingFactor = 1.33f;
     public const float PoorTimberFactor = 0.75f;
-    public static bool ShowPriortyPanel = false;
-    public static bool ShowVillagerWidgets = false;
 
 
     public const int NoRequirement = -1;
@@ -273,6 +271,7 @@ public class SuperManager : MonoBehaviour
         public float tempLumber;
         public float tempMetal;
         public float longhausHealth;
+        public List<Priority> priorities;
     }
 
     [Serializable]
@@ -672,6 +671,7 @@ public class SuperManager : MonoBehaviour
         villagerMan.SetAvailable(_matchData.availableVillagers);
         villagerMan.SetStarveTicks(_matchData.starveTicks);
         villagerMan.SetManuallyAllocated(_matchData.manuallyAllocated);
+        villagerMan.SetPriorities(_matchData.priorities);
         // not so easy stuff...
 
         // structures
@@ -784,7 +784,8 @@ public class SuperManager : MonoBehaviour
             tempLumber = gameMan.lumberSinceObjective,
             tempMetal = gameMan.metalSinceObjective,
             longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
-            manuallyAllocated = villMan.GetManuallyAllocated()
+            manuallyAllocated = villMan.GetManuallyAllocated(),
+            priorities = villMan.GetPriorities()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
@@ -1052,8 +1053,6 @@ public class SuperManager : MonoBehaviour
 
     public void WriteGameData()
     {
-        saveData.showPriority = ShowPriortyPanel;
-        saveData.showWidgets = ShowVillagerWidgets;
         BinaryFormatter bf = new BinaryFormatter();
         if (File.Exists(StructureManager.GetSaveDataPath()))
         {
@@ -1076,8 +1075,6 @@ public class SuperManager : MonoBehaviour
             file.Close();
 
             saveData = data;
-            ShowPriortyPanel = saveData.showPriority;
-            ShowVillagerWidgets = saveData.showWidgets;
         }
         else
         {
@@ -1114,6 +1111,8 @@ public class SuperManager : MonoBehaviour
         saveData.currentMatch.match = false;
         saveData.currentMatch.matchWon = false;
         saveData.showTutorial = true;
+        saveData.showPriority = true;
+        saveData.showWidgets = true;
         for (int i = 0; i < ResearchDefinitions.Count; i++)
         {
             if (i == 0) { saveData.research.Add(0, true); }
@@ -1125,6 +1124,31 @@ public class SuperManager : MonoBehaviour
         }
 
         WriteGameData();
+    }
+
+    public bool GetShowWidgets()
+    {
+        return saveData.showWidgets;
+    }
+
+    public void SetShowWidgets(bool _showWidgets)
+    {
+        saveData.showWidgets = _showWidgets;
+    }
+
+    public bool GetShowPriority()
+    {
+        return saveData.showPriority;
+    }
+
+    public void SetShowPriority(bool _showPriority)
+    {
+        saveData.showPriority = _showPriority;
+    }
+
+    public void ToggleShowPriority()
+    {
+        saveData.showPriority = !saveData.showPriority;
     }
 
     public void ResetSaveData()
