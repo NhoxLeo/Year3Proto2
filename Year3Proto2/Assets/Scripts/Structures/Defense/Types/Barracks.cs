@@ -81,6 +81,7 @@ public class Barracks : DefenseStructure
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
 
         // soldier stuff
         if (!SoldierPrefab)
