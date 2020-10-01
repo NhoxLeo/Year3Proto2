@@ -36,4 +36,9 @@ public class HillEnvironment : EnvironmentStructure
         meshRenderer.materials[0].SetColor("_BaseColor", colour);
         meshRenderer.materials[1].SetColor("_BaseColor", colour);
     }
+
+    public override void SetColour(Color _colour)
+    {
+        throw new System.NotImplementedException();
+    }
 }

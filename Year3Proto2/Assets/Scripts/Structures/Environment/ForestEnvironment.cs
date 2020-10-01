@@ -71,4 +71,9 @@ public class ForestEnvironment : EnvironmentStructure
         colour.a = _opacity;
         meshRenderer.materials[1].color = colour;
     }
+
+    public override void SetColour(Color _colour)
+    {
+        throw new System.NotImplementedException();
+    }
 }

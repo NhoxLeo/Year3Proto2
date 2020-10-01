@@ -19,6 +19,8 @@ public class LightningTower : DefenseStructure
     private float time;
     private bool sparkDamage;
 
+    private Color normalEmissiveColour;
+
     protected override void Awake()
     {
         // set base stats
@@ -42,6 +44,8 @@ public class LightningTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.FlyingInvader);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+
+        normalEmissiveColour = meshRenderer.materials[0].GetColor("_EmissiveColor");
     }
 
     protected override void Start()
@@ -158,5 +162,16 @@ public class LightningTower : DefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTowerPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
+        if (_colour == Color.white)
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+        }
     }
 }

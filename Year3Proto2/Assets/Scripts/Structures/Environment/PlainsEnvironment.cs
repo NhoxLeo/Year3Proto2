@@ -35,4 +35,9 @@ public class PlainsEnvironment : EnvironmentStructure
         colour.a = _opacity;
         meshRenderer.material.color = colour;
     }
+
+    public override void SetColour(Color _colour)
+    {
+        throw new System.NotImplementedException();
+    }
 }

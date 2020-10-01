@@ -13,6 +13,7 @@ public class ShockWaveTower : DefenseStructure
     private float delay = MinimumDelay;
 
     private GameObject boulderModel;
+    private MeshRenderer boulderMesh;
     private Vector3 restingPosition;
     private Vector3 readyPosition;
 
@@ -36,6 +37,7 @@ public class ShockWaveTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.BatteringRam);
 
         boulderModel = transform.GetChild(3).gameObject;
+        boulderMesh = boulderModel.GetComponent<MeshRenderer>();
     }
 
     protected override void Start()
@@ -130,5 +132,11 @@ public class ShockWaveTower : DefenseStructure
         maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        boulderMesh.materials[0].SetColor("_BaseColor", _colour);
     }
 }
