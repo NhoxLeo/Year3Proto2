@@ -836,7 +836,7 @@ public class StructureManager : MonoBehaviour
                 firstStructurePlaced = true;
             }
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (structure.IsStructure(StructureNames.Barracks) || structure.IsStructure(StructureNames.FreezeTower))
+            if (/*structure.IsStructure(StructureNames.Barracks) ||*/ structure.IsStructure(StructureNames.FreezeTower))
             {
                 villWidget = false;
             }
