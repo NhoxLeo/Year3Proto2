@@ -116,9 +116,10 @@ public abstract class ResourceStructure : Structure
                         GameObject newTileHighlight = Instantiate(StructureManager.GetTileHighlight(), transform);
                         tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
                         Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
-                        highlightPos.y = 0.55f;
+                        highlightPos.y = StructureManager.HighlightSitHeight;
                         newTileHighlight.transform.position = highlightPos;
                         Structure adjStructure = adjacentsToAttached[(TileBehaviour.TileCode)i].GetAttached();
+                        bool tileCounted = false;
                         // If there is a structure on the tile...
                         if (adjStructure)
                         {
@@ -129,30 +130,19 @@ public abstract class ResourceStructure : Structure
                                 {
                                     envStructure.SetExploited(true);
                                     envStructure.SetExploiterID(ID);
-                                    newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                                    tileBonus++;
-                                    AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                                 }
-                                else
+                                // the structure will now definitely be exploited
+                                if (envStructure.GetExploiterID() == ID)
                                 {
-                                    if (envStructure.GetExploiterID() == ID)
-                                    {
-                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                                        tileBonus++;
-                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
-                                    }
-                                    else
-                                    {
-                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
-                                    }
+                                    tileCounted = true;
                                 }
                             }
-                            else
-                            {
-                                newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
-                            }
+                        }
+                        if (tileCounted)
+                        {
+                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                            tileBonus++;
+                            AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                         }
                         else
                         {
