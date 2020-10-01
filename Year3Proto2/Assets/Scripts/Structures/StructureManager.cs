@@ -195,6 +195,7 @@ public class StructureManager : MonoBehaviour
     private const float OpacityMinimum = 0.1f;
     private const float OpacityMaximum = 0.7f;
     private float opacity = OpacityMaximum;
+    private const float ColourLerpAmount = 0.4f;
 
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -719,7 +720,7 @@ public class StructureManager : MonoBehaviour
                     hitPos.y = structure.sitHeight;
                     structure.transform.position = hitPos;
 
-                    SetStructureColour(Color.red);
+                    SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
 
                     if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                     if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
@@ -781,11 +782,11 @@ public class StructureManager : MonoBehaviour
                                 || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
                             if (resourceGain)
                             {
-                                SetStructureColour(Color.green);
+                                SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
                             }
                             else
                             {
-                                SetStructureColour(Color.yellow);
+                                SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
                             }
                         }
                     }
@@ -793,18 +794,18 @@ public class StructureManager : MonoBehaviour
                     {
                         if (structure.GetStructureType() == StructureType.Resource)
                         {
-                            SetStructureColour(Color.yellow);
+                            SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
                         }
                         else
                         {
-                            SetStructureColour(Color.green);
+                            SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
                         }
                     }
 
                     // If player cannot afford the structure, set to red.
                     if (!GameManager.GetInstance().playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
                     {
-                        SetStructureColour(Color.red);
+                        SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
                     }
 
                     Vector3 structPos = hitGround.transform.position;
@@ -1157,10 +1158,7 @@ public class StructureManager : MonoBehaviour
 
     private void SetStructureColour(Color _colour)
     {
-        foreach (Material mat in structure.GetComponent<MeshRenderer>().materials)
-        {
-            mat.SetColor("_BaseColor", _colour);
-        }
+        structure.SetColour(_colour);
     }
 
     private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)

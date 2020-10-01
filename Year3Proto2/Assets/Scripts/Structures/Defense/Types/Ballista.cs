@@ -13,6 +13,7 @@ public class Ballista : ProjectileDefenseStructure
 
     private float damage;
     private bool arrowPierce;
+    private MeshRenderer ballistaMesh;
 
     protected override void Awake()
     {
@@ -37,6 +38,7 @@ public class Ballista : ProjectileDefenseStructure
         targetableEnemies.Add(EnemyNames.FlyingInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+        ballistaMesh = transform.GetChild(2).GetChild(0).GetComponent<MeshRenderer>();
     }
 
     protected override void Update()
@@ -145,5 +147,11 @@ public class Ballista : ProjectileDefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        ballistaMesh.materials[0].SetColor("_BaseColor", _colour);
     }
 }
