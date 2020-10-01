@@ -1112,7 +1112,7 @@ public class SuperManager : MonoBehaviour
         saveData.currentMatch.matchWon = false;
         saveData.showTutorial = true;
         saveData.showPriority = true;
-        saveData.showWidgets = true;
+        saveData.showWidgets = false;
         for (int i = 0; i < ResearchDefinitions.Count; i++)
         {
             if (i == 0) { saveData.research.Add(0, true); }

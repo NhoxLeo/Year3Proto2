@@ -4,22 +4,18 @@ using UnityEngine;
 
 public abstract class EnvironmentStructure : Structure
 {
-    public enum EnvironmentType
-    {
-        forest,
-        hill,
-        plains
-    }
 
-    protected EnvironmentType environmentType;
+    protected ResourceType resourceType;
     protected ResourceStructure gatherer = null;
     protected bool exploited = false;
     protected int exploiterID = -1;
+    protected MeshRenderer meshRenderer;
 
     protected override void Awake()
     {
         base.Awake();
         structureType = StructureType.Environment;
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     public ResourceStructure GetGatherer()
@@ -32,9 +28,9 @@ public abstract class EnvironmentStructure : Structure
         gatherer = _gatherer;
     }
 
-    public EnvironmentType GetEnvironmentType()
+    public ResourceType GetResourceType()
     {
-        return environmentType;
+        return resourceType;
     }
 
     public void SetExploited(bool _exploited)
@@ -56,4 +52,6 @@ public abstract class EnvironmentStructure : Structure
     {
         return exploiterID;
     }
+
+    public abstract void SetOpacity(float _opacity);
 }
