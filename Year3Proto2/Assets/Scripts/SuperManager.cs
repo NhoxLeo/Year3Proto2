@@ -611,6 +611,7 @@ public class SuperManager : MonoBehaviour
                 {
                     startMaxed = true;
                     WipeReloadScene(true);
+                    PlayerPrefs.DeleteAll();
                 }
             }
         }
