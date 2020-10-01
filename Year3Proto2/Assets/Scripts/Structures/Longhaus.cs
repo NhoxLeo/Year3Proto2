@@ -84,4 +84,10 @@ public class Longhaus : Structure
         base.OnDestroyed();
         GlobalData.longhausDead = true;
     }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
+    }
 }
