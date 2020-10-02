@@ -3,72 +3,54 @@ using UnityEngine;
 
 public class LightningBolt : MonoBehaviour
 {
-    public Transform target;
     [SerializeField] private ParticleSystem lightningBolt;
     [SerializeField] private ParticleSystem sparks;
-    private float damage;
-    private bool sparkDamage;
 
-    private List<ParticleCollisionEvent> collisions;
+    private const float DetectionRadius = 2.4f;
 
-    public void Initialize(Transform _target, float _damage, bool _sparkDamage)
+    public Transform Fire(Vector3 _origin, Transform _target, Transform _previousTarget, float damage)
     {
-        target = _target;
-        damage = _damage;
-        sparkDamage = _sparkDamage;
+        transform.position = _origin;
+        transform.LookAt(_target);
 
-        collisions = new List<ParticleCollisionEvent>();
-    }
+        Vector3 scale = transform.localScale;
+        scale.z = (_target.transform.position - transform.position).magnitude;
+        transform.localScale = scale;
 
-    private void OnParticleCollision(GameObject _other)
-    {
-        if (sparkDamage)
+        lightningBolt.Emit(1);
+        sparks.Emit(10);
+
+        Enemy enemy = _target.GetComponent<Enemy>();
+        if (enemy)
         {
-            if ((sparks.gameObject.layer & (1 << _other.gameObject.layer)) != 0)
+            Petard pet = enemy.GetComponent<Petard>();
+            if (pet)
             {
-                int numCollisionEvents = sparks.GetCollisionEvents(_other, collisions);
-
-                Enemy enemy = _other.GetComponent<Enemy>();
-                int i = 0;
-
-                while (i < numCollisionEvents)
-                {
-                    if (enemy)
-                    {
-                        enemy.Damage(2.5f);
-                    }
-                    i++;
-                }
+                pet.SetOffBarrel();
+            }
+            else
+            {
+                enemy.Damage(damage);
             }
         }
-    }
 
-    public void Fire()
-    {
-        if (target != null)
+        if (_previousTarget == null) return _target;
+
+        RaycastHit[] hitEnemies = Physics.SphereCastAll(_target.position, DetectionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
+        for(int i = 0; i < hitEnemies.Length; i++)
         {
-            transform.LookAt(target);
-
-            Vector3 scale = transform.localScale;
-            scale.z = Vector3.Distance(transform.position, target.transform.position);
-            transform.localScale = scale;
-
-            lightningBolt.Emit(1);
-            sparks.Emit(10);
-
-            Enemy enemy = target.GetComponent<Enemy>();
+            RaycastHit raycastHit = hitEnemies[i];
+            Transform transform = raycastHit.transform;
+                
+            enemy = transform.GetComponent<Enemy>();
             if(enemy)
             {
-                Petard pet = enemy.GetComponent<Petard>();
-                if (pet)
+                if(transform != _previousTarget)
                 {
-                    pet.SetOffBarrel();
+                    return enemy.transform;
                 }
-                else
-                {
-                    enemy.Damage(damage);
-                }
-            }
+            }            
         }
+        return null;
     }
 }

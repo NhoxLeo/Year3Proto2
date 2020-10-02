@@ -65,19 +65,19 @@ public class OptionsSystem : MonoBehaviour
         */
 
         // SLIDERS
-        OptionSliderData masterVolumeData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData masterVolumeData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f);
         masterVolumeData.CallBack(() => AudioListener.volume = masterVolumeData.value);
         
-        OptionSliderData soundEffectData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData soundEffectData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
         soundEffectData.CallBack(() => SuperManager.EffectsVolume = soundEffectData.value);
 
-        OptionSliderData ambientEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData ambientEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
         ambientEffectsData.CallBack(() => SuperManager.AmbientVolume = ambientEffectsData.value);
 
-        OptionSliderData musicEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData musicEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
         musicEffectsData.CallBack(() => SuperManager.MusicVolume = musicEffectsData.value);
 
-        OptionSliderData cameraMovementData = new OptionSliderData(new Vector2(2.0f, 6.0f), 0.5f, 0.5f);
+        OptionSliderData cameraMovementData = new OptionSliderData(new Vector2(2.0f, 6.0f), 4.0f);
         cameraMovementData.CallBack(() => SuperManager.CameraSensitivity = cameraMovementData.value);
 
 

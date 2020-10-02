@@ -187,6 +187,15 @@ public class StructureManager : MonoBehaviour
     [HideInInspector]
     public int seed = 0;
     private Vector3 mpAtRightDown = new Vector2();
+    private List<Transform> resourceHighlights;
+    private EnvironmentStructure hoverEnvironment = null;
+    public const float HighlightSitHeight = 0.54f;
+    private bool opacityAscending = false;
+    private const float OpacitySpeed = 0.6f;
+    private const float OpacityMinimum = 0.1f;
+    private const float OpacityMaximum = 0.7f;
+    private float opacity = OpacityMaximum;
+    private const float ColourLerpAmount = 0.4f;
 
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -422,7 +431,19 @@ public class StructureManager : MonoBehaviour
             }
             // add the Longhaus to the player structure dictionary
             playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
+            resourceHighlights = new List<Transform>()
+            {
+                Instantiate(GetTileHighlight()).transform,
+                Instantiate(GetTileHighlight()).transform,
+                Instantiate(GetTileHighlight()).transform,
+                Instantiate(GetTileHighlight()).transform
+            };
+            for (int i = 0; i < resourceHighlights.Count; i++)
+            {
+                resourceHighlights[i].gameObject.SetActive(false);
+            }
         }
+
     }
 
     private void LoadPGPFromFile()
@@ -519,7 +540,7 @@ public class StructureManager : MonoBehaviour
 
                     // move the highlight to the position the player is hovering over.
                     Vector3 highlightpos = hitStructure.transform.position;
-                    highlightpos.y = 0.501f;
+                    highlightpos.y = HighlightSitHeight;
                     tileHighlight.position = highlightpos;
 
                     // Respond to the fact that the player's hovering over the structure.
@@ -551,7 +572,7 @@ public class StructureManager : MonoBehaviour
 
                     // move the highlight to the position the player is hovering over.
                     Vector3 highlightpos = hitGround.transform.position;
-                    highlightpos.y = 0.501f;
+                    highlightpos.y = HighlightSitHeight;
                     tileHighlight.position = highlightpos;
                 }
                 else
@@ -607,7 +628,7 @@ public class StructureManager : MonoBehaviour
         }
 
         Vector3 highlightpos = selectedStructure.transform.position;
-        highlightpos.y = 0.501f;
+        highlightpos.y = HighlightSitHeight;
         selectedTileHighlight.position = highlightpos;
 
         if (!Input.GetMouseButton(1))
@@ -620,7 +641,7 @@ public class StructureManager : MonoBehaviour
                     tileHighlight.gameObject.SetActive(true);
 
                     highlightpos = hitStructure.transform.position;
-                    highlightpos.y = 0.501f;
+                    highlightpos.y = HighlightSitHeight;
                     tileHighlight.position = highlightpos;
 
                     // If the player clicks the LMB...
@@ -659,7 +680,7 @@ public class StructureManager : MonoBehaviour
                     {
                         tileHighlight.gameObject.SetActive(true);
                         highlightpos = hitGround.transform.position;
-                        highlightpos.y = 0.501f;
+                        highlightpos.y = HighlightSitHeight;
                         tileHighlight.position = highlightpos;
                     }
                     else
@@ -699,7 +720,7 @@ public class StructureManager : MonoBehaviour
                     hitPos.y = structure.sitHeight;
                     structure.transform.position = hitPos;
 
-                    SetStructureColour(Color.red);
+                    SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
 
                     if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
                     if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
@@ -717,6 +738,38 @@ public class StructureManager : MonoBehaviour
                         structure.ShowRangeDisplay(true);
                     }
 
+                    if (structure.GetStructureType() == StructureType.Resource)
+                    {
+                        SetPreview(tile);
+                        if (attached)
+                        {
+                            EnvironmentStructure environment = attached.GetComponent<EnvironmentStructure>();
+                            if (environment)
+                            {
+                                if (!environment.GetExploited())
+                                {
+                                    if (hoverEnvironment)
+                                    {
+                                        if (hoverEnvironment != environment)
+                                        {
+                                            hoverEnvironment.SetOpacity(1.0f);
+                                        }
+                                    }
+                                    hoverEnvironment = environment;
+                                    UpdateEnvironmentTransparency();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (hoverEnvironment)
+                            {
+                                hoverEnvironment.SetOpacity(1.0f);
+                                hoverEnvironment = null;
+                            }
+                        }
+                    }
+
                     if (attached)
                     {
                         if (attached.GetStructureType() == StructureType.Environment)
@@ -729,23 +782,30 @@ public class StructureManager : MonoBehaviour
                                 || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
                             if (resourceGain)
                             {
-                                SetStructureColour(Color.green);
+                                SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
                             }
                             else
                             {
-                                SetStructureColour(Color.yellow);
+                                SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
                             }
                         }
                     }
                     else // the tile can be placed on, and has no attached structure
                     {
-                        SetStructureColour(Color.green);
+                        if (structure.GetStructureType() == StructureType.Resource)
+                        {
+                            SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
+                        }
+                        else
+                        {
+                            SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
+                        }
                     }
 
                     // If player cannot afford the structure, set to red.
                     if (!GameManager.GetInstance().playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
                     {
-                        SetStructureColour(Color.red);
+                        SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
                     }
 
                     Vector3 structPos = hitGround.transform.position;
@@ -753,7 +813,7 @@ public class StructureManager : MonoBehaviour
                     structure.transform.position = structPos;
 
                     Vector3 highlightPos = structPos;
-                    highlightPos.y = 0.501f;
+                    highlightPos.y = HighlightSitHeight;
                     tileHighlight.position = highlightPos;
                     selectedTileHighlight.position = highlightPos;
 
@@ -836,7 +896,7 @@ public class StructureManager : MonoBehaviour
                 firstStructurePlaced = true;
             }
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (structure.IsStructure(StructureNames.Barracks) || structure.IsStructure(StructureNames.FreezeTower))
+            if (/*structure.IsStructure(StructureNames.Barracks) ||*/ structure.IsStructure(StructureNames.FreezeTower))
             {
                 villWidget = false;
             }
@@ -855,6 +915,14 @@ public class StructureManager : MonoBehaviour
             {
                 structure.RefreshWidget();
                 structure.SetWidgetVisibility(true);
+            }
+            // turn off all the resourceHighlights
+            foreach (Transform highlight in resourceHighlights)
+            {
+                if (highlight.gameObject.activeSelf)
+                {
+                    highlight.gameObject.SetActive(false);
+                }
             }
         }
     }
@@ -966,6 +1034,19 @@ public class StructureManager : MonoBehaviour
                 }
                 structureState = StructManState.Selected;
             }
+            // turn off all the resourceHighlights
+            foreach (Transform highlight in resourceHighlights)
+            {
+                if (highlight.gameObject.activeSelf)
+                {
+                    highlight.gameObject.SetActive(false);
+                }
+            }
+            if (hoverEnvironment)
+            {
+                hoverEnvironment.SetOpacity(1.0f);
+                hoverEnvironment = null;
+            }
         }
     }
 
@@ -980,7 +1061,7 @@ public class StructureManager : MonoBehaviour
         selectedTileHighlight.gameObject.SetActive(true);
 
         Vector3 highlightpos = selectedStructure.attachedTile.transform.position;
-        highlightpos.y = 0.501f;
+        highlightpos.y = HighlightSitHeight;
         selectedTileHighlight.position = highlightpos;
 
         buildingInfo.SetTargetBuilding(selectedStructure.gameObject);
@@ -1077,10 +1158,7 @@ public class StructureManager : MonoBehaviour
 
     private void SetStructureColour(Color _colour)
     {
-        foreach (Material mat in structure.GetComponent<MeshRenderer>().materials)
-        {
-            mat.SetColor("_BaseColor", _colour);
-        }
+        structure.SetColour(_colour);
     }
 
     private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
@@ -1305,6 +1383,99 @@ public class StructureManager : MonoBehaviour
             TileHighlight = Resources.Load("TileHighlight") as GameObject;
         }
         return TileHighlight;
+    }
+
+    private void SetPreview(TileBehaviour _hitTile)
+    {
+        ResourceStructure resStruct = structure.GetComponent<ResourceStructure>();
+        
+        // if the structure is a ResourceStructure...
+        if (resStruct)
+        {
+            ResourceType resourceType = resStruct.GetResourceType();
+            Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacents = _hitTile.GetAdjacentTiles();
+            
+            // for each tilecode
+            for (int i = 0; i < 4; i++)
+            {
+                TileBehaviour.TileCode tileCode = (TileBehaviour.TileCode)i;
+
+                // if _hitTile has a tile in that direction...
+                if (adjacents.ContainsKey(tileCode))
+                {
+                    // move the corresponding tilehighligh to the tile's position
+                    Vector3 highlightPos = adjacents[tileCode].transform.position;
+                    highlightPos.y = HighlightSitHeight;
+                    resourceHighlights[i].position = highlightPos;
+
+                    // enable it
+                    resourceHighlights[i].gameObject.SetActive(true);
+
+                    // set it to the right colour
+                    Structure attached = adjacents[tileCode].GetAttached();
+                    if (attached)
+                    {
+                        EnvironmentStructure attachedEnvironment = attached.GetComponent<EnvironmentStructure>();
+                        if (attachedEnvironment)
+                        {
+                            // if the ResourceType of the structure being placed and the environment match
+                            if (resourceType == attachedEnvironment.GetResourceType())
+                            {
+                                resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                            }
+                            else
+                            {
+                                resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                            }
+                        }
+                        else
+                        {
+                            resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                        }
+                    }
+                    else
+                    {
+                        resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                    }
+                }
+                else
+                {
+                    resourceHighlights[i].gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
+    private void UpdateEnvironmentTransparency()
+    {
+        if (hoverEnvironment)
+        {
+            if (opacityAscending)
+            {
+                opacity += Time.deltaTime * OpacitySpeed;
+                if (opacity > OpacityMaximum)
+                {
+                    opacity = OpacityMaximum;
+                    opacityAscending = !opacityAscending;
+                }
+            }
+            else
+            {
+                opacity -= Time.deltaTime * OpacitySpeed;
+                if (opacity < OpacityMinimum)
+                {
+                    opacity = OpacityMinimum;
+                    opacityAscending = !opacityAscending;
+                }
+            }
+            hoverEnvironment.SetOpacity(opacity);
+            Debug.Log("Opacity: " + opacity.ToString());
+        }
+        else
+        {
+            opacity = OpacityMaximum;
+            opacityAscending = false;
+        }
     }
 }
 

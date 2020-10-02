@@ -7,6 +7,8 @@ public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
     private int maxSoldiers = 3;
+    private bool superAbility = false;
+
     [HideInInspector]
     public List<Soldier> soldiers;
     private float trainTime = 20f;
@@ -15,6 +17,7 @@ public class Barracks : DefenseStructure
     private const float BaseMaxHealth = 350f;
     private const float BaseDamage = 3f;
 
+    private Color normalEmissiveColour;
     public float GetTimeTrained()
     {
         return timeTrained;
@@ -32,8 +35,6 @@ public class Barracks : DefenseStructure
 
     private void UpdateCapacity()
     {
-        //maxSoldiers = allocatedVillagers;
-        maxSoldiers = 3;
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
         {
@@ -72,9 +73,11 @@ public class Barracks : DefenseStructure
         SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
         {
+            superAbility = true;
             trainTime = 10f;
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
+            maxSoldiers = 6;
         }
 
         // set targets
@@ -89,6 +92,7 @@ public class Barracks : DefenseStructure
             SoldierPrefab = Resources.Load("Soldier") as GameObject;
         }
         soldiers = new List<Soldier>();
+        normalEmissiveColour = meshRenderer.materials[0].GetColor("_EmissiveColor");
     }
 
     protected override void Update()
@@ -101,7 +105,7 @@ public class Barracks : DefenseStructure
                 timeTrained += Time.deltaTime;
                 if (timeTrained >= trainTime)
                 {
-                    timeTrained = 0f;
+                    timeTrained = 0f; 
                     SpawnSoldier();
                 }
             }
@@ -195,5 +199,16 @@ public class Barracks : DefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
+        if (_colour == Color.white)
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+        }
     }
 }

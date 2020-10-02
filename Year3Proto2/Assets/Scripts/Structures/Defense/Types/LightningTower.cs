@@ -7,7 +7,7 @@ public class LightningTower : DefenseStructure
 {
     [Header("Lightning Tower")]
     [SerializeField] private LightningBolt lightning;
-    [SerializeField] private float lightningAmount = 2f;
+    [SerializeField] private float lightningAmount = 2.0f;
     [SerializeField] private float lightningDelay = 4f;
     [SerializeField] private float lightningStartDelay = 0.6f;
     [SerializeField] private Transform lightningStartPosition;
@@ -17,7 +17,9 @@ public class LightningTower : DefenseStructure
 
     private float damage;
     private float time;
-    private bool sparkDamage;
+    private bool superAbility;
+
+    private Color normalEmissiveColour;
 
     protected override void Awake()
     {
@@ -34,7 +36,7 @@ public class LightningTower : DefenseStructure
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
 
-        sparkDamage = superMan.GetResearchComplete(SuperManager.LightningTowerSuper);
+        superAbility = superMan.GetResearchComplete(SuperManager.LightningTowerSuper);
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
@@ -42,6 +44,8 @@ public class LightningTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.FlyingInvader);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+
+        normalEmissiveColour = meshRenderer.materials[0].GetColor("_EmissiveColor");
     }
 
     protected override void Start()
@@ -59,9 +63,12 @@ public class LightningTower : DefenseStructure
             {
                 time -= Time.deltaTime;
                 if (time <= 0.0f)
-                {
+                { 
+                    float timePerStrike = 0.8f;
+                    StartCoroutine(Strike(timePerStrike));
+
+                    lightningDelay = timePerStrike * lightningAmount;
                     time = lightningDelay;
-                    StartCoroutine(Strike(0.3f));
                 }
             }
         }
@@ -93,7 +100,17 @@ public class LightningTower : DefenseStructure
             Enemy enemy = enemiesToStrike[i].GetComponent<Enemy>();
             if (enemy)
             {
-                StrikeEnemy(enemiesToStrike[i]);
+                if(superAbility)
+                {
+                    Transform previousTarget = null;
+                    for(int j = 0; j < 3; j++)
+                    {
+                        Transform currenTarget = StrikeEnemy(enemiesToStrike[i], previousTarget);
+                        previousTarget = currenTarget;
+                    }
+                }
+                StrikeEnemy(enemiesToStrike[i], null);
+
             }
             yield return new WaitForSeconds(seconds);
         }
@@ -101,12 +118,11 @@ public class LightningTower : DefenseStructure
         yield return null;
     }
 
-    private void StrikeEnemy(Transform _target)
+    private Transform StrikeEnemy(Transform _target, Transform _previousTarget)
     {
         LightningBolt lightningBolt = Instantiate(lightning, lightningStartPosition.position, Quaternion.identity);
-        lightningBolt.Initialize(_target, damage, sparkDamage);
-        lightningBolt.Fire();
         GameManager.CreateAudioEffect("Zap", _target.position, SoundType.SoundEffect, 0.6f);
+        return lightningBolt.Fire(transform.position, _target, _previousTarget, damage); 
     }
 
     public float GetFireRate()
@@ -158,5 +174,16 @@ public class LightningTower : DefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTowerPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
+        if (_colour == Color.white)
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+        }
     }
 }

@@ -170,7 +170,7 @@ public class Soldier : MonoBehaviour
         else
         {
             haveHomePath = false;
-            if (toHome.magnitude < 0.25f)
+            if (toHome.magnitude < 0.45f)
             {
                 Vector3 avoidance = GetAvoidanceOnly();
                 if (avoidance == Vector3.zero)

@@ -882,9 +882,11 @@ public class EnemyManager : MonoBehaviour
         enemiesKilled = 0;
     }
 
-    public void SpawnNextWave()    {
+    public void SpawnNextWave()
+    {
         // get the time that would have passed
-        float timeSkipped = time;        time = 0f;
+        float timeSkipped = time;
+        time = 0f;
 
         // get the increase of the increment that would have occured
         float incrementIncrease = tokensScalar * timeSkipped;
@@ -893,13 +895,29 @@ public class EnemyManager : MonoBehaviour
         tokens += (tokenIncrement + (incrementIncrease / 2f)) * timeSkipped;
 
         // increase the increment
-        tokenIncrement += incrementIncrease;        spawning = true;    }
+        tokenIncrement += incrementIncrease;
 
-    public bool GetCurrentWaveSurvived()    {        return GetWaveSurvived(wave);    }
+        spawning = true;
+    }
 
-    public bool CanSpawnNextWave()    {        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;    }
+    public bool GetCurrentWaveSurvived()
+    {
+        return GetWaveSurvived(wave);
+    }
 
-    public int GetEnemiesLeftCurrentWave()    {        if (waveEnemyCounts.ContainsKey(wave))        {            return waveEnemyCounts[wave].enemiesRemaining;        }        return 0;    }
+    public bool CanSpawnNextWave()
+    {
+        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;
+    }
+
+    public int GetEnemiesLeftCurrentWave()
+    {
+        if (waveEnemyCounts.ContainsKey(wave))
+        {
+            return waveEnemyCounts[wave].enemiesRemaining;
+        }
+        return 0;
+    }
 
     public void DebugSpawnEnemyAtCursor(string _enemy)
     {

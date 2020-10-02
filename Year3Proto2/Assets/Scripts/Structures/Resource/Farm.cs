@@ -50,4 +50,11 @@ public class Farm : ResourceStructure
         fences[_side].SetActive(_exploit);
         closedFences[_side].SetActive(!_exploit);
     }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[1].SetColor("_Color", _colour);
+        meshRenderer.materials[2].SetColor("_BaseColor", _colour);
+    }
 }

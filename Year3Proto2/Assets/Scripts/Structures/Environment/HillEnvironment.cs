@@ -7,7 +7,7 @@ public class HillEnvironment : EnvironmentStructure
     protected override void Awake()
     {
         base.Awake();
-        environmentType = EnvironmentType.hill;
+        resourceType = ResourceType.Metal;
         structureName = StructureNames.MetalEnvironment;
     }
 
@@ -19,5 +19,26 @@ public class HillEnvironment : EnvironmentStructure
     public override float GetTrueMaxHealth()
     {
         return GetBaseMaxHealth();
+    }
+
+    public override void SetOpacity(float _opacity)
+    {
+        if (_opacity == 1f)
+        {
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        }
+        else
+        {
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        Color colour = meshRenderer.material.GetColor("_BaseColor");
+        colour.a = _opacity;
+        meshRenderer.materials[0].SetColor("_BaseColor", colour);
+        meshRenderer.materials[1].SetColor("_BaseColor", colour);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        throw new System.NotImplementedException();
     }
 }

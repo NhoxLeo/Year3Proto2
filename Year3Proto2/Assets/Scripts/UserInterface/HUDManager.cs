@@ -19,6 +19,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
+
 public class HUDManager : MonoBehaviour
 {
     private static HUDManager instance;
@@ -63,6 +64,9 @@ public class HUDManager : MonoBehaviour
 
     [SerializeField] private Toggle showVillagerWidgets;
 
+    [Header("Pause Menu")]
+    [SerializeField] private PauseMenu pauseMenu;
+
     private bool nextWaveUpdate = false;
 
     public static HUDManager GetInstance()
@@ -94,7 +98,10 @@ public class HUDManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            doShowHUD = !doShowHUD;
+            if (!pauseMenu.isPaused && !pauseMenu.isHelp)
+            {
+                SetHUD(!doShowHUD);
+            }
         }
 
         updateTimer -= Time.unscaledDeltaTime;
@@ -258,6 +265,11 @@ public class HUDManager : MonoBehaviour
         {
             ShowResourceDelta((int)_resourceDelta.food, (int)_resourceDelta.wood, (int)_resourceDelta.metal);
         }
+    }
+
+    public void SetHUD(bool _active)
+    {
+        doShowHUD = _active;
     }
 
     public void SetOverUI(bool _isOver)
