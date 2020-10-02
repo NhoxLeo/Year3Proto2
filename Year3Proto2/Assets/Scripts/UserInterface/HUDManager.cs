@@ -64,6 +64,9 @@ public class HUDManager : MonoBehaviour
 
     [SerializeField] private Toggle showVillagerWidgets;
 
+    [Header("Pause Menu")]
+    [SerializeField] private PauseMenu pauseMenu;
+
     private bool nextWaveUpdate = false;
 
     public static HUDManager GetInstance()
@@ -95,7 +98,10 @@ public class HUDManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            SetHUD(!doShowHUD);
+            if (!pauseMenu.isPaused && !pauseMenu.isHelp)
+            {
+                SetHUD(!doShowHUD);
+            }
         }
 
         updateTimer -= Time.unscaledDeltaTime;
