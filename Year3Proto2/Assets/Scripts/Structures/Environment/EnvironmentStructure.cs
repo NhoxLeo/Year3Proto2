@@ -9,13 +9,11 @@ public abstract class EnvironmentStructure : Structure
     protected ResourceStructure gatherer = null;
     protected bool exploited = false;
     protected int exploiterID = -1;
-    protected MeshRenderer meshRenderer;
 
     protected override void Awake()
     {
         base.Awake();
         structureType = StructureType.Environment;
-        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     public ResourceStructure GetGatherer()
