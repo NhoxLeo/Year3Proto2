@@ -794,12 +794,14 @@ public class EnemyManager : MonoBehaviour
         {
             enemies.Remove(_enemy);
         }
+        else
+        {
+            Debug.LogError("Enemy " + _enemy.ToString() + " was killed, but it was not in enemies...");
+        }
         int wave = _enemy.GetSpawnWave();
         if (waveEnemyCounts.ContainsKey(wave))
         {
-            WaveData data = waveEnemyCounts[wave];
-            data.ReportEnemyDead();
-            waveEnemyCounts[wave] = data;
+            waveEnemyCounts[wave].ReportEnemyDead();
         }
     }
 
