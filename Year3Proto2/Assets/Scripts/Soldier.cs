@@ -39,6 +39,8 @@ public class Soldier : MonoBehaviour
     private bool waitingOnPath = false;
     private bool haveHomePath = false;
 
+    private bool deathCalled = false;
+
     public TileBehaviour GetCurrentTile()
     {
         if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
@@ -320,17 +322,38 @@ public class Soldier : MonoBehaviour
         health -= _damage;
         if (health <= 0f)
         {
-            if (target)
+            if (!deathCalled)
             {
-                target.ForgetSoldier();
+                if (target)
+                {
+                    target.ForgetSoldier();
+                }
+                if (home)
+                {
+                    home.OnSoldierDeath(this);
+                }
+                GameObject puff = Instantiate(PuffEffect);
+                puff.transform.position = transform.position;
+                puff.transform.localScale *= 2f;
+                deathCalled = true;
+                Destroy(gameObject);
             }
-            GameObject puff = Instantiate(PuffEffect);
-            puff.transform.position = transform.position;
-            puff.transform.localScale *= 2f;
-            Destroy(gameObject);
             return true;
         }
         return false;
+    }
+
+    public void VillagerDeallocated()
+    {
+        if (target)
+        {
+            target.ForgetSoldier();
+        }
+        GameObject puff = Instantiate(PuffEffect);
+        puff.transform.position = transform.position;
+        puff.transform.localScale *= 2f;
+        deathCalled = true;
+        Destroy(gameObject);
     }
 
     public void SwingContact()
