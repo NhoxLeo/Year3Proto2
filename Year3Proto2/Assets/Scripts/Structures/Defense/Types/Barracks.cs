@@ -7,7 +7,6 @@ public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
     private int maxSoldiers = 3;
-    private bool superAbility = false;
 
     [HideInInspector]
     public List<Soldier> soldiers;
@@ -73,7 +72,6 @@ public class Barracks : DefenseStructure
         SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
         {
-            superAbility = true;
             trainTime = 10f;
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);

@@ -7,8 +7,8 @@ public class Ballista : ProjectileDefenseStructure
     [SerializeField] private GameObject arrowPrefab;
 
     private const int MetalCost = 2;
-    private const float BaseMaxHealth = 500f;
-    private const float BaseDamage = 10f;
+    private const float BaseMaxHealth = 400f;
+    private const float BaseDamage = 30f;
     private const float ArrowSpeed = 12.5f;
 
     private float damage;
@@ -85,11 +85,10 @@ public class Ballista : ProjectileDefenseStructure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        projectileRate = allocatedVillagers * 0.5f;
+        projectileRate = 0.2f + (allocatedVillagers * 0.1f);
         if (allocatedVillagers != 0)
         {
             projectileDelay = 1f / projectileRate;
-            //projectileAmount = allocatedVillagers;
         }
     }
 

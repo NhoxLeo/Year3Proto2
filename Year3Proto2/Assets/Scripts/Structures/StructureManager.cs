@@ -737,42 +737,15 @@ public class StructureManager : MonoBehaviour
                     {
                         structure.ShowRangeDisplay(true);
                     }
-
-                    if (structure.GetStructureType() == StructureType.Resource)
+                    else if (newStructureType == StructureType.Resource)
                     {
                         SetPreview(tile);
-                        if (attached)
-                        {
-                            EnvironmentStructure environment = attached.GetComponent<EnvironmentStructure>();
-                            if (environment)
-                            {
-                                if (!environment.GetExploited())
-                                {
-                                    if (hoverEnvironment)
-                                    {
-                                        if (hoverEnvironment != environment)
-                                        {
-                                            hoverEnvironment.SetOpacity(1.0f);
-                                        }
-                                    }
-                                    hoverEnvironment = environment;
-                                    UpdateEnvironmentTransparency();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (hoverEnvironment)
-                            {
-                                hoverEnvironment.SetOpacity(1.0f);
-                                hoverEnvironment = null;
-                            }
-                        }
                     }
 
                     if (attached)
                     {
-                        if (attached.GetStructureType() == StructureType.Environment)
+                        EnvironmentStructure environment = attached.GetComponent<EnvironmentStructure>();
+                        if (environment)
                         {
                             string attachedName = attached.GetStructureName();
                             string structureName = structure.GetStructureName();
@@ -788,10 +761,27 @@ public class StructureManager : MonoBehaviour
                             {
                                 SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
                             }
+                            if (!environment.GetExploited())
+                            {
+                                if (hoverEnvironment)
+                                {
+                                    if (hoverEnvironment != environment)
+                                    {
+                                        hoverEnvironment.SetOpacity(1.0f);
+                                    }
+                                }
+                                hoverEnvironment = environment;
+                                UpdateEnvironmentTransparency();
+                            }
                         }
                     }
                     else // the tile can be placed on, and has no attached structure
                     {
+                        if (hoverEnvironment)
+                        {
+                            hoverEnvironment.SetOpacity(1.0f);
+                            hoverEnvironment = null;
+                        }
                         if (structure.GetStructureType() == StructureType.Resource)
                         {
                             SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
@@ -896,7 +886,7 @@ public class StructureManager : MonoBehaviour
                 firstStructurePlaced = true;
             }
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (/*structure.IsStructure(StructureNames.Barracks) ||*/ structure.IsStructure(StructureNames.FreezeTower))
+            if (structure.IsStructure(StructureNames.Barracks) || structure.IsStructure(StructureNames.FreezeTower))
             {
                 villWidget = false;
             }
@@ -1469,7 +1459,7 @@ public class StructureManager : MonoBehaviour
                 }
             }
             hoverEnvironment.SetOpacity(opacity);
-            Debug.Log("Opacity: " + opacity.ToString());
+            //Debug.Log("Opacity: " + opacity.ToString());
         }
         else
         {

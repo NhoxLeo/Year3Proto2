@@ -7,7 +7,7 @@ public class ShockWaveTower : DefenseStructure
     [SerializeField] private Transform particle;
     private float timer = 0.0f;
 
-    private const float BaseMaxHealth = 400f;
+    private const float BaseMaxHealth = 350f;
     private const float MinimumDelay = 3f;
 
     private float delay = MinimumDelay;
