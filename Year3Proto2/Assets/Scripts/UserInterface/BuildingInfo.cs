@@ -186,9 +186,9 @@ public class BuildingInfo : MonoBehaviour
             case StructureNames.LightningTower:
                 LightningTower lightning = targetBuilding.GetComponent<LightningTower>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "Fire Rate";
-                statValueText.text = lightning.GetFireRate().ToString("F");
-                statInfoText.text = "per second";
+                statHeadingText.text = "Lightning Bolts";
+                statValueText.text = "Up to " + lightning.GetProjectileCount().ToString("0");
+                statInfoText.text = "per discharge";
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = lightning.CanBeRepaired();

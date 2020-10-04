@@ -134,6 +134,11 @@ public class LightningTower : DefenseStructure
         return lightningAmount * (1f / lightningDelay);
     }
 
+    public float GetProjectileCount()
+    {
+        return lightningAmount;
+    }
+
 
     public override void OnAllocation()
     {
