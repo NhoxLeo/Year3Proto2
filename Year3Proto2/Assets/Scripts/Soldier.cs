@@ -322,15 +322,6 @@ public class Soldier : MonoBehaviour
             {
                 target.ForgetSoldier();
             }
-            if (home)
-            {
-                /*
-                if (home.soldiers.Contains(this))
-                {
-                    home.soldiers.Remove(this);
-                }
-                */
-            }
             GameObject puff = Instantiate(PuffEffect);
             puff.transform.position = transform.position;
             puff.transform.localScale *= 2f;

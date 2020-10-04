@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -17,6 +18,7 @@ using UnityEngine;
 
 public class OptionsSystem : MonoBehaviour
 {
+    
     [Header("Panels")]
     [SerializeField] private Transform displayPanel;
     [SerializeField] private Transform graphicsPanel;
@@ -32,7 +34,6 @@ public class OptionsSystem : MonoBehaviour
     private void Awake()
     {
         // TOGGLES
-
         OptionToggleData fullscreenData = new OptionToggleData(true, true);
         fullscreenData.CallBack(() => Screen.fullScreenMode = fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
 
@@ -79,7 +80,6 @@ public class OptionsSystem : MonoBehaviour
 
         OptionSliderData cameraMovementData = new OptionSliderData(new Vector2(2.0f, 6.0f), 4.0f);
         cameraMovementData.CallBack(() => SuperManager.CameraSensitivity = cameraMovementData.value);
-
 
         // DISPLAY OPTIONS
 
