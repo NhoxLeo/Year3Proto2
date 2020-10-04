@@ -290,6 +290,7 @@ public class HUDManager : MonoBehaviour
     public void HideHelpScreen()
     {
         SuperManager.GetInstance().SetShowTutorial(false);
+        buildPanel.SetPanelVisibility(true);
     }
 
     public void UpdateVillagerWidgetMode()

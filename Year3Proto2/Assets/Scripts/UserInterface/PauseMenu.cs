@@ -23,20 +23,7 @@ public class PauseMenu : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (isActive)
-                {
-                    if (currentAnimator != null)
-                    {
-                        currentAnimator.SetVisibility(false);
-                    }
-
-                    PausedButtons(true);
-                    isActive = false;
-                }
-                else
-                {
-                    Paused(!isPaused);
-                }
+                TogglePause();
             }
 
             Time.timeScale = isPaused ? 0.0f : 1.0f;
@@ -72,5 +59,23 @@ public class PauseMenu : MonoBehaviour
     public void SetCurrentAnimator(UIAnimator _animator)
     {
         currentAnimator = _animator;
+    }
+
+    public void TogglePause()
+    {
+        if (isActive)
+        {
+            if (currentAnimator != null)
+            {
+                currentAnimator.SetVisibility(false);
+            }
+
+            PausedButtons(true);
+            isActive = false;
+        }
+        else
+        {
+            Paused(!isPaused);
+        }
     }
 }
