@@ -5164,7 +5164,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3745757213977141429}
-  - {fileID: 600443226636769072}
+  - {fileID: 6321819888759543136}
   - {fileID: 2640882017143391595}
   - {fileID: 6077846840317155063}
   - {fileID: 2176033115338780482}
@@ -9176,6 +9176,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5827797114919674255}
     m_Modifications:
+    - target: {fileID: 433204819785821583, guid: 40ea5de1b230e42468fa8de8bfbf312d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1298614699}
+    - target: {fileID: 433204819785821583, guid: 40ea5de1b230e42468fa8de8bfbf312d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetOverUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 433204819785821583, guid: 40ea5de1b230e42468fa8de8bfbf312d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1298614699}
+    - target: {fileID: 433204819785821583, guid: 40ea5de1b230e42468fa8de8bfbf312d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetOverUI
+      objectReference: {fileID: 0}
     - target: {fileID: 945356401609529877, guid: 40ea5de1b230e42468fa8de8bfbf312d,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -10880,7 +10900,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 626060686499462130, guid: 2020d210b0e19d54196077da1255126f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2020d210b0e19d54196077da1255126f, type: 3}
---- !u!224 &600443226636769072 stripped
+--- !u!224 &6321819888759543136 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6912654201860014718, guid: 2020d210b0e19d54196077da1255126f,
     type: 3}
@@ -10893,6 +10913,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5827797114919674255}
     m_Modifications:
+    - target: {fileID: 1249861742340285776, guid: f727203e0852bac4594dbad984e0657d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1298614699}
+    - target: {fileID: 1249861742340285776, guid: f727203e0852bac4594dbad984e0657d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetOverUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 1249861742340285776, guid: f727203e0852bac4594dbad984e0657d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1298614699}
+    - target: {fileID: 1249861742340285776, guid: f727203e0852bac4594dbad984e0657d,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetOverUI
+      objectReference: {fileID: 0}
     - target: {fileID: 1707135729094468798, guid: f727203e0852bac4594dbad984e0657d,
         type: 3}
       propertyPath: m_LocalPosition.x
