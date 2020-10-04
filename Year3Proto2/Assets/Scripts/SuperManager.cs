@@ -369,7 +369,7 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
         new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
         new ResearchElementDefinition(BarracksFortification, Barracks, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(BarracksSuper, Barracks, "Rapid Courses", "Barracks spawn & heal soldiers faster.", 500, true),
+        new ResearchElementDefinition(BarracksSuper, Barracks, "Advanced Training", "Soldiers train & heal much faster.", 500, true),
 
         new ResearchElementDefinition(Ballista, NoRequirement, "Ballista Tower", "The Ballista Tower is great for single target damage, firing bolts at deadly speeds.", 300),
         new ResearchElementDefinition(BallistaRange, Ballista, "Range Boost", "Extends tower range by 25%.", 200),

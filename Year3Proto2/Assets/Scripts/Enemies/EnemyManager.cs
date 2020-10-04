@@ -801,7 +801,9 @@ public class EnemyManager : MonoBehaviour
         int wave = _enemy.GetSpawnWave();
         if (waveEnemyCounts.ContainsKey(wave))
         {
-            waveEnemyCounts[wave].ReportEnemyDead();
+            WaveData waveData = waveEnemyCounts[wave];
+            waveData.ReportEnemyDead();
+            waveEnemyCounts[wave] = waveData;
         }
     }
 
