@@ -42,6 +42,11 @@ public abstract class Structure : MonoBehaviour
     {
         if (allocatedVillagers == _villagers && manualAllocation)
         {
+            if (structureType == StructureType.Defense)
+            {
+                ManuallyAllocate(0);
+                return;
+            }
             VillagerManager villMan = VillagerManager.GetInstance();
             villMan.ReturnVillagers(allocatedVillagers, true);
             allocatedVillagers = 0;

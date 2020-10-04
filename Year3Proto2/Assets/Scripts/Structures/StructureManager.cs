@@ -222,10 +222,10 @@ public class StructureManager : MonoBehaviour
         { StructureNames.ShockwaveTower, BuildPanel.Buildings.ShockwaveTower },
         { StructureNames.LightningTower, BuildPanel.Buildings.LightningTower },
         { StructureNames.FoodResource, BuildPanel.Buildings.Farm },
-        { StructureNames.FoodStorage, BuildPanel.Buildings.Granary },
         { StructureNames.LumberResource, BuildPanel.Buildings.LumberMill },
-        { StructureNames.LumberStorage, BuildPanel.Buildings.LumberPile },
         { StructureNames.MetalResource, BuildPanel.Buildings.Mine },
+        { StructureNames.FoodStorage, BuildPanel.Buildings.Granary },
+        { StructureNames.LumberStorage, BuildPanel.Buildings.LumberPile },
         { StructureNames.MetalStorage, BuildPanel.Buildings.MetalStorage }
     };
     public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
@@ -441,6 +441,11 @@ public class StructureManager : MonoBehaviour
             for (int i = 0; i < resourceHighlights.Count; i++)
             {
                 resourceHighlights[i].gameObject.SetActive(false);
+            }
+            for (int i = 1; i <= 12; i++)
+            {
+                Vector3 cost = CalculateStructureCost(StructureNames.BuildPanelToString((BuildPanel.Buildings)i));
+                panel.GetToolInfo().cost[i] = new Vector2(cost.y, cost.z);
             }
         }
 
@@ -905,6 +910,10 @@ public class StructureManager : MonoBehaviour
             {
                 structure.RefreshWidget();
                 structure.SetWidgetVisibility(true);
+                if (structType == StructureType.Defense)
+                {
+                    structure.ManuallyAllocate(0);
+                }
             }
             // turn off all the resourceHighlights
             foreach (Transform highlight in resourceHighlights)
