@@ -376,14 +376,14 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(BallistaPower, Ballista, "Power Shot", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(BallistaFortification, Ballista, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(BallistaEfficiency, Ballista, "Efficiency", "Bolt cost reduced by 50%.", 200),
-        new ResearchElementDefinition(BallistaSuper, Ballista, "Piercing Shot", "Bolts rip right through their targets.", 500, true),
+        new ResearchElementDefinition(BallistaSuper, Ballista, "Multishot", "Fires three piercing shots.", 500, true),
 
         new ResearchElementDefinition(Catapult, NoRequirement, "Catapult Tower", "The Catapult Tower deals splash damage, making it the ideal choice for crowd control.", 300),
         new ResearchElementDefinition(CatapultRange, Catapult, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
-        new ResearchElementDefinition(CatapultSuper, Catapult, "Big Shockwave", "Boulders have a 50% larger damage radius.", 500, true),
+        new ResearchElementDefinition(CatapultSuper, Catapult, "Cluster Bomb", "Smaller boulders erupt from the inital explosion.", 500, true),
 
         new ResearchElementDefinition(FreezeTower, NoRequirement, "Freeze Tower", "The Freeze Tower slows down enemies making it easier for other defenses to hit them.", 300),
         new ResearchElementDefinition(FreezeTowerRange, FreezeTower, "Range Boost", "Extends tower range by 25%.", 200),
