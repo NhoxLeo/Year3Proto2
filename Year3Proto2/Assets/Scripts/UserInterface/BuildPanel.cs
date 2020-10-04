@@ -77,7 +77,7 @@ public class BuildPanel : MonoBehaviour
         buildTip = buildTipBox.GetComponent<Tooltip>();
         buildTipHeading = buildTipBox.transform.Find("PanelMask/Heading").GetComponent<TMP_Text>();
 
-
+        if (!superMan.GetResearchComplete(SuperManager.Ballista)) { transform.Find("PanelMask/Content/DefenceBuildings/IconArcher").GetComponent<Image>().sprite = lockedBuilding; }
         if (!superMan.GetResearchComplete(SuperManager.Catapult)) { transform.Find("PanelMask/Content/DefenceBuildings/IconCatapult").GetComponent<Image>().sprite = lockedBuilding; }
         if (!superMan.GetResearchComplete(SuperManager.Barracks)) { transform.Find("PanelMask/Content/DefenceBuildings/IconBarracks").GetComponent<Image>().sprite = lockedBuilding; }
         if (!superMan.GetResearchComplete(SuperManager.FreezeTower)) { transform.Find("PanelMask/Content/DefenceBuildings/IconFreeze").GetComponent<Image>().sprite = lockedBuilding; }
@@ -241,6 +241,7 @@ public class BuildPanel : MonoBehaviour
     {
         tooltipSelected = (Buildings)tool;
 
+        if (tooltipSelected == Buildings.Ballista && !superMan.GetResearchComplete(SuperManager.Ballista)) { return; }
         if (tooltipSelected == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
         if (tooltipSelected == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
         if (tooltipSelected == Buildings.FreezeTower && !superMan.GetResearchComplete(SuperManager.FreezeTower)) { return; }
@@ -280,6 +281,7 @@ public class BuildPanel : MonoBehaviour
 
     public void SelectBuilding(int buildingType)
     {
+        if ((Buildings)buildingType == Buildings.Ballista && !superMan.GetResearchComplete(SuperManager.Ballista)) { return; }
         if ((Buildings)buildingType == Buildings.Catapult && !superMan.GetResearchComplete(SuperManager.Catapult)) { return; }
         if ((Buildings)buildingType == Buildings.Barracks && !superMan.GetResearchComplete(SuperManager.Barracks)) { return; }
         if ((Buildings)buildingType == Buildings.FreezeTower && !superMan.GetResearchComplete(SuperManager.FreezeTower)) { return; }

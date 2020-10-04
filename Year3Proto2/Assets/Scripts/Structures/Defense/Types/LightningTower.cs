@@ -14,6 +14,7 @@ public class LightningTower : DefenseStructure
 
     private const float BaseMaxHealth = 400f;
     private const float BaseDamage = 5f;
+    private const float LightningIntraDelay = 0.6f;
 
     private float damage;
     private float time;
@@ -64,10 +65,7 @@ public class LightningTower : DefenseStructure
                 time -= Time.deltaTime;
                 if (time <= 0.0f)
                 { 
-                    float timePerStrike = 0.8f;
-                    StartCoroutine(Strike(timePerStrike));
-
-                    lightningDelay = timePerStrike * lightningAmount;
+                    StartCoroutine(Strike(LightningIntraDelay));
                     time = lightningDelay;
                 }
             }
@@ -100,29 +98,35 @@ public class LightningTower : DefenseStructure
             Enemy enemy = enemiesToStrike[i].GetComponent<Enemy>();
             if (enemy)
             {
-                if(superAbility)
+                List<Transform> previousTargets = null;
+                if (superAbility)
                 {
-                    Transform previousTarget = null;
-                    for(int j = 0; j < 3; j++)
+                    previousTargets = new List<Transform>();
+                    Transform currentTarget = enemiesToStrike[i];
+                    for (int j = 0; j < 3; j++)
                     {
-                        Transform currenTarget = StrikeEnemy(enemiesToStrike[i], previousTarget);
-                        previousTarget = currenTarget;
+                        currentTarget = StrikeEnemy(currentTarget, ref previousTargets);
+                        if (currentTarget == null)
+                        {
+                            break;
+                        }
                     }
                 }
-                StrikeEnemy(enemiesToStrike[i], null);
-
+                else
+                {
+                    StrikeEnemy(enemiesToStrike[i], ref previousTargets);
+                }
             }
             yield return new WaitForSeconds(seconds);
         }
-
         yield return null;
     }
 
-    private Transform StrikeEnemy(Transform _target, Transform _previousTarget)
+    private Transform StrikeEnemy(Transform _target, ref List<Transform> _previousTargets)
     {
-        LightningBolt lightningBolt = Instantiate(lightning, lightningStartPosition.position, Quaternion.identity);
+        LightningBolt lightningBolt = Instantiate(lightning);
         GameManager.CreateAudioEffect("Zap", _target.position, SoundType.SoundEffect, 0.6f);
-        return lightningBolt.Fire(transform.position, _target, _previousTarget, damage); 
+        return lightningBolt.Fire(lightningStartPosition.position, _target, ref _previousTargets, damage); 
     }
 
     public float GetFireRate()
