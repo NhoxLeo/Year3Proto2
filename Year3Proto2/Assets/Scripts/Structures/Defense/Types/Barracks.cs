@@ -213,7 +213,7 @@ public class Barracks : DefenseStructure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        maxSoldiers = superAbility ? allocatedVillagers * 2 : allocatedVillagers;
+        //maxSoldiers = superAbility ? allocatedVillagers * 2 : allocatedVillagers;
 
         for (int i = 0; i < soldiers.Count; i++)
         {

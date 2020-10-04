@@ -13,7 +13,7 @@ public class PauseMenu : MonoBehaviour
     {
         tool = GetComponent<UIAnimator>();
         isPaused = false;
-        isHelp = true;
+        isHelp = SuperManager.GetInstance().GetShowTutorial();
         isActive = false;
     }
 
