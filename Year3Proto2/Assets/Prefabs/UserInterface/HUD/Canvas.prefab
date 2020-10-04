@@ -10897,6 +10897,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2896523851378621067, guid: f727203e0852bac4594dbad984e0657d,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1298614699}
     - target: {fileID: 5571392368675892999, guid: f727203e0852bac4594dbad984e0657d,
         type: 3}
       propertyPath: clickSound

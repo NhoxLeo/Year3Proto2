@@ -6,7 +6,7 @@ using DG.Tweening;
 public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
-    private int maxSoldiers = 3;
+    private int maxSoldiers = 0;
 
     [HideInInspector]
     public List<Soldier> soldiers;
@@ -17,8 +17,6 @@ public class Barracks : DefenseStructure
     private const float BaseDamage = 3f;
 
     private Color normalEmissiveColour;
-
-    private bool superUpgrade = false;
     public float GetTimeTrained()
     {
         return timeTrained;
@@ -84,11 +82,6 @@ public class Barracks : DefenseStructure
         targetableEnemies.Add(EnemyNames.HeavyInvader); 
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
-
-        if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
-        {
-            superUpgrade = true;
-        }
 
         // soldier stuff
         if (!SoldierPrefab)
