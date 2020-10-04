@@ -6,7 +6,6 @@ using DG.Tweening;
 public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
-    private int maxSoldiers = 0;
 
     [HideInInspector]
     public List<Soldier> soldiers;
@@ -29,7 +28,7 @@ public class Barracks : DefenseStructure
 
     public float GetTroopCapacity()
     {
-        return maxSoldiers;
+        return allocatedVillagers;
     }
 
     private void UpdateCapacity()
@@ -37,7 +36,7 @@ public class Barracks : DefenseStructure
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
         {
-            if (i >= maxSoldiers)
+            if (i >= allocatedVillagers)
             {
                 soldiers[i].SetReturnHome(true);
             }
@@ -59,7 +58,7 @@ public class Barracks : DefenseStructure
     protected override void Start()
     {
         base.Start();
-        UpdateCapacity();
+        //UpdateCapacity();
     }
 
     protected override void Awake()
@@ -97,7 +96,7 @@ public class Barracks : DefenseStructure
         base.Update();
         if (isPlaced)
         {
-            if (soldiers.Count < maxSoldiers)
+            if (soldiers.Count < allocatedVillagers)
             {
                 timeTrained += Time.deltaTime;
                 if (timeTrained >= trainTime)
@@ -211,11 +210,10 @@ public class Barracks : DefenseStructure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        maxSoldiers = allocatedVillagers;
 
         for (int i = 0; i < soldiers.Count; i++)
         {
-            if(i > maxSoldiers - 1)
+            if (i > allocatedVillagers - 1)
             {
                 soldiers[i].VillagerDeallocated();
             }
