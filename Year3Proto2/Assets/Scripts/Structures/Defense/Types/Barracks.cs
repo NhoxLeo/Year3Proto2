@@ -80,7 +80,7 @@ public class Barracks : DefenseStructure
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
-        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader); 
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
 
@@ -208,5 +208,21 @@ public class Barracks : DefenseStructure
         {
             meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
         }
+    }
+
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+        //maxSoldiers = superAbility ? allocatedVillagers * 2 : allocatedVillagers;
+
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            if(i > maxSoldiers - 1)
+            {
+               soldiers[i].ApplyDamage(1000);
+            }
+        }
+
+        soldiers.RemoveAll(soldier => !soldier);
     }
 }
