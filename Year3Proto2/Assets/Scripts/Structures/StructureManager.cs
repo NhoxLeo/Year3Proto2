@@ -245,21 +245,21 @@ public class StructureManager : MonoBehaviour
     };
     public Dictionary<string, ResourceBundle> structureCosts = new Dictionary<string, ResourceBundle>
     {
-        // NAME                                                fC       wC       mC      
-        { StructureNames.Ballista,          new ResourceBundle(0,       150,     50) },
-        { StructureNames.Catapult,          new ResourceBundle(0,       200,     250) },
-        { StructureNames.Barracks,          new ResourceBundle(0,       200,     100) },
-        { StructureNames.FreezeTower,       new ResourceBundle(0,       200,     50) },
-        { StructureNames.ShockwaveTower,    new ResourceBundle(0,       200,     200) },
-        { StructureNames.LightningTower,    new ResourceBundle(0,       200,     100) },
+        // NAME                                                fC       wC       mC    
+        { StructureNames.Barracks,          new ResourceBundle(0,       150,     25) },
+        { StructureNames.Ballista,          new ResourceBundle(0,       200,     125) },
+        { StructureNames.Catapult,          new ResourceBundle(0,       50,      250) },
+        { StructureNames.FreezeTower,       new ResourceBundle(0,       100,     150) },
+        { StructureNames.ShockwaveTower,    new ResourceBundle(0,       100,     200) },
+        { StructureNames.LightningTower,    new ResourceBundle(0,       50,      200) },
 
-        { StructureNames.FoodResource,      new ResourceBundle(0,       40,      0) },
-        { StructureNames.LumberResource,    new ResourceBundle(0,       60,      20) },
-        { StructureNames.MetalResource,     new ResourceBundle(0,       100,     20) },
+        { StructureNames.FoodResource,      new ResourceBundle(0,       50,      0) },
+        { StructureNames.LumberResource,    new ResourceBundle(0,       50,      0) },
+        { StructureNames.MetalResource,     new ResourceBundle(0,       100,     0) },
 
-        { StructureNames.FoodStorage,       new ResourceBundle(0,       120,     0) },
-        { StructureNames.LumberStorage,     new ResourceBundle(0,       120,     0) },
-        { StructureNames.MetalStorage,      new ResourceBundle(0,       120,     80) }
+        { StructureNames.FoodStorage,       new ResourceBundle(0,       100,     0) },
+        { StructureNames.LumberStorage,     new ResourceBundle(0,       120,     40) },
+        { StructureNames.MetalStorage,      new ResourceBundle(0,       160,     40) }
     };
     private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
     [HideInInspector]

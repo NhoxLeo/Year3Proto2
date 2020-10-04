@@ -13,6 +13,8 @@ public class Soldier : MonoBehaviour
 
     private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
 
+    private const float DamageBonusAgainstBatteringRams = 4f;
+
     private static float MaxHealth = 18.0f;
     private static float Damage = 3.0f;
     private static float MovementSpeed = 0.5f;
@@ -336,7 +338,7 @@ public class Soldier : MonoBehaviour
         if (target && state == 2)
         {
             target.OnDamagedBySoldier(this);
-            if (target.Damage(Damage))
+            if (target.Damage(Damage * (target.enemyName == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
             {
                 target = null;
             }
