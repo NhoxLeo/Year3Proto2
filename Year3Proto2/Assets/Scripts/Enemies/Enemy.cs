@@ -155,10 +155,6 @@ public abstract class Enemy : MonoBehaviour
             action = true;
             LookAtPosition(_soldier.transform.position);
         }
-        if (enemyName == EnemyNames.BatteringRam)
-        {
-            Stun(0.0f);
-        }
     }
 
     public void ForgetSoldier()
