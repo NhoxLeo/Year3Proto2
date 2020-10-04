@@ -36,11 +36,17 @@ public abstract class Structure : MonoBehaviour
     protected static int villagerCapacity = 3;
     protected VillagerAllocation villagerWidget = null;
     private bool manualAllocation = false;
+    protected MeshRenderer meshRenderer;
 
     public void HandleAllocation(int _villagers)
     {
         if (allocatedVillagers == _villagers && manualAllocation)
         {
+            if (structureType == StructureType.Defense)
+            {
+                ManuallyAllocate(0);
+                return;
+            }
             VillagerManager villMan = VillagerManager.GetInstance();
             villMan.ReturnVillagers(allocatedVillagers, true);
             allocatedVillagers = 0;
@@ -310,6 +316,7 @@ public abstract class Structure : MonoBehaviour
         {
             DestructionEffect = Resources.Load("DestructionEffect") as GameObject;
         }
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     protected virtual void Start()
@@ -382,5 +389,7 @@ public abstract class Structure : MonoBehaviour
     public abstract float GetBaseMaxHealth();
 
     public abstract float GetTrueMaxHealth();
+
+    public abstract void SetColour(Color _colour);
 }
 

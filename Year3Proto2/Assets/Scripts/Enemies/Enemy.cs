@@ -66,6 +66,7 @@ public abstract class Enemy : MonoBehaviour
     private EnemyPathSignature signature;
     protected int level;
     protected Healthbar healthbar;
+    private bool onKillCalled = false;
 
     // Stun
     protected bool stunned = false;
@@ -153,10 +154,6 @@ public abstract class Enemy : MonoBehaviour
             animator.SetBool("Attack", true);
             action = true;
             LookAtPosition(_soldier.transform.position);
-        }
-        if (enemyName == EnemyNames.BatteringRam)
-        {
-            Stun(0.0f);
         }
     }
 
@@ -382,8 +379,12 @@ public abstract class Enemy : MonoBehaviour
 
         if (health <= 0f)
         {
-            OnKill();
-            Destroy(gameObject);
+            if (!onKillCalled)
+            {
+                OnKill();
+                onKillCalled = true;
+                Destroy(gameObject);
+            }
             return true;
         }
         return false;

@@ -13,6 +13,8 @@ public class Soldier : MonoBehaviour
 
     private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
 
+    private const float DamageBonusAgainstBatteringRams = 4f;
+
     private static float MaxHealth = 18.0f;
     private static float Damage = 3.0f;
     private static float MovementSpeed = 0.5f;
@@ -36,6 +38,8 @@ public class Soldier : MonoBehaviour
     private SoldierPath path;
     private bool waitingOnPath = false;
     private bool haveHomePath = false;
+
+    private bool deathCalled = false;
 
     public TileBehaviour GetCurrentTile()
     {
@@ -170,7 +174,7 @@ public class Soldier : MonoBehaviour
         else
         {
             haveHomePath = false;
-            if (toHome.magnitude < 0.25f)
+            if (toHome.magnitude < 0.45f)
             {
                 Vector3 avoidance = GetAvoidanceOnly();
                 if (avoidance == Vector3.zero)
@@ -318,26 +322,38 @@ public class Soldier : MonoBehaviour
         health -= _damage;
         if (health <= 0f)
         {
-            if (target)
+            if (!deathCalled)
             {
-                target.ForgetSoldier();
-            }
-            if (home)
-            {
-                /*
-                if (home.soldiers.Contains(this))
+                if (target)
                 {
-                    home.soldiers.Remove(this);
+                    target.ForgetSoldier();
                 }
-                */
+                if (home)
+                {
+                    home.OnSoldierDeath(this);
+                }
+                GameObject puff = Instantiate(PuffEffect);
+                puff.transform.position = transform.position;
+                puff.transform.localScale *= 2f;
+                deathCalled = true;
+                Destroy(gameObject);
             }
-            GameObject puff = Instantiate(PuffEffect);
-            puff.transform.position = transform.position;
-            puff.transform.localScale *= 2f;
-            Destroy(gameObject);
             return true;
         }
         return false;
+    }
+
+    public void VillagerDeallocated()
+    {
+        if (target)
+        {
+            target.ForgetSoldier();
+        }
+        GameObject puff = Instantiate(PuffEffect);
+        puff.transform.position = transform.position;
+        puff.transform.localScale *= 2f;
+        deathCalled = true;
+        Destroy(gameObject);
     }
 
     public void SwingContact()
@@ -345,7 +361,7 @@ public class Soldier : MonoBehaviour
         if (target && state == 2)
         {
             target.OnDamagedBySoldier(this);
-            if (target.Damage(Damage))
+            if (target.Damage(Damage * (target.enemyName == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
             {
                 target = null;
             }

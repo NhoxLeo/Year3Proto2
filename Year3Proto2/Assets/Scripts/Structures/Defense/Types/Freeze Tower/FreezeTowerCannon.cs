@@ -14,6 +14,7 @@ public class FreezeTowerCannon : MonoBehaviour
 
     private float time;
     private readonly List<Transform> targets = new List<Transform>();
+    private FreezeTower parentTower = null;
 
     // Research 
     private float slowAmount = 1.0f;
@@ -22,54 +23,85 @@ public class FreezeTowerCannon : MonoBehaviour
     private void Start()
     {
         particle.Stop();
+        parentTower = transform.parent.GetComponent<FreezeTower>();
     }
 
     private void Update()
     {
-        if (targets.Count > 0 && damageEnemies)
+        if (parentTower.isPlaced)
         {
-            time -= Time.deltaTime;
-            if (time <= 0.0f)
+            if (targets.Count > 0 && damageEnemies)
             {
-                targets.ForEach(target =>
+                time -= Time.deltaTime;
+                if (time <= 0.0f)
                 {
-                    if (target)
+                    targets.ForEach(target =>
                     {
-                        Enemy enemy = target.GetComponent<Enemy>();
-                        if(enemy) enemy.Damage(0.8f);
-                    }
-                });
-                time = damageDelay;
+                        if (target)
+                        {
+                            Enemy enemy = target.GetComponent<Enemy>();
+                            if (enemy) enemy.Damage(0.8f);
+                        }
+                    });
+                    time = damageDelay;
+                }
+            }
+
+            targets.RemoveAll(target => !target);
+            if (targets.Count > 0 && !particlesPlaying)
+            {
+                particle.Play();
+                particlesPlaying = true;
+            }
+            else if (targets.Count == 0 && particlesPlaying)
+            {
+                particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                particlesPlaying = false;
             }
         }
-
-        targets.RemoveAll(target => !target);
-        if (targets.Count > 0 && !particlesPlaying)
-        {
-            particle.Play();
-            particlesPlaying = true;
-        }
-        else if (targets.Count == 0 && particlesPlaying)
-        {
-            particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            particlesPlaying = false;
-        }
-
     } 
 
     private void OnTriggerEnter(Collider other)
     {
-        if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
+        if (parentTower.isPlaced)
         {
-            Vector3 direction = (other.transform.position - transform.position).normalized;
-            // If transform is inside angle based on snow cannons transform
-            if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
+            if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
             {
-                Enemy enemy = other.GetComponent<Enemy>();
-                if (enemy)
+                Vector3 direction = (other.transform.position - transform.position).normalized;
+                // If transform is inside angle based on snow cannons transform
+                if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
                 {
-                    enemy.Slow(true, slowAmount);
-                    targets.Add(other.transform);
+                    Enemy enemy = other.GetComponent<Enemy>();
+                    if (enemy)
+                    {
+                        enemy.Slow(true, slowAmount);
+                        targets.Add(other.transform);
+                    }
+                }
+            }
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (parentTower.isPlaced)
+        {
+            if (targets.Contains(other.transform))
+            {
+                return;
+            }
+            if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
+            {
+                Vector3 direction = (other.transform.position - transform.position).normalized;
+                // If transform is inside angle based on snow cannons transform
+                if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
+                {
+                    Enemy enemy = other.GetComponent<Enemy>();
+                    if (enemy)
+                    {
+                        enemy.Slow(true, slowAmount);
+                        targets.Add(other.transform);
+                    }
                 }
             }
         }
@@ -77,15 +109,18 @@ public class FreezeTowerCannon : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
+        if (parentTower.isPlaced)
         {
-            if (targets.Contains(other.transform))
+            if ((targetMask.value & (1 << other.gameObject.layer)) != 0)
             {
-                Enemy enemy = other.GetComponent<Enemy>();
-                if (enemy)
+                if (targets.Contains(other.transform))
                 {
-                    enemy.Slow(false, slowAmount);
-                    targets.Remove(other.transform);
+                    Enemy enemy = other.GetComponent<Enemy>();
+                    if (enemy)
+                    {
+                        enemy.Slow(false, slowAmount);
+                        targets.Remove(other.transform);
+                    }
                 }
             }
         }
