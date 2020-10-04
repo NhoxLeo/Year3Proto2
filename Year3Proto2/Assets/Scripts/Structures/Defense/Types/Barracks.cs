@@ -7,6 +7,7 @@ public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
     private int maxSoldiers = 3;
+
     [HideInInspector]
     public List<Soldier> soldiers;
     private float trainTime = 20f;
@@ -33,8 +34,6 @@ public class Barracks : DefenseStructure
 
     private void UpdateCapacity()
     {
-        //maxSoldiers = allocatedVillagers;
-        maxSoldiers = 3;
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
         {
@@ -76,11 +75,12 @@ public class Barracks : DefenseStructure
             trainTime = 10f;
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
+            maxSoldiers = 6;
         }
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
-        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader); 
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
 
@@ -103,7 +103,7 @@ public class Barracks : DefenseStructure
                 timeTrained += Time.deltaTime;
                 if (timeTrained >= trainTime)
                 {
-                    timeTrained = 0f;
+                    timeTrained = 0f; 
                     SpawnSoldier();
                 }
             }
@@ -208,5 +208,21 @@ public class Barracks : DefenseStructure
         {
             meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
         }
+    }
+
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+        //maxSoldiers = superAbility ? allocatedVillagers * 2 : allocatedVillagers;
+
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            if(i > maxSoldiers - 1)
+            {
+               soldiers[i].ApplyDamage(1000);
+            }
+        }
+
+        soldiers.RemoveAll(soldier => !soldier);
     }
 }

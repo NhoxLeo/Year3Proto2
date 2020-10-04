@@ -7,7 +7,7 @@ public class Catapult : ProjectileDefenseStructure
     public GameObject boulder;
 
     private const float BoulderSpeed = 1f;
-    private const float BaseMaxHealth = 550f;
+    private const float BaseMaxHealth = 470f;
     private const float BaseDamage = 15f;
 
     private float damage;

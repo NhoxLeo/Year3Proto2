@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -17,6 +18,7 @@ using UnityEngine;
 
 public class OptionsSystem : MonoBehaviour
 {
+    
     [Header("Panels")]
     [SerializeField] private Transform displayPanel;
     [SerializeField] private Transform graphicsPanel;
@@ -32,7 +34,6 @@ public class OptionsSystem : MonoBehaviour
     private void Awake()
     {
         // TOGGLES
-
         OptionToggleData fullscreenData = new OptionToggleData(true, true);
         fullscreenData.CallBack(() => Screen.fullScreenMode = fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
 
@@ -65,21 +66,20 @@ public class OptionsSystem : MonoBehaviour
         */
 
         // SLIDERS
-        OptionSliderData masterVolumeData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData masterVolumeData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f);
         masterVolumeData.CallBack(() => AudioListener.volume = masterVolumeData.value);
         
-        OptionSliderData soundEffectData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData soundEffectData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
         soundEffectData.CallBack(() => SuperManager.EffectsVolume = soundEffectData.value);
 
-        OptionSliderData ambientEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData ambientEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
         ambientEffectsData.CallBack(() => SuperManager.AmbientVolume = ambientEffectsData.value);
 
-        OptionSliderData musicEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f, 0.5f);
+        OptionSliderData musicEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
         musicEffectsData.CallBack(() => SuperManager.MusicVolume = musicEffectsData.value);
 
-        OptionSliderData cameraMovementData = new OptionSliderData(new Vector2(2.0f, 6.0f), 0.5f, 0.5f);
+        OptionSliderData cameraMovementData = new OptionSliderData(new Vector2(2.0f, 6.0f), 4.0f);
         cameraMovementData.CallBack(() => SuperManager.CameraSensitivity = cameraMovementData.value);
-
 
         // DISPLAY OPTIONS
 

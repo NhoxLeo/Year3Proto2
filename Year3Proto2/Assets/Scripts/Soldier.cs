@@ -170,7 +170,7 @@ public class Soldier : MonoBehaviour
         else
         {
             haveHomePath = false;
-            if (toHome.magnitude < 0.25f)
+            if (toHome.magnitude < 0.45f)
             {
                 Vector3 avoidance = GetAvoidanceOnly();
                 if (avoidance == Vector3.zero)
@@ -321,15 +321,6 @@ public class Soldier : MonoBehaviour
             if (target)
             {
                 target.ForgetSoldier();
-            }
-            if (home)
-            {
-                /*
-                if (home.soldiers.Contains(this))
-                {
-                    home.soldiers.Remove(this);
-                }
-                */
             }
             GameObject puff = Instantiate(PuffEffect);
             puff.transform.position = transform.position;

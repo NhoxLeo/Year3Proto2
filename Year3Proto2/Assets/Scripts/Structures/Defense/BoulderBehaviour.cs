@@ -48,13 +48,11 @@ public class BoulderBehaviour : MonoBehaviour
                     Transform newBoulder = Instantiate(boulder, instantiatePosition, Quaternion.identity);
                     BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
                     boulderBehaviour.target = position;
-                    boulderBehaviour.damage = damage;
-                    boulderBehaviour.speed = 0.4f;
+                    boulderBehaviour.damage = damage / 2.0f;
+                    boulderBehaviour.speed = speed / 2.0f;
                     boulderBehaviour.arcFactor = 0.82f;
                     boulderBehaviour.smallBoulder = true;
                     boulderBehaviour.explosionRadius = 0.2f;
-
-                    // Balancing Needed
                 }
             }
 
@@ -76,8 +74,7 @@ public class BoulderBehaviour : MonoBehaviour
                 }
             }
             Destroy(gameObject);
-            Debug.Log("Destroyed " + gameObject.name);
-            GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, smallBoulder ? 0.3f : 0.6f);
+            GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, smallBoulder ? 0.1f : 0.6f);
         }
     }
 }
