@@ -886,7 +886,7 @@ public class StructureManager : MonoBehaviour
                 firstStructurePlaced = true;
             }
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (structure.IsStructure(StructureNames.Barracks) || structure.IsStructure(StructureNames.FreezeTower))
+            if (structure.IsStructure(StructureNames.FreezeTower))
             {
                 villWidget = false;
             }
@@ -1305,7 +1305,7 @@ public class StructureManager : MonoBehaviour
             playerStructureDict.Add(_saveData.ID, newStructure);
             StructureType structType = newStructure.GetStructureType();
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (newStructure.IsStructure(StructureNames.Barracks) || newStructure.IsStructure(StructureNames.FreezeTower))
+            if (newStructure.IsStructure(StructureNames.FreezeTower))
             {
                 villWidget = false;
             }

@@ -377,7 +377,7 @@ public abstract class Enemy : MonoBehaviour
             }
         }
 
-        if (health <= 0f && !onKillCalled)
+        if (health <= 0f)
         {
             if (!onKillCalled)
             {

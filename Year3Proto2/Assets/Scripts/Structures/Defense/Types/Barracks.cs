@@ -10,13 +10,15 @@ public class Barracks : DefenseStructure
 
     [HideInInspector]
     public List<Soldier> soldiers;
-    private float trainTime = 20f;
+    private float trainTime = 10f;
     private float timeTrained = 0f;
 
     private const float BaseMaxHealth = 350f;
     private const float BaseDamage = 3f;
 
     private Color normalEmissiveColour;
+
+    private bool superUpgrade = false;
     public float GetTimeTrained()
     {
         return timeTrained;
@@ -72,10 +74,9 @@ public class Barracks : DefenseStructure
         SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
         {
-            trainTime = 10f;
+            trainTime = 5f;
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
-            maxSoldiers = 6;
         }
 
         // set targets
@@ -83,6 +84,11 @@ public class Barracks : DefenseStructure
         targetableEnemies.Add(EnemyNames.HeavyInvader); 
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+
+        if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
+        {
+            superUpgrade = true;
+        }
 
         // soldier stuff
         if (!SoldierPrefab)
@@ -95,19 +101,18 @@ public class Barracks : DefenseStructure
 
     protected override void Update()
     {
-        if (attachedTile != null)
+        base.Update();
+        if (isPlaced)
         {
-            base.Update();
             if (soldiers.Count < maxSoldiers)
             {
                 timeTrained += Time.deltaTime;
                 if (timeTrained >= trainTime)
                 {
-                    timeTrained = 0f; 
+                    timeTrained = 0f;
                     SpawnSoldier();
                 }
             }
-
             soldiers.RemoveAll(soldier => !soldier);
         }
     }
@@ -133,7 +138,7 @@ public class Barracks : DefenseStructure
 
         soldiers.Add(newSoldier);
 
-        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, SoundType.SoundEffect, 0.6f);
+        //GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, SoundType.SoundEffect, 0.6f);
     }
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
@@ -213,16 +218,23 @@ public class Barracks : DefenseStructure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        //maxSoldiers = superAbility ? allocatedVillagers * 2 : allocatedVillagers;
+        maxSoldiers = allocatedVillagers;
 
         for (int i = 0; i < soldiers.Count; i++)
         {
             if(i > maxSoldiers - 1)
             {
-               soldiers[i].ApplyDamage(1000);
+                soldiers[i].VillagerDeallocated();
             }
         }
 
         soldiers.RemoveAll(soldier => !soldier);
+    }
+
+    public void OnSoldierDeath(Soldier _soldier)
+    {
+        soldiers.Remove(_soldier);
+        ManuallyAllocate(allocatedVillagers - 1);
+        VillagerManager.GetInstance().RemoveVillagers(1, false);
     }
 }

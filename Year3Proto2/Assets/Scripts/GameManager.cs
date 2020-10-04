@@ -450,6 +450,12 @@ public class GameManager : MonoBehaviour
 
                 switch (buildingI)
                 {
+                    case BuildPanel.Buildings.Ballista:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Ballista))
+                        {
+                            continue;
+                        }
+                        break;
                     case BuildPanel.Buildings.Catapult:
                         if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
                         {
