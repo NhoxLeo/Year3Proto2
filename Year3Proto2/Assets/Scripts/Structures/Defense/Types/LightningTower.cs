@@ -12,7 +12,7 @@ public class LightningTower : DefenseStructure
     [SerializeField] private float lightningStartDelay = 0.6f;
     [SerializeField] private Transform lightningStartPosition;
 
-    private const float BaseMaxHealth = 400f;
+    private const float BaseMaxHealth = 420f;
     private const float BaseDamage = 5f;
     private const float LightningIntraDelay = 0.6f;
 
