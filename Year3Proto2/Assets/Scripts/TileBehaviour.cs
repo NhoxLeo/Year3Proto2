@@ -22,6 +22,8 @@ public class TileBehaviour : MonoBehaviour
 
     private static Transform cliffFaceParent = null;
 
+    private static Material snowMat = null;
+
     //Determines whether or not it is being approached by an airship.")]
     private bool isApproached;
 
@@ -322,5 +324,14 @@ public class TileBehaviour : MonoBehaviour
     public bool GetApproached()
     {
         return isApproached;
+    }
+
+    public static Material GetSnowMat()
+    {
+        if (!snowMat)
+        {
+            //snowMat = Resources.Load() as Material;
+        }
+        return snowMat;
     }
 }

@@ -391,5 +391,10 @@ public abstract class Structure : MonoBehaviour
     public abstract float GetTrueMaxHealth();
 
     public abstract void SetColour(Color _colour);
+
+    public virtual void SetMaterials(bool _snow)
+    {
+        meshRenderer.materials = StructureMaterials.Fetch(structureName, _snow).ToArray();
+    }
 }
 

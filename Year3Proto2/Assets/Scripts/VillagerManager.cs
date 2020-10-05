@@ -472,7 +472,6 @@ public class VillagerManager : MonoBehaviour
             }
             RemoveVillagers(1, false);
         }
-        RedistributeVillagers();
     }
 
     public int GetVillagers()
@@ -514,6 +513,7 @@ public class VillagerManager : MonoBehaviour
         {
             villagersManAllocated -= _villagers;
         }
+        RedistributeVillagers();
     }
 
     public int GetAvailable()

@@ -1177,4 +1177,9 @@ public class SuperManager : MonoBehaviour
         bool poorTimber = CurrentLevelHasModifier(PoorTimber);
         return poorTimber ? PoorTimberFactor : 1.0f;
     }
+
+    public bool GetSnow()
+    {
+        return currentLevel > 1;
+    }
 }

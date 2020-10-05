@@ -102,6 +102,51 @@ public struct ProceduralGenerationParameters
     public int seed;
 }
 
+public static class StructureMaterials
+{
+    private static Dictionary<(string, bool), List<Material>> materials = new Dictionary<(string, bool), List<Material>>();
+
+    private static List<string> GetPathsFromKey((string, bool) _key)
+    {
+        List<string> paths = new List<string>();
+        switch (_key.Item1)
+        {
+            case StructureNames.Longhaus:
+                paths.Add("Materials/Structures/Longhaus/HomeBase" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Longhaus/ThatchRoof" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FoodStorage:
+                paths.Add("Materials/Structures/Granary/Granary" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberStorage:
+                paths.Add("Materials/Structures/Lumber Pile/Wood Storage" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalStorage:
+                paths.Add("Materials/Structures/Metal Storage/Metal Storage" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            default:
+                break;
+        }
+        return paths;
+    }
+
+    public static List<Material> Fetch(string _name, bool _snow)
+    {
+        (string, bool) key = (_name, _snow);
+        if (!materials.ContainsKey(key))
+        {
+            List<Material> materialList = new List<Material>();
+            List<string> paths = GetPathsFromKey(key);
+            foreach (string path in paths)
+            {
+                materialList.Add(Resources.Load(path) as Material);
+            }
+            materials.Add(key, materialList);
+        }
+        return materials[key];
+    }
+}
+
 public static class StructureNames
 {
     public const string Longhaus = "Longhaus";

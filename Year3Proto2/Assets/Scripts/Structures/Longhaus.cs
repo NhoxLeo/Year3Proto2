@@ -25,7 +25,8 @@ public class Longhaus : Structure
     {
         base.Awake();
         structureType = StructureType.Longhaus;
-        structureName = "Longhaus";
+        structureName = StructureNames.Longhaus;
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 
     // Update is called once per frame
@@ -40,10 +41,6 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                //gameMan.AddBatch(new ResourceBatch(metalGen, ResourceType.Metal));
-                //gameMan.AddBatch(new ResourceBatch(lumberGen, ResourceType.Wood));
-                //gameMan.AddBatch(new ResourceBatch(foodGen, ResourceType.Food));
-                //gameMan.AddBatch(new ResourceBatch(VillagerManager.GetInstance().GetRationCost(), ResourceType.Food));
             }
 
         }
