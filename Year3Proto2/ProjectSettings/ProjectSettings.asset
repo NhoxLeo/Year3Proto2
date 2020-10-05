@@ -15,7 +15,7 @@ PlayerSettings:
   companyName: GendlyGames
   productName: Longhaus
   defaultCursor: {fileID: 2800000, guid: 0119948829c864e46a100d59957dc32d, type: 3}
-  cursorHotspot: {x: 14, y: 22}
+  cursorHotspot: {x: 2, y: 3}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_ShowUnitySplashScreen: 1
   m_ShowUnitySplashLogo: 1
