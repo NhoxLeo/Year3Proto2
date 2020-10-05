@@ -54,6 +54,7 @@ public class HUDManager : MonoBehaviour
 
     [Header("Misc")]
     [SerializeField] private TMP_Text victoryProgress;
+    [SerializeField] private Button villagerButton;
     [SerializeField] private TMP_Text villagerCost;
     [SerializeField] private TMP_Text nextWave;
     [SerializeField] private Transform villAlloc;
@@ -223,6 +224,11 @@ public class HUDManager : MonoBehaviour
 
         // Update content size fitters
         LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+
+        // Update villager button interation and tooltip text color
+        bool canAffordVillager = gameMan.playerResources.CanAfford(villagerMan.GetVillagerTrainCost());
+        villagerButton.interactable = canAffordVillager;
+        villagerCost.color = canAffordVillager ? gainColour : lossColour;
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
