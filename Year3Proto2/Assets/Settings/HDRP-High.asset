@@ -283,13 +283,13 @@ MonoBehaviour:
       lutFormat: 48
       bufferFormat: 74
     dynamicResolutionSettings:
-      enabled: 0
-      maxPercentage: 50
-      minPercentage: 25
-      dynResType: 0
+      enabled: 1
+      maxPercentage: 100
+      minPercentage: 75
+      dynResType: 1
       upsampleFilter: 1
-      forceResolution: 1
-      forcedPercentage: 50
+      forceResolution: 0
+      forcedPercentage: 100
     lowresTransparentSettings:
       enabled: 1
       checkerboardDepthBuffer: 1
