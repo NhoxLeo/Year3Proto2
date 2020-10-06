@@ -306,13 +306,13 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateVillagerWidgetMode()
     {
-        SetHudMode(showVillagerWidgets.isOn);
+        SetVillagerWidgets(showVillagerWidgets.isOn);
     }
 
-    public void SetHudMode(bool _buildMode)
+    public void SetVillagerWidgets(bool _villagers)
     {
-        SuperManager.GetInstance().SetShowWidgets(_buildMode);
-        SetAllVillagerWidgets(_buildMode);
+        SuperManager.GetInstance().SetShowWidgets(_villagers);
+        SetAllVillagerWidgets(_villagers);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)

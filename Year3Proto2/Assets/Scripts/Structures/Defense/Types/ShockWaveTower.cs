@@ -136,7 +136,18 @@ public class ShockWaveTower : DefenseStructure
 
     public override void SetColour(Color _colour)
     {
-        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
         boulderMesh.materials[0].SetColor("_BaseColor", _colour);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }

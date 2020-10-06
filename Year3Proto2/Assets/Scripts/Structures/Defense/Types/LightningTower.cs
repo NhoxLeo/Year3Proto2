@@ -188,11 +188,26 @@ public class LightningTower : DefenseStructure
     public override void SetColour(Color _colour)
     {
         meshRenderer.materials[0].SetColor("_BaseColor", _colour);
-        meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
-        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
         if (_colour == Color.white)
         {
             meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
         }
+        else
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+        }
+
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[1].SetColor(colourReference, _colour);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }
