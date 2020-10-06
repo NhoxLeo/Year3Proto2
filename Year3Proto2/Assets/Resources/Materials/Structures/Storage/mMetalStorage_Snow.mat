@@ -144,12 +144,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Boolean_5D7E2DBD: 1
-    - Boolean_FDFFBAD1: 0
-    - Vector1_1510CCCA: 1
-    - Vector1_1D9E69B2: 1
-    - Vector1_40E92133: 0.25
-    - Vector1_4E27F0EB: 0.33
-    - Vector1_935BE281: 0.2
+    - Boolean_FDFFBAD1: 1
+    - Vector1_1510CCCA: 0.75
+    - Vector1_1D9E69B2: 0.772
+    - Vector1_40E92133: 0.286
+    - Vector1_4E27F0EB: 0.649
+    - Vector1_935BE281: 0.186
     - Vector1_A7C4AA77: 0
     - Vector1_A97EEF39: 0.2
     - _AORemapMax: 1
@@ -275,7 +275,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_35E573F6: {r: 1, g: 1, b: 1, a: 0}
+    - Color_35E573F6: {r: 0.9009434, g: 0.9575471, b: 1, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
