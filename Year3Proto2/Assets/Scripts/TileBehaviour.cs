@@ -10,19 +10,15 @@ public class TileBehaviour : MonoBehaviour
     [Tooltip("Determines whether or not the player can place structures on the tile.")]
     private bool isPlayable;
 
-
-
     [SerializeField] 
-
     [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
-
     private bool isValidSpawnTile;
 
     private static GameObject CliffFacePrefab = null;
     private static GameObject SnowCliffFacePrefab = null;
-
+    private static GameObject BoundaryPrefab = null;
+    private static GameObject SnowBoundaryPrefab = null;
     private static Transform CliffFaceParent = null;
-
     private static Material SnowMat = null;
 
     //Determines whether or not it is being approached by an airship.")]
@@ -238,6 +234,10 @@ public class TileBehaviour : MonoBehaviour
         GetCliffParent();
         SpawnCliffFaces();
         ID = GenerateID();
+        if (!isPlayable)
+        {
+            Instantiate(GetBoundaryPrefab(), transform.position + Vector3.up * 0.501f, Quaternion.identity);
+        }
     }
 
     private void Start()
@@ -353,5 +353,25 @@ public class TileBehaviour : MonoBehaviour
             SnowMat = Resources.Load("Materials/Ground_Grass_Snow") as Material;
         }
         return SnowMat;
+    }
+
+    public static GameObject GetBoundaryPrefab()
+    {
+        if (SuperManager.GetInstance().GetSnow())
+        {
+            if (!SnowBoundaryPrefab)
+            {
+                SnowBoundaryPrefab = Resources.Load("Boundary_Snow") as GameObject;
+            }
+            return SnowBoundaryPrefab;
+        }
+        else
+        {
+            if (!BoundaryPrefab)
+            {
+                BoundaryPrefab = Resources.Load("Boundary") as GameObject;
+            }
+            return BoundaryPrefab;
+        }
     }
 }
