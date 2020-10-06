@@ -95,7 +95,6 @@ public class TitleScreen : MonoBehaviour
         }*/
 
         music.volume = musicVolume * SuperManager.MusicVolume;
-        Debug.Log(SuperManager.MusicVolume);
     }
 
     public void PlayButton()

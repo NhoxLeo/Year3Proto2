@@ -20,5 +20,16 @@ public class LumberMill : ResourceStructure
         {
             tileBonus++;
         }
+        SetMaterials(SuperManager.GetInstance().GetSnow());
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
     }
 }

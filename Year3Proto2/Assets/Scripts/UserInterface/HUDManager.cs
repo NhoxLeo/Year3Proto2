@@ -19,6 +19,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
+
 public class HUDManager : MonoBehaviour
 {
     private static HUDManager instance;
@@ -53,6 +54,7 @@ public class HUDManager : MonoBehaviour
 
     [Header("Misc")]
     [SerializeField] private TMP_Text victoryProgress;
+    [SerializeField] private Button villagerButton;
     [SerializeField] private TMP_Text villagerCost;
     [SerializeField] private TMP_Text nextWave;
     [SerializeField] private Transform villAlloc;
@@ -62,6 +64,9 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private BuildPanel buildPanel;
 
     [SerializeField] private Toggle showVillagerWidgets;
+
+    [Header("Pause Menu")]
+    [SerializeField] private PauseMenu pauseMenu;
 
     private bool nextWaveUpdate = false;
 
@@ -86,6 +91,7 @@ public class HUDManager : MonoBehaviour
         helpScreen.SetVisibility(showTutorial);
         showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
     }
 
     void LateUpdate()
@@ -94,7 +100,10 @@ public class HUDManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            doShowHUD = !doShowHUD;
+            if (!pauseMenu.isPaused && !pauseMenu.isHelp)
+            {
+                SetHUD(!doShowHUD);
+            }
         }
 
         updateTimer -= Time.unscaledDeltaTime;
@@ -181,7 +190,11 @@ public class HUDManager : MonoBehaviour
         // available out of total
         string availableVillagers = villagerMan.GetAvailable().ToString("0");
         string villagers = villagerMan.GetVillagers().ToString("0");
-        villagerText.text = availableVillagers + "/" + villagers;
+        if (villagerText.text != availableVillagers + "/" + villagers)
+        {
+            villagerText.text = availableVillagers + "/" + villagers;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        }
 
         Vector3 resources = gameMan.playerResources.GetResources();
         Vector3 capacity = gameMan.playerResources.GetCapacity();
@@ -215,7 +228,12 @@ public class HUDManager : MonoBehaviour
         }
 
         // Update content size fitters
-        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+
+        // Update villager button interation and tooltip text color
+        bool canAffordVillager = gameMan.playerResources.CanAfford(villagerMan.GetVillagerTrainCost());
+        villagerButton.interactable = canAffordVillager;
+        villagerCost.color = canAffordVillager ? gainColour : lossColour;
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
@@ -260,6 +278,11 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+    public void SetHUD(bool _active)
+    {
+        doShowHUD = _active;
+    }
+
     public void SetOverUI(bool _isOver)
     {
         if (StructureManager.GetInstance() == null)
@@ -278,17 +301,18 @@ public class HUDManager : MonoBehaviour
     public void HideHelpScreen()
     {
         SuperManager.GetInstance().SetShowTutorial(false);
+        buildPanel.SetPanelVisibility(true);
     }
 
     public void UpdateVillagerWidgetMode()
     {
-        SetHudMode(showVillagerWidgets.isOn);
+        SetVillagerWidgets(showVillagerWidgets.isOn);
     }
 
-    public void SetHudMode(bool _buildMode)
+    public void SetVillagerWidgets(bool _villagers)
     {
-        SuperManager.GetInstance().SetShowWidgets(_buildMode);
-        SetAllVillagerWidgets(_buildMode);
+        SuperManager.GetInstance().SetShowWidgets(_villagers);
+        SetAllVillagerWidgets(_villagers);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)

@@ -7,12 +7,13 @@ public class Catapult : ProjectileDefenseStructure
     public GameObject boulder;
 
     private const float BoulderSpeed = 1f;
-    private const float BaseMaxHealth = 550f;
+    private const float BaseMaxHealth = 470f;
     private const float BaseDamage = 15f;
 
     private float damage;
     private float boulderExplosionRadius = 0.375f;
 
+    private MeshRenderer catapultMesh;
     protected override void Awake()
     {
         // set base stats
@@ -38,6 +39,7 @@ public class Catapult : ProjectileDefenseStructure
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+        catapultMesh = transform.GetChild(2).GetChild(0).GetComponent<MeshRenderer>();
     }
 
     public override void Launch(Transform _target)
@@ -118,5 +120,22 @@ public class Catapult : ProjectileDefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        catapultMesh.materials[0].SetColor("_BaseColor", _colour);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }

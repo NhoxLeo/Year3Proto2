@@ -38,7 +38,7 @@ public class FlyingInvaderBarrel : MonoBehaviour
     public void SetOff(Structure _hitStructure = null)
     {
         RaycastHit[] hitStructures = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("Structure"));
-        GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+        GameObject explosion = Instantiate(GameManager.GetExplosion(2), transform.position, Quaternion.identity);
         explosion.transform.localScale *= 2f * explosionRadius;
         foreach (RaycastHit structureHit in hitStructures)
         {

@@ -47,20 +47,18 @@ public class BoulderBehaviour : MonoBehaviour
 
                     Transform newBoulder = Instantiate(boulder, instantiatePosition, Quaternion.identity);
                     BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
-                    boulderBehaviour.target = position;
-                    boulderBehaviour.damage = damage;
-                    boulderBehaviour.speed = 0.4f;
-                    boulderBehaviour.arcFactor = 0.82f;
                     boulderBehaviour.smallBoulder = true;
-                    boulderBehaviour.explosionRadius = 0.2f;
-
-                    // Balancing Needed
+                    boulderBehaviour.target = position;
+                    boulderBehaviour.damage = damage * 0.2f;
+                    boulderBehaviour.speed = speed * 0.5f;
+                    boulderBehaviour.arcFactor = 0.82f;
+                    boulderBehaviour.explosionRadius = explosionRadius * 0.2f;
                 }
             }
 
 
             RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
-            GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+            GameObject explosion = Instantiate(GameManager.GetExplosion(1), transform.position, Quaternion.identity);
             explosion.transform.localScale *= 2f * explosionRadius;
             foreach (RaycastHit enemyHit in hitEnemies)
             { 
@@ -76,8 +74,7 @@ public class BoulderBehaviour : MonoBehaviour
                 }
             }
             Destroy(gameObject);
-            Debug.Log("Destroyed " + gameObject.name);
-            GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, smallBoulder ? 0.3f : 0.6f);
+            GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, smallBoulder ? 0.1f : 0.6f);
         }
     }
 }

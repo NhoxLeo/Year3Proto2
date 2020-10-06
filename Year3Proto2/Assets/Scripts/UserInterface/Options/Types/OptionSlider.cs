@@ -18,11 +18,10 @@ public class OptionSliderData : OptionData
     public float defaultValue;
     public float value;
 
-    public Vector3 range;
+    public Vector2 range;
 
-    public OptionSliderData(Vector3 _range, float _defaultValue, float _value)
+    public OptionSliderData(Vector2 _range, float _defaultValue)
     {
-        value = _value;
         range = _range;
         defaultValue = _defaultValue;
     }
@@ -35,11 +34,19 @@ public class OptionSlider : OptionObject, OptionDataBase
 
     public override void Deserialize()
     {
-        data.value = PlayerPrefs.GetFloat(key, data.defaultValue);
-        slider.value = data.value;
-        slider.minValue = data.range.x;
-        slider.maxValue = data.range.y;
-        data.GetCallback().Invoke();
+        if(slider && data != null)
+        {
+            slider.minValue = data.range.x;
+            slider.maxValue = data.range.y;
+            data.value = PlayerPrefs.GetFloat(key, data.defaultValue);
+            slider.value = data.value;
+
+            OptionCallback optionCallback = data.GetCallback();
+            if (optionCallback != null)
+            {
+                optionCallback.Invoke();
+            }
+        }
     }
 
     public override OptionData GetData()
@@ -62,7 +69,12 @@ public class OptionSlider : OptionObject, OptionDataBase
         if (slider && data != null)
         {
             data.value = slider.value;
-            data.GetCallback().Invoke();
+
+            OptionCallback optionCallback = data.GetCallback();
+            if (optionCallback != null)
+            {
+                optionCallback.Invoke();
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 
 public class MessageBox : MonoBehaviour
@@ -22,60 +20,65 @@ public class MessageBox : MonoBehaviour
 
     void Update()
     {
-        if (timerMode)
+        if (SuperManager.messageBox)
         {
-            if (timer > 0.0f)
+            if (timerMode)
             {
-                timer -= Time.unscaledDeltaTime;
-                tool.showTooltip = true;
+                if (timer > 0.0f)
+                {
+                    timer -= Time.unscaledDeltaTime;
+                    tool.showTooltip = true;
+                }
+                else
+                {
+                    tool.showTooltip = false;
+                }
             }
             else
             {
-                tool.showTooltip = false;
+                tool.showTooltip = true;
             }
-        }
-        else
-        {
-            tool.showTooltip = true;
         }
     }
 
     public void ShowMessage(string message, float time = 0f)
     {
-        if ((timerMode && timer <= 0f) || !timerMode)
+        if (SuperManager.messageBox)
         {
-            if (tool)
+            if ((timerMode && timer <= 0f) || !timerMode)
             {
-                //Debug.Log("tool returns.");
-                if (tool.showTooltip)
+                if (tool)
                 {
-                    //Debug.Log("tool.showTooltip is true.");
+                    //Debug.Log("tool returns.");
+                    if (tool.showTooltip)
+                    {
+                        //Debug.Log("tool.showTooltip is true.");
+                    }
+                    else
+                    {
+                        //Debug.Log("tool.showTooltip is false.");
+                    }
                 }
                 else
                 {
-                    //Debug.Log("tool.showTooltip is false.");
+                    Debug.LogError("tool returns null.");
                 }
-            }
-            else
-            {
-                Debug.LogError("tool returns null.");
-            }
-            if (displayText)
-            {
-                //Debug.Log("displayText returns.");
-                //Debug.Log("displayText.text == " + displayText.text);
-            }
-            else
-            {
-                Debug.LogError("displayText returns null.");
-            }
+                if (displayText)
+                {
+                    //Debug.Log("displayText returns.");
+                    //Debug.Log("displayText.text == " + displayText.text);
+                }
+                else
+                {
+                    Debug.LogError("displayText returns null.");
+                }
 
-            if (tool.showTooltip && displayText.text != message) { tool.PulseTip(); }
-            displayText.text = message;
+                if (tool.showTooltip && displayText.text != message) { tool.PulseTip(); }
+                displayText.text = message;
 
-            timer = time;
-            timerMode = time != 0f;
-
+                timer = time;
+                timerMode = time != 0f;
+            }
         }
     }
 
