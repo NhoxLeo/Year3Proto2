@@ -451,11 +451,11 @@ public class VillagerManager : MonoBehaviour
     public void AddStarveTicks(float _ticks)
     {
         starveTicks += _ticks;
-        if (starveTicks >= 100)
+        if (starveTicks >= 100f)
         {
+            starveTicks = 0f;
             if (availableVillagers == 0)
             {
-                starveTicks = 0;
                 List<Structure> populated = new List<Structure>();
                 foreach (Structure structure in FindObjectsOfType<Structure>())
                 {
@@ -471,8 +471,8 @@ public class VillagerManager : MonoBehaviour
                 }
             }
             RemoveVillagers(1, false);
+            FindObjectOfType<MessageBox>().ShowMessage("A villager just starved!", 2.5f);
         }
-        RedistributeVillagers();
     }
 
     public int GetVillagers()
@@ -514,6 +514,7 @@ public class VillagerManager : MonoBehaviour
         {
             villagersManAllocated -= _villagers;
         }
+        RedistributeVillagers();
     }
 
     public int GetAvailable()

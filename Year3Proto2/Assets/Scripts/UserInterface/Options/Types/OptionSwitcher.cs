@@ -94,6 +94,8 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     {
         if (data != null && value)
         {
+          if (data.value < data.values.Length)
+          {
             data.value = PlayerPrefs.GetInt(key, data.defaultValue);
             value.text = data.values[data.value].ToString();
 
@@ -102,6 +104,7 @@ public class OptionSwitcher : OptionObject, OptionDataBase
             {
                 optionCallback.Invoke();
             }
+          }
         }
     }
 
