@@ -25,7 +25,7 @@ Material:
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 2000
   stringTagMap:
@@ -40,11 +40,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_33D1CF7D:
+        m_Texture: {fileID: 2800000, guid: 7f0ce1a63f7a07c47a582c18e4c5e59d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_52ACA811:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_599CDFA:
-        m_Texture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 2800000, guid: a185f12afb8e30f419c402537759096d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_D4A94B7F:
@@ -56,7 +60,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_E8065E2E:
-        m_Texture: {fileID: 2800000, guid: 7f0ce1a63f7a07c47a582c18e4c5e59d, type: 3}
+        m_Texture: {fileID: 2800000, guid: d89d396096ab74c488c5ed624959f579, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_FD000BBB:
@@ -153,13 +157,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Boolean_5D7E2DBD: 1
-    - Boolean_FDFFBAD1: 0
-    - Vector1_1510CCCA: 1
-    - Vector1_1D9E69B2: 1
-    - Vector1_40E92133: 0.25
-    - Vector1_4E27F0EB: 0.33
-    - Vector1_935BE281: 0
-    - Vector1_A7C4AA77: 0
+    - Boolean_FDFFBAD1: 1
+    - Vector1_1510CCCA: 0.6
+    - Vector1_1D9E69B2: 0.662
+    - Vector1_40E92133: 0.509
+    - Vector1_4E27F0EB: 0.544
+    - Vector1_935BE281: 0.095
+    - Vector1_A7C4AA77: 0.5
     - Vector1_A97EEF39: 0.2
     - _AORemapMax: 1
     - _AORemapMin: 0

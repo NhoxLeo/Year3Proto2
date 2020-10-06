@@ -8,13 +8,15 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mForestGround_Snow
-  m_Shader: {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
-  m_ShaderKeywords: _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+  m_Shader: {fileID: -6465566751694194690, guid: 829d0cfca5e083f4ead89eda3bb91fb0,
+    type: 3}
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    MotionVector: User
   disabledShaderPasses:
   - DistortionVectors
   - MOTIONVECTORS
@@ -24,6 +26,34 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_33D1CF7D:
+        m_Texture: {fileID: 2800000, guid: a185f12afb8e30f419c402537759096d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_52ACA811:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_599CDFA:
+        m_Texture: {fileID: 2800000, guid: a185f12afb8e30f419c402537759096d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_D4A94B7F:
+        m_Texture: {fileID: 2800000, guid: 23e848493f745b3448fd8da78846eda6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_D7B06630:
+        m_Texture: {fileID: 2800000, guid: cb9667d141e4bc6489738975b7a67662, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_E8065E2E:
+        m_Texture: {fileID: 2800000, guid: d89d396096ab74c488c5ed624959f579, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_FD000BBB:
+        m_Texture: {fileID: 2800000, guid: e60adfa396634fd429d8caa3d3b77aea, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _AnisotropyMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -73,11 +103,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskMap:
-        m_Texture: {fileID: 2800000, guid: d33e23fec138438429d5fdff19dbfb51, type: 3}
+        m_Texture: {fileID: 2800000, guid: a185f12afb8e30f419c402537759096d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalFromTexture_33A46B1F_Texture_0:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: 8deb6c6eaea1b6a42872529fd0df34a7, type: 3}
+        m_Texture: {fileID: 2800000, guid: d89d396096ab74c488c5ed624959f579, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMapOS:
@@ -109,6 +143,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Boolean_5D7E2DBD: 1
+    - Boolean_FDFFBAD1: 0
+    - Vector1_1510CCCA: 0.3
+    - Vector1_1D9E69B2: 0.75
+    - Vector1_40E92133: 0.4
+    - Vector1_4E27F0EB: 0.5
+    - Vector1_935BE281: 0.542
+    - Vector1_A7C4AA77: 0
+    - Vector1_A97EEF39: 0.2
     - _AORemapMax: 1
     - _AORemapMin: 0
     - _ATDistance: 1
@@ -187,6 +230,8 @@ Material:
     - _PPDPrimitiveWidth: 1
     - _ReceivesSSR: 1
     - _RefractionModel: 0
+    - _RenderQueueType: 1
+    - _RequireSplitLighting: 0
     - _SSRefractionProjectionModel: 0
     - _Smoothness: 0.5
     - _SmoothnessRemapMax: 1
@@ -230,6 +275,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
+    - Color_35E573F6: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

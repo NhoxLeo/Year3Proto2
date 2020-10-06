@@ -397,6 +397,8 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
+  alertPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
+    type: 3}
 --- !u!64 &3125420406668506432
 MeshCollider:
   m_ObjectHideFlags: 0

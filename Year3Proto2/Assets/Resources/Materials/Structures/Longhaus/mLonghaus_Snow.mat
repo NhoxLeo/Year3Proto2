@@ -25,7 +25,7 @@ Material:
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 2000
   stringTagMap:
@@ -40,15 +40,19 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_33D1CF7D:
+        m_Texture: {fileID: 2800000, guid: 83556ac5650ee8a4ca3f746408f3c7aa, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_52ACA811:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_599CDFA:
-        m_Texture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 2800000, guid: 83556ac5650ee8a4ca3f746408f3c7aa, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_D4A94B7F:
-        m_Texture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 2800000, guid: 23e848493f745b3448fd8da78846eda6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_D7B06630:
@@ -56,7 +60,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_E8065E2E:
-        m_Texture: {fileID: 2800000, guid: 83556ac5650ee8a4ca3f746408f3c7aa, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_FD000BBB:
@@ -153,13 +157,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Boolean_5D7E2DBD: 1
-    - Boolean_FDFFBAD1: 0
+    - Boolean_FDFFBAD1: 1
     - Vector1_1510CCCA: 1
-    - Vector1_1D9E69B2: 1
-    - Vector1_40E92133: 0.25
-    - Vector1_4E27F0EB: 0.33
-    - Vector1_935BE281: 0
-    - Vector1_A7C4AA77: 0
+    - Vector1_1D9E69B2: 0.423
+    - Vector1_40E92133: 0.613
+    - Vector1_4E27F0EB: 0.266
+    - Vector1_935BE281: 0.263
+    - Vector1_A7C4AA77: 0.6
     - Vector1_A97EEF39: 0.2
     - _AORemapMax: 0.9003487
     - _AORemapMin: 0.14947683
@@ -284,7 +288,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_35E573F6: {r: 1, g: 1, b: 1, a: 0}
+    - Color_35E573F6: {r: 0.9198113, g: 0.9665349, b: 1, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

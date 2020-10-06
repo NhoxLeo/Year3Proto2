@@ -25,9 +25,9 @@ Material:
     type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _BLENDMODE_ALPHA _ENABLE_FOG_ON_TRANSPARENT _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: 2750
   stringTagMap:
     MotionVector: User
     RenderType: Transparent
@@ -41,15 +41,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_1F932173:
-        m_Texture: {fileID: 2800000, guid: df1890151933c114eaf4faae33021200, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5bb396b738873a345ba084be0d89c2f7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_5E72269:
-        m_Texture: {fileID: 2800000, guid: 9ce62ad0006071d48b040d70e31b0f8e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5baab5758c425204eb14c5c856cdaa6a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_6F406246:
-        m_Texture: {fileID: 2800000, guid: 5e3e22da5a688864b99717643c0beb55, type: 3}
+        m_Texture: {fileID: 2800000, guid: 82614d53b32b18d45a40f4456c8dfac5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AnisotropyMap:
@@ -145,7 +145,7 @@ Material:
     - Vector1_BC9E37AB: 0.08
     - Vector1_C5DE58C5: 1.75
     - Vector1_CD3C872C: 0
-    - Vector1_D10D86B7: 1
+    - Vector1_D10D86B7: 0.5
     - Vector1_D527384A: 4.5
     - Vector1_E1CB68E3: 0
     - Vector1_E88C363C: 0.5
@@ -227,7 +227,7 @@ Material:
     - _PPDPrimitiveWidth: 1
     - _ReceivesSSR: 1
     - _RefractionModel: 0
-    - _RenderQueueType: 5
+    - _RenderQueueType: 4
     - _RequireSplitLighting: 0
     - _SSRefractionProjectionModel: 0
     - _Smoothness: 0.5
