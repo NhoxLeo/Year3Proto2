@@ -54,6 +54,7 @@ public class HUDManager : MonoBehaviour
 
     [Header("Misc")]
     [SerializeField] private TMP_Text victoryProgress;
+    [SerializeField] private Button villagerButton;
     [SerializeField] private TMP_Text villagerCost;
     [SerializeField] private TMP_Text nextWave;
     [SerializeField] private Transform villAlloc;
@@ -90,6 +91,7 @@ public class HUDManager : MonoBehaviour
         helpScreen.SetVisibility(showTutorial);
         showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
     }
 
     void LateUpdate()
@@ -188,7 +190,11 @@ public class HUDManager : MonoBehaviour
         // available out of total
         string availableVillagers = villagerMan.GetAvailable().ToString("0");
         string villagers = villagerMan.GetVillagers().ToString("0");
-        villagerText.text = availableVillagers + "/" + villagers;
+        if (villagerText.text != availableVillagers + "/" + villagers)
+        {
+            villagerText.text = availableVillagers + "/" + villagers;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        }
 
         Vector3 resources = gameMan.playerResources.GetResources();
         Vector3 capacity = gameMan.playerResources.GetCapacity();
@@ -222,7 +228,12 @@ public class HUDManager : MonoBehaviour
         }
 
         // Update content size fitters
-        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+
+        // Update villager button interation and tooltip text color
+        bool canAffordVillager = gameMan.playerResources.CanAfford(villagerMan.GetVillagerTrainCost());
+        villagerButton.interactable = canAffordVillager;
+        villagerCost.color = canAffordVillager ? gainColour : lossColour;
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)

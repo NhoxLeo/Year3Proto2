@@ -128,6 +128,7 @@ public class BuildPanel : MonoBehaviour
             default:
                 break;
         }
+
     }
 
     private void Update()
@@ -151,6 +152,15 @@ public class BuildPanel : MonoBehaviour
         {
             HidePanel();
             panelShown = false;
+        }
+
+        // Set tooltip resource cost text colors based on if player can afford
+        if (tooltipSelected != Buildings.None)
+        {
+            GameManager gameMan = GameManager.GetInstance();
+            HUDManager hudMan = HUDManager.GetInstance();
+            woodCostText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, toolInfo.cost[(int)tooltipSelected].x, 0f)) ? hudMan.gainColour : hudMan.lossColour;
+            metalCostText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, 0f, toolInfo.cost[(int)tooltipSelected].y)) ? hudMan.gainColour : hudMan.lossColour;
         }
     }
 
