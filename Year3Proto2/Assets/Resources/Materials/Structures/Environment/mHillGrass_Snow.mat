@@ -27,7 +27,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2750
+  m_CustomRenderQueue: 3000
   stringTagMap:
     MotionVector: User
     RenderType: Transparent
@@ -41,7 +41,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_33D1CF7D:
-        m_Texture: {fileID: 2800000, guid: 1ca9d161b58bee740a2cc1ed48d35e59, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8cdd13f4f84735349bc72f87aa4c2d25, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_52ACA811:
@@ -49,7 +49,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_599CDFA:
-        m_Texture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 2800000, guid: 8cdd13f4f84735349bc72f87aa4c2d25, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_D4A94B7F:
@@ -61,7 +61,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_E8065E2E:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6b25ddc04d8cb2445ae643f97984dbc8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_FD000BBB:
@@ -157,13 +157,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Boolean_5D7E2DBD: 1
-    - Boolean_FDFFBAD1: 0
+    - Boolean_5D7E2DBD: 0
+    - Boolean_FDFFBAD1: 1
     - Vector1_1510CCCA: 1
-    - Vector1_1D9E69B2: 1
-    - Vector1_40E92133: 0.25
-    - Vector1_4E27F0EB: 0.33
-    - Vector1_935BE281: 0
+    - Vector1_1D9E69B2: 0.569
+    - Vector1_40E92133: 0.167
+    - Vector1_4E27F0EB: 0.5
+    - Vector1_935BE281: 0.319
     - Vector1_A7C4AA77: 0.5
     - Vector1_A97EEF39: 0.2
     - _AORemapMax: 1
@@ -244,7 +244,7 @@ Material:
     - _PPDPrimitiveWidth: 1
     - _ReceivesSSR: 1
     - _RefractionModel: 0
-    - _RenderQueueType: 4
+    - _RenderQueueType: 5
     - _RequireSplitLighting: 0
     - _SSRefractionProjectionModel: 0
     - _Smoothness: 0.5
@@ -289,7 +289,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_35E573F6: {r: 1, g: 1, b: 1, a: 1}
+    - Color_35E573F6: {r: 0.7698469, g: 0.87693053, b: 0.9433962, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
