@@ -15,6 +15,8 @@ public class SuperManager : MonoBehaviour
 
     // CONSTANTS
     public static bool DevMode = false;
+    public static bool waveHornStart = false;
+    public static bool messageBox = false;
     public static float CameraSensitivity = 4.0f;
 
     public const float ScalingFactor = 1.33f;

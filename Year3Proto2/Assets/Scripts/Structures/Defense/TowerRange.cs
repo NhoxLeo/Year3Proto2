@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TowerRange : MonoBehaviour
 {
@@ -36,6 +34,8 @@ public class TowerRange : MonoBehaviour
                             if(!defenseParent.GetAlert() && defenseParent.GetAllocated() <= 0)
                             {
                                 defenseParent.Alert();
+                                MessageBox messageBox = FindObjectOfType<MessageBox>();
+                                messageBox.ShowMessage(defenseParent.structureName + " has no allocated villagers.", 3.0f);
                             }
                         }
                     }

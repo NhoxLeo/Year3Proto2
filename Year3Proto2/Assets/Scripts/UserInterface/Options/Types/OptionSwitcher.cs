@@ -42,16 +42,24 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     ***************************************/
     public void Next()
     {
-        if (data.value >= (data.values.Length - 1))
+        if (data != null && value)
         {
-            data.value = 0;
+            if (data.value >= (data.values.Length - 1))
+            {
+                data.value = 0;
+            }
+            else
+            {
+                data.value += 1;
+            }
+            value.text = data.values[data.value].ToString();
+
+            OptionCallback optionCallback = data.GetCallback();
+            if (optionCallback != null)
+            {
+                optionCallback.Invoke();
+            }
         }
-        else
-        {
-            data.value += 1;
-        }
-        value.text = data.values[data.value].ToString();
-        data.GetCallback().Invoke();
     }
 
     /**************************************
@@ -62,23 +70,39 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     ***************************************/
     public void Previous()
     {
-        if (data.value <= 0)
+        if (data != null && value)
         {
-            data.value = data.values.Length - 1;
+            if (data.value <= 0)
+            {
+                data.value = data.values.Length - 1;
+            }
+            else
+            {
+                data.value -= 1;
+            }
+            value.text = data.values[data.value].ToString();
+
+            OptionCallback optionCallback = data.GetCallback();
+            if (optionCallback != null)
+            {
+                optionCallback.Invoke();
+            }
         }
-        else
-        {
-            data.value -= 1;
-        }
-        value.text = data.values[data.value].ToString();
-        data.GetCallback().Invoke();
     }
 
     public override void Deserialize()
     {
-        data.value = PlayerPrefs.GetInt(key, data.defaultValue);
-        value.text = data.values[data.value].ToString();
-        data.GetCallback().Invoke();
+        if (data != null && value)
+        {
+            data.value = PlayerPrefs.GetInt(key, data.defaultValue);
+            value.text = data.values[data.value].ToString();
+
+            OptionCallback optionCallback = data.GetCallback();
+            if (optionCallback != null)
+            {
+                optionCallback.Invoke();
+            }
+        }
     }
 
     public override void Serialize()
