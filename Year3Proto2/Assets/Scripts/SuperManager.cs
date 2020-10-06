@@ -14,7 +14,7 @@ public class SuperManager : MonoBehaviour
     public static float EffectsVolume = 1.0f;
 
     // CONSTANTS
-    public static bool DevMode = false;
+    public static bool DevMode = true;
     public static float CameraSensitivity = 4.0f;
 
     public const float ScalingFactor = 1.33f;
@@ -1116,7 +1116,8 @@ public class SuperManager : MonoBehaviour
         saveData.showWidgets = false;
         for (int i = 0; i < ResearchDefinitions.Count; i++)
         {
-            if (i == 0) { saveData.research.Add(0, true); }
+            if (i == Barracks) { saveData.research.Add(Barracks, true); }
+            else if (i == Ballista) { saveData.research.Add(Ballista, true); }
             else { saveData.research.Add(i, startMaxed); }
         }
         for (int i = 0; i < LevelDefinitions.Count; i++)

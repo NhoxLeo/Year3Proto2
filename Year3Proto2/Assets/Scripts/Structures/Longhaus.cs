@@ -26,6 +26,11 @@ public class Longhaus : Structure
         base.Awake();
         structureType = StructureType.Longhaus;
         structureName = StructureNames.Longhaus;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 
@@ -84,7 +89,9 @@ public class Longhaus : Structure
 
     public override void SetColour(Color _colour)
     {
+        /*
         meshRenderer.materials[0].SetColor("_BaseColor", _colour);
         meshRenderer.materials[1].SetColor("_BaseColor", _colour);
+        */
     }
 }

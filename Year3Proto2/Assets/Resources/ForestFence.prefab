@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1499846250121807666}
   - component: {fileID: 5182534161172118475}
   m_Layer: 0
-  m_Name: smForestFencev2 (1)
+  m_Name: ForestFence
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,8 +58,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 864fb17a42b2b7046bab05a994698f04, type: 2}
-  - {fileID: 2100000, guid: 9694cb610b5ad5c4cb0b2491fab0cc32, type: 2}
+  - {fileID: 2100000, guid: fc4c1abad0be31242a360b0e7b6bf8b4, type: 2}
+  - {fileID: 2100000, guid: ed279512b88c9244eb5875e707d53259, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

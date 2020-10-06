@@ -47,18 +47,18 @@ public class BoulderBehaviour : MonoBehaviour
 
                     Transform newBoulder = Instantiate(boulder, instantiatePosition, Quaternion.identity);
                     BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
-                    boulderBehaviour.target = position;
-                    boulderBehaviour.damage = damage / 2.0f;
-                    boulderBehaviour.speed = speed / 2.0f;
-                    boulderBehaviour.arcFactor = 0.82f;
                     boulderBehaviour.smallBoulder = true;
-                    boulderBehaviour.explosionRadius = 0.2f;
+                    boulderBehaviour.target = position;
+                    boulderBehaviour.damage = damage * 0.2f;
+                    boulderBehaviour.speed = speed * 0.5f;
+                    boulderBehaviour.arcFactor = 0.82f;
+                    boulderBehaviour.explosionRadius = explosionRadius * 0.2f;
                 }
             }
 
 
             RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
-            GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+            GameObject explosion = Instantiate(GameManager.GetExplosion(1), transform.position, Quaternion.identity);
             explosion.transform.localScale *= 2f * explosionRadius;
             foreach (RaycastHit enemyHit in hitEnemies)
             { 

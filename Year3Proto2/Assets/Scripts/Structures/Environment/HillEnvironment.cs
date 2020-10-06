@@ -11,6 +11,12 @@ public class HillEnvironment : EnvironmentStructure
         structureName = StructureNames.MetalEnvironment;
     }
 
+    protected override void Start()
+    {
+        base.Start();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
+    }
+
     public override float GetBaseMaxHealth()
     {
         return 100f;
@@ -31,10 +37,15 @@ public class HillEnvironment : EnvironmentStructure
         {
             meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
-        Color colour = meshRenderer.material.GetColor("_BaseColor");
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        Color colour = meshRenderer.material.GetColor(colourReference);
         colour.a = _opacity;
-        meshRenderer.materials[0].SetColor("_BaseColor", colour);
-        meshRenderer.materials[1].SetColor("_BaseColor", colour);
+        meshRenderer.materials[0].SetColor(colourReference, colour);
+        meshRenderer.materials[1].SetColor(colourReference, colour);
     }
 
     public override void SetColour(Color _colour)

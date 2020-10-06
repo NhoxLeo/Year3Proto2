@@ -112,17 +112,66 @@ public static class StructureMaterials
         switch (_key.Item1)
         {
             case StructureNames.Longhaus:
-                paths.Add("Materials/Structures/Longhaus/HomeBase" + (_key.Item2 ? "_Snow" : ""));
-                paths.Add("Materials/Structures/Longhaus/ThatchRoof" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Longhaus/mLonghaus" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Longhaus/mLonghausRoof" + (_key.Item2 ? "_Snow" : ""));
                 break;
             case StructureNames.FoodStorage:
-                paths.Add("Materials/Structures/Granary/Granary" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Storage/mGranary" + (_key.Item2 ? "_Snow" : ""));
                 break;
             case StructureNames.LumberStorage:
-                paths.Add("Materials/Structures/Lumber Pile/Wood Storage" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Storage/mLumberStorage" + (_key.Item2 ? "_Snow" : ""));
                 break;
             case StructureNames.MetalStorage:
-                paths.Add("Materials/Structures/Metal Storage/Metal Storage" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Storage/mMetalStorage" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalEnvironment:
+                paths.Add("Materials/Structures/Environment/mHillRocks" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mHillGrass" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberEnvironment:
+                paths.Add("Materials/Structures/Environment/mForestGround" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mForest" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mForestGrass" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberEnvironment + StructureNames.Alt:
+                paths.Add("Materials/Structures/Environment/mForestTile" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mForestFence" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FoodResource:
+                paths.Add("Materials/Structures/Resource/mFarmGrazingField" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mFields");
+                paths.Add("Materials/Structures/Resource/mFarm" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FoodResource + StructureNames.Alt:
+                paths.Add("Materials/Structures/Resource/mFarmFence" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberResource:
+                paths.Add("Materials/Structures/Resource/mLumberMill" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalResource:
+                paths.Add("Materials/Structures/Resource/mMine" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalResource + StructureNames.Alt:
+                paths.Add("Materials/Structures/Resource/mMinePlatform" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.Ballista:
+                paths.Add("Materials/Structures/Defense/mBallista" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.Catapult:
+                paths.Add("Materials/Structures/Defense/mCatapult" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LightningTower:
+                paths.Add("Materials/Structures/Defense/mLightningCrystal");
+                paths.Add("Materials/Structures/Defense/mLightningTower" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FreezeTower:
+                paths.Add("Materials/Structures/Defense/mFreezeTower" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mFreezeGround" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mFreezeFaceTwo");
+                paths.Add("Materials/Structures/Defense/mFreezeFaceOne");
+                break;
+            case StructureNames.ShockwaveTower:
+                paths.Add("Materials/Structures/Defense/mShockwaveTower" + (_key.Item2 ? "_Snow" : ""));
                 break;
             default:
                 break;
@@ -169,6 +218,8 @@ public static class StructureNames
     public const string MetalEnvironment = "Hill";
     public const string MetalResource = "Mine";
     public const string MetalStorage = "Metal Storage";
+
+    public const string Alt = "_Alt";
 
     public static string BuildPanelToString(BuildPanel.Buildings _buildingID)
     {
