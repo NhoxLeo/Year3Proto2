@@ -585,6 +585,8 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
+  alertPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
+    type: 3}
   startDelay: 1.2
   particle: {fileID: 704763455902512607, guid: b6f7037bdc1829a428e84d5bfeb38faf, type: 3}
 --- !u!1 &8664006256923292875

@@ -284,6 +284,8 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
+  alertPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
+    type: 3}
   lightning: {fileID: 1759245588081772921, guid: 70cdd219e75cbf14eadc7ffea9f25043,
     type: 3}
   lightningAmount: 3

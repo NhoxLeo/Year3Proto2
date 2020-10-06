@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class TowerRange : MonoBehaviour
 {
-    DefenseStructure defenseParent;
-    int enemyStructureColliderLayer;
+    private DefenseStructure defenseParent;
+    private int enemyStructureColliderLayer;
 
     private void Start()
     {
@@ -33,6 +33,10 @@ public class TowerRange : MonoBehaviour
                         if (!defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
                             defenseParent.GetEnemies().Add(other.transform.parent);
+                            if(!defenseParent.GetAlert() && defenseParent.GetAllocated() <= 0)
+                            {
+                                defenseParent.Alert();
+                            }
                         }
                     }
                 }
@@ -55,6 +59,10 @@ public class TowerRange : MonoBehaviour
                         if (defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
                             defenseParent.GetEnemies().Remove(other.transform.parent);
+                            if(defenseParent.GetEnemies().Count < 0)
+                            {
+                                Destroy(defenseParent.GetAlert().gameObject);
+                            }
                         }
                     }
                 }

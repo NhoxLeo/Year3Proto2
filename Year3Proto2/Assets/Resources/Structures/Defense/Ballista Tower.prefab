@@ -136,6 +136,8 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
+  alertPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
+    type: 3}
   projectilePrefab: {fileID: 8777188293571484912, guid: f6228a268ed18a74c93b8da99d36baf3,
     type: 3}
   projectileLocation: {fileID: 5670479194302288651}
