@@ -331,7 +331,6 @@ public class HUDManager : MonoBehaviour
         {
             SetVillagerWidgetVisibility(villAlloc.transform.GetChild(i).GetComponent<UIAnimator>(), _enabled);
         }
-        Debug.Log(villAlloc.transform.childCount);
     }
 
     public void FetchVillagerInfo()
