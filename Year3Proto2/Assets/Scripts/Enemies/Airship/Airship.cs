@@ -25,9 +25,9 @@ public enum AirshipState
 
 public class Airship : MonoBehaviour
 {
-    [Header("Pointer")]
-    [SerializeField] private Transform pointerPrefab;
-    private Transform pointer;
+    [Header("Alert")]
+    [SerializeField] private Transform alertPrefab;
+    private Transform alert;
 
     [Header("Spawn Location")]
     [SerializeField] private float spawnPointOffset = 1.2f;
@@ -103,7 +103,7 @@ public class Airship : MonoBehaviour
                     if (heading.sqrMagnitude < Mathf.Pow(distanceOffset, 2))
                     {
                         airshipState = AirshipState.Deploy;
-                        Destroy(pointer.gameObject);
+                        Destroy(alert.gameObject);
                         StartCoroutine(Deploy(0.5f));
                     }
                     break;
@@ -120,7 +120,11 @@ public class Airship : MonoBehaviour
     
     private IEnumerator Deploy(float seconds)
     {
-        GameManager.CreateAudioEffect("horn", transform.position, SoundType.SoundEffect, 0.6f);
+        if (SuperManager.waveHornStart)
+        {
+            GameManager.CreateAudioEffect("horn", transform.position, SoundType.SoundEffect, 0.6f);
+        }
+
         WaitForSeconds wait = new WaitForSeconds(seconds);
         List<Vector3> spawnPoints = GenerateSpawnPoints();
         for (int i = 0; i < transforms.Length; i++)
@@ -195,9 +199,9 @@ public class Airship : MonoBehaviour
             initialLocation = transform.position;
 
             // Instantiate and Setup pointer.
-            if (pointerPrefab) pointer = Instantiate(pointerPrefab, _pointerParent);
-            AirshipPointer airshipPointer = pointer.GetComponent<AirshipPointer>();
-            if (airshipPointer) airshipPointer.SetTarget(transform);
+            this.alert = Instantiate(alertPrefab, _pointerParent);
+            Alert alert = this.alert.GetComponent<Alert>();
+            if (alert) alert.SetTarget(transform);
 
             transforms = _transforms;
             airshipState = AirshipState.Move;
