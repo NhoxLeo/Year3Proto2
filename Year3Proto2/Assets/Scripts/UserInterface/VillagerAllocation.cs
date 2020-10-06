@@ -137,4 +137,14 @@ public class VillagerAllocation : MonoBehaviour
             autoIndicator.transform.DOLocalMoveX(buttonPos[target.GetAllocated()].x, 0.2f);
         }
     }
+
+    private void OnDestroy()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            allocationButtons.GetChild(i).DOKill(true);
+            manualIndicator.transform.DOKill(true);
+            autoIndicator.transform.DOKill(true);
+        }
+    }
 }
