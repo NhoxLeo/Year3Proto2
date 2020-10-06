@@ -14,7 +14,7 @@ public class SuperManager : MonoBehaviour
     public static float EffectsVolume = 1.0f;
 
     // CONSTANTS
-    public static bool DevMode = true;
+    public static bool DevMode = false;
     public static float CameraSensitivity = 4.0f;
 
     public const float ScalingFactor = 1.33f;
