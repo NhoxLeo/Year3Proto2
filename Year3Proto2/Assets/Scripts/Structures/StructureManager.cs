@@ -102,6 +102,100 @@ public struct ProceduralGenerationParameters
     public int seed;
 }
 
+public static class StructureMaterials
+{
+    private static Dictionary<(string, bool), List<Material>> materials = new Dictionary<(string, bool), List<Material>>();
+
+    private static List<string> GetPathsFromKey((string, bool) _key)
+    {
+        List<string> paths = new List<string>();
+        switch (_key.Item1)
+        {
+            case StructureNames.Longhaus:
+                paths.Add("Materials/Structures/Longhaus/mLonghaus" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Longhaus/mLonghausRoof" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FoodStorage:
+                paths.Add("Materials/Structures/Storage/mGranary" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberStorage:
+                paths.Add("Materials/Structures/Storage/mLumberStorage" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalStorage:
+                paths.Add("Materials/Structures/Storage/mMetalStorage" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalEnvironment:
+                paths.Add("Materials/Structures/Environment/mHillRocks" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mHillGrass" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberEnvironment:
+                paths.Add("Materials/Structures/Environment/mForestGround" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mForest" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mForestGrass" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberEnvironment + StructureNames.Alt:
+                paths.Add("Materials/Structures/Environment/mForestTile" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mForestFence" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FoodResource:
+                paths.Add("Materials/Structures/Resource/mFarmGrazingField" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Environment/mFields");
+                paths.Add("Materials/Structures/Resource/mFarm" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FoodResource + StructureNames.Alt:
+                paths.Add("Materials/Structures/Resource/mFarmFence" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LumberResource:
+                paths.Add("Materials/Structures/Resource/mLumberMill" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalResource:
+                paths.Add("Materials/Structures/Resource/mMine" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.MetalResource + StructureNames.Alt:
+                paths.Add("Materials/Structures/Resource/mMinePlatform" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.Ballista:
+                paths.Add("Materials/Structures/Defense/mBallista" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.Catapult:
+                paths.Add("Materials/Structures/Defense/mCatapult" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.LightningTower:
+                paths.Add("Materials/Structures/Defense/mLightningCrystal");
+                paths.Add("Materials/Structures/Defense/mLightningTower" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            case StructureNames.FreezeTower:
+                paths.Add("Materials/Structures/Defense/mFreezeTower" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mFreezeGround" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mFreezeFaceTwo");
+                paths.Add("Materials/Structures/Defense/mFreezeFaceOne");
+                break;
+            case StructureNames.ShockwaveTower:
+                paths.Add("Materials/Structures/Defense/mShockwaveTower" + (_key.Item2 ? "_Snow" : ""));
+                break;
+            default:
+                break;
+        }
+        return paths;
+    }
+
+    public static List<Material> Fetch(string _name, bool _snow)
+    {
+        (string, bool) key = (_name, _snow);
+        if (!materials.ContainsKey(key))
+        {
+            List<Material> materialList = new List<Material>();
+            List<string> paths = GetPathsFromKey(key);
+            foreach (string path in paths)
+            {
+                materialList.Add(Resources.Load(path) as Material);
+            }
+            materials.Add(key, materialList);
+        }
+        return materials[key];
+    }
+}
+
 public static class StructureNames
 {
     public const string Longhaus = "Longhaus";
@@ -124,6 +218,8 @@ public static class StructureNames
     public const string MetalEnvironment = "Hill";
     public const string MetalResource = "Mine";
     public const string MetalStorage = "Metal Storage";
+
+    public const string Alt = "_Alt";
 
     public static string BuildPanelToString(BuildPanel.Buildings _buildingID)
     {
@@ -778,6 +874,11 @@ public class StructureManager : MonoBehaviour
                                 hoverEnvironment = environment;
                                 UpdateEnvironmentTransparency();
                             }
+                            else
+                            {
+                                hoverEnvironment.SetOpacity(1.0f);
+                                hoverEnvironment = null;
+                            }
                         }
                     }
                     else // the tile can be placed on, and has no attached structure
@@ -820,6 +921,14 @@ public class StructureManager : MonoBehaviour
                         AttemptPlaceStructure(tile);
                     }
                 }
+            }
+        }
+        else
+        {
+            if (hoverEnvironment)
+            {
+                hoverEnvironment.SetOpacity(1.0f);
+                hoverEnvironment = null;
             }
         }
         if (Input.GetMouseButtonUp(1))

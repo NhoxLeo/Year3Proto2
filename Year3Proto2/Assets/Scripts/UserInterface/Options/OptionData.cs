@@ -14,7 +14,7 @@ public interface OptionDataBase { }
 
 public class OptionData 
 {
-    protected OptionCallback optionCallback;
+    private OptionCallback optionCallback;
 
     public OptionCallback GetCallback()
     {

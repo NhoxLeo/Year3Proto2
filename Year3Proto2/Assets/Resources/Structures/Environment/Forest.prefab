@@ -4768,7 +4768,7 @@ GameObject:
   - component: {fileID: 133044356586333424}
   - component: {fileID: 3380872272309476251}
   m_Layer: 9
-  m_Name: Forest Environment
+  m_Name: Forest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4836,9 +4836,9 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6eafec0cd8c44d9409e3391b6eaae086, type: 2}
-  - {fileID: 2100000, guid: 546410f1e5a42234a9d761687e8875bc, type: 2}
-  - {fileID: 2100000, guid: 3a226eb635fae0a4db32b922128e7a7c, type: 2}
+  - {fileID: 2100000, guid: 5f27b2533d2007248bf2591e3da9814c, type: 2}
+  - {fileID: 2100000, guid: 600c24f785ab6bb47b03925387f96f6e, type: 2}
+  - {fileID: 2100000, guid: f3bafff642feaac44b74c9b4b1164d83, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

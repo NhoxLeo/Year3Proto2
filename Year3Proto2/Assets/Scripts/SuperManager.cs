@@ -15,6 +15,8 @@ public class SuperManager : MonoBehaviour
 
     // CONSTANTS
     public static bool DevMode = false;
+    public static bool waveHornStart = false;
+    public static bool messageBox = false;
     public static float CameraSensitivity = 4.0f;
 
     public const float ScalingFactor = 1.33f;
@@ -415,7 +417,7 @@ public class SuperManager : MonoBehaviour
         new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, DryFields, PoorTimber },    1750)
     };
     public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
-    { 
+    {
         // ID, Name, Description, Coefficient
         new ModifierDefinition(SnoballPrices, "Snowball Prices", "Structure Cost Acceleration hits harder.", 0.5f),
         new ModifierDefinition(SwiftFootwork, "Swift Footwork", "Enemies are 40% faster.", 0.25f),
@@ -423,7 +425,7 @@ public class SuperManager : MonoBehaviour
         new ModifierDefinition(PoorTimber, "Poor Timber", "Buildings have 75% of their standard durability.", 0.4f),
     };
     public static List<WinConditionDefinition> WinConditionDefinitions = new List<WinConditionDefinition>()
-    { 
+    {
         // ID, Name, Description
         new WinConditionDefinition(Accumulate, "Accumulate", "Have 1500 of each resource."),
         new WinConditionDefinition(AccumulateII, "Accumulate II", "Have 2500 of each resource."),
@@ -790,7 +792,7 @@ public class SuperManager : MonoBehaviour
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
-        
+
 
         // not so easy stuff...
         // invaders
@@ -832,7 +834,7 @@ public class SuperManager : MonoBehaviour
             };
             save.heavyInvaders.Add(saveData);
         }
-        
+
         // flying
         foreach (FlyingInvader flying in FindObjectsOfType<FlyingInvader>())
         {
@@ -947,9 +949,9 @@ public class SuperManager : MonoBehaviour
 
     public bool GetResearchComplete(int _ID)
     {
-        if (saveData.research == null) 
-        { 
-            RestoreSaveData(); 
+        if (saveData.research == null)
+        {
+            RestoreSaveData();
         }
         else
         {
@@ -963,9 +965,9 @@ public class SuperManager : MonoBehaviour
 
     public Dictionary<int, bool> GetResearch()
     {
-        if (saveData.research == null) 
-        { 
-            RestoreSaveData(); 
+        if (saveData.research == null)
+        {
+            RestoreSaveData();
         }
         return saveData.research;
     }
@@ -1116,7 +1118,8 @@ public class SuperManager : MonoBehaviour
         saveData.showWidgets = false;
         for (int i = 0; i < ResearchDefinitions.Count; i++)
         {
-            if (i == 0) { saveData.research.Add(0, true); }
+            if (i == Barracks) { saveData.research.Add(Barracks, true); }
+            else if (i == Ballista) { saveData.research.Add(Ballista, true); }
             else { saveData.research.Add(i, startMaxed); }
         }
         for (int i = 0; i < LevelDefinitions.Count; i++)
@@ -1176,5 +1179,10 @@ public class SuperManager : MonoBehaviour
     {
         bool poorTimber = CurrentLevelHasModifier(PoorTimber);
         return poorTimber ? PoorTimberFactor : 1.0f;
+    }
+
+    public bool GetSnow()
+    {
+        return currentLevel > 1;
     }
 }

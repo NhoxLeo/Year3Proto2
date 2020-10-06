@@ -3,6 +3,10 @@ using UnityEngine;
 
 public abstract class DefenseStructure : Structure
 {
+    [Header("Alert")]
+    [SerializeField] private Transform alertPrefab;
+    private Alert alert;
+
     protected ResourceBundle attackCost;
     protected List<Transform> enemies = new List<Transform>();
     protected List<string> targetableEnemies = new List<string>();
@@ -57,6 +61,37 @@ public abstract class DefenseStructure : Structure
         enemies.RemoveAll(enemy => !enemy);
     }
 
+    private void OnDestroy()
+    {
+        if (alert)
+        {
+            Destroy(alert.gameObject);
+        }
+    }
+
+    public void Alert()
+    {
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas)
+        {
+            Transform transform = Instantiate(alertPrefab, canvas.transform);
+            Alert alert = transform.GetComponent<Alert>();
+            if (alert)
+            {
+                Vector3 position = this.transform.localPosition;
+                position.y = 1.0f;
+                alert.SetTarget(position);
+                this.alert = alert;
+            }
+        }
+    }
+
+    public override void OnSelected()
+    {
+        base.OnSelected();
+        if (alert) Destroy(alert.gameObject);
+    }
+
     public override void ShowRangeDisplay(bool _active)
     {
         base.ShowRangeDisplay(_active);
@@ -89,6 +124,11 @@ public abstract class DefenseStructure : Structure
     public int GetLevel()
     {
         return level;
+    }
+
+    public Alert GetAlert()
+    {
+        return alert;
     }
 
     protected virtual void OnSetLevel()

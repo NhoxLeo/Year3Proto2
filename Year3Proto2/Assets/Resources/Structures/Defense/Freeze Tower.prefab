@@ -353,10 +353,10 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0908292a73226d54693e3e4476e9765d, type: 2}
-  - {fileID: 2100000, guid: e40615c4cdc19bf469835523db7e8adb, type: 2}
-  - {fileID: 2100000, guid: 76e9b67159333dc45a75bc77ec8604a5, type: 2}
-  - {fileID: 2100000, guid: 4fba2f098ddc9e843b93ebb7a0d0b20e, type: 2}
+  - {fileID: 2100000, guid: 82e0819fdd3694149a074428b5b2edbd, type: 2}
+  - {fileID: 2100000, guid: 8544653847b4b8544af205a51f2b54b0, type: 2}
+  - {fileID: 2100000, guid: ff783b20676ef2a48a18053ecdcabddb, type: 2}
+  - {fileID: 2100000, guid: 7ad0ca2ea9f187442855cec6fd57a233, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -397,6 +397,8 @@ MonoBehaviour:
   structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
+  alertPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
+    type: 3}
 --- !u!64 &3125420406668506432
 MeshCollider:
   m_ObjectHideFlags: 0

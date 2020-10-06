@@ -52,12 +52,20 @@ public struct PlayerResources
     {
         food += _bundle.food;
         if (food > foodMax) { food = foodMax; }
+        if (food < 0)
+        {
+            VillagerManager.GetInstance().AddStarveTicks(-food);
+            food = 0; 
+        }
+
 
         wood += _bundle.wood;
         if (wood > woodMax) { wood = woodMax; }
+        if (wood < 0) { wood = 0; }
 
         metal += _bundle.metal;
         if (metal > metalMax) { metal = metalMax; }
+        if (metal < 0) { metal = 0; }
     }
 
     public bool ResourceIsFull(ResourceType _type)
@@ -161,10 +169,32 @@ public class GameManager : MonoBehaviour
     private AudioSource ambience;
     private float musicVolume;
     private float ambienceVolume;
+    private static GameObject ExplosionOne = null;
+    private static GameObject ExplosionTwo = null;
 
     public static GameManager GetInstance()
     {
         return instance;
+    }
+
+    public static GameObject GetExplosion(int _variant)
+    {
+        if (_variant == 1)
+        {
+            if (!ExplosionOne)
+            {
+                ExplosionOne = Resources.Load("Explosion") as GameObject;
+            }
+            return ExplosionOne;
+        }
+        else
+        {
+            if (!ExplosionTwo)
+            {
+                ExplosionTwo = Resources.Load("ExplosionPetard") as GameObject;
+            }
+            return ExplosionTwo;
+        }
     }
 
     public static void CreateAudioEffect(string _sfxName, Vector3 _positon, SoundType _type = SoundType.SoundEffect, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
@@ -179,7 +209,6 @@ public class GameManager : MonoBehaviour
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];
-        spawnAudioComp.Play();
         switch (_type)
         {
             case SoundType.SoundEffect:
@@ -194,6 +223,7 @@ public class GameManager : MonoBehaviour
             default:
                 break;
         }
+        spawnAudioComp.Play();
     }
 
     public static void IncrementRepairCount()
@@ -503,7 +533,7 @@ public class GameManager : MonoBehaviour
                 gameover = true;
                 victory = false;
                 messageBox.ShowMessage("You Lost!", 3f);
-                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                music.DOFade(0f, 0.5f);
                 CreateAudioEffect("lose", Vector3.zero, SoundType.Music, 1f, false);
             }
             else
@@ -531,7 +561,7 @@ public class GameManager : MonoBehaviour
                     victory = true;
                     SuperManager.GetInstance().OnLevelComplete();
                     messageBox.ShowMessage("You Win!", 5f);
-                    GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                    music.DOFade(0f, 0.5f);
                     CreateAudioEffect("win", Vector3.zero, SoundType.Music, 1f, false);
                 }
             }            
@@ -603,7 +633,7 @@ public class GameManager : MonoBehaviour
                 musicDelay -= Time.deltaTime;
                 if (musicDelay < 0f && !musicBackOn)
                 {
-                    GetComponents<AudioSource>()[0].DOFade(volumeFull, 2f);
+                    music.DOFade(musicVolume * SuperManager.MusicVolume, 2f);
                     musicBackOn = true;
                 }
             }
@@ -621,9 +651,14 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        
 
-        music.volume = musicVolume * SuperManager.MusicVolume;
-        ambience.volume = ambienceVolume * SuperManager.AmbientVolume;
+        if (!gameover || musicDelay < -2f)
+        {
+            music.volume = musicVolume * SuperManager.MusicVolume;
+            ambience.volume = ambienceVolume * SuperManager.AmbientVolume;
+        }
+
     }
 
     public void SaveMatch()

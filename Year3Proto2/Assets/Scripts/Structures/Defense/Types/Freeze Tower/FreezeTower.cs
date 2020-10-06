@@ -102,8 +102,14 @@ public class FreezeTower : DefenseStructure
 
     public override void SetColour(Color _colour)
     {
-        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
-        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        meshRenderer.materials[1].SetColor(colourReference, _colour);
+
         meshRenderer.materials[2].SetColor("_BaseColor", _colour);
         meshRenderer.materials[2].SetColor("_EmissiveColor", _colour);
         meshRenderer.materials[3].SetColor("_BaseColor", _colour);
@@ -113,5 +119,11 @@ public class FreezeTower : DefenseStructure
             meshRenderer.materials[2].SetColor("_EmissiveColor", normalEmissiveColour);
             meshRenderer.materials[3].SetColor("_EmissiveColor", normalEmissiveColour);
         }
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }
