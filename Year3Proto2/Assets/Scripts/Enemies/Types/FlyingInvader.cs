@@ -14,9 +14,7 @@ public class FlyingInvader : Enemy
         base.Awake();
         structureTypes = new List<StructureType>()
         {
-            StructureType.Storage,
-            StructureType.Longhaus,
-            StructureType.Defense
+            StructureType.Longhaus
         };
         enemyName = EnemyNames.FlyingInvader;
         if (!Barrel)

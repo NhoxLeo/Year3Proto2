@@ -25,6 +25,7 @@ public class ForestEnvironment : EnvironmentStructure
             meshRenderer.enabled = false;
         }
         */
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 
     protected override void Update()
@@ -75,5 +76,11 @@ public class ForestEnvironment : EnvironmentStructure
     public override void SetColour(Color _colour)
     {
         throw new System.NotImplementedException();
+    }
+
+    public override void SetMaterials(bool _snow)
+    {
+        base.SetMaterials(_snow);
+        transform.GetChild(0).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
     }
 }

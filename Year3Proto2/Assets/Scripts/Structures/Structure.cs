@@ -37,6 +37,7 @@ public abstract class Structure : MonoBehaviour
     protected VillagerAllocation villagerWidget = null;
     private bool manualAllocation = false;
     protected MeshRenderer meshRenderer;
+    protected bool snowMatActive = false;
 
     public void HandleAllocation(int _villagers)
     {
@@ -391,5 +392,11 @@ public abstract class Structure : MonoBehaviour
     public abstract float GetTrueMaxHealth();
 
     public abstract void SetColour(Color _colour);
+
+    public virtual void SetMaterials(bool _snow)
+    {
+        snowMatActive = _snow;
+        meshRenderer.materials = StructureMaterials.Fetch(structureName, _snow).ToArray();
+    }
 }
 

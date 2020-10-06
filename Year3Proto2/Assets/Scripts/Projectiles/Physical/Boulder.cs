@@ -41,7 +41,7 @@ public class Boulder : PhysicalProjectile
     protected override void OnGroundHit()
     {
         RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, ExplosionRadius, Vector3.up, 0f, LayerMask.GetMask("EnemyStructureCollider"));
-        GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+        GameObject explosion = Instantiate(GameManager.GetExplosion(1), transform.position, Quaternion.identity);
         explosion.transform.localScale *= 2f * ExplosionRadius;
         foreach (RaycastHit enemyHit in hitEnemies)
         {

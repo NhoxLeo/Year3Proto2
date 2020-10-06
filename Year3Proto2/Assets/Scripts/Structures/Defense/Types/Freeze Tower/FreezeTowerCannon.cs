@@ -23,6 +23,10 @@ public class FreezeTowerCannon : MonoBehaviour
     private void Start()
     {
         particle.Stop();
+    }
+
+    private void Awake()
+    {
         parentTower = transform.parent.GetComponent<FreezeTower>();
     }
 

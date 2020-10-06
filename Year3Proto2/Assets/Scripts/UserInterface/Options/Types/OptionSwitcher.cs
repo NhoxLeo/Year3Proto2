@@ -77,8 +77,11 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     public override void Deserialize()
     {
         data.value = PlayerPrefs.GetInt(key, data.defaultValue);
-        value.text = data.values[data.value].ToString();
-        data.GetCallback().Invoke();
+        if (data.value < data.values.Length)
+        {
+            value.text = data.values[data.value].ToString();
+            data.GetCallback().Invoke();
+        }
     }
 
     public override void Serialize()

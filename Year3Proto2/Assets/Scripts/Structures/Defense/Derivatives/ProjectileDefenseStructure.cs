@@ -19,6 +19,15 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
         base.Update();
         if (attachedTile && enemies.Count > 0 && allocatedVillagers != 0)
         {
+            if (!target)
+            {
+                List<Transform> targetedEnemies = GetTargetedEnemies();
+                if (targetedEnemies.Count > 0)
+                {
+                    target = targetedEnemies[0];
+                }
+            }
+
             projectileTime += Time.deltaTime;
             if (projectileTime >= projectileDelay && GameManager.GetInstance().playerResources.AttemptPurchase(attackCost))
             {

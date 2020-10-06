@@ -23,6 +23,7 @@ public abstract class StorageStructure : Structure
     public override void OnPlace()
     {
         base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
         GameManager.GetInstance().CalculateStorageMaximum();
     }
 
