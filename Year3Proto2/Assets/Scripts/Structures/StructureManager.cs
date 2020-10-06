@@ -874,6 +874,11 @@ public class StructureManager : MonoBehaviour
                                 hoverEnvironment = environment;
                                 UpdateEnvironmentTransparency();
                             }
+                            else
+                            {
+                                hoverEnvironment.SetOpacity(1.0f);
+                                hoverEnvironment = null;
+                            }
                         }
                     }
                     else // the tile can be placed on, and has no attached structure
@@ -916,6 +921,14 @@ public class StructureManager : MonoBehaviour
                         AttemptPlaceStructure(tile);
                     }
                 }
+            }
+        }
+        else
+        {
+            if (hoverEnvironment)
+            {
+                hoverEnvironment.SetOpacity(1.0f);
+                hoverEnvironment = null;
             }
         }
         if (Input.GetMouseButtonUp(1))
