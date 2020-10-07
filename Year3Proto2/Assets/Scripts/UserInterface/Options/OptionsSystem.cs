@@ -55,8 +55,7 @@ public class OptionsSystem : MonoBehaviour
         resolutionData.CallBack(() =>
         {
             Resolution resolution = Screen.resolutions[resolutionData.value];
-            resolution = Screen.currentResolution;
-            Screen.SetResolution(resolution.width, resolution.height, fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+            Screen.SetResolution(resolution.width, resolution.height, false); // TODO FIX FULL SCREEN BUG
         });
 
         OptionSwitcherData shadowQualityData = new OptionSwitcherData(2, 0, new string[] { "Low", "Medium", "High", "Ultra" });

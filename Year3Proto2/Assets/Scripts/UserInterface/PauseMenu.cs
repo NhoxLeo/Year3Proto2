@@ -30,7 +30,7 @@ public class PauseMenu : MonoBehaviour
                     {
                         levelEndscreen.HideEndscreen();
                     }
-                    else if(levelEndscreen.showingVictory)
+                    else if(levelEndscreen.showingDefeat)
                     {
                         levelEndscreen.DefeatGoToLevelSelect();
                     }

@@ -52,9 +52,9 @@ public class OptionToggle : OptionObject, OptionDataBase
 
     public override void Deserialize()
     {
-        data.value = PlayerPrefs.GetInt(key, data.defaultValue ? 1 : 0) != 0;
         if (toggle && data != null)
         {
+            data.value = PlayerPrefs.GetInt(key, data.defaultValue ? 1 : 0) != 0;
             toggle.isOn = data.value;
             OptionCallback optionCallback = data.GetCallback();
             if (optionCallback != null)
