@@ -901,47 +901,49 @@ public class SuperManager : MonoBehaviour
         // structures
         foreach (Structure structure in FindObjectsOfType<Structure>())
         {
-            // structures placed by the structureManager don't have a parent, and need to be saved
-            if (structure.transform.parent == null)
+            // don't save the longhaus
+            if (structure.GetStructureName() == StructureNames.Longhaus)
             {
-                StructureSaveData saveData = new StructureSaveData
-                {
-                    structure = structure.GetStructureName(),
-                    type = structure.GetStructureType(),
-                    position = new SaveVector3(structure.transform.position),
-                    villagers = structure.GetAllocated(),
-                    health = structure.GetHealth(),
-                    ID = structure.GetID(),
-                    manualAllocation = structure.GetManualAllocation()
-                };
-                if (saveData.type == StructureType.Environment)
-                {
-                    EnvironmentStructure envStructure = structure.gameObject.GetComponent<EnvironmentStructure>();
-                    if (envStructure.GetExploited())
-                    {
-                        saveData.exploited = true;
-                        saveData.exploiterID = envStructure.GetExploiterID();
-                    }
-                }
-                if (structure.IsStructure("Farm"))
-                {
-                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains;
-                }
-                if (structure.IsStructure("Mine"))
-                {
-                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills;
-                }
-                if (structure.IsStructure("Lumber Mill"))
-                {
-                    saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest;
-                }
-                if (structure.GetStructureType() == StructureType.Defense)
-                {
-                    DefenseStructure defense = structure.GetComponent<DefenseStructure>();
-                    saveData.level = defense.GetLevel();
-                }
-                save.structures.Add(saveData);
+                continue;
             }
+
+            StructureSaveData saveData = new StructureSaveData
+            {
+                structure = structure.GetStructureName(),
+                type = structure.GetStructureType(),
+                position = new SaveVector3(structure.transform.position),
+                villagers = structure.GetAllocated(),
+                health = structure.GetHealth(),
+                ID = structure.GetID(),
+                manualAllocation = structure.GetManualAllocation()
+            };
+            if (saveData.type == StructureType.Environment)
+            {
+                EnvironmentStructure envStructure = structure.gameObject.GetComponent<EnvironmentStructure>();
+                if (envStructure.GetExploited())
+                {
+                    saveData.exploited = true;
+                    saveData.exploiterID = envStructure.GetExploiterID();
+                }
+            }
+            if (structure.IsStructure("Farm"))
+            {
+                saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains;
+            }
+            if (structure.IsStructure("Mine"))
+            {
+                saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills;
+            }
+            if (structure.IsStructure("Lumber Mill"))
+            {
+                saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest;
+            }
+            if (structure.GetStructureType() == StructureType.Defense)
+            {
+                DefenseStructure defense = structure.GetComponent<DefenseStructure>();
+                saveData.level = defense.GetLevel();
+            }
+            save.structures.Add(saveData);
         }
 
         return save;

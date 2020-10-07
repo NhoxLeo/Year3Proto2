@@ -403,7 +403,7 @@ public class StructureManager : MonoBehaviour
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                                    NAME                                                                        fC       wC       mC      
-            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(0,       600,     200)) },
+            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(0,       200,     50)) },
 
             { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(0,       150,     25)) },
             { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(0,       200,     125)) },
@@ -808,128 +808,130 @@ public class StructureManager : MonoBehaviour
         if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
         {
             TileBehaviour tile = hitGround.transform.GetComponent<TileBehaviour>();
+            bool canPlaceHere = true;
+            Structure attached = tile.GetAttached();
+            StructureType newStructureType = structure.GetStructureType();
             if (tile.GetPlayable())
             {
-                bool canPlaceHere = true;
                 // If the tile we hit has an attached object...
-                Structure attached = tile.GetAttached();
-                StructureType newStructureType = structure.GetStructureType();
                 if (attached)
                 {
                     canPlaceHere = false;
-                    Vector3 hitPos = hitGround.point;
-                    hitPos.y = structure.sitHeight;
-                    structure.transform.position = hitPos;
-
-                    SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
-
-                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                    if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-
                     if (attached.GetStructureType() == StructureType.Environment)
                     {
                         canPlaceHere = true;
                     }
                 }
-                // if the structure can be placed here...
-                if (canPlaceHere)
+            }
+            else
+            {
+                canPlaceHere = false;
+            }
+            // if the structure can be placed here...
+            if (canPlaceHere)
+            {
+                if (newStructureType == StructureType.Defense)
                 {
-                    if (newStructureType == StructureType.Defense)
-                    {
-                        structure.ShowRangeDisplay(true);
-                    }
-                    else if (newStructureType == StructureType.Resource)
-                    {
-                        SetPreview(tile);
-                    }
+                    structure.ShowRangeDisplay(true);
+                }
+                else if (newStructureType == StructureType.Resource)
+                {
+                    SetPreview(tile);
+                }
 
-                    if (attached)
+                if (attached)
+                {
+                    EnvironmentStructure environment = attached.GetComponent<EnvironmentStructure>();
+                    if (environment)
                     {
-                        EnvironmentStructure environment = attached.GetComponent<EnvironmentStructure>();
-                        if (environment)
-                        {
-                            string attachedName = attached.GetStructureName();
-                            string structureName = structure.GetStructureName();
-                            // determine if the structure is in synergy with attached structure
-                            bool resourceGain = (attachedName == StructureNames.FoodEnvironment && structureName == StructureNames.FoodResource)
-                                || (attachedName == StructureNames.LumberEnvironment && structureName == StructureNames.LumberResource)
-                                || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
-                            if (resourceGain)
-                            {
-                                SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
-                            }
-                            else
-                            {
-                                SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
-                            }
-                            if (!environment.GetExploited())
-                            {
-                                if (hoverEnvironment)
-                                {
-                                    if (hoverEnvironment != environment)
-                                    {
-                                        hoverEnvironment.SetOpacity(1.0f);
-                                    }
-                                }
-                                hoverEnvironment = environment;
-                                UpdateEnvironmentTransparency();
-                            }
-                            else
-                            {
-                                hoverEnvironment.SetOpacity(1.0f);
-                                hoverEnvironment = null;
-                            }
-                        }
-                    }
-                    else // the tile can be placed on, and has no attached structure
-                    {
-                        if (hoverEnvironment)
-                        {
-                            hoverEnvironment.SetOpacity(1.0f);
-                            hoverEnvironment = null;
-                        }
-                        if (structure.GetStructureType() == StructureType.Resource)
-                        {
-                            SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
-                        }
-                        else
+                        string attachedName = attached.GetStructureName();
+                        string structureName = structure.GetStructureName();
+                        // determine if the structure is in synergy with attached structure
+                        bool resourceGain = (attachedName == StructureNames.FoodEnvironment && structureName == StructureNames.FoodResource)
+                            || (attachedName == StructureNames.LumberEnvironment && structureName == StructureNames.LumberResource)
+                            || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
+                        if (resourceGain)
                         {
                             SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
                         }
-                    }
-
-                    // If player cannot afford the structure, set to red.
-                    if (!GameManager.GetInstance().playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
-                    {
-                        SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
-                    }
-
-                    Vector3 structPos = hitGround.transform.position;
-                    structPos.y = structure.sitHeight;
-                    structure.transform.position = structPos;
-
-                    Vector3 highlightPos = structPos;
-                    highlightPos.y = HighlightSitHeight;
-                    tileHighlight.position = highlightPos;
-                    selectedTileHighlight.position = highlightPos;
-
-                    tileHighlight.gameObject.SetActive(true);
-
-                    // If the user clicked the LMB...
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        AttemptPlaceStructure(tile);
+                        else
+                        {
+                            SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
+                        }
+                        if (!environment.GetExploited())
+                        {
+                            if (hoverEnvironment)
+                            {
+                                if (hoverEnvironment != environment)
+                                {
+                                    ResetEnvironmentTransparency();
+                                }
+                            }
+                            hoverEnvironment = environment;
+                            UpdateEnvironmentTransparency();
+                        }
+                        else
+                        {
+                            ResetEnvironmentTransparency();
+                        }
                     }
                 }
+                else // the tile can be placed on, and has no attached structure
+                {
+                    ResetEnvironmentTransparency();
+                    if (structure.GetStructureType() == StructureType.Resource)
+                    {
+                        SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
+                    }
+                    else
+                    {
+                        SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
+                    }
+                }
+
+                // If player cannot afford the structure, set to red.
+                if (!GameManager.GetInstance().playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
+                {
+                    SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
+                }
+
+                Vector3 structPos = hitGround.transform.position;
+                structPos.y = structure.sitHeight;
+                structure.transform.position = structPos;
+
+                Vector3 highlightPos = structPos;
+                highlightPos.y = HighlightSitHeight;
+                tileHighlight.position = highlightPos;
+                selectedTileHighlight.position = highlightPos;
+
+                tileHighlight.gameObject.SetActive(true);
+
+                // If the user clicked the LMB...
+                if (Input.GetMouseButtonDown(0))
+                {
+                    AttemptPlaceStructure(tile);
+                }
+            }
+            else
+            {
+                Vector3 hitPos = hitGround.point;
+                hitPos.y = structure.sitHeight;
+                structure.transform.position = hitPos;
+
+                SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
+
+                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+
+                ResetEnvironmentTransparency();
+                TurnOffPreview();
             }
         }
         else
         {
-            if (hoverEnvironment)
-            {
-                hoverEnvironment.SetOpacity(1.0f);
-                hoverEnvironment = null;
-            }
+            ResetEnvironmentTransparency();
+            TurnOffPreview();
+            HideBuilding();
         }
         if (Input.GetMouseButtonUp(1))
         {
@@ -1024,14 +1026,7 @@ public class StructureManager : MonoBehaviour
                     structure.ManuallyAllocate(0);
                 }
             }
-            // turn off all the resourceHighlights
-            foreach (Transform highlight in resourceHighlights)
-            {
-                if (highlight.gameObject.activeSelf)
-                {
-                    highlight.gameObject.SetActive(false);
-                }
-            }
+            TurnOffPreview();
         }
     }
 
@@ -1142,19 +1137,8 @@ public class StructureManager : MonoBehaviour
                 }
                 structureState = StructManState.Selected;
             }
-            // turn off all the resourceHighlights
-            foreach (Transform highlight in resourceHighlights)
-            {
-                if (highlight.gameObject.activeSelf)
-                {
-                    highlight.gameObject.SetActive(false);
-                }
-            }
-            if (hoverEnvironment)
-            {
-                hoverEnvironment.SetOpacity(1.0f);
-                hoverEnvironment = null;
-            }
+            TurnOffPreview();
+            ResetEnvironmentTransparency();
         }
     }
 
@@ -1328,7 +1312,7 @@ public class StructureManager : MonoBehaviour
     {
         if (structure && structureState == StructManState.Moving)
         {
-            structure.transform.position = Vector3.down * 10f;
+            structure.transform.position = Vector3.down * 1000f;
         }
     }
 
@@ -1554,6 +1538,18 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    private void TurnOffPreview()
+    {
+        // turn off all the resourceHighlights
+        foreach (Transform highlight in resourceHighlights)
+        {
+            if (highlight.gameObject.activeSelf)
+            {
+                highlight.gameObject.SetActive(false);
+            }
+        }
+    }
+
     private void UpdateEnvironmentTransparency()
     {
         if (hoverEnvironment)
@@ -1583,6 +1579,15 @@ public class StructureManager : MonoBehaviour
         {
             opacity = OpacityMaximum;
             opacityAscending = false;
+        }
+    }
+
+    private void ResetEnvironmentTransparency()
+    {
+        if (hoverEnvironment)
+        {
+            hoverEnvironment.SetOpacity(1.0f);
+            hoverEnvironment = null;
         }
     }
 }
