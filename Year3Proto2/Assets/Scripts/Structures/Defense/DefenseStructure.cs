@@ -63,7 +63,7 @@ public abstract class DefenseStructure : Structure
 
     protected override void OnDestroy()
     {
-        base.OnDestroyed();
+        base.OnDestroy();
         if (alert)
         {
             Destroy(alert.gameObject);
