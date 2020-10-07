@@ -21,9 +21,8 @@ public class OptionSwitcherData : OptionData
     public int value;
     public string[] values;
 
-    public OptionSwitcherData(int _defaultValue, int _value, string[] _values)
+    public OptionSwitcherData(int _defaultValue, string[] _values)
     {
-        value = _value;
         values = _values;
         defaultValue = _defaultValue;
     }

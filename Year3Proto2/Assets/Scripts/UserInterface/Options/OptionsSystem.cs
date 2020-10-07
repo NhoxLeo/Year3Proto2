@@ -51,17 +51,17 @@ public class OptionsSystem : MonoBehaviour
         vSyncData.CallBack(() => QualitySettings.vSyncCount = vSyncData.value ? 1 : 0);
 
         // SWITCHERS
-        OptionSwitcherData resolutionData = new OptionSwitcherData(Screen.resolutions.Length - 1, 0, Screen.resolutions.Select(o => o.ToString()).ToArray());
+        OptionSwitcherData resolutionData = new OptionSwitcherData(Screen.resolutions.Length - 1, Screen.resolutions.Select(o => o.ToString()).ToArray());
         resolutionData.CallBack(() =>
         {
             Resolution resolution = Screen.resolutions[resolutionData.value];
             Screen.SetResolution(resolution.width, resolution.height, false); // TODO FIX FULL SCREEN BUG
         });
 
-        OptionSwitcherData shadowQualityData = new OptionSwitcherData(2, 0, new string[] { "Low", "Medium", "High", "Ultra" });
+        OptionSwitcherData shadowQualityData = new OptionSwitcherData(2, new string[] { "Low", "Medium", "High", "Ultra" });
         shadowQualityData.CallBack(() => light.shadowResolution = (LightShadowResolution)Enum.ToObject(typeof(LightShadowResolution), shadowQualityData.value));
 
-        OptionSwitcherData ambienOcclusionData = new OptionSwitcherData(2, 0, Enum.GetNames(typeof(ScalableSettingLevelParameter.Level)));
+        OptionSwitcherData ambienOcclusionData = new OptionSwitcherData(2, Enum.GetNames(typeof(ScalableSettingLevelParameter.Level)));
         ambienOcclusionData.CallBack(() => {
             AmbientOcclusion ambientOcclusion;
             if(volume.profile.TryGet(out ambientOcclusion)) {
@@ -107,8 +107,6 @@ public class OptionsSystem : MonoBehaviour
 
         // CONTROLS
         optionObjects.Add(InstantiateOption("CAMERA_SENSITIVITY", cameraMovementData, sliderPrefab, controlsPanel));
-
-        optionObjects.ForEach(optionObject => optionObject.Deserialize());
     }
 
     public OptionObject InstantiateOption(string _key, OptionData _optionData, Transform _prefab, Transform _parent)
@@ -117,8 +115,9 @@ public class OptionsSystem : MonoBehaviour
         OptionObject optionObject = transform.GetComponent<OptionObject>();
         if (optionObject)
         {
-            optionObject.SetData(_optionData);
             optionObject.SetKey(_key);
+            optionObject.SetData(_optionData);
+            optionObject.Deserialize();
             return optionObject;
         }
         return null;
