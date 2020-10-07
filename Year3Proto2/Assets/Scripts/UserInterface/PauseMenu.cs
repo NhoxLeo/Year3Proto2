@@ -19,7 +19,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (!isHelp)
+        if (!isHelp && !GameManager.GetInstance().victory)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
