@@ -400,17 +400,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            repairAll = true;
-            RepairAll();
-        }
-
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            ShowEnemyHealthbars = !ShowEnemyHealthbars;
-        }
-
+        CheckControls();
         // get resourceDelta
         ResourceBundle resourcesThisFrame = new ResourceBundle(GetResourceVelocity() * Time.deltaTime);
         foodSinceObjective += Mathf.Clamp(resourcesThisFrame.food, 0f, resourcesThisFrame.food);
@@ -567,61 +557,6 @@ public class GameManager : MonoBehaviour
             }            
         }
 
-        if (objectivesCompleted < objectives.Count)
-        {
-            string completion = "(" + (objectivesCompleted).ToString() + "/" + objectives.Count.ToString() + ") ";
-            string name = completion + SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].name;
-            string desc = SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].description;
-            string objCompletion = "";
-            switch (objectives[objectivesCompleted])
-            {
-                case SuperManager.Slaughter:
-                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/20)";
-                    break;
-                case SuperManager.SlaughterII:
-                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/50)";
-                    break;
-                case SuperManager.SlaughterIII:
-                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
-                    break;
-                case SuperManager.Food:
-                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/1000)";
-                    break;
-                case SuperManager.FoodII:
-                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/2000)";
-                    break;
-                case SuperManager.FoodIII:
-                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/3000)";
-                    break;
-                case SuperManager.Lumber:
-                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/1000)";
-                    break;
-                case SuperManager.LumberII:
-                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/2000)";
-                    break;
-                case SuperManager.LumberIII:
-                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/3000)";
-                    break;
-                case SuperManager.Metal:
-                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/1000)";
-                    break;
-                case SuperManager.MetalII:
-                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/2000)";
-                    break;
-                case SuperManager.MetalIII:
-                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/3000)";
-                    break;
-                default:
-                    break;
-            }
-
-            HUDManager.GetInstance().SetVictoryInfo(name, desc + objCompletion);
-        }
-        else if (objectivesCompleted == objectives.Count)
-        {
-            HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
-        }
-
         if (gameover)
         {
             if (victory)
@@ -676,6 +611,118 @@ public class GameManager : MonoBehaviour
     public bool AllObjectivesCompleted()
     {
         return objectives.Count == objectivesCompleted;
+    }
+
+    public void UpdateObjectiveText()
+    {
+        if (objectivesCompleted < objectives.Count)
+        {
+            string completion = "(" + (objectivesCompleted).ToString() + "/" + objectives.Count.ToString() + ") ";
+            string name = completion + SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].name;
+            string desc = SuperManager.WinConditionDefinitions[objectives[objectivesCompleted]].description;
+            string objCompletion = "";
+            switch (objectives[objectivesCompleted])
+            {
+                case SuperManager.Slaughter:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/20)";
+                    break;
+                case SuperManager.SlaughterII:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/50)";
+                    break;
+                case SuperManager.SlaughterIII:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
+                    break;
+                case SuperManager.Food:
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/1000)";
+                    break;
+                case SuperManager.FoodII:
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/2000)";
+                    break;
+                case SuperManager.FoodIII:
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/3000)";
+                    break;
+                case SuperManager.Lumber:
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/1000)";
+                    break;
+                case SuperManager.LumberII:
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/2000)";
+                    break;
+                case SuperManager.LumberIII:
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/3000)";
+                    break;
+                case SuperManager.Metal:
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/1000)";
+                    break;
+                case SuperManager.MetalII:
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/2000)";
+                    break;
+                case SuperManager.MetalIII:
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/3000)";
+                    break;
+                default:
+                    break;
+            }
+
+            HUDManager.GetInstance().SetVictoryInfo(name, desc + objCompletion);
+        }
+        else if (objectivesCompleted == objectives.Count)
+        {
+            HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
+        }
+    }
+
+    private void CheckControls()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            repairAll = true;
+            RepairAll();
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ShowEnemyHealthbars = !ShowEnemyHealthbars;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            HUDManager.GetInstance().SwitchTabs();
+        }
+
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            HUDManager.GetInstance().ToggleShowVillagers();
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            VillagerManager.GetInstance().TrainVillager();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+        }
     }
 
     private bool CheckNextWinConditionIsMet()

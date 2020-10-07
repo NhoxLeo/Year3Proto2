@@ -375,6 +375,11 @@ public class StructureManager : MonoBehaviour
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private MessageBox messageBox;
+
+    private const int PlainsInStartingArea = 24;
+    private const int ForestsInStartingArea = 18;
+    private const int HillsInStartingArea = 12;
+
     [HideInInspector]
     public Vector2Int plainsEnvironmentBounds;
     [HideInInspector]
@@ -929,6 +934,7 @@ public class StructureManager : MonoBehaviour
         }
         else
         {
+            tileHighlight.gameObject.SetActive(false);
             ResetEnvironmentTransparency();
             TurnOffPreview();
             HideBuilding();
@@ -1216,31 +1222,116 @@ public class StructureManager : MonoBehaviour
         // get all the tiles
         TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
         PGPlayableTiles = new List<TileBehaviour>();
+        List<TileBehaviour> PGStartingTiles = new List<TileBehaviour>();
+
+        Vector3 longhausTilePos = FindObjectOfType<Longhaus>().attachedTile.transform.position;
+        float startingAreaRadius = 6f;
+
         for (int i = 0; i < tiles.Length; i++)
         {
-            if (Application.isEditor) { tiles[i].DetectStructure(); }
+            if (Application.isEditor)
+            {
+                tiles[i].DetectStructure(); 
+            }
             // if the tile is playable and it doesn't have a structure already
             if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
             {
                 PGPlayableTiles.Add(tiles[i]);
+                // if the tile is also within currentRadius units from the longhaus (if the tile is within the starting area)
+                if ((tiles[i].transform.position - longhausTilePos).magnitude <= startingAreaRadius)
+                {
+                    PGStartingTiles.Add(tiles[i]);
+                }
             }
         }
 
+        // in a small radius around the Longhaus, make sure that a certain quota of fields, forests and hills have been generated.
+        // 12 hills, then
+        // 18 forests, then
+        // 24 fields
+        // STARTING AREA
         int hillsPlaced = 0;
+        int forestPlaced = 0;
+        int plainsPlaced = 0;
+        bool continueStartingAreaGeneration = true;
+        while (continueStartingAreaGeneration)
+        {
+            if (hillsPlaced < HillsInStartingArea && PGStartingTiles.Count > 0)
+            {
+                TileBehaviour tile = PGStartingTiles[UnityEngine.Random.Range(0, PGStartingTiles.Count)];
+                List<TileBehaviour> toBeRemoved = PGRecursiveWander(StructureNames.MetalEnvironment, tile, ref hillsPlaced, HillsInStartingArea, recursiveHGrowthChance);
+                foreach (TileBehaviour removalTarget in toBeRemoved)
+                {
+                    if (PGStartingTiles.Contains(removalTarget))
+                    {
+                        PGStartingTiles.Remove(removalTarget);
+                    }
+                }
+            }
+
+            if (forestPlaced < ForestsInStartingArea && PGStartingTiles.Count > 0)
+            {
+                TileBehaviour tile = PGStartingTiles[UnityEngine.Random.Range(0, PGStartingTiles.Count)];
+                List<TileBehaviour> toBeRemoved = PGRecursiveWander(StructureNames.LumberEnvironment, tile, ref forestPlaced, ForestsInStartingArea, recursiveFGrowthChance);
+                foreach (TileBehaviour removalTarget in toBeRemoved)
+                {
+                    if (PGStartingTiles.Contains(removalTarget))
+                    {
+                        PGStartingTiles.Remove(removalTarget);
+                    }
+                }
+            }
+
+            if (plainsPlaced < PlainsInStartingArea && PGStartingTiles.Count > 0)
+            {
+                TileBehaviour tile = PGStartingTiles[UnityEngine.Random.Range(0, PGStartingTiles.Count)];
+                List<TileBehaviour> toBeRemoved = PGRecursiveWander(StructureNames.FoodEnvironment, tile, ref plainsPlaced, PlainsInStartingArea, recursivePGrowthChance);
+                foreach (TileBehaviour removalTarget in toBeRemoved)
+                {
+                    if (PGStartingTiles.Contains(removalTarget))
+                    {
+                        PGStartingTiles.Remove(removalTarget);
+                    }
+                }
+            }
+
+            // if we've finished placing all the tiles
+            if (hillsPlaced == HillsInStartingArea && forestPlaced == ForestsInStartingArea && plainsPlaced == PlainsInStartingArea)
+            {
+                break;
+            }
+
+            // if we're out of starting tiles
+            if (PGStartingTiles.Count == 0)
+            {
+                startingAreaRadius += 3f;
+                foreach (TileBehaviour tile in PGPlayableTiles)
+                {
+                    if ((tile.transform.position - longhausTilePos).magnitude <= startingAreaRadius)
+                    {
+                        PGStartingTiles.Add(tile);
+                    }
+                }
+            }
+        }
+
+        Debug.Log("Starting Area grew to: " + startingAreaRadius.ToString() + " units away from the Longhaus.");
+
+
+        // REMAINING GENERATION
+
         while (hillsPlaced < hillsTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
             PGRecursiveWander(StructureNames.MetalEnvironment, tile, ref hillsPlaced, hillsTotal, recursiveHGrowthChance);
         }
 
-        int forestPlaced = 0;
         while (forestPlaced < forestTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
             PGRecursiveWander(StructureNames.LumberEnvironment, tile, ref forestPlaced, forestTotal, recursiveFGrowthChance);
         }
 
-        int plainsPlaced = 0;
         while (plainsPlaced < plainsTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
@@ -1253,11 +1344,12 @@ public class StructureManager : MonoBehaviour
         structure.SetColour(_colour);
     }
 
-    private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
+    private List<TileBehaviour> PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
     {
+        List<TileBehaviour> removedTiles = new List<TileBehaviour>();
         if (_placed == _max)
         {
-            return;
+            return removedTiles;
         }
         // plant the environment on the tile,
         // remove the tile from PGPlayableTiles
@@ -1267,6 +1359,7 @@ public class StructureManager : MonoBehaviour
             _placed++;
             PGPlayableTiles.Remove(_tile);
             PGInstatiateEnvironment(_environmentType, _tile);
+            removedTiles.Add(_tile);
         }
 
         // now try the tiles around it
@@ -1282,11 +1375,13 @@ public class StructureManager : MonoBehaviour
                 {
                     if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
                     {
-                        PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance);
+                        removedTiles.AddRange(PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance));
                     }
                 }
             }
         }
+
+        return removedTiles;
     }
 
     private void PGInstatiateEnvironment(string _environmentType, TileBehaviour _tile)
