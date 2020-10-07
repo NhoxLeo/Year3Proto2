@@ -19,11 +19,26 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (!isHelp && !GameManager.GetInstance().victory)
+        if (!isHelp)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                TogglePause();
+                LevelEndscreen levelEndscreen = FindObjectOfType<LevelEndscreen>();
+                if (levelEndscreen)
+                {
+                    if (levelEndscreen.showingVictory)
+                    {
+                        levelEndscreen.HideEndscreen();
+                    }
+                    else if(levelEndscreen.showingVictory)
+                    {
+                        levelEndscreen.DefeatGoToLevelSelect();
+                    }
+                    else
+                    {
+                        TogglePause();
+                    }
+                }
             }
 
             Time.timeScale = isPaused ? 0.0f : 1.0f;

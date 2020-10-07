@@ -138,6 +138,8 @@ public class GameManager : MonoBehaviour
     private bool gameover = false;
     [HideInInspector]
     public bool victory = false;
+    [HideInInspector]
+    public bool freePlay = false;
     private float gameoverTimer = 5.0f;
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
