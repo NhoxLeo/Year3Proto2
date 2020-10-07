@@ -65,6 +65,10 @@ public class HUDManager : MonoBehaviour
 
     [SerializeField] private Toggle showVillagerWidgets;
 
+    [SerializeField] private OptionCategoryObject defenceCategory;
+    [SerializeField] private OptionCategoryObject resourceCategory;
+    private int currentTab = 1;
+
     [Header("Pause Menu")]
     [SerializeField] private PauseMenu pauseMenu;
 
@@ -110,6 +114,7 @@ public class HUDManager : MonoBehaviour
         if (updateTimer <= 0)
         {
             RefreshResources();
+            GameManager.GetInstance().UpdateObjectiveText();
             updateTimer = updateInterval;
         }
 
@@ -309,7 +314,7 @@ public class HUDManager : MonoBehaviour
         SetVillagerWidgets(showVillagerWidgets.isOn);
     }
 
-    public void SetVillagerWidgets(bool _villagers)
+    private void SetVillagerWidgets(bool _villagers)
     {
         SuperManager.GetInstance().SetShowWidgets(_villagers);
         SetAllVillagerWidgets(_villagers);
@@ -378,5 +383,35 @@ public class HUDManager : MonoBehaviour
         {
             EnemyManager.GetInstance().SpawnNextWave();
         }
+    }
+
+    public void SetCurrentTab(int _tab)
+    {
+        currentTab = _tab;
+    }
+
+    public void SwitchTabs()
+    {
+        if (currentTab == 0)
+        {
+            resourceCategory.SwitchTo();
+            currentTab = 1;
+        }
+        else
+        {
+            defenceCategory.SwitchTo();
+            currentTab = 0;
+        }
+    }
+
+    public int GetCurrentTab()
+    {
+        return currentTab;
+    }
+
+    public void ToggleShowVillagers()
+    {
+        showVillagerWidgets.isOn = !showVillagerWidgets.isOn;
+        UpdateVillagerWidgetMode();
     }
 }
