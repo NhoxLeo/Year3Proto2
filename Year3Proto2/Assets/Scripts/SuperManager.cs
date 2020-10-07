@@ -412,9 +412,9 @@ public class SuperManager : MonoBehaviour
     {
         // ID, ID requirement, Win Condition, Modifiers, Base Reward
         new LevelDefinition(0, NoRequirement,   new List<int>(){ Survive, Villagers, FoodII },                          new List<int>(),                                            1000),
-        new LevelDefinition(1, 0,               new List<int>(){ Villagers, Accumulate, SlaughterII },                  new List<int>(){ SnoballPrices, SwiftFootwork },            1250),
+        new LevelDefinition(1, 0,               new List<int>(){ Villagers, Accumulate, SlaughterII },                  new List<int>(){ SnoballPrices },            1250),
         new LevelDefinition(2, 1,               new List<int>(){ Slaughter, Lumber, VillagersII, AccumulateII },        new List<int>(){ DryFields, PoorTimber },                   1500),
-        new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, DryFields, PoorTimber },    1750)
+        new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, PoorTimber, SwiftFootwork },    1750)
     };
     public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
     {

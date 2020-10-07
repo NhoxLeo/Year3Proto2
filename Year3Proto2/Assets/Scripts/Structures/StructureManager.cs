@@ -929,6 +929,7 @@ public class StructureManager : MonoBehaviour
         }
         else
         {
+            tileHighlight.gameObject.SetActive(false);
             ResetEnvironmentTransparency();
             TurnOffPreview();
             HideBuilding();
