@@ -778,5 +778,15 @@ public class PathManager : MonoBehaviour
             jobInfo.jobHandle.Complete();
             jobInfo.resultPath.Dispose();
         }
+        foreach (SoldierPathData soldierInfo in soldierPaths.Values)
+        {
+            soldierInfo.jobHandle.Complete();
+            soldierInfo.nativePath.Dispose();
+        }
+        foreach (SoldierPathData soldierInfo in soldierHomeTrips.Values)
+        {
+            soldierInfo.jobHandle.Complete();
+            soldierInfo.nativePath.Dispose();
+        }
     }
 }

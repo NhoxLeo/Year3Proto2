@@ -636,6 +636,10 @@ public class SuperManager : MonoBehaviour
 
     public void SaveCurrentMatch()
     {
+        if (GameManager.GetInstance().GetGameLost())
+        {
+            return;
+        }
         saveData.currentMatch = SaveMatch();
         WriteGameData();
     }

@@ -40,6 +40,8 @@ public class Soldier : MonoBehaviour
     private bool haveHomePath = false;
     private float walkHeight = 0f;
     private bool deathCalled = false;
+    protected Healthbar healthbar;
+    protected bool showHealthBar = false;
 
     public TileBehaviour GetCurrentTile()
     {
@@ -91,6 +93,42 @@ public class Soldier : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthbar.pulseOnHealthIncrease = false;
+        healthBarInst.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (healthbar)
+        {
+            if (health < GetMaxHealth())
+            {
+                healthbar.fillAmount = health / GetMaxHealth();
+                showHealthBar = true;
+            }
+            else
+            {
+                showHealthBar = false;
+            }
+            if (!GameManager.ShowEnemyHealthbars || !showHealthBar)
+            {
+                if (healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (!healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(true);
+                }
+            }
+        }
     }
 
     // Update is called once per frame
@@ -577,5 +615,12 @@ public class Soldier : MonoBehaviour
     public static float GetMovementSpeed()
     {
         return MovementSpeed;
+    }
+    private void OnDestroy()
+    {
+        if (healthbar)
+        {
+            Destroy(healthbar.gameObject);
+        }
     }
 }

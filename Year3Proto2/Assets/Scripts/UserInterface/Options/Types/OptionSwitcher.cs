@@ -21,9 +21,8 @@ public class OptionSwitcherData : OptionData
     public int value;
     public string[] values;
 
-    public OptionSwitcherData(int _defaultValue, int _value, string[] _values)
+    public OptionSwitcherData(int _defaultValue, string[] _values)
     {
-        value = _value;
         values = _values;
         defaultValue = _defaultValue;
     }
@@ -42,7 +41,7 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     ***************************************/
     public void Next()
     {
-        if (data != null && value)
+        if (deserialised)
         {
             if (data.value >= (data.values.Length - 1))
             {
@@ -54,11 +53,7 @@ public class OptionSwitcher : OptionObject, OptionDataBase
             }
             value.text = data.values[data.value].ToString();
 
-            OptionCallback optionCallback = data.GetCallback();
-            if (optionCallback != null)
-            {
-                optionCallback.Invoke();
-            }
+            data.GetCallback().Invoke();
         }
     }
 
@@ -70,7 +65,7 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     ***************************************/
     public void Previous()
     {
-        if (data != null && value)
+        if (deserialised)
         {
             if (data.value <= 0)
             {
@@ -81,30 +76,19 @@ public class OptionSwitcher : OptionObject, OptionDataBase
                 data.value -= 1;
             }
             value.text = data.values[data.value].ToString();
-
-            OptionCallback optionCallback = data.GetCallback();
-            if (optionCallback != null)
-            {
-                optionCallback.Invoke();
-            }
+            data.GetCallback().Invoke();
         }
     }
 
     public override void Deserialize()
     {
-        if (data != null && value)
+        if (data.value < data.values.Length)
         {
-          if (data.value < data.values.Length)
-          {
             data.value = PlayerPrefs.GetInt(key, data.defaultValue);
             value.text = data.values[data.value].ToString();
+            data.GetCallback().Invoke();
 
-            OptionCallback optionCallback = data.GetCallback();
-            if (optionCallback != null)
-            {
-                optionCallback.Invoke();
-            }
-          }
+            deserialised = true;
         }
     }
 
