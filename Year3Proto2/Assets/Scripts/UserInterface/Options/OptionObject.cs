@@ -16,6 +16,7 @@ using System.Globalization;
 
 public abstract class OptionObject : MonoBehaviour
 {
+    protected bool deserialised = false;
     [SerializeField] protected string key;
     [SerializeField] private TMP_Text displayName; 
 

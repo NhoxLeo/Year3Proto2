@@ -39,7 +39,7 @@ public class OptionsSystem : MonoBehaviour
 
         // TOGGLES
         OptionToggleData fullscreenData = new OptionToggleData(true);
-        fullscreenData.CallBack(() => Screen.fullScreenMode = fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        fullscreenData.CallBack(() => Screen.fullScreen = fullscreenData.value);
 
         OptionToggleData waveHornData = new OptionToggleData(true);
         waveHornData.CallBack(() => SuperManager.waveHornStart = waveHornData.value);
@@ -54,8 +54,8 @@ public class OptionsSystem : MonoBehaviour
         OptionSwitcherData resolutionData = new OptionSwitcherData(Screen.resolutions.Length - 1, Screen.resolutions.Select(o => o.ToString()).ToArray());
         resolutionData.CallBack(() =>
         {
-            Resolution resolution = Screen.resolutions[resolutionData.value];
-            Screen.SetResolution(resolution.width, resolution.height, false); // TODO FIX FULL SCREEN BUG
+            Resolution resolution = Screen.resolutions[resolutionData.value];    
+            Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
         });
 
         OptionSwitcherData shadowQualityData = new OptionSwitcherData(2, new string[] { "Low", "Medium", "High", "Ultra" });
@@ -107,6 +107,8 @@ public class OptionsSystem : MonoBehaviour
 
         // CONTROLS
         optionObjects.Add(InstantiateOption("CAMERA_SENSITIVITY", cameraMovementData, sliderPrefab, controlsPanel));
+
+        optionObjects.ForEach(optionObject => optionObject.Deserialize());
     }
 
     public OptionObject InstantiateOption(string _key, OptionData _optionData, Transform _prefab, Transform _parent)
@@ -117,7 +119,6 @@ public class OptionsSystem : MonoBehaviour
         {
             optionObject.SetKey(_key);
             optionObject.SetData(_optionData);
-            optionObject.Deserialize();
             return optionObject;
         }
         return null;
