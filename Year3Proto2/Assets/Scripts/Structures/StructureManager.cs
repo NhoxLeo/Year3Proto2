@@ -809,7 +809,10 @@ public class StructureManager : MonoBehaviour
 
     private void UpdateMoving(Ray _mouseRay)
     {
-        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+        if (selectedTileHighlight.gameObject.activeSelf) 
+        { 
+            selectedTileHighlight.gameObject.SetActive(false); 
+        }
         if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
         {
             TileBehaviour tile = hitGround.transform.GetComponent<TileBehaviour>();
@@ -1362,18 +1365,18 @@ public class StructureManager : MonoBehaviour
             removedTiles.Add(_tile);
         }
 
+        Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = _tile.GetAdjacentTiles();
         // now try the tiles around it
         for (int i = 0; i < 4; i++)
         {
             if (_placed == _max) { break; }
 
-            Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = _tile.GetAdjacentTiles();
             if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
             {
                 TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
                 if (PGPlayableTiles.Contains(tileI))
                 {
-                    if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
+                    if (UnityEngine.Random.Range(0f, 1f) <= _recursiveChance)
                     {
                         removedTiles.AddRange(PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance));
                     }

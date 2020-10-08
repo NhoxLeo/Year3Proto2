@@ -51,7 +51,6 @@ MonoBehaviour:
   icon: {fileID: 0}
   isPlaced: 0
   sitHeight: 0.5
-  structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
 --- !u!33 &5057963941686781006

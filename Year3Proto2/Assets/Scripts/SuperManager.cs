@@ -14,7 +14,7 @@ public class SuperManager : MonoBehaviour
     public static float EffectsVolume = 1.0f;
 
     // CONSTANTS
-    public static bool DevMode = false;
+    public static bool DevMode = true;
     public static bool waveHornStart = false;
     public static bool messageBox = false;
     public static float CameraSensitivity = 4.0f;
@@ -903,6 +903,11 @@ public class SuperManager : MonoBehaviour
         {
             // don't save the longhaus
             if (structure.GetStructureName() == StructureNames.Longhaus)
+            {
+                continue;
+            }
+            // don't save structures that haven't been placed
+            if (!structure.isPlaced)
             {
                 continue;
             }
