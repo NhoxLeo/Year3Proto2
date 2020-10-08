@@ -291,11 +291,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedTile: {fileID: 0}
-  displayName: 
-  icon: {fileID: 0}
   isPlaced: 0
   sitHeight: 0.5
-  structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
   alertPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
@@ -343,8 +340,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6fedb5ddfde9ffb42a55c74454536e18, type: 2}
-  - {fileID: 2100000, guid: c85e7f715a038a1438937b82e3f03a27, type: 2}
+  - {fileID: 2100000, guid: c08af615e8e53b44ab4eaef6ce876ae3, type: 2}
+  - {fileID: 2100000, guid: 7d5b730412a8b9a479e98f288169dda6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

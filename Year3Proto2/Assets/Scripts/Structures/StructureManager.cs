@@ -154,6 +154,10 @@ public static class StructureMaterials
             case StructureNames.MetalResource + StructureNames.Alt:
                 paths.Add("Materials/Structures/Resource/mMinePlatform" + (_key.Item2 ? "_Snow" : ""));
                 break;
+            case StructureNames.Barracks:
+                paths.Add("Materials/Structures/Defense/mBarracks" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mBarracksGround" + (_key.Item2 ? "_Snow" : ""));
+                break;
             case StructureNames.Ballista:
                 paths.Add("Materials/Structures/Defense/mBallista" + (_key.Item2 ? "_Snow" : ""));
                 break;
