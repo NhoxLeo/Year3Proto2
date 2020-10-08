@@ -18,8 +18,6 @@ public enum ResourceType
 public abstract class Structure : MonoBehaviour
 {
     public TileBehaviour attachedTile = null;
-    public string displayName;
-    public Sprite icon;
     public bool isPlaced = false;
     public float sitHeight;
     protected string structureName;
@@ -330,9 +328,12 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void Start()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
+        if (isPlaced)
         {
-            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
+            {
+                hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
+            }
         }
         if (structureType != StructureType.Environment)
         {
