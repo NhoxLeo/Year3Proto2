@@ -63,10 +63,11 @@ public abstract class Enemy : MonoBehaviour
     protected EnemyPath path;
     protected float updatePathTimer = 0f;
     protected float updatePathDelay = 1.5f;
-    private EnemyPathSignature signature;
+    protected EnemyPathSignature signature;
     protected int level;
     protected Healthbar healthbar;
     private bool onKillCalled = false;
+    protected float walkHeight = 0f;
 
     // Stun
     protected bool stunned = false;
