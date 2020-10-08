@@ -38,7 +38,7 @@ public class Soldier : MonoBehaviour
     private SoldierPath path;
     private bool waitingOnPath = false;
     private bool haveHomePath = false;
-
+    private float walkHeight = 0f;
     private bool deathCalled = false;
 
     public TileBehaviour GetCurrentTile()
@@ -80,6 +80,7 @@ public class Soldier : MonoBehaviour
 
     private void LookAtPosition(Vector3 _position)
     {
+        _position.y = transform.position.y;
         transform.LookAt(_position);
         // fixing animation problems
         transform.forward = transform.right;
@@ -95,6 +96,22 @@ public class Soldier : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
+        walkHeight = 0.5f;
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            Structure attached = hit.transform.GetComponent<TileBehaviour>().GetAttached();
+            if (attached)
+            {
+                if (attached.GetStructureName() == StructureNames.MetalEnvironment)
+                {
+                    if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hitStruct, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                    {
+                        walkHeight = hitStruct.point.y;
+                    }
+                }
+            }
+        }
+
         // if the soldier has been recalled
         if (returnHome) { state = 3; }
         // if the soldier was responding to a recall but no longer needs to be recalled
@@ -165,6 +182,7 @@ public class Soldier : MonoBehaviour
                         }
                     }
                     Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                    newPosition.y = walkHeight;
                     LookAtPosition(newPosition);
                     transform.position = newPosition;
                 }
@@ -184,6 +202,7 @@ public class Soldier : MonoBehaviour
                 else
                 {
                     Vector3 futurePos = transform.position + (avoidance * Time.fixedDeltaTime);
+                    futurePos.y = walkHeight;
                     LookAtPosition(home.transform.position);
                     transform.position = futurePos;
                     animator.SetInteger("State", 1);
@@ -193,7 +212,9 @@ public class Soldier : MonoBehaviour
             else
             {
                 LookAtPosition(home.transform.position);
-                transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
+                Vector3 futurePos = transform.position + (GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime);
+                futurePos.y = walkHeight;
+                transform.position = futurePos;
                 canHeal = false;
                 animator.SetInteger("State", 1);
             }
@@ -227,6 +248,7 @@ public class Soldier : MonoBehaviour
                 }
             }
             Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+            newPosition.y = walkHeight;
             LookAtPosition(newPosition);
             transform.position = newPosition;
         }
@@ -234,7 +256,9 @@ public class Soldier : MonoBehaviour
         else
         {
             LookAtPosition(target.transform.position);
-            transform.position += GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime;
+            Vector3 futurePos = transform.position + (GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime);
+            futurePos.y = walkHeight;
+            transform.position = futurePos;
             Vector3 toTarget = target.transform.position - transform.position;
             toTarget.y = 0f;
             if (toTarget.magnitude < (target.enemyName == EnemyNames.BatteringRam ? 0.5f : 0.2f))
@@ -271,7 +295,9 @@ public class Soldier : MonoBehaviour
         if (toHome.magnitude > 0.8f)
         {
             LookAtPosition(home.transform.position);
-            transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
+            Vector3 futurePos = transform.position + (GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime);
+            futurePos.y = walkHeight;
+            transform.position = futurePos;
             animator.SetInteger("State", 1);
         }
         else
