@@ -66,7 +66,7 @@ public abstract class Enemy : MonoBehaviour
     protected EnemyPathSignature signature;
     protected int level;
     protected Healthbar healthbar;
-    protected bool showHealthBar;
+    protected bool showHealthBar = false;
     private bool onKillCalled = false;
     protected float walkHeight = 0f;
 
@@ -190,7 +190,7 @@ public abstract class Enemy : MonoBehaviour
 
         if (healthbar)
         {
-            if (!GameManager.ShowEnemyHealthbars)
+            if (!GameManager.ShowEnemyHealthbars || !showHealthBar)
             {
                 if (healthbar.gameObject.activeSelf)
                 {
@@ -199,12 +199,9 @@ public abstract class Enemy : MonoBehaviour
             }
             else
             {
-                if (showHealthBar)
+                if (!healthbar.gameObject.activeSelf)
                 {
-                    if (!healthbar.gameObject.activeSelf)
-                    {
-                        healthbar.gameObject.SetActive(true);
-                    }
+                    healthbar.gameObject.SetActive(true);
                 }
             }
         }
@@ -388,7 +385,6 @@ public abstract class Enemy : MonoBehaviour
                 showHealthBar = true;
             }
         }
-
         if (health <= 0f)
         {
             if (!onKillCalled)

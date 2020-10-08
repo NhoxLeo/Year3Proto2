@@ -780,4 +780,9 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+
+    public bool GetGameLost()
+    {
+        return gameover && !victory;
+    }
 }
