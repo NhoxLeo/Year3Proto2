@@ -112,4 +112,11 @@ public class Tooltip : MonoBehaviour
     {
         showTooltip = isVisible;
     }
+
+    private void OnDestroy()
+    {
+        canvas.DOKill(true);
+        rTransform.DOKill(true);
+        pulseSeq.Kill(true);
+    }
 }

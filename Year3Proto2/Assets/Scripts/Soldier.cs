@@ -13,6 +13,8 @@ public class Soldier : MonoBehaviour
 
     private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
 
+    private const float DamageBonusAgainstBatteringRams = 4f;
+
     private static float MaxHealth = 18.0f;
     private static float Damage = 3.0f;
     private static float MovementSpeed = 0.5f;
@@ -36,6 +38,10 @@ public class Soldier : MonoBehaviour
     private SoldierPath path;
     private bool waitingOnPath = false;
     private bool haveHomePath = false;
+    private float walkHeight = 0f;
+    private bool deathCalled = false;
+    protected Healthbar healthbar;
+    protected bool showHealthBar = false;
 
     public TileBehaviour GetCurrentTile()
     {
@@ -76,6 +82,7 @@ public class Soldier : MonoBehaviour
 
     private void LookAtPosition(Vector3 _position)
     {
+        _position.y = transform.position.y;
         transform.LookAt(_position);
         // fixing animation problems
         transform.forward = transform.right;
@@ -86,11 +93,63 @@ public class Soldier : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthbar.pulseOnHealthIncrease = false;
+        healthBarInst.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (healthbar)
+        {
+            if (health < GetMaxHealth())
+            {
+                healthbar.fillAmount = health / GetMaxHealth();
+                showHealthBar = true;
+            }
+            else
+            {
+                showHealthBar = false;
+            }
+            if (!GameManager.ShowEnemyHealthbars || !showHealthBar)
+            {
+                if (healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (!healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(true);
+                }
+            }
+        }
     }
 
     // Update is called once per frame
     private void FixedUpdate()
     {
+        walkHeight = 0.5f;
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            Structure attached = hit.transform.GetComponent<TileBehaviour>().GetAttached();
+            if (attached)
+            {
+                if (attached.GetStructureName() == StructureNames.MetalEnvironment)
+                {
+                    if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hitStruct, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                    {
+                        walkHeight = hitStruct.point.y;
+                    }
+                }
+            }
+        }
+
         // if the soldier has been recalled
         if (returnHome) { state = 3; }
         // if the soldier was responding to a recall but no longer needs to be recalled
@@ -161,6 +220,7 @@ public class Soldier : MonoBehaviour
                         }
                     }
                     Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                    newPosition.y = walkHeight;
                     LookAtPosition(newPosition);
                     transform.position = newPosition;
                 }
@@ -170,7 +230,7 @@ public class Soldier : MonoBehaviour
         else
         {
             haveHomePath = false;
-            if (toHome.magnitude < 0.25f)
+            if (toHome.magnitude < 0.45f)
             {
                 Vector3 avoidance = GetAvoidanceOnly();
                 if (avoidance == Vector3.zero)
@@ -180,6 +240,7 @@ public class Soldier : MonoBehaviour
                 else
                 {
                     Vector3 futurePos = transform.position + (avoidance * Time.fixedDeltaTime);
+                    futurePos.y = walkHeight;
                     LookAtPosition(home.transform.position);
                     transform.position = futurePos;
                     animator.SetInteger("State", 1);
@@ -189,7 +250,9 @@ public class Soldier : MonoBehaviour
             else
             {
                 LookAtPosition(home.transform.position);
-                transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
+                Vector3 futurePos = transform.position + (GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime);
+                futurePos.y = walkHeight;
+                transform.position = futurePos;
                 canHeal = false;
                 animator.SetInteger("State", 1);
             }
@@ -223,6 +286,7 @@ public class Soldier : MonoBehaviour
                 }
             }
             Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+            newPosition.y = walkHeight;
             LookAtPosition(newPosition);
             transform.position = newPosition;
         }
@@ -230,10 +294,12 @@ public class Soldier : MonoBehaviour
         else
         {
             LookAtPosition(target.transform.position);
-            transform.position += GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime;
+            Vector3 futurePos = transform.position + (GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime);
+            futurePos.y = walkHeight;
+            transform.position = futurePos;
             Vector3 toTarget = target.transform.position - transform.position;
             toTarget.y = 0f;
-            if (toTarget.magnitude < 0.2f)
+            if (toTarget.magnitude < (target.enemyName == EnemyNames.BatteringRam ? 0.5f : 0.2f))
             {
                 state = 2;
             }
@@ -267,7 +333,9 @@ public class Soldier : MonoBehaviour
         if (toHome.magnitude > 0.8f)
         {
             LookAtPosition(home.transform.position);
-            transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
+            Vector3 futurePos = transform.position + (GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime);
+            futurePos.y = walkHeight;
+            transform.position = futurePos;
             animator.SetInteger("State", 1);
         }
         else
@@ -318,26 +386,38 @@ public class Soldier : MonoBehaviour
         health -= _damage;
         if (health <= 0f)
         {
-            if (target)
+            if (!deathCalled)
             {
-                target.ForgetSoldier();
-            }
-            if (home)
-            {
-                /*
-                if (home.soldiers.Contains(this))
+                if (target)
                 {
-                    home.soldiers.Remove(this);
+                    target.ForgetSoldier();
                 }
-                */
+                if (home)
+                {
+                    home.OnSoldierDeath(this);
+                }
+                GameObject puff = Instantiate(PuffEffect);
+                puff.transform.position = transform.position;
+                puff.transform.localScale *= 2f;
+                deathCalled = true;
+                Destroy(gameObject);
             }
-            GameObject puff = Instantiate(PuffEffect);
-            puff.transform.position = transform.position;
-            puff.transform.localScale *= 2f;
-            Destroy(gameObject);
             return true;
         }
         return false;
+    }
+
+    public void VillagerDeallocated()
+    {
+        if (target)
+        {
+            target.ForgetSoldier();
+        }
+        GameObject puff = Instantiate(PuffEffect);
+        puff.transform.position = transform.position;
+        puff.transform.localScale *= 2f;
+        deathCalled = true;
+        Destroy(gameObject);
     }
 
     public void SwingContact()
@@ -345,7 +425,7 @@ public class Soldier : MonoBehaviour
         if (target && state == 2)
         {
             target.OnDamagedBySoldier(this);
-            if (target.Damage(Damage))
+            if (target.Damage(Damage * (target.enemyName == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
             {
                 target = null;
             }
@@ -535,5 +615,12 @@ public class Soldier : MonoBehaviour
     public static float GetMovementSpeed()
     {
         return MovementSpeed;
+    }
+    private void OnDestroy()
+    {
+        if (healthbar)
+        {
+            Destroy(healthbar.gameObject);
+        }
     }
 }

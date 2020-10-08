@@ -52,12 +52,20 @@ public struct PlayerResources
     {
         food += _bundle.food;
         if (food > foodMax) { food = foodMax; }
+        if (food < 0)
+        {
+            VillagerManager.GetInstance().AddStarveTicks(-food);
+            food = 0; 
+        }
+
 
         wood += _bundle.wood;
         if (wood > woodMax) { wood = woodMax; }
+        if (wood < 0) { wood = 0; }
 
         metal += _bundle.metal;
         if (metal > metalMax) { metal = metalMax; }
+        if (metal < 0) { metal = 0; }
     }
 
     public bool ResourceIsFull(ResourceType _type)
@@ -130,6 +138,8 @@ public class GameManager : MonoBehaviour
     private bool gameover = false;
     [HideInInspector]
     public bool victory = false;
+    [HideInInspector]
+    public bool freePlay = false;
     private float gameoverTimer = 5.0f;
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
@@ -161,10 +171,32 @@ public class GameManager : MonoBehaviour
     private AudioSource ambience;
     private float musicVolume;
     private float ambienceVolume;
+    private static GameObject ExplosionOne = null;
+    private static GameObject ExplosionTwo = null;
 
     public static GameManager GetInstance()
     {
         return instance;
+    }
+
+    public static GameObject GetExplosion(int _variant)
+    {
+        if (_variant == 1)
+        {
+            if (!ExplosionOne)
+            {
+                ExplosionOne = Resources.Load("Explosion") as GameObject;
+            }
+            return ExplosionOne;
+        }
+        else
+        {
+            if (!ExplosionTwo)
+            {
+                ExplosionTwo = Resources.Load("ExplosionPetard") as GameObject;
+            }
+            return ExplosionTwo;
+        }
     }
 
     public static void CreateAudioEffect(string _sfxName, Vector3 _positon, SoundType _type = SoundType.SoundEffect, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
@@ -179,7 +211,6 @@ public class GameManager : MonoBehaviour
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];
-        spawnAudioComp.Play();
         switch (_type)
         {
             case SoundType.SoundEffect:
@@ -194,6 +225,7 @@ public class GameManager : MonoBehaviour
             default:
                 break;
         }
+        spawnAudioComp.Play();
     }
 
     public static void IncrementRepairCount()
@@ -370,17 +402,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            repairAll = true;
-            RepairAll();
-        }
-
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            ShowEnemyHealthbars = !ShowEnemyHealthbars;
-        }
-
+        CheckControls();
         // get resourceDelta
         ResourceBundle resourcesThisFrame = new ResourceBundle(GetResourceVelocity() * Time.deltaTime);
         foodSinceObjective += Mathf.Clamp(resourcesThisFrame.food, 0f, resourcesThisFrame.food);
@@ -450,6 +472,12 @@ public class GameManager : MonoBehaviour
 
                 switch (buildingI)
                 {
+                    case BuildPanel.Buildings.Ballista:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Ballista))
+                        {
+                            continue;
+                        }
+                        break;
                     case BuildPanel.Buildings.Catapult:
                         if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
                         {
@@ -497,7 +525,7 @@ public class GameManager : MonoBehaviour
                 gameover = true;
                 victory = false;
                 messageBox.ShowMessage("You Lost!", 3f);
-                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                music.DOFade(0f, 0.5f);
                 CreateAudioEffect("lose", Vector3.zero, SoundType.Music, 1f, false);
             }
             else
@@ -525,12 +553,70 @@ public class GameManager : MonoBehaviour
                     victory = true;
                     SuperManager.GetInstance().OnLevelComplete();
                     messageBox.ShowMessage("You Win!", 5f);
-                    GetComponents<AudioSource>()[0].DOFade(0f, 1f);
+                    music.DOFade(0f, 0.5f);
                     CreateAudioEffect("win", Vector3.zero, SoundType.Music, 1f, false);
                 }
             }            
         }
 
+        if (gameover)
+        {
+            if (victory)
+            {
+                if (musicDelay == 3f)
+                {
+                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
+                }
+                musicDelay -= Time.deltaTime;
+                if (musicDelay < 0f && !musicBackOn)
+                {
+                    music.DOFade(musicVolume * SuperManager.MusicVolume, 2f);
+                    musicBackOn = true;
+                }
+            }
+            else
+            {
+                if (gameoverTimer == 5f)
+                {
+                    FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
+                }
+                gameoverTimer -= Time.deltaTime;
+                if (gameoverTimer < 0f && !switchingScene)
+                {
+                    //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                    switchingScene = true;
+                }
+            }
+        }
+        
+
+        if (!gameover || musicDelay < -2f)
+        {
+            music.volume = musicVolume * SuperManager.MusicVolume;
+            ambience.volume = ambienceVolume * SuperManager.AmbientVolume;
+        }
+
+    }
+
+    public void SaveMatch()
+    {
+        SuperManager.GetInstance().SaveCurrentMatch();
+    }
+
+    public void OnRestart()
+    {
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.ClearCurrentMatch();
+        superMan.PlayLevel(superMan.GetCurrentLevel());
+    }
+
+    public bool AllObjectivesCompleted()
+    {
+        return objectives.Count == objectivesCompleted;
+    }
+
+    public void UpdateObjectiveText()
+    {
         if (objectivesCompleted < objectives.Count)
         {
             string completion = "(" + (objectivesCompleted).ToString() + "/" + objectives.Count.ToString() + ") ";
@@ -585,56 +671,60 @@ public class GameManager : MonoBehaviour
         {
             HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
         }
+    }
 
-        if (gameover)
+    private void CheckControls()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (victory)
-            {
-                if (musicDelay == 3f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
-                }
-                musicDelay -= Time.deltaTime;
-                if (musicDelay < 0f && !musicBackOn)
-                {
-                    GetComponents<AudioSource>()[0].DOFade(volumeFull, 2f);
-                    musicBackOn = true;
-                }
-            }
-            else
-            {
-                if (gameoverTimer == 5f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
-                }
-                gameoverTimer -= Time.deltaTime;
-                if (gameoverTimer < 0f && !switchingScene)
-                {
-                    //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
-                    switchingScene = true;
-                }
-            }
+            repairAll = true;
+            RepairAll();
         }
 
-        music.volume = musicVolume * SuperManager.MusicVolume;
-        ambience.volume = ambienceVolume * SuperManager.AmbientVolume;
-    }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ShowEnemyHealthbars = !ShowEnemyHealthbars;
+        }
 
-    public void SaveMatch()
-    {
-        SuperManager.GetInstance().SaveCurrentMatch();
-    }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            HUDManager.GetInstance().SwitchTabs();
+        }
 
-    public void OnRestart()
-    {
-        SuperManager superMan = SuperManager.GetInstance();
-        superMan.ClearCurrentMatch();
-        superMan.PlayLevel(superMan.GetCurrentLevel());
-    }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            HUDManager.GetInstance().ToggleShowVillagers();
+        }
 
-    public bool AllObjectivesCompleted()
-    {
-        return objectives.Count == objectivesCompleted;
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            VillagerManager.GetInstance().TrainVillager();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+        }
     }
 
     private bool CheckNextWinConditionIsMet()
@@ -691,5 +781,10 @@ public class GameManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public bool GetGameLost()
+    {
+        return gameover && !victory;
     }
 }

@@ -39,6 +39,7 @@ public class HeavyInvader : Enemy
 
     protected override void LookAtPosition(Vector3 _position)
     {
+        _position.y = transform.position.y;
         base.LookAtPosition(_position);
         // fixing animation problems
         transform.right = -transform.forward;
@@ -47,6 +48,21 @@ public class HeavyInvader : Enemy
     private void FixedUpdate()
     {
         if (stunned) return;
+        walkHeight = 0.5f;
+        if (signature.startTile)
+        {
+            Structure attached = signature.startTile.GetAttached();
+            if (attached)
+            {
+                if (attached.GetStructureName() == StructureNames.MetalEnvironment)
+                {
+                    if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                    {
+                        walkHeight = hit.point.y;
+                    }
+                }
+            }
+        }
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -71,6 +87,7 @@ public class HeavyInvader : Enemy
                                 if ((target.transform.position - transform.position).magnitude < 0.5f)
                                 {
                                     Vector3 newPosition = transform.position - (GetAvoidingMotionVector() * Time.fixedDeltaTime);
+                                    newPosition.y = walkHeight;
                                     LookAtPosition(newPosition);
                                     transform.position = newPosition;
                                 }
@@ -125,6 +142,7 @@ public class HeavyInvader : Enemy
                                 break;
                             }
                             Vector3 newPosition = GetNextPositionPathFollow();
+                            newPosition.y = walkHeight;
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
                         }
@@ -134,7 +152,7 @@ public class HeavyInvader : Enemy
 
                             // get the motion vector for this frame
                             Vector3 newPosition = transform.position + (GetAvoidingMotionVector() * Time.fixedDeltaTime);
-                            //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
+                            newPosition.y = walkHeight;
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
 
@@ -250,6 +268,9 @@ public class HeavyInvader : Enemy
             if (target.GetHealth() > 0)
             {
                 action = true;
+                Vector3 lookPosition = target.transform.position;
+                lookPosition.y = transform.position.y;
+                LookAtPosition(lookPosition);
             }
             else
             {

@@ -28,9 +28,6 @@ public class CameraController : MonoBehaviour
     [SerializeField] [Tooltip("Buffer zone for mouse camera control at edge of screen")]
     private float mouseYBuffer = 50.0f;
 
-    [SerializeField] [Tooltip("Rate of movement for the camera")]
-    private float sensitivity = 4.0f;
-
     [SerializeField] [Tooltip("Multiplier for movement with keyboard")]
     private float keyboardSpeed = 30.0f;
 
@@ -76,8 +73,6 @@ public class CameraController : MonoBehaviour
         xAxisMin = settings.Item1.w;
         scrollMin = settings.Item2.x;
         scrollMax = settings.Item2.y;
-
-        sensitivity = SuperManager.CameraSensitivity;
     }
 
     void Update()
@@ -95,7 +90,7 @@ public class CameraController : MonoBehaviour
 
         float scrollMoveCoeff = 1f + (-scrollOffset + 10f) * 0.15f;
         float resolutionMod = 1080.0f / Screen.height;
-        float movementCoeff = sensitivity * scrollMoveCoeff * 0.0007f;
+        float movementCoeff = SuperManager.CameraSensitivity * scrollMoveCoeff * 0.0007f;
 
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
@@ -107,7 +102,6 @@ public class CameraController : MonoBehaviour
         {
             float maxInertia = Screen.height * 0.33f;
             inertia = Vector2.ClampMagnitude(movementCoeff * resolutionMod * (lastFrameMousePos - mp), maxInertia);
-
         }
         else
         {

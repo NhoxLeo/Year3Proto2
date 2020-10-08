@@ -40,21 +40,7 @@ public class OptionCategoryObject : MonoBehaviour
 
     public void OnClick()
     {
-        Transform parent = transform.parent;
-        for (int i = 0; i < parent.childCount; i++)
-        {
-            Transform transform = parent.GetChild(i);
-            if(transform)
-            {
-                OptionCategoryObject categoryObject = transform.GetComponent<OptionCategoryObject>();
-                categoryObject.GetPanel().GetComponent<UIAnimator>().showElement = false;
-            }
-        }
-
-        // Animation do tween.
-        // 
-        panel.GetComponent<UIAnimator>().showElement = true;
-        tabIndicator.DOLocalMoveX(transform.localPosition.x, 0.2f).SetEase(Ease.OutBack);
+        SwitchTo();
     }
 
     /**************************************
@@ -66,5 +52,24 @@ public class OptionCategoryObject : MonoBehaviour
     public Transform GetPanel()
     {
         return panel;
+    }
+
+    public void SwitchTo()
+    {
+        Transform parent = transform.parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform transform = parent.GetChild(i);
+            if (transform)
+            {
+                OptionCategoryObject categoryObject = transform.GetComponent<OptionCategoryObject>();
+                categoryObject.GetPanel().GetComponent<UIAnimator>().showElement = false;
+            }
+        }
+
+        // Animation do tween.
+        // 
+        panel.GetComponent<UIAnimator>().showElement = true;
+        tabIndicator.DOLocalMoveX(transform.localPosition.x, 0.2f).SetEase(Ease.OutBack);
     }
 }

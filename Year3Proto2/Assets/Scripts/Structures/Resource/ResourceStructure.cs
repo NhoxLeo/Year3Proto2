@@ -113,12 +113,13 @@ public abstract class ResourceStructure : Structure
                 {
                     if (adjacentsToAttached[(TileBehaviour.TileCode)i].GetPlayable())
                     {
-                        GameObject newTileHighlight = Instantiate(GetTileHighlight(), transform);
+                        GameObject newTileHighlight = Instantiate(StructureManager.GetTileHighlight(), transform);
                         tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
                         Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
-                        highlightPos.y = 0.55f;
+                        highlightPos.y = StructureManager.HighlightSitHeight;
                         newTileHighlight.transform.position = highlightPos;
                         Structure adjStructure = adjacentsToAttached[(TileBehaviour.TileCode)i].GetAttached();
+                        bool tileCounted = false;
                         // If there is a structure on the tile...
                         if (adjStructure)
                         {
@@ -129,30 +130,19 @@ public abstract class ResourceStructure : Structure
                                 {
                                     envStructure.SetExploited(true);
                                     envStructure.SetExploiterID(ID);
-                                    newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                                    tileBonus++;
-                                    AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                                 }
-                                else
+                                // the structure will now definitely be exploited
+                                if (envStructure.GetExploiterID() == ID)
                                 {
-                                    if (envStructure.GetExploiterID() == ID)
-                                    {
-                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                                        tileBonus++;
-                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
-                                    }
-                                    else
-                                    {
-                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
-                                    }
+                                    tileCounted = true;
                                 }
                             }
-                            else
-                            {
-                                newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
-                            }
+                        }
+                        if (tileCounted)
+                        {
+                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                            tileBonus++;
+                            AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                         }
                         else
                         {
@@ -239,15 +229,6 @@ public abstract class ResourceStructure : Structure
         villagers[0] = transform.Find("Villager 1").gameObject;
         villagers[1] = transform.Find("Villager 2").gameObject;
         villagers[2] = transform.Find("Villager 3").gameObject;
-    }
-
-    private GameObject GetTileHighlight()
-    {
-        if (!TileHighlight)
-        {
-            TileHighlight = Resources.Load("TileHighlight") as GameObject;
-        }
-        return TileHighlight;
     }
 
     protected override void Update()

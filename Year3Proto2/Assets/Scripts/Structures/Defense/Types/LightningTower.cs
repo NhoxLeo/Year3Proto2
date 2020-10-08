@@ -7,17 +7,20 @@ public class LightningTower : DefenseStructure
 {
     [Header("Lightning Tower")]
     [SerializeField] private LightningBolt lightning;
-    [SerializeField] private float lightningAmount = 2f;
+    [SerializeField] private float lightningAmount = 2.0f;
     [SerializeField] private float lightningDelay = 4f;
     [SerializeField] private float lightningStartDelay = 0.6f;
     [SerializeField] private Transform lightningStartPosition;
 
-    private const float BaseMaxHealth = 400f;
+    private const float BaseMaxHealth = 420f;
     private const float BaseDamage = 5f;
+    private const float LightningIntraDelay = 0.6f;
 
     private float damage;
     private float time;
-    private bool sparkDamage;
+    private bool superAbility;
+
+    private Color normalEmissiveColour;
 
     protected override void Awake()
     {
@@ -34,7 +37,7 @@ public class LightningTower : DefenseStructure
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
         }
 
-        sparkDamage = superMan.GetResearchComplete(SuperManager.LightningTowerSuper);
+        superAbility = superMan.GetResearchComplete(SuperManager.LightningTowerSuper);
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
@@ -42,6 +45,8 @@ public class LightningTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.FlyingInvader);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+
+        normalEmissiveColour = meshRenderer.materials[0].GetColor("_EmissiveColor");
     }
 
     protected override void Start()
@@ -59,9 +64,9 @@ public class LightningTower : DefenseStructure
             {
                 time -= Time.deltaTime;
                 if (time <= 0.0f)
-                {
+                { 
+                    StartCoroutine(Strike(LightningIntraDelay));
                     time = lightningDelay;
-                    StartCoroutine(Strike(0.3f));
                 }
             }
         }
@@ -93,25 +98,45 @@ public class LightningTower : DefenseStructure
             Enemy enemy = enemiesToStrike[i].GetComponent<Enemy>();
             if (enemy)
             {
-                StrikeEnemy(enemiesToStrike[i]);
+                List<Transform> previousTargets = null;
+                if (superAbility)
+                {
+                    previousTargets = new List<Transform>();
+                    Transform currentTarget = enemiesToStrike[i];
+                    for (int j = 0; j < 3; j++)
+                    {
+                        currentTarget = StrikeEnemy(currentTarget, ref previousTargets);
+                        if (currentTarget == null)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    StrikeEnemy(enemiesToStrike[i], ref previousTargets);
+                }
             }
             yield return new WaitForSeconds(seconds);
         }
-
         yield return null;
     }
 
-    private void StrikeEnemy(Transform _target)
+    private Transform StrikeEnemy(Transform _target, ref List<Transform> _previousTargets)
     {
-        LightningBolt lightningBolt = Instantiate(lightning, lightningStartPosition.position, Quaternion.identity);
-        lightningBolt.Initialize(_target, damage, sparkDamage);
-        lightningBolt.Fire();
+        LightningBolt lightningBolt = Instantiate(lightning);
         GameManager.CreateAudioEffect("Zap", _target.position, SoundType.SoundEffect, 0.6f);
+        return lightningBolt.Fire(lightningStartPosition.position, _target, ref _previousTargets, damage); 
     }
 
     public float GetFireRate()
     {
         return lightningAmount * (1f / lightningDelay);
+    }
+
+    public float GetProjectileCount()
+    {
+        return lightningAmount;
     }
 
 
@@ -125,7 +150,9 @@ public class LightningTower : DefenseStructure
     {
         base.OnSetLevel();
         damage = GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()
@@ -156,5 +183,31 @@ public class LightningTower : DefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTowerPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        if (_colour == Color.white)
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+        }
+        else
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+        }
+
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[1].SetColor(colourReference, _colour);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }

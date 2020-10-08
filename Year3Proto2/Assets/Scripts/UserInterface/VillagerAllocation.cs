@@ -90,7 +90,7 @@ public class VillagerAllocation : MonoBehaviour
         if (!_visible)
         {
             // and ShowVillagerWidgets is true (aka showing all widgets currently)
-            if (SuperManager.ShowVillagerWidgets)
+            if (SuperManager.GetInstance().GetShowWidgets())
             {
                 // don't set the visibility.
                 return;
@@ -135,6 +135,16 @@ public class VillagerAllocation : MonoBehaviour
             allocationButtons.GetChild(i).DOLocalMoveX(buttonPos[i].x, 0.2f);
             manualIndicator.transform.DOLocalMoveX(buttonPos[target.GetAllocated()].x, 0.2f);
             autoIndicator.transform.DOLocalMoveX(buttonPos[target.GetAllocated()].x, 0.2f);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            allocationButtons.GetChild(i).DOKill(true);
+            manualIndicator.transform.DOKill(true);
+            autoIndicator.transform.DOKill(true);
         }
     }
 }

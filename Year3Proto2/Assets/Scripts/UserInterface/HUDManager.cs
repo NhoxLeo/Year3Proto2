@@ -19,6 +19,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
+
 public class HUDManager : MonoBehaviour
 {
     private static HUDManager instance;
@@ -53,12 +54,25 @@ public class HUDManager : MonoBehaviour
 
     [Header("Misc")]
     [SerializeField] private TMP_Text victoryProgress;
+    [SerializeField] private Button villagerButton;
     [SerializeField] private TMP_Text villagerCost;
+    [SerializeField] private TMP_Text nextWave;
     [SerializeField] private Transform villAlloc;
-    [SerializeField] private GameObject helpScreen;
+    [SerializeField] private UIAnimator helpScreen;
+    [SerializeField] private RectTransform nextWaveTooltip;
+    [SerializeField] private Button nextWaveButton;
     [SerializeField] private BuildPanel buildPanel;
 
     [SerializeField] private Toggle showVillagerWidgets;
+
+    [SerializeField] private OptionCategoryObject defenceCategory;
+    [SerializeField] private OptionCategoryObject resourceCategory;
+    private int currentTab = 1;
+
+    [Header("Pause Menu")]
+    [SerializeField] private PauseMenu pauseMenu;
+
+    private bool nextWaveUpdate = false;
 
     public static HUDManager GetInstance()
     {
@@ -78,8 +92,10 @@ public class HUDManager : MonoBehaviour
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
         resourceBar.SetVisibility(!showTutorial);
         buildPanel.showPanel = !showTutorial;
-        helpScreen.SetActive(showTutorial);
+        helpScreen.SetVisibility(showTutorial);
+        showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
     }
 
     void LateUpdate()
@@ -88,13 +104,17 @@ public class HUDManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            doShowHUD = !doShowHUD;
+            if (!pauseMenu.isPaused && !pauseMenu.isHelp)
+            {
+                SetHUD(!doShowHUD);
+            }
         }
 
         updateTimer -= Time.unscaledDeltaTime;
         if (updateTimer <= 0)
         {
             RefreshResources();
+            GameManager.GetInstance().UpdateObjectiveText();
             updateTimer = updateInterval;
         }
 
@@ -142,6 +162,12 @@ public class HUDManager : MonoBehaviour
         }
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
+
+        nextWaveButton.interactable = enemyMan.CanSpawnNextWave();
+        if (nextWaveUpdate)
+        {
+            FetchNextWaveInfo();
+        }
     }
 
     private void GetVictoryInfo()
@@ -169,7 +195,11 @@ public class HUDManager : MonoBehaviour
         // available out of total
         string availableVillagers = villagerMan.GetAvailable().ToString("0");
         string villagers = villagerMan.GetVillagers().ToString("0");
-        villagerText.text = availableVillagers + "/" + villagers;
+        if (villagerText.text != availableVillagers + "/" + villagers)
+        {
+            villagerText.text = availableVillagers + "/" + villagers;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        }
 
         Vector3 resources = gameMan.playerResources.GetResources();
         Vector3 capacity = gameMan.playerResources.GetCapacity();
@@ -203,7 +233,12 @@ public class HUDManager : MonoBehaviour
         }
 
         // Update content size fitters
-        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+
+        // Update villager button interation and tooltip text color
+        bool canAffordVillager = gameMan.playerResources.CanAfford(villagerMan.GetVillagerTrainCost());
+        villagerButton.interactable = canAffordVillager;
+        villagerCost.color = canAffordVillager ? gainColour : lossColour;
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
@@ -248,6 +283,11 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+    public void SetHUD(bool _active)
+    {
+        doShowHUD = _active;
+    }
+
     public void SetOverUI(bool _isOver)
     {
         if (StructureManager.GetInstance() == null)
@@ -266,23 +306,18 @@ public class HUDManager : MonoBehaviour
     public void HideHelpScreen()
     {
         SuperManager.GetInstance().SetShowTutorial(false);
-        Invoke("DisableHelpScreen", 2.0f);
-    }
-
-    private void DisableHelpScreen()
-    {
-        helpScreen.SetActive(false);
+        buildPanel.SetPanelVisibility(true);
     }
 
     public void UpdateVillagerWidgetMode()
     {
-        SetHudMode(showVillagerWidgets.isOn);
+        SetVillagerWidgets(showVillagerWidgets.isOn);
     }
 
-    public void SetHudMode(bool _buildMode)
+    private void SetVillagerWidgets(bool _villagers)
     {
-        SuperManager.ShowVillagerWidgets = _buildMode;
-        SetAllVillagerWidgets(SuperManager.ShowVillagerWidgets);
+        SuperManager.GetInstance().SetShowWidgets(_villagers);
+        SetAllVillagerWidgets(_villagers);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
@@ -301,7 +336,6 @@ public class HUDManager : MonoBehaviour
         {
             SetVillagerWidgetVisibility(villAlloc.transform.GetChild(i).GetComponent<UIAnimator>(), _enabled);
         }
-        Debug.Log(villAlloc.transform.childCount);
     }
 
     public void FetchVillagerInfo()
@@ -314,5 +348,70 @@ public class HUDManager : MonoBehaviour
     {
         VillagerManager.GetInstance().TrainVillager();
         FetchVillagerInfo();
+    }
+
+    public void SetNextWaveUpdate(bool _update)
+    {
+        nextWaveUpdate = _update;
+    }
+
+    public void FetchNextWaveInfo()
+    {
+        EnemyManager enemyMan = EnemyManager.GetInstance();
+
+        string time = "Time until the next wave spawns naturally: " + enemyMan.GetTime().ToString("0");
+        // Time until next wave spawns:  + spawnDelay
+        // You must clear the current wave before you can spawn the next one. Remaning enemies from current wave:  + enemies
+        string remaining = "";
+        if (!enemyMan.CanSpawnNextWave())
+        {
+            remaining += "\n\nYou must clear the current wave before you can spawn the next one. Remaining enemies from current wave: " + enemyMan.GetEnemiesLeftCurrentWave();
+        }
+
+        //nextWave.text = ;
+        // enemies remaining from previous wave, necessary before spawning next wave
+        // time before next wave spawns
+        // 
+        nextWave.text = time + remaining;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(nextWaveTooltip);
+    }
+
+    public void NextWave()
+    {
+        EnemyManager enemyMan = EnemyManager.GetInstance();
+        if (enemyMan.CanSpawnNextWave())
+        {
+            EnemyManager.GetInstance().SpawnNextWave();
+        }
+    }
+
+    public void SetCurrentTab(int _tab)
+    {
+        currentTab = _tab;
+    }
+
+    public void SwitchTabs()
+    {
+        if (currentTab == 0)
+        {
+            resourceCategory.SwitchTo();
+            currentTab = 1;
+        }
+        else
+        {
+            defenceCategory.SwitchTo();
+            currentTab = 0;
+        }
+    }
+
+    public int GetCurrentTab()
+    {
+        return currentTab;
+    }
+
+    public void ToggleShowVillagers()
+    {
+        showVillagerWidgets.isOn = !showVillagerWidgets.isOn;
+        UpdateVillagerWidgetMode();
     }
 }

@@ -33,10 +33,30 @@ public class Mine : ResourceStructure
         {
             tileBonus++;
         }
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 
     protected override void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
     {
         scaffolding[_side].SetActive(_exploit);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+    }
+
+    public override void SetMaterials(bool _snow)
+    {
+        base.SetMaterials(_snow);
+        transform.GetChild(0).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
+        transform.GetChild(1).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
+        transform.GetChild(2).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
+        transform.GetChild(3).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
     }
 }

@@ -63,9 +63,12 @@ public abstract class Enemy : MonoBehaviour
     protected EnemyPath path;
     protected float updatePathTimer = 0f;
     protected float updatePathDelay = 1.5f;
-    private EnemyPathSignature signature;
+    protected EnemyPathSignature signature;
     protected int level;
     protected Healthbar healthbar;
+    protected bool showHealthBar = false;
+    private bool onKillCalled = false;
+    protected float walkHeight = 0f;
 
     // Stun
     protected bool stunned = false;
@@ -154,10 +157,6 @@ public abstract class Enemy : MonoBehaviour
             action = true;
             LookAtPosition(_soldier.transform.position);
         }
-        if (enemyName == EnemyNames.BatteringRam)
-        {
-            Stun(0.0f);
-        }
     }
 
     public void ForgetSoldier()
@@ -191,11 +190,18 @@ public abstract class Enemy : MonoBehaviour
 
         if (healthbar)
         {
-            if (!GameManager.ShowEnemyHealthbars)
+            if (!GameManager.ShowEnemyHealthbars || !showHealthBar)
             {
                 if (healthbar.gameObject.activeSelf)
                 {
                     healthbar.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (!healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(true);
                 }
             }
         }
@@ -371,19 +377,22 @@ public abstract class Enemy : MonoBehaviour
     public bool Damage(float _damage)
     {
         health -= _damage;
-        if (healthbar && GameManager.ShowEnemyHealthbars)
+        if (healthbar)
         {
             if (health < GetTrueMaxHealth())
             {
-                healthbar.gameObject.SetActive(true);
                 healthbar.fillAmount = health / GetTrueMaxHealth();
+                showHealthBar = true;
             }
         }
-
         if (health <= 0f)
         {
-            OnKill();
-            Destroy(gameObject);
+            if (!onKillCalled)
+            {
+                OnKill();
+                onKillCalled = true;
+                Destroy(gameObject);
+            }
             return true;
         }
         return false;

@@ -21,9 +21,8 @@ public class OptionSwitcherData : OptionData
     public int value;
     public string[] values;
 
-    public OptionSwitcherData(int _defaultValue, int _value, string[] _values)
+    public OptionSwitcherData(int _defaultValue, string[] _values)
     {
-        value = _value;
         values = _values;
         defaultValue = _defaultValue;
     }
@@ -42,16 +41,20 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     ***************************************/
     public void Next()
     {
-        if (data.value >= (data.values.Length - 1))
+        if (deserialised)
         {
-            data.value = 0;
+            if (data.value >= (data.values.Length - 1))
+            {
+                data.value = 0;
+            }
+            else
+            {
+                data.value += 1;
+            }
+            value.text = data.values[data.value].ToString();
+
+            data.GetCallback().Invoke();
         }
-        else
-        {
-            data.value += 1;
-        }
-        value.text = data.values[data.value].ToString();
-        data.GetCallback().Invoke();
     }
 
     /**************************************
@@ -62,23 +65,31 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     ***************************************/
     public void Previous()
     {
-        if (data.value <= 0)
+        if (deserialised)
         {
-            data.value = data.values.Length - 1;
+            if (data.value <= 0)
+            {
+                data.value = data.values.Length - 1;
+            }
+            else
+            {
+                data.value -= 1;
+            }
+            value.text = data.values[data.value].ToString();
+            data.GetCallback().Invoke();
         }
-        else
-        {
-            data.value -= 1;
-        }
-        value.text = data.values[data.value].ToString();
-        data.GetCallback().Invoke();
     }
 
     public override void Deserialize()
     {
-        data.value = PlayerPrefs.GetInt(key, data.defaultValue);
-        value.text = data.values[data.value].ToString();
-        data.GetCallback().Invoke();
+        if (data.value < data.values.Length)
+        {
+            data.value = PlayerPrefs.GetInt(key, data.defaultValue);
+            value.text = data.values[data.value].ToString();
+            data.GetCallback().Invoke();
+
+            deserialised = true;
+        }
     }
 
     public override void Serialize()

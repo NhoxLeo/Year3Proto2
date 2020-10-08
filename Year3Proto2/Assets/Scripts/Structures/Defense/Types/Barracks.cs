@@ -6,15 +6,16 @@ using DG.Tweening;
 public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
-    private int maxSoldiers = 3;
+
     [HideInInspector]
     public List<Soldier> soldiers;
-    private float trainTime = 20f;
+    private float trainTime = 10f;
     private float timeTrained = 0f;
 
     private const float BaseMaxHealth = 350f;
     private const float BaseDamage = 3f;
 
+    private Color normalEmissiveColour;
     public float GetTimeTrained()
     {
         return timeTrained;
@@ -27,17 +28,15 @@ public class Barracks : DefenseStructure
 
     public float GetTroopCapacity()
     {
-        return maxSoldiers;
+        return allocatedVillagers;
     }
 
     private void UpdateCapacity()
     {
-        //maxSoldiers = allocatedVillagers;
-        maxSoldiers = 3;
         // recall excess soldiers
         for (int i = 0; i < soldiers.Count; i++)
         {
-            if (i >= maxSoldiers)
+            if (i >= allocatedVillagers)
             {
                 soldiers[i].SetReturnHome(true);
             }
@@ -59,7 +58,7 @@ public class Barracks : DefenseStructure
     protected override void Start()
     {
         base.Start();
-        UpdateCapacity();
+        //UpdateCapacity();
     }
 
     protected override void Awake()
@@ -72,15 +71,16 @@ public class Barracks : DefenseStructure
         SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
         {
-            trainTime = 10f;
+            trainTime = 5f;
             float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
             SetHealRate(soldierMaxHealth / trainTime);
         }
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
-        targetableEnemies.Add(EnemyNames.HeavyInvader);
+        targetableEnemies.Add(EnemyNames.HeavyInvader); 
         targetableEnemies.Add(EnemyNames.Petard);
+        targetableEnemies.Add(EnemyNames.BatteringRam);
 
         // soldier stuff
         if (!SoldierPrefab)
@@ -88,14 +88,15 @@ public class Barracks : DefenseStructure
             SoldierPrefab = Resources.Load("Soldier") as GameObject;
         }
         soldiers = new List<Soldier>();
+        normalEmissiveColour = meshRenderer.materials[0].GetColor("_EmissiveColor");
     }
 
     protected override void Update()
     {
-        if (attachedTile != null)
+        base.Update();
+        if (isPlaced)
         {
-            base.Update();
-            if (soldiers.Count < maxSoldiers)
+            if (soldiers.Count < allocatedVillagers)
             {
                 timeTrained += Time.deltaTime;
                 if (timeTrained >= trainTime)
@@ -104,7 +105,6 @@ public class Barracks : DefenseStructure
                     SpawnSoldier();
                 }
             }
-
             soldiers.RemoveAll(soldier => !soldier);
         }
     }
@@ -130,7 +130,7 @@ public class Barracks : DefenseStructure
 
         soldiers.Add(newSoldier);
 
-        GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, SoundType.SoundEffect, 0.6f);
+        //GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, SoundType.SoundEffect, 0.6f);
     }
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
@@ -161,7 +161,9 @@ public class Barracks : DefenseStructure
     {
         base.OnSetLevel();
         Soldier.SetDamage(GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1));
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()
@@ -192,5 +194,52 @@ public class Barracks : DefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        else
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+            if (_colour == Color.white)
+            {
+                meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+            }
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        meshRenderer.materials[1].SetColor(colourReference, _colour);
+    }
+
+    public override void OnAllocation()
+    {
+        base.OnAllocation();
+
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            if (i > allocatedVillagers - 1)
+            {
+                soldiers[i].VillagerDeallocated();
+            }
+        }
+
+        soldiers.RemoveAll(soldier => !soldier);
+    }
+
+    public void OnSoldierDeath(Soldier _soldier)
+    {
+        soldiers.Remove(_soldier);
+        ManuallyAllocate(allocatedVillagers - 1);
+        VillagerManager.GetInstance().RemoveVillagers(1, false);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }
