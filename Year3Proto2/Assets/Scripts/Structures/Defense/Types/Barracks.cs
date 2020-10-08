@@ -198,13 +198,21 @@ public class Barracks : DefenseStructure
 
     public override void SetColour(Color _colour)
     {
-        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
-        meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
-        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
-        if (_colour == Color.white)
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
         {
-            meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+            colourReference = "_Color";
         }
+        else
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+            if (_colour == Color.white)
+            {
+                meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+            }
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        meshRenderer.materials[1].SetColor(colourReference, _colour);
     }
 
     public override void OnAllocation()
@@ -227,5 +235,11 @@ public class Barracks : DefenseStructure
         soldiers.Remove(_soldier);
         ManuallyAllocate(allocatedVillagers - 1);
         VillagerManager.GetInstance().RemoveVillagers(1, false);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }

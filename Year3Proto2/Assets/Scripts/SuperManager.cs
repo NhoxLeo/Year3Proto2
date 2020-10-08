@@ -14,7 +14,7 @@ public class SuperManager : MonoBehaviour
     public static float EffectsVolume = 1.0f;
 
     // CONSTANTS
-    public static bool DevMode = false;
+    public static bool DevMode = true;
     public static bool waveHornStart = false;
     public static bool messageBox = false;
     public static float CameraSensitivity = 4.0f;
@@ -412,9 +412,9 @@ public class SuperManager : MonoBehaviour
     {
         // ID, ID requirement, Win Condition, Modifiers, Base Reward
         new LevelDefinition(0, NoRequirement,   new List<int>(){ Survive, Villagers, FoodII },                          new List<int>(),                                            1000),
-        new LevelDefinition(1, 0,               new List<int>(){ Villagers, Accumulate, SlaughterII },                  new List<int>(){ SnoballPrices, SwiftFootwork },            1250),
+        new LevelDefinition(1, 0,               new List<int>(){ Villagers, Accumulate, SlaughterII },                  new List<int>(){ SnoballPrices },            1250),
         new LevelDefinition(2, 1,               new List<int>(){ Slaughter, Lumber, VillagersII, AccumulateII },        new List<int>(){ DryFields, PoorTimber },                   1500),
-        new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, DryFields, PoorTimber },    1750)
+        new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, PoorTimber, SwiftFootwork },    1750)
     };
     public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
     {
@@ -901,47 +901,54 @@ public class SuperManager : MonoBehaviour
         // structures
         foreach (Structure structure in FindObjectsOfType<Structure>())
         {
-            // structures placed by the structureManager don't have a parent, and need to be saved
-            if (structure.transform.parent == null)
+            // don't save the longhaus
+            if (structure.GetStructureName() == StructureNames.Longhaus)
             {
-                StructureSaveData saveData = new StructureSaveData
-                {
-                    structure = structure.GetStructureName(),
-                    type = structure.GetStructureType(),
-                    position = new SaveVector3(structure.transform.position),
-                    villagers = structure.GetAllocated(),
-                    health = structure.GetHealth(),
-                    ID = structure.GetID(),
-                    manualAllocation = structure.GetManualAllocation()
-                };
-                if (saveData.type == StructureType.Environment)
-                {
-                    EnvironmentStructure envStructure = structure.gameObject.GetComponent<EnvironmentStructure>();
-                    if (envStructure.GetExploited())
-                    {
-                        saveData.exploited = true;
-                        saveData.exploiterID = envStructure.GetExploiterID();
-                    }
-                }
-                if (structure.IsStructure("Farm"))
-                {
-                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains;
-                }
-                if (structure.IsStructure("Mine"))
-                {
-                    saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills;
-                }
-                if (structure.IsStructure("Lumber Mill"))
-                {
-                    saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest;
-                }
-                if (structure.GetStructureType() == StructureType.Defense)
-                {
-                    DefenseStructure defense = structure.GetComponent<DefenseStructure>();
-                    saveData.level = defense.GetLevel();
-                }
-                save.structures.Add(saveData);
+                continue;
             }
+            // don't save structures that haven't been placed
+            if (!structure.isPlaced)
+            {
+                continue;
+            }
+
+            StructureSaveData saveData = new StructureSaveData
+            {
+                structure = structure.GetStructureName(),
+                type = structure.GetStructureType(),
+                position = new SaveVector3(structure.transform.position),
+                villagers = structure.GetAllocated(),
+                health = structure.GetHealth(),
+                ID = structure.GetID(),
+                manualAllocation = structure.GetManualAllocation()
+            };
+            if (saveData.type == StructureType.Environment)
+            {
+                EnvironmentStructure envStructure = structure.gameObject.GetComponent<EnvironmentStructure>();
+                if (envStructure.GetExploited())
+                {
+                    saveData.exploited = true;
+                    saveData.exploiterID = envStructure.GetExploiterID();
+                }
+            }
+            if (structure.IsStructure("Farm"))
+            {
+                saveData.wasPlacedOn = structure.gameObject.GetComponent<Farm>().wasPlacedOnPlains;
+            }
+            if (structure.IsStructure("Mine"))
+            {
+                saveData.wasPlacedOn = structure.gameObject.GetComponent<Mine>().wasPlacedOnHills;
+            }
+            if (structure.IsStructure("Lumber Mill"))
+            {
+                saveData.wasPlacedOn = structure.gameObject.GetComponent<LumberMill>().wasPlacedOnForest;
+            }
+            if (structure.GetStructureType() == StructureType.Defense)
+            {
+                DefenseStructure defense = structure.GetComponent<DefenseStructure>();
+                saveData.level = defense.GetLevel();
+            }
+            save.structures.Add(saveData);
         }
 
         return save;

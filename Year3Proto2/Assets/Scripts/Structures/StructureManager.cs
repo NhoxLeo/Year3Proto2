@@ -154,6 +154,10 @@ public static class StructureMaterials
             case StructureNames.MetalResource + StructureNames.Alt:
                 paths.Add("Materials/Structures/Resource/mMinePlatform" + (_key.Item2 ? "_Snow" : ""));
                 break;
+            case StructureNames.Barracks:
+                paths.Add("Materials/Structures/Defense/mBarracks" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mBarracksGround" + (_key.Item2 ? "_Snow" : ""));
+                break;
             case StructureNames.Ballista:
                 paths.Add("Materials/Structures/Defense/mBallista" + (_key.Item2 ? "_Snow" : ""));
                 break;
@@ -375,6 +379,11 @@ public class StructureManager : MonoBehaviour
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
     private MessageBox messageBox;
+
+    private const int PlainsInStartingArea = 24;
+    private const int ForestsInStartingArea = 18;
+    private const int HillsInStartingArea = 12;
+
     [HideInInspector]
     public Vector2Int plainsEnvironmentBounds;
     [HideInInspector]
@@ -403,7 +412,7 @@ public class StructureManager : MonoBehaviour
         structureDict = new Dictionary<string, StructureDefinition>
         {
             // NAME                                                                    NAME                                                                        fC       wC       mC      
-            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(0,       600,     200)) },
+            { StructureNames.Longhaus,          new StructureDefinition(Resources.Load("Structures/Longhaus")                   as GameObject,  new ResourceBundle(0,       200,     50)) },
 
             { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(0,       150,     25)) },
             { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(0,       200,     125)) },
@@ -804,132 +813,138 @@ public class StructureManager : MonoBehaviour
 
     private void UpdateMoving(Ray _mouseRay)
     {
-        if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+        if (selectedTileHighlight.gameObject.activeSelf) 
+        { 
+            selectedTileHighlight.gameObject.SetActive(false); 
+        }
         if (Physics.Raycast(_mouseRay.origin, _mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
         {
             TileBehaviour tile = hitGround.transform.GetComponent<TileBehaviour>();
+            bool canPlaceHere = true;
+            Structure attached = tile.GetAttached();
+            StructureType newStructureType = structure.GetStructureType();
             if (tile.GetPlayable())
             {
-                bool canPlaceHere = true;
                 // If the tile we hit has an attached object...
-                Structure attached = tile.GetAttached();
-                StructureType newStructureType = structure.GetStructureType();
                 if (attached)
                 {
                     canPlaceHere = false;
-                    Vector3 hitPos = hitGround.point;
-                    hitPos.y = structure.sitHeight;
-                    structure.transform.position = hitPos;
-
-                    SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
-
-                    if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-                    if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
-
                     if (attached.GetStructureType() == StructureType.Environment)
                     {
                         canPlaceHere = true;
                     }
                 }
-                // if the structure can be placed here...
-                if (canPlaceHere)
+            }
+            else
+            {
+                canPlaceHere = false;
+            }
+            // if the structure can be placed here...
+            if (canPlaceHere)
+            {
+                if (newStructureType == StructureType.Defense)
                 {
-                    if (newStructureType == StructureType.Defense)
-                    {
-                        structure.ShowRangeDisplay(true);
-                    }
-                    else if (newStructureType == StructureType.Resource)
-                    {
-                        SetPreview(tile);
-                    }
+                    structure.ShowRangeDisplay(true);
+                }
+                else if (newStructureType == StructureType.Resource)
+                {
+                    SetPreview(tile);
+                }
 
-                    if (attached)
+                if (attached)
+                {
+                    EnvironmentStructure environment = attached.GetComponent<EnvironmentStructure>();
+                    if (environment)
                     {
-                        EnvironmentStructure environment = attached.GetComponent<EnvironmentStructure>();
-                        if (environment)
-                        {
-                            string attachedName = attached.GetStructureName();
-                            string structureName = structure.GetStructureName();
-                            // determine if the structure is in synergy with attached structure
-                            bool resourceGain = (attachedName == StructureNames.FoodEnvironment && structureName == StructureNames.FoodResource)
-                                || (attachedName == StructureNames.LumberEnvironment && structureName == StructureNames.LumberResource)
-                                || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
-                            if (resourceGain)
-                            {
-                                SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
-                            }
-                            else
-                            {
-                                SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
-                            }
-                            if (!environment.GetExploited())
-                            {
-                                if (hoverEnvironment)
-                                {
-                                    if (hoverEnvironment != environment)
-                                    {
-                                        hoverEnvironment.SetOpacity(1.0f);
-                                    }
-                                }
-                                hoverEnvironment = environment;
-                                UpdateEnvironmentTransparency();
-                            }
-                            else
-                            {
-                                hoverEnvironment.SetOpacity(1.0f);
-                                hoverEnvironment = null;
-                            }
-                        }
-                    }
-                    else // the tile can be placed on, and has no attached structure
-                    {
-                        if (hoverEnvironment)
-                        {
-                            hoverEnvironment.SetOpacity(1.0f);
-                            hoverEnvironment = null;
-                        }
-                        if (structure.GetStructureType() == StructureType.Resource)
-                        {
-                            SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
-                        }
-                        else
+                        string attachedName = attached.GetStructureName();
+                        string structureName = structure.GetStructureName();
+                        // determine if the structure is in synergy with attached structure
+                        bool resourceGain = (attachedName == StructureNames.FoodEnvironment && structureName == StructureNames.FoodResource)
+                            || (attachedName == StructureNames.LumberEnvironment && structureName == StructureNames.LumberResource)
+                            || (attachedName == StructureNames.MetalEnvironment && structureName == StructureNames.MetalResource);
+                        if (resourceGain)
                         {
                             SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
                         }
-                    }
-
-                    // If player cannot afford the structure, set to red.
-                    if (!GameManager.GetInstance().playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
-                    {
-                        SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
-                    }
-
-                    Vector3 structPos = hitGround.transform.position;
-                    structPos.y = structure.sitHeight;
-                    structure.transform.position = structPos;
-
-                    Vector3 highlightPos = structPos;
-                    highlightPos.y = HighlightSitHeight;
-                    tileHighlight.position = highlightPos;
-                    selectedTileHighlight.position = highlightPos;
-
-                    tileHighlight.gameObject.SetActive(true);
-
-                    // If the user clicked the LMB...
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        AttemptPlaceStructure(tile);
+                        else
+                        {
+                            SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
+                        }
+                        if (!environment.GetExploited())
+                        {
+                            if (hoverEnvironment)
+                            {
+                                if (hoverEnvironment != environment)
+                                {
+                                    ResetEnvironmentTransparency();
+                                }
+                            }
+                            hoverEnvironment = environment;
+                            UpdateEnvironmentTransparency();
+                        }
+                        else
+                        {
+                            ResetEnvironmentTransparency();
+                        }
                     }
                 }
+                else // the tile can be placed on, and has no attached structure
+                {
+                    ResetEnvironmentTransparency();
+                    if (structure.GetStructureType() == StructureType.Resource)
+                    {
+                        SetStructureColour(Color.Lerp(Color.white, Color.yellow, ColourLerpAmount));
+                    }
+                    else
+                    {
+                        SetStructureColour(Color.Lerp(Color.white, Color.green, ColourLerpAmount));
+                    }
+                }
+
+                // If player cannot afford the structure, set to red.
+                if (!GameManager.GetInstance().playerResources.CanAfford(structureCosts[structure.GetStructureName()]))
+                {
+                    SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
+                }
+
+                Vector3 structPos = hitGround.transform.position;
+                structPos.y = structure.sitHeight;
+                structure.transform.position = structPos;
+
+                Vector3 highlightPos = structPos;
+                highlightPos.y = HighlightSitHeight;
+                tileHighlight.position = highlightPos;
+                selectedTileHighlight.position = highlightPos;
+
+                tileHighlight.gameObject.SetActive(true);
+
+                // If the user clicked the LMB...
+                if (Input.GetMouseButtonDown(0))
+                {
+                    AttemptPlaceStructure(tile);
+                }
+            }
+            else
+            {
+                Vector3 hitPos = hitGround.point;
+                hitPos.y = structure.sitHeight;
+                structure.transform.position = hitPos;
+
+                SetStructureColour(Color.Lerp(Color.white, Color.red, ColourLerpAmount));
+
+                if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+                if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
+
+                ResetEnvironmentTransparency();
+                TurnOffPreview();
             }
         }
         else
         {
-            if (hoverEnvironment)
-            {
-                hoverEnvironment.SetOpacity(1.0f);
-                hoverEnvironment = null;
-            }
+            tileHighlight.gameObject.SetActive(false);
+            ResetEnvironmentTransparency();
+            TurnOffPreview();
+            HideBuilding();
         }
         if (Input.GetMouseButtonUp(1))
         {
@@ -1024,14 +1039,7 @@ public class StructureManager : MonoBehaviour
                     structure.ManuallyAllocate(0);
                 }
             }
-            // turn off all the resourceHighlights
-            foreach (Transform highlight in resourceHighlights)
-            {
-                if (highlight.gameObject.activeSelf)
-                {
-                    highlight.gameObject.SetActive(false);
-                }
-            }
+            TurnOffPreview();
         }
     }
 
@@ -1142,19 +1150,8 @@ public class StructureManager : MonoBehaviour
                 }
                 structureState = StructManState.Selected;
             }
-            // turn off all the resourceHighlights
-            foreach (Transform highlight in resourceHighlights)
-            {
-                if (highlight.gameObject.activeSelf)
-                {
-                    highlight.gameObject.SetActive(false);
-                }
-            }
-            if (hoverEnvironment)
-            {
-                hoverEnvironment.SetOpacity(1.0f);
-                hoverEnvironment = null;
-            }
+            TurnOffPreview();
+            ResetEnvironmentTransparency();
         }
     }
 
@@ -1232,31 +1229,116 @@ public class StructureManager : MonoBehaviour
         // get all the tiles
         TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
         PGPlayableTiles = new List<TileBehaviour>();
+        List<TileBehaviour> PGStartingTiles = new List<TileBehaviour>();
+
+        Vector3 longhausTilePos = FindObjectOfType<Longhaus>().attachedTile.transform.position;
+        float startingAreaRadius = 6f;
+
         for (int i = 0; i < tiles.Length; i++)
         {
-            if (Application.isEditor) { tiles[i].DetectStructure(); }
+            if (Application.isEditor)
+            {
+                tiles[i].DetectStructure(); 
+            }
             // if the tile is playable and it doesn't have a structure already
             if (tiles[i].GetPlayable() && tiles[i].GetAttached() == null)
             {
                 PGPlayableTiles.Add(tiles[i]);
+                // if the tile is also within currentRadius units from the longhaus (if the tile is within the starting area)
+                if ((tiles[i].transform.position - longhausTilePos).magnitude <= startingAreaRadius)
+                {
+                    PGStartingTiles.Add(tiles[i]);
+                }
             }
         }
 
+        // in a small radius around the Longhaus, make sure that a certain quota of fields, forests and hills have been generated.
+        // 12 hills, then
+        // 18 forests, then
+        // 24 fields
+        // STARTING AREA
         int hillsPlaced = 0;
+        int forestPlaced = 0;
+        int plainsPlaced = 0;
+        bool continueStartingAreaGeneration = true;
+        while (continueStartingAreaGeneration)
+        {
+            if (hillsPlaced < HillsInStartingArea && PGStartingTiles.Count > 0)
+            {
+                TileBehaviour tile = PGStartingTiles[UnityEngine.Random.Range(0, PGStartingTiles.Count)];
+                List<TileBehaviour> toBeRemoved = PGRecursiveWander(StructureNames.MetalEnvironment, tile, ref hillsPlaced, HillsInStartingArea, recursiveHGrowthChance);
+                foreach (TileBehaviour removalTarget in toBeRemoved)
+                {
+                    if (PGStartingTiles.Contains(removalTarget))
+                    {
+                        PGStartingTiles.Remove(removalTarget);
+                    }
+                }
+            }
+
+            if (forestPlaced < ForestsInStartingArea && PGStartingTiles.Count > 0)
+            {
+                TileBehaviour tile = PGStartingTiles[UnityEngine.Random.Range(0, PGStartingTiles.Count)];
+                List<TileBehaviour> toBeRemoved = PGRecursiveWander(StructureNames.LumberEnvironment, tile, ref forestPlaced, ForestsInStartingArea, recursiveFGrowthChance);
+                foreach (TileBehaviour removalTarget in toBeRemoved)
+                {
+                    if (PGStartingTiles.Contains(removalTarget))
+                    {
+                        PGStartingTiles.Remove(removalTarget);
+                    }
+                }
+            }
+
+            if (plainsPlaced < PlainsInStartingArea && PGStartingTiles.Count > 0)
+            {
+                TileBehaviour tile = PGStartingTiles[UnityEngine.Random.Range(0, PGStartingTiles.Count)];
+                List<TileBehaviour> toBeRemoved = PGRecursiveWander(StructureNames.FoodEnvironment, tile, ref plainsPlaced, PlainsInStartingArea, recursivePGrowthChance);
+                foreach (TileBehaviour removalTarget in toBeRemoved)
+                {
+                    if (PGStartingTiles.Contains(removalTarget))
+                    {
+                        PGStartingTiles.Remove(removalTarget);
+                    }
+                }
+            }
+
+            // if we've finished placing all the tiles
+            if (hillsPlaced == HillsInStartingArea && forestPlaced == ForestsInStartingArea && plainsPlaced == PlainsInStartingArea)
+            {
+                break;
+            }
+
+            // if we're out of starting tiles
+            if (PGStartingTiles.Count == 0)
+            {
+                startingAreaRadius += 3f;
+                foreach (TileBehaviour tile in PGPlayableTiles)
+                {
+                    if ((tile.transform.position - longhausTilePos).magnitude <= startingAreaRadius)
+                    {
+                        PGStartingTiles.Add(tile);
+                    }
+                }
+            }
+        }
+
+        Debug.Log("Starting Area grew to: " + startingAreaRadius.ToString() + " units away from the Longhaus.");
+
+
+        // REMAINING GENERATION
+
         while (hillsPlaced < hillsTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
             PGRecursiveWander(StructureNames.MetalEnvironment, tile, ref hillsPlaced, hillsTotal, recursiveHGrowthChance);
         }
 
-        int forestPlaced = 0;
         while (forestPlaced < forestTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
             PGRecursiveWander(StructureNames.LumberEnvironment, tile, ref forestPlaced, forestTotal, recursiveFGrowthChance);
         }
 
-        int plainsPlaced = 0;
         while (plainsPlaced < plainsTotal)
         {
             TileBehaviour tile = PGPlayableTiles[UnityEngine.Random.Range(0, PGPlayableTiles.Count)];
@@ -1269,11 +1351,12 @@ public class StructureManager : MonoBehaviour
         structure.SetColour(_colour);
     }
 
-    private void PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
+    private List<TileBehaviour> PGRecursiveWander(string _environmentType, TileBehaviour _tile, ref int _placed, int _max, float _recursiveChance)
     {
+        List<TileBehaviour> removedTiles = new List<TileBehaviour>();
         if (_placed == _max)
         {
-            return;
+            return removedTiles;
         }
         // plant the environment on the tile,
         // remove the tile from PGPlayableTiles
@@ -1283,26 +1366,29 @@ public class StructureManager : MonoBehaviour
             _placed++;
             PGPlayableTiles.Remove(_tile);
             PGInstatiateEnvironment(_environmentType, _tile);
+            removedTiles.Add(_tile);
         }
 
+        Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = _tile.GetAdjacentTiles();
         // now try the tiles around it
         for (int i = 0; i < 4; i++)
         {
             if (_placed == _max) { break; }
 
-            Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacentsToTile = _tile.GetAdjacentTiles();
             if (adjacentsToTile.ContainsKey((TileBehaviour.TileCode)i))
             {
                 TileBehaviour tileI = adjacentsToTile[(TileBehaviour.TileCode)i];
                 if (PGPlayableTiles.Contains(tileI))
                 {
-                    if (UnityEngine.Random.Range(0f, 100f) <= _recursiveChance * 100f)
+                    if (UnityEngine.Random.Range(0f, 1f) <= _recursiveChance)
                     {
-                        PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance);
+                        removedTiles.AddRange(PGRecursiveWander(_environmentType, tileI, ref _placed, _max, _recursiveChance));
                     }
                 }
             }
         }
+
+        return removedTiles;
     }
 
     private void PGInstatiateEnvironment(string _environmentType, TileBehaviour _tile)
@@ -1328,7 +1414,7 @@ public class StructureManager : MonoBehaviour
     {
         if (structure && structureState == StructManState.Moving)
         {
-            structure.transform.position = Vector3.down * 10f;
+            structure.transform.position = Vector3.down * 1000f;
         }
     }
 
@@ -1554,6 +1640,18 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    private void TurnOffPreview()
+    {
+        // turn off all the resourceHighlights
+        foreach (Transform highlight in resourceHighlights)
+        {
+            if (highlight.gameObject.activeSelf)
+            {
+                highlight.gameObject.SetActive(false);
+            }
+        }
+    }
+
     private void UpdateEnvironmentTransparency()
     {
         if (hoverEnvironment)
@@ -1583,6 +1681,15 @@ public class StructureManager : MonoBehaviour
         {
             opacity = OpacityMaximum;
             opacityAscending = false;
+        }
+    }
+
+    private void ResetEnvironmentTransparency()
+    {
+        if (hoverEnvironment)
+        {
+            hoverEnvironment.SetOpacity(1.0f);
+            hoverEnvironment = null;
         }
     }
 }
