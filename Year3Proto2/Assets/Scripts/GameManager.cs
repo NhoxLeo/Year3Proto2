@@ -128,7 +128,7 @@ public enum SoundType
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
-
+    private static GameObject PuffEffect;
     [HideInInspector]
     public PlayerResources playerResources;
     [HideInInspector]
@@ -385,18 +385,6 @@ public class GameManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
-        {
-            Soldier.SetMaxHealth(1.5f * Soldier.GetMaxHealth());
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
-        {
-            Soldier.SetDamage(1.3f * Soldier.GetDamage());
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
-        {
-            Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
-        }
     }
 
     // Update is called once per frame
@@ -786,5 +774,14 @@ public class GameManager : MonoBehaviour
     public bool GetGameLost()
     {
         return gameover && !victory;
+    }
+
+    public static GameObject GetPuffEffect()
+    {
+        if (!PuffEffect)
+        {
+            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+        }
+        return PuffEffect;
     }
 }

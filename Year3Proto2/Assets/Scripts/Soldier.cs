@@ -15,28 +15,25 @@ public class Soldier : MonoBehaviour
 
     private const float DamageBonusAgainstBatteringRams = 4f;
 
-    private static float MaxHealth = 18.0f;
-    private static float Damage = 3.0f;
-    private static float MovementSpeed = 0.5f;
     // 0 idle, 1 moving, 2 attacking, 3 returning home
     // animation states line up (0, 1, 2), with moving state being used for state 3
     private int state = 0;
     private Enemy target = null;
     private Animator animator;
-    private static GameObject PuffEffect;
     private float health;
+    private float damage;
+    private float movementSpeed;
     private bool canHeal = false;
     private float healRate = 0.5f;
     private Barracks home;
     private bool returnHome;
-    private int ID;
     private int barracksID;
     private float searchTimer = 0f;
     private float searchDelay = 0.3f;
     private float avoidance = 0.05f;
     private List<Soldier> nearbySoldiers = new List<Soldier>();
     private SoldierPath path;
-    private bool waitingOnPath = false;
+    private bool waitOnPath = false;
     private bool haveHomePath = false;
     private float walkHeight = 0f;
     private bool deathCalled = false;
@@ -92,6 +89,9 @@ public class Soldier : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        SetMovementSpeed(home.GetSoldierMovementSpeed());
+        SetDamage(home.GetSoldierDamage());
+        SetHealRate(home.GetSoldierHealRate());
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
         healthbar = healthBarInst.GetComponent<Healthbar>();
@@ -182,10 +182,14 @@ public class Soldier : MonoBehaviour
         }
         if (canHeal)
         {
-            if (health != MaxHealth)
+            float maxHealth = GetMaxHealth();
+            if (health != maxHealth)
             {
                 health += healRate * Time.fixedDeltaTime;
-                if (health > MaxHealth) { health = MaxHealth; }
+                if (health > maxHealth)
+                {
+                    health = maxHealth;
+                }
             }
         }
     }
@@ -344,24 +348,15 @@ public class Soldier : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        health = MaxHealth;
-        if (!PuffEffect)
-        {
-            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
-        }
-    }
-
     private void SearchForEnemies()
     {
-        if (waitingOnPath)
+        if (waitOnPath)
         {
             if (PathManager.GetInstance().RequestPath(this, ref path))
             {
                 target = path.target;
                 state = 1;
-                waitingOnPath = false;
+                waitOnPath = false;
                 haveHomePath = false;
             }
         }
@@ -373,12 +368,10 @@ public class Soldier : MonoBehaviour
                 searchTimer = 0f;
                 if (GetClosestEnemy())
                 {
-                    waitingOnPath = true;
+                    waitOnPath = true;
                 }
             }
         }
-
-
     }
 
     public bool ApplyDamage(float _damage)
@@ -396,7 +389,7 @@ public class Soldier : MonoBehaviour
                 {
                     home.OnSoldierDeath(this);
                 }
-                GameObject puff = Instantiate(PuffEffect);
+                GameObject puff = Instantiate(GameManager.GetPuffEffect());
                 puff.transform.position = transform.position;
                 puff.transform.localScale *= 2f;
                 deathCalled = true;
@@ -413,11 +406,7 @@ public class Soldier : MonoBehaviour
         {
             target.ForgetSoldier();
         }
-        GameObject puff = Instantiate(PuffEffect);
-        puff.transform.position = transform.position;
-        puff.transform.localScale *= 2f;
-        deathCalled = true;
-        Destroy(gameObject);
+        returnHome = true;
     }
 
     public void SwingContact()
@@ -425,9 +414,22 @@ public class Soldier : MonoBehaviour
         if (target && state == 2)
         {
             target.OnDamagedBySoldier(this);
-            if (target.Damage(Damage * (target.enemyName == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
+            if (target.Damage(damage * (target.enemyName == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
             {
                 target = null;
+                Enemy closest = GetClosestEnemy();
+                if (closest)
+                {
+                    float distance = (transform.position - closest.transform.position).magnitude;
+                    if (distance < 0.5f)
+                    {
+                        target = closest;
+                    }
+                    else
+                    {
+                        waitOnPath = true;
+                    }
+                }
             }
             else
             {
@@ -444,7 +446,7 @@ public class Soldier : MonoBehaviour
         Vector3 avoidanceForce = GetAvoidanceForce();
         if (avoidanceForce != Vector3.zero)
         {
-            return avoidanceForce.normalized * MovementSpeed;
+            return avoidanceForce.normalized * movementSpeed;
         }
         return avoidanceForce;
     }
@@ -459,7 +461,7 @@ public class Soldier : MonoBehaviour
         {
             finalMotionVector += GetAvoidanceForce();
         }
-        return finalMotionVector.normalized * MovementSpeed;
+        return finalMotionVector.normalized * movementSpeed;
     }
 
     private Vector3 GetPathVector()
@@ -472,7 +474,7 @@ public class Soldier : MonoBehaviour
         {
              finalMotionVector += GetAvoidanceOnly();
         }
-        return finalMotionVector.normalized * MovementSpeed;
+        return finalMotionVector.normalized * movementSpeed;
     }
 
     private Vector3 GetAvoidanceForce()
@@ -547,16 +549,6 @@ public class Soldier : MonoBehaviour
         return returnHome;
     }
 
-    public void SetID(int _ID)
-    {
-        ID = _ID;
-    }
-
-    public int GetID()
-    {
-        return ID;
-    }
-
     public void SetState(int _state)
     {
         state = _state;
@@ -587,34 +579,24 @@ public class Soldier : MonoBehaviour
         return health;
     }
 
-    public static void SetMaxHealth(float _newMax)
+    public void SetDamage(float _damage)
     {
-        MaxHealth = _newMax;
+        damage = _damage;
     }
 
-    public static float GetMaxHealth()
+    public float GetDamage()
     {
-        return MaxHealth;
+        return damage;
     }
 
-    public static void SetDamage(float _damage)
+    public void SetMovementSpeed(float _speed)
     {
-        Damage = _damage;
+        movementSpeed = _speed;
     }
 
-    public static float GetDamage()
+    public float GetMovementSpeed()
     {
-        return Damage;
-    }
-
-    public static void SetMovementSpeed(float _speed)
-    {
-        MovementSpeed = _speed;
-    }
-
-    public static float GetMovementSpeed()
-    {
-        return MovementSpeed;
+        return movementSpeed;
     }
     private void OnDestroy()
     {
@@ -622,5 +604,26 @@ public class Soldier : MonoBehaviour
         {
             Destroy(healthbar.gameObject);
         }
+    }
+
+    private float GetMaxHealth()
+    {
+        if (home)
+        {
+            return home.GetSoldierMaxHealth();
+        }
+        else
+        {
+            return 0f;
+        }
+    }
+
+    public void OnSetLevel()
+    {
+        SetDamage(home.GetSoldierDamage());
+        SetHealRate(home.GetSoldierHealRate());
+        float oldMaxHealth = GetMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 }

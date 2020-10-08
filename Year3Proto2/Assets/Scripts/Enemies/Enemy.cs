@@ -25,15 +25,9 @@ public enum EnemyState
 
 public abstract class Enemy : MonoBehaviour
 {
-    [HideInInspector]
-    protected static GameObject PuffEffect;
-    [HideInInspector]
     protected float baseHealth = 10.0f;
-    [HideInInspector]
     protected float baseDamage = 2.0f;
-    [HideInInspector]
     protected float health;
-    [HideInInspector]
     protected float damage;
     [HideInInspector]
     public bool nextReturnFalse = false;
@@ -58,7 +52,7 @@ public abstract class Enemy : MonoBehaviour
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
-    protected int observers = 0;
+    protected List<SpottingRange> observers = new List<SpottingRange>();
     protected bool hasPath = false;
     protected EnemyPath path;
     protected float updatePathTimer = 0f;
@@ -82,10 +76,6 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (!PuffEffect)
-        {
-            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
-        }
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
     }
@@ -150,12 +140,15 @@ public abstract class Enemy : MonoBehaviour
     {
         if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
         {
-            enemyState = EnemyState.Action;
-            defenseTarget = _soldier;
-            defending = true;
-            animator.SetBool("Attack", true);
-            action = true;
-            LookAtPosition(_soldier.transform.position);
+            if (!defending)
+            {
+                enemyState = EnemyState.Action;
+                defenseTarget = _soldier;
+                defending = true;
+                animator.SetBool("Attack", true);
+                action = true;
+                LookAtPosition(_soldier.transform.position);
+            }
         }
     }
 
@@ -342,8 +335,6 @@ public abstract class Enemy : MonoBehaviour
         return finalMotionVector.normalized * currentSpeed;
     }
 
-
-
     public Structure GetTarget()
     {
         return target;
@@ -398,19 +389,22 @@ public abstract class Enemy : MonoBehaviour
         return false;
     }
 
-    public void AddObserver()
+    public void SeenByObserver(SpottingRange _observer)
     {
-        observers++;
+        if (!observers.Contains(_observer))
+        {
+            observers.Add(_observer);
+        }
     }
 
-    public void RemoveObserver()
+    public void LostByObserver(SpottingRange _observer)
     {
-        observers--;
+        observers.Remove(_observer);
     }
 
     public bool IsBeingObserved()
     {
-        return observers > 0;
+        return observers.Count > 0;
     }
 
     public TileBehaviour GetCurrentTile()
