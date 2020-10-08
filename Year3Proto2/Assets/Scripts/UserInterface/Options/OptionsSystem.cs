@@ -39,7 +39,7 @@ public class OptionsSystem : MonoBehaviour
 
         // TOGGLES
         OptionToggleData fullscreenData = new OptionToggleData(true);
-        fullscreenData.CallBack(() => Screen.fullScreenMode = fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        fullscreenData.CallBack(() => Screen.fullScreen = fullscreenData.value);
 
         OptionToggleData waveHornData = new OptionToggleData(true);
         waveHornData.CallBack(() => SuperManager.waveHornStart = waveHornData.value);
@@ -55,7 +55,6 @@ public class OptionsSystem : MonoBehaviour
         resolutionData.CallBack(() =>
         {
             Resolution resolution = Screen.resolutions[resolutionData.value];
-            resolution = Screen.currentResolution;
             Screen.SetResolution(resolution.width, resolution.height, fullscreenData.value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
         });
 

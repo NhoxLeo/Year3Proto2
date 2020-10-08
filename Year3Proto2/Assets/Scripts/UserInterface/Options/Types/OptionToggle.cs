@@ -41,7 +41,7 @@ public class OptionToggle : OptionObject, OptionDataBase
     {
         if (toggle && data != null)
         {
-            data.value = !data.value;
+            data.value = toggle.isOn;
             OptionCallback optionCallback = data.GetCallback();
             if(optionCallback != null)
             {
