@@ -61,8 +61,9 @@ public abstract class DefenseStructure : Structure
         enemies.RemoveAll(enemy => !enemy);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         if (alert)
         {
             Destroy(alert.gameObject);

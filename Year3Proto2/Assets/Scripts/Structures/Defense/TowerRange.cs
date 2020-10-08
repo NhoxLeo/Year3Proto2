@@ -31,11 +31,14 @@ public class TowerRange : MonoBehaviour
                         if (!defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
                             defenseParent.GetEnemies().Add(other.transform.parent);
-                            if(!defenseParent.GetAlert() && defenseParent.GetAllocated() <= 0)
+                            if (defenseParent.isPlaced)
                             {
-                                defenseParent.Alert();
-                                MessageBox messageBox = FindObjectOfType<MessageBox>();
-                                messageBox.ShowMessage(defenseParent.GetStructureName() + " has no allocated villagers.", 3.0f);
+                                if (!defenseParent.GetAlert() && defenseParent.GetAllocated() <= 0)
+                                {
+                                    defenseParent.Alert();
+                                    MessageBox messageBox = FindObjectOfType<MessageBox>();
+                                    messageBox.ShowMessage(defenseParent.GetStructureName() + " has no allocated villagers.", 3.0f);
+                                }
                             }
                         }
                     }

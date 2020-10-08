@@ -23,7 +23,22 @@ public class PauseMenu : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                TogglePause();
+                LevelEndscreen levelEndscreen = FindObjectOfType<LevelEndscreen>();
+                if (levelEndscreen)
+                {
+                    if (levelEndscreen.showingVictory)
+                    {
+                        levelEndscreen.HideEndscreen();
+                    }
+                    else if(levelEndscreen.showingDefeat)
+                    {
+                        levelEndscreen.DefeatGoToLevelSelect();
+                    }
+                    else
+                    {
+                        TogglePause();
+                    }
+                }
             }
 
             Time.timeScale = isPaused ? 0.0f : 1.0f;
