@@ -25,7 +25,10 @@ public class TowerRange : MonoBehaviour
                 Enemy enemy = other.transform.parent.GetComponent<Enemy>();
                 if (enemy)
                 {
-                    if (!defenseParent) { GetParent(); }
+                    if (!defenseParent) 
+                    { 
+                        GetParent(); 
+                    }
                     if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
                     {
                         if (!defenseParent.GetEnemies().Contains(other.transform.parent))
@@ -56,7 +59,10 @@ public class TowerRange : MonoBehaviour
                 Enemy enemy = other.transform.parent.GetComponent<Enemy>();
                 if (enemy)
                 {
-                    if (!defenseParent) { GetParent(); }
+                    if (!defenseParent)
+                    { 
+                        GetParent(); 
+                    }
                     if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
                     {
                         if (defenseParent.GetEnemies().Contains(other.transform.parent))

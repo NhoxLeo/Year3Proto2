@@ -297,7 +297,6 @@ MonoBehaviour:
   saveDataStartFrame: 0
   alertPrefab: {fileID: 7858864030562708848, guid: 1eb6737c53d651b4094eb46018508ea8,
     type: 3}
-  soldiers: []
 --- !u!54 &6193169271181408757
 Rigidbody:
   m_ObjectHideFlags: 0

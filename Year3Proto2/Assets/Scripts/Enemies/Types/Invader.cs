@@ -194,7 +194,7 @@ public class Invader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(PuffEffect);
+        GameObject puff = Instantiate(GameManager.GetPuffEffect());
         puff.transform.position = transform.position;
         puff.transform.localScale *= scale;
     }
