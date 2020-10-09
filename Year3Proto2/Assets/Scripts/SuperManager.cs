@@ -8,21 +8,22 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    // AUDIO
+    public static bool DevMode = true;
+
+    // SETTINGS
     public static float AmbientVolume = 1.0f;
     public static float MusicVolume = 1.0f;
     public static float EffectsVolume = 1.0f;
 
-    // CONSTANTS
-    public static bool DevMode = true;
     public static bool waveHornStart = false;
     public static bool messageBox = false;
     public static float CameraSensitivity = 4.0f;
 
+    // CONSTANTS
     public const float ScalingFactor = 1.33f;
     public const float PoorTimberFactor = 0.75f;
 
-
+    // Identifiers
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -60,6 +61,7 @@ public class SuperManager : MonoBehaviour
     public const int VillagersII = 19;
     public const int VillagersIII = 20;
 
+    // Structure Research
     // BARRACKS
     public const int Barracks = 0;
     public const int BarracksSoldierDamage = 1;
