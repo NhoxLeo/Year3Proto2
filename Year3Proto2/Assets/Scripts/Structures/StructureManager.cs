@@ -207,7 +207,7 @@ public static class StructureNames
     public const string Barracks = "Barracks";
     public const string Ballista = "Ballista";
     public const string Catapult = "Catapult";
-    public const string FreezeTower = "Freeze Tower";
+    public const string FreezeTower = "Frost Tower";
     public const string ShockwaveTower = "Shockwave Tower";
     public const string LightningTower = "Lightning Tower";
 
