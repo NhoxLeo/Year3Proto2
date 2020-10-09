@@ -144,9 +144,9 @@ public class Soldier : MonoBehaviour
                 {
                     if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hitStruct, Mathf.Infinity, LayerMask.GetMask("Structure")))
                     {
-                        if (hit.transform.name.Contains("Hill"))
+                        if (hitStruct.transform.name.Contains("Hill"))
                         {
-                            walkHeight = hit.point.y;
+                            walkHeight = hitStruct.point.y;
                         }
                     }
                 }
