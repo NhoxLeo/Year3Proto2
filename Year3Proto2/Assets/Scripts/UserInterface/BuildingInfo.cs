@@ -103,16 +103,6 @@ public class BuildingInfo : MonoBehaviour
             destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
             destroyButtonConfirm.showTooltip = showDestroyConfirm;
         }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            targetStructure.Damage(50.0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            targetStructure.Damage(-50.0f);
-        }
     }
 
     public void SetInfo()
@@ -314,7 +304,8 @@ public class BuildingInfo : MonoBehaviour
             headingTextFloating.text = shortenedName + levelSuffix;
 
             upgradeButton.gameObject.SetActive(true);
-            upgradeButton.interactable = defenseStructure.GetLevel() < 3;
+            bool canAfford = GameManager.GetInstance().playerResources.CanAfford(structMan.QuoteUpgradeCostFor(defenseStructure));
+            upgradeButton.interactable = defenseStructure.GetLevel() < 3 && canAfford;
         }
         else
         {
@@ -395,10 +386,15 @@ public class BuildingInfo : MonoBehaviour
             ResourceBundle upgradeCost = structMan.QuoteUpgradeCostFor(defenseStructure);
             if (upgradeCost.food + upgradeCost.wood + upgradeCost.metal != 0)
             {
+                HUDManager hudMan = HUDManager.GetInstance();
+                GameManager gameMan = GameManager.GetInstance();
                 costComponent.SetActive(true);
-                upgradeButton.interactable = true;
+                upgradeButton.interactable = gameMan.playerResources.CanAfford(upgradeCost);
                 woodText.text = ((int)upgradeCost.wood).ToString();
                 metalText.text = ((int)upgradeCost.metal).ToString();
+                // Set tooltip resource cost text colors based on if player can afford
+                woodText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, upgradeCost.wood, 0f)) ? hudMan.gainColour : hudMan.lossColour;
+                metalText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, 0f, upgradeCost.metal)) ? hudMan.gainColour : hudMan.lossColour;
 
                 tooltipDescription.gameObject.SetActive(true);
                 tooltipDescription.text = "Increases durability and damage.";
@@ -421,9 +417,14 @@ public class BuildingInfo : MonoBehaviour
 
         if (repairCost.wood + repairCost.metal != 0)
         {
+            HUDManager hudMan = HUDManager.GetInstance();
+            GameManager gameMan = GameManager.GetInstance();
             costComponent.SetActive(true);
             woodText.text = ((int)repairCost.wood).ToString();
             metalText.text = ((int)repairCost.metal).ToString();
+            // Set tooltip resource cost text colors based on if player can afford
+            woodText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, repairCost.wood, 0f)) ? hudMan.gainColour : hudMan.lossColour;
+            metalText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, 0f, repairCost.metal)) ? hudMan.gainColour : hudMan.lossColour;
 
             tooltipDescription.gameObject.SetActive(true);
             tooltipDescription.text = repairButton.interactable ? "" : "Cannot repair while recently damaged";
