@@ -8,21 +8,22 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    // AUDIO
+    public static bool DevMode = false;
+
+    // SETTINGS
     public static float AmbientVolume = 1.0f;
     public static float MusicVolume = 1.0f;
     public static float EffectsVolume = 1.0f;
 
-    // CONSTANTS
-    public static bool DevMode = true;
     public static bool waveHornStart = false;
     public static bool messageBox = false;
     public static float CameraSensitivity = 4.0f;
 
+    // CONSTANTS
     public const float ScalingFactor = 1.33f;
     public const float PoorTimberFactor = 0.75f;
 
-
+    // Identifiers
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -60,6 +61,7 @@ public class SuperManager : MonoBehaviour
     public const int VillagersII = 19;
     public const int VillagersIII = 20;
 
+    // Structure Research
     // BARRACKS
     public const int Barracks = 0;
     public const int BarracksSoldierDamage = 1;
@@ -212,6 +214,18 @@ public class SuperManager : MonoBehaviour
     }
 
     [Serializable]
+    public struct AirshipSaveData
+    {
+        public List<string> enemies;
+        public SaveVector3 position;
+        public SaveVector3 targetPosition;
+        public SaveQuaternion orientation;
+        public SaveVector3 initialLocation;
+        public AirshipState state;
+        public int spawnWave;
+    }
+
+    [Serializable]
     public struct StructureSaveData
     {
         // all structures
@@ -244,6 +258,7 @@ public class SuperManager : MonoBehaviour
         public PlayerResources playerResources;
         public Dictionary<string, ResourceBundle> structureCosts;
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
+        public List<AirshipSaveData> airships;
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
         public List<HeavyInvaderSaveData> heavyInvaders;
@@ -273,6 +288,7 @@ public class SuperManager : MonoBehaviour
         public float tempLumber;
         public float tempMetal;
         public float longhausHealth;
+        public int waveAtObjectiveStart;
         public List<Priority> priorities;
     }
 
@@ -288,6 +304,7 @@ public class SuperManager : MonoBehaviour
         public bool showWidgets;
         public bool showPriority;
     }
+
 
     [Serializable]
     public struct ResearchElementDefinition
@@ -411,10 +428,10 @@ public class SuperManager : MonoBehaviour
     public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
     {
         // ID, ID requirement, Win Condition, Modifiers, Base Reward
-        new LevelDefinition(0, NoRequirement,   new List<int>(){ Survive, Villagers, FoodII },                          new List<int>(),                                            1000),
+        new LevelDefinition(0, NoRequirement,   new List<int>(){ Food, Villagers, Survive },                          new List<int>(),                                            1000),
         new LevelDefinition(1, 0,               new List<int>(){ Villagers, Accumulate, SlaughterII },                  new List<int>(){ SnoballPrices },            1250),
         new LevelDefinition(2, 1,               new List<int>(){ Slaughter, Lumber, VillagersII, AccumulateII },        new List<int>(){ DryFields, PoorTimber },                   1500),
-        new LevelDefinition(3, 2,               new List<int>(){ FoodII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, PoorTimber, SwiftFootwork },    1750)
+        new LevelDefinition(3, 2,               new List<int>(){ FoodIII, SlaughterIII,  VillagersIII, AccumulateIII },  new List<int>(){ SnoballPrices, PoorTimber, SwiftFootwork },    1750)
     };
     public static List<ModifierDefinition> ModDefinitions = new List<ModifierDefinition>()
     {
@@ -451,9 +468,9 @@ public class SuperManager : MonoBehaviour
         new WinConditionDefinition(MetalII, "Metal II", "Collect a total of 2000 metal."),
         new WinConditionDefinition(MetalIII, "Metal III", "Collect a total of 3000 metal."),
 
-        new WinConditionDefinition(Villagers, "Villagers", "Train a total of 15 villagers."),
-        new WinConditionDefinition(VillagersII, "Villagers II", "Train a total of 35 villagers."),
-        new WinConditionDefinition(VillagersIII, "Villagers III", "Train a total of 65 villagers."),
+        new WinConditionDefinition(Villagers, "Villagers", "Have a total of 20 villagers."),
+        new WinConditionDefinition(VillagersII, "Villagers II", "Have a total of 40 villagers."),
+        new WinConditionDefinition(VillagersIII, "Villagers III", "Have a total of 60 villagers."),
     };
     public static Dictionary<int, (Vector4, Vector2)> CameraSettings = new Dictionary<int, (Vector4, Vector2)>()
     {
@@ -671,6 +688,7 @@ public class SuperManager : MonoBehaviour
         gameMan.foodSinceObjective = _matchData.tempFood;
         gameMan.lumberSinceObjective = _matchData.tempLumber;
         gameMan.metalSinceObjective = _matchData.tempMetal;
+        gameMan.waveAtObjectiveStart = _matchData.waveAtObjectiveStart;
         structMan.structureCosts = _matchData.structureCosts;
         structMan.structureCounts = _matchData.structureCounts;
         structMan.SetNextStructureID(_matchData.nextStructureID);
@@ -746,6 +764,8 @@ public class SuperManager : MonoBehaviour
             }
         }
 
+        enemyMan.LoadAirships(_matchData.airships);
+
         FindObjectOfType<Longhaus>().SetHealth(_matchData.longhausHealth);
 
         return true;
@@ -774,6 +794,7 @@ public class SuperManager : MonoBehaviour
             structureCosts = structMan.structureCosts,
             structureCounts = structMan.structureCounts,
             playerResources = gameMan.playerResources,
+            airships = new List<AirshipSaveData>(),
             invaders = new List<InvaderSaveData>(),
             heavyInvaders = new List<HeavyInvaderSaveData>(),
             flyingInvaders = new List<EnemySaveData>(),
@@ -792,7 +813,8 @@ public class SuperManager : MonoBehaviour
             tempMetal = gameMan.metalSinceObjective,
             longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
             manuallyAllocated = villMan.GetManuallyAllocated(),
-            priorities = villMan.GetPriorities()
+            priorities = villMan.GetPriorities(),
+            waveAtObjectiveStart = gameMan.waveAtObjectiveStart
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
@@ -900,6 +922,11 @@ public class SuperManager : MonoBehaviour
                 returnHome = soldier.GetReturnHome()
             };
             save.soldiers.Add(saveData);
+        }
+
+        foreach (Airship airship in FindObjectsOfType<Airship>())
+        {
+            save.airships.Add(airship.GenerateSaveData());
         }
 
         // structures
