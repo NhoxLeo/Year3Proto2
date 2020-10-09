@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Petard : Enemy
 {
+    private const float BaseHealth = 15f;
+    private const float BaseDamage = 100f;
     private float explosionRadius = 0.35f;
     private bool barrelExploded = false;
 
@@ -23,7 +25,21 @@ public class Petard : Enemy
     private void FixedUpdate()
     {
         if (stunned) return;
-
+        walkHeight = 0.5f;
+        if (signature.startTile)
+        {
+            Structure attached = signature.startTile.GetAttached();
+            if (attached)
+            {
+                if (attached.GetStructureName() == StructureNames.MetalEnvironment)
+                {
+                    if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                    {
+                        walkHeight = hit.point.y;
+                    }
+                }
+            }
+        }
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -40,6 +56,7 @@ public class Petard : Enemy
                             if ((target.transform.position - transform.position).magnitude < 0.5f)
                             {
                                 Vector3 newPosition = transform.position - (GetAvoidingMotionVector() * Time.fixedDeltaTime);
+                                newPosition.y = walkHeight;
                                 LookAtPosition(newPosition);
                                 transform.position = newPosition;
                             }
@@ -86,6 +103,7 @@ public class Petard : Enemy
                                 break;
                             }
                             Vector3 newPosition = GetNextPositionPathFollow();
+                            newPosition.y = walkHeight;
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
                         }
@@ -95,7 +113,7 @@ public class Petard : Enemy
 
                             // get the motion vector for this frame
                             Vector3 newPosition = transform.position + (GetAvoidingMotionVector() * Time.fixedDeltaTime);
-                            //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
+                            newPosition.y = walkHeight;
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
 
@@ -126,6 +144,7 @@ public class Petard : Enemy
 
     protected override void LookAtPosition(Vector3 _position)
     {
+        _position.y = transform.position.y;
         base.LookAtPosition(_position);
         // fixing animation problems
         transform.forward = transform.right;
@@ -133,15 +152,15 @@ public class Petard : Enemy
 
     public override void Action()
     {
-        SetOffBarrel();
+        SetOffBarrel(target);
     }
 
-    public void SetOffBarrel()
+    public void SetOffBarrel(Structure _hitStructure = null)
     {
         if (!barrelExploded)
         {
             RaycastHit[] hitStructures = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, LayerMask.GetMask("Structure"));
-            GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject, transform.position, Quaternion.identity);
+            GameObject explosion = Instantiate(GameManager.GetExplosion(2), transform.position, Quaternion.identity);
             explosion.transform.localScale *= 2f * explosionRadius;
             foreach (RaycastHit structureHit in hitStructures)
             {
@@ -152,13 +171,21 @@ public class Petard : Enemy
                     {
                         continue;
                     }
+                    if (structure == _hitStructure)
+                    {
+                        continue;
+                    }
                     float damageToThisStructure = damage * (transform.position - structure.transform.position).magnitude / explosionRadius;
                     float clamped = Mathf.Clamp(damageToThisStructure, damage * 0.3f, damage);
                     structure.Damage(clamped);
                 }
             }
-            GameManager.CreateAudioEffect("Explosion", transform.position, 0.6f);
+            GameManager.CreateAudioEffect("Explosion", transform.position, SoundType.SoundEffect, 0.6f);
             barrelExploded = true;
+            if (_hitStructure)
+            {
+                _hitStructure.Damage(damage);
+            }
             Damage(health);
         }
     }
@@ -166,14 +193,14 @@ public class Petard : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(PuffEffect);
+        GameObject puff = Instantiate(GameManager.GetPuffEffect());
         puff.transform.position = transform.position;
     }
 
     public void Initialize(int _level)
     {
-        baseHealth = 15f;
-        baseDamage = 100f;
+        baseHealth = BaseHealth;
+        baseDamage = BaseDamage;
         SetLevel(_level);
         finalSpeed = 0.4f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;

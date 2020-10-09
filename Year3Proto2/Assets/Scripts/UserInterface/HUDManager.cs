@@ -19,16 +19,16 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
+
 public class HUDManager : MonoBehaviour
 {
     private static HUDManager instance;
 
-    private float updateInterval = 0.5f;
+    private float updateInterval = 0.125f;
     private float updateTimer;
 
     UIAnimator animator;
     public bool doShowHUD = true;
-    public bool buildMode = true;
 
     [Header("Resource Cards")]
     [SerializeField] private UIAnimator resourceBar;
@@ -54,9 +54,25 @@ public class HUDManager : MonoBehaviour
 
     [Header("Misc")]
     [SerializeField] private TMP_Text victoryProgress;
+    [SerializeField] private Button villagerButton;
+    [SerializeField] private TMP_Text villagerCost;
+    [SerializeField] private TMP_Text nextWave;
     [SerializeField] private Transform villAlloc;
-    [SerializeField] private GameObject helpScreen;
+    [SerializeField] private UIAnimator helpScreen;
+    [SerializeField] private RectTransform nextWaveTooltip;
+    [SerializeField] private Button nextWaveButton;
     [SerializeField] private BuildPanel buildPanel;
+
+    [SerializeField] private Toggle showVillagerWidgets;
+
+    [SerializeField] private OptionCategoryObject defenceCategory;
+    [SerializeField] private OptionCategoryObject resourceCategory;
+    private int currentTab = 1;
+
+    [Header("Pause Menu")]
+    [SerializeField] private PauseMenu pauseMenu;
+
+    private bool nextWaveUpdate = false;
 
     public static HUDManager GetInstance()
     {
@@ -76,7 +92,10 @@ public class HUDManager : MonoBehaviour
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
         resourceBar.SetVisibility(!showTutorial);
         buildPanel.showPanel = !showTutorial;
-        helpScreen.SetActive(showTutorial);
+        helpScreen.SetVisibility(showTutorial);
+        showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
+        UpdateVillagerWidgetMode();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
     }
 
     void LateUpdate()
@@ -85,13 +104,17 @@ public class HUDManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            doShowHUD = !doShowHUD;
+            if (!pauseMenu.isPaused && !pauseMenu.isHelp)
+            {
+                SetHUD(!doShowHUD);
+            }
         }
 
         updateTimer -= Time.unscaledDeltaTime;
         if (updateTimer <= 0)
         {
             RefreshResources();
+            GameManager.GetInstance().UpdateObjectiveText();
             updateTimer = updateInterval;
         }
 
@@ -139,6 +162,12 @@ public class HUDManager : MonoBehaviour
         }
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
+
+        nextWaveButton.interactable = enemyMan.CanSpawnNextWave();
+        if (nextWaveUpdate)
+        {
+            FetchNextWaveInfo();
+        }
     }
 
     private void GetVictoryInfo()
@@ -160,42 +189,56 @@ public class HUDManager : MonoBehaviour
 
     public void RefreshResources()
     {
+        GameManager gameMan = GameManager.GetInstance();
+        VillagerManager villagerMan = VillagerManager.GetInstance();
+
         // available out of total
-        string availableVillagers = VillagerManager.GetInstance().GetAvailable().ToString("0");
-        string villagers = VillagerManager.GetInstance().GetVillagers().ToString("0");
-        villagerText.text = availableVillagers + "/" + villagers;
+        string availableVillagers = villagerMan.GetAvailable().ToString("0");
+        string villagers = villagerMan.GetVillagers().ToString("0");
+        if (villagerText.text != availableVillagers + "/" + villagers)
+        {
+            villagerText.text = availableVillagers + "/" + villagers;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        }
 
-        Vector3 velocity = GameManager.GetInstance().GetResourceVelocity();
+        Vector3 resources = gameMan.playerResources.GetResources();
+        Vector3 capacity = gameMan.playerResources.GetCapacity();
+        Vector3 velocity = gameMan.GetResourceVelocity();
 
-        float foodVel = velocity.z;
+        float foodVel = velocity.x;
         string foodVelDP = AddSign(Mathf.Round(foodVel));
-        foodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Food).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Food).ToString() + " (" + foodVelDP + ")";
+        foodText.text = resources.x.ToString("0") + "/" + capacity.x.ToString("0") + " (" + foodVelDP + ")";
         foodText.color = (Mathf.Sign(foodVel) == 1) ? gainColour : lossColour;
-        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Food))
+        if (gameMan.playerResources.ResourceIsFull(ResourceType.Food))
         {
             foodText.color = fullColour;
         }
 
-        float woodVel = velocity.x;
+        float woodVel = velocity.y;
         string woodVelDP = AddSign(Mathf.Round(woodVel));
-        woodText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Wood).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Wood).ToString() + " (" + woodVelDP + ")";
+        woodText.text = resources.y.ToString("0") + "/" + capacity.y.ToString("0") + " (" + woodVelDP + ")";
         woodText.color = (Mathf.Sign(woodVel) == 1) ? gainColour : lossColour;
-        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Wood))
+        if (gameMan.playerResources.ResourceIsFull(ResourceType.Wood))
         {
             woodText.color = fullColour;
         }
 
-        float metalVel = velocity.y;
+        float metalVel = velocity.z;
         string metalVelDP = AddSign(Mathf.Round(metalVel));
-        metalText.text = GameManager.GetInstance().playerResources.Get(ResourceType.Metal).ToString() + "/" + GameManager.GetInstance().playerResources.GetResourceMax(ResourceType.Metal).ToString() + " (" + metalVelDP + ")";
+        metalText.text = resources.z.ToString("0") + "/" + capacity.z.ToString("0") + " (" + metalVelDP + ")";
         metalText.color = (Mathf.Sign(metalVel) == 1) ? gainColour : lossColour;
-        if (GameManager.GetInstance().playerResources.ResourceIsFull(ResourceType.Metal))
+        if (gameMan.playerResources.ResourceIsFull(ResourceType.Metal))
         {
             metalText.color = fullColour;
         }
 
         // Update content size fitters
-        LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
+
+        // Update villager button interation and tooltip text color
+        bool canAffordVillager = gameMan.playerResources.CanAfford(villagerMan.GetVillagerTrainCost());
+        villagerButton.interactable = canAffordVillager;
+        villagerCost.color = canAffordVillager ? gainColour : lossColour;
     }
 
     public void ShowResourceDelta(int _food, int _wood, int _metal)
@@ -232,12 +275,17 @@ public class HUDManager : MonoBehaviour
     {
         if (_makeNegative)
         {
-            ShowResourceDelta(-_resourceDelta.foodCost, -_resourceDelta.woodCost, -_resourceDelta.metalCost);
+            ShowResourceDelta((int)-_resourceDelta.food, (int)-_resourceDelta.wood, (int)-_resourceDelta.metal);
         }
         else
         {
-            ShowResourceDelta(_resourceDelta.foodCost, _resourceDelta.woodCost, _resourceDelta.metalCost);
+            ShowResourceDelta((int)_resourceDelta.food, (int)_resourceDelta.wood, (int)_resourceDelta.metal);
         }
+    }
+
+    public void SetHUD(bool _active)
+    {
+        doShowHUD = _active;
     }
 
     public void SetOverUI(bool _isOver)
@@ -258,24 +306,18 @@ public class HUDManager : MonoBehaviour
     public void HideHelpScreen()
     {
         SuperManager.GetInstance().SetShowTutorial(false);
-        Invoke("DisableHelpScreen", 2.0f);
+        buildPanel.SetPanelVisibility(true);
     }
 
-    private void DisableHelpScreen()
+    public void UpdateVillagerWidgetMode()
     {
-        helpScreen.SetActive(false);
+        SetVillagerWidgets(showVillagerWidgets.isOn);
     }
 
-    public void ToggleHUDMode()
+    private void SetVillagerWidgets(bool _villagers)
     {
-        buildMode = !buildMode;
-        SetAllVillagerWidgets(!buildMode);
-    }
-
-    public void SetHudMode(bool _buildMode)
-    {
-        buildMode = _buildMode;
-        SetAllVillagerWidgets(!buildMode);
+        SuperManager.GetInstance().SetShowWidgets(_villagers);
+        SetAllVillagerWidgets(_villagers);
     }
 
     public void SetVillagerWidgetVisibility(UIAnimator _widget, bool _visible)
@@ -294,6 +336,82 @@ public class HUDManager : MonoBehaviour
         {
             SetVillagerWidgetVisibility(villAlloc.transform.GetChild(i).GetComponent<UIAnimator>(), _enabled);
         }
-        Debug.Log(villAlloc.transform.childCount);
+    }
+
+    public void FetchVillagerInfo()
+    {
+        // Get info about the cost to train a Villager
+        villagerCost.text = ((int)VillagerManager.GetInstance().GetVillagerTrainCost().food).ToString();
+    }
+
+    public void TrainVillager()
+    {
+        VillagerManager.GetInstance().TrainVillager();
+        FetchVillagerInfo();
+    }
+
+    public void SetNextWaveUpdate(bool _update)
+    {
+        nextWaveUpdate = _update;
+    }
+
+    public void FetchNextWaveInfo()
+    {
+        EnemyManager enemyMan = EnemyManager.GetInstance();
+
+        string time = "Time until the next wave spawns naturally: " + enemyMan.GetTime().ToString("0");
+        // Time until next wave spawns:  + spawnDelay
+        // You must clear the current wave before you can spawn the next one. Remaning enemies from current wave:  + enemies
+        string remaining = "";
+        if (!enemyMan.CanSpawnNextWave())
+        {
+            remaining += "\n\nYou must clear the current wave before you can spawn the next one. Remaining enemies from current wave: " + enemyMan.GetEnemiesLeftCurrentWave();
+        }
+
+        //nextWave.text = ;
+        // enemies remaining from previous wave, necessary before spawning next wave
+        // time before next wave spawns
+        // 
+        nextWave.text = time + remaining;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(nextWaveTooltip);
+    }
+
+    public void NextWave()
+    {
+        EnemyManager enemyMan = EnemyManager.GetInstance();
+        if (enemyMan.CanSpawnNextWave())
+        {
+            EnemyManager.GetInstance().SpawnNextWave();
+        }
+    }
+
+    public void SetCurrentTab(int _tab)
+    {
+        currentTab = _tab;
+    }
+
+    public void SwitchTabs()
+    {
+        if (currentTab == 0)
+        {
+            resourceCategory.SwitchTo();
+            currentTab = 1;
+        }
+        else
+        {
+            defenceCategory.SwitchTo();
+            currentTab = 0;
+        }
+    }
+
+    public int GetCurrentTab()
+    {
+        return currentTab;
+    }
+
+    public void ToggleShowVillagers()
+    {
+        showVillagerWidgets.isOn = !showVillagerWidgets.isOn;
+        UpdateVillagerWidgetMode();
     }
 }

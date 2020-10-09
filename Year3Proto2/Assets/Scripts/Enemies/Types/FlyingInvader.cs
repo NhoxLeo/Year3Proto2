@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FlyingInvader : Enemy
 {
+    private const float BaseHealth = 45f;
+    private const float BaseDamage = 100f;
     private float barrelDropDelay = 4.0f;
     private float barrelDropTimer = 0.0f;
     private static GameObject Barrel = null;
@@ -12,15 +14,19 @@ public class FlyingInvader : Enemy
         base.Awake();
         structureTypes = new List<StructureType>()
         {
-            StructureType.Storage,
-            StructureType.Longhaus,
-            StructureType.Defense
+            StructureType.Longhaus
         };
         enemyName = EnemyNames.FlyingInvader;
         if (!Barrel)
         {
             Barrel = Resources.Load("FlyingInvaderBarrel") as GameObject;
         }
+
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthBarInst.SetActive(false);
     }
 
     // Update is called once per frame
@@ -93,7 +99,7 @@ public class FlyingInvader : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(PuffEffect);
+        GameObject puff = Instantiate(GameManager.GetPuffEffect());
         puff.transform.position = transform.position;
         puff.transform.localScale *= 2f;
     }
@@ -154,8 +160,8 @@ public class FlyingInvader : Enemy
 
     public void Initialize(int _level)
     {
-        baseHealth = 45f;
-        baseDamage = 100f;
+        baseHealth = BaseHealth;
+        baseDamage = BaseDamage;
         SetLevel(_level);
         finalSpeed = 0.25f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;

@@ -2382,6 +2382,7 @@ GameObject:
   - component: {fileID: 6560535888289969877}
   - component: {fileID: 879422986561904764}
   - component: {fileID: 1442182035810083811}
+  - component: {fileID: 8168733773891910823}
   m_Layer: 5
   m_Name: BuildingInfo
   m_TagString: Untagged
@@ -2465,6 +2466,7 @@ MonoBehaviour:
   showDestroyConfirm: 0
   destroyButtonConfirm: {fileID: 6788745574507910283}
   trainVillagerButton: {fileID: 6703620290666257189}
+  trainVillagerCost: {fileID: 7497131773579802321}
   tooltipTransform: {fileID: 3423048170752512865}
   tooltipHeading: {fileID: 1060708849689921089}
   costComponent: {fileID: 660843792707232636}
@@ -2473,6 +2475,49 @@ MonoBehaviour:
   tooltipDescription: {fileID: 4150027405401169793}
   doAutoUpdate: 1
   updateInterval: 1
+--- !u!114 &8168733773891910823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5443361779459252360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_MethodName: SetIsOverUI
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_MethodName: SetIsOverUI
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &5975357557036698207
 GameObject:
   m_ObjectHideFlags: 0
@@ -3951,15 +3996,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bccad2a79d9fc164c8b0167db8f0a601, type: 3}
---- !u!1 &9205154951219447275 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
-    type: 3}
-  m_PrefabInstance: {fileID: 1789396303130159755}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7590806739269839453 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8179312044486000854, guid: bccad2a79d9fc164c8b0167db8f0a601,
+    type: 3}
+  m_PrefabInstance: {fileID: 1789396303130159755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &9205154951219447275 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7451893728440315744, guid: bccad2a79d9fc164c8b0167db8f0a601,
     type: 3}
   m_PrefabInstance: {fileID: 1789396303130159755}
   m_PrefabAsset: {fileID: 0}
@@ -4264,6 +4309,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55886cd92e2201e41a371ef7ebe2b4da, type: 3}
+--- !u!114 &7497131773579802321 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3426256563355585339, guid: 55886cd92e2201e41a371ef7ebe2b4da,
+    type: 3}
+  m_PrefabInstance: {fileID: 5154276936174648810}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &2646159847426567774 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7151337756724990900, guid: 55886cd92e2201e41a371ef7ebe2b4da,
+    type: 3}
+  m_PrefabInstance: {fileID: 5154276936174648810}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8050950360238568983 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2899494776023747581, guid: 55886cd92e2201e41a371ef7ebe2b4da,
@@ -4276,12 +4339,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &2646159847426567774 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7151337756724990900, guid: 55886cd92e2201e41a371ef7ebe2b4da,
-    type: 3}
-  m_PrefabInstance: {fileID: 5154276936174648810}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5937898241499497809
 PrefabInstance:
   m_ObjectHideFlags: 0

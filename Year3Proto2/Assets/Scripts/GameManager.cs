@@ -7,13 +7,13 @@ using System;
 [Serializable]
 public struct PlayerResources
 {
-    private int food;
-    private int foodMax;
-    private int metal;
-    private int metalMax;
-    private int wood;
-    private int woodMax;
-    public PlayerResources(int _startAmount, int _maxAmount)
+    private float food;
+    private float foodMax;
+    private float metal;
+    private float metalMax;
+    private float wood;
+    private float woodMax;
+    public PlayerResources(float _startAmount, float _maxAmount)
     {
         wood = _startAmount;
         metal = _startAmount;
@@ -24,37 +24,13 @@ public struct PlayerResources
         foodMax = _maxAmount;
     }
 
-    public void AddBatch(ResourceBatch _batch)
-    {
-        switch (_batch.type)
-        {
-            case ResourceType.Wood:
-                wood += _batch.amount;
-                if (wood > woodMax) { wood = woodMax; }
-                break;
-            case ResourceType.Metal:
-                metal += _batch.amount;
-                if (metal > metalMax) { metal = metalMax; }
-                break;
-            case ResourceType.Food:
-                food += _batch.amount;
-                if (food > foodMax) { food = foodMax; }
-                if (food < 0)
-                {
-                    VillagerManager.GetInstance().AddStarveTicks(-food);
-                    food = 0;
-                }
-                break;
-        }
-    }
-
     public bool AttemptPurchase(ResourceBundle _cost)
     {
         if (CanAfford(_cost))
         {
-            wood -= _cost.woodCost;
-            metal -= _cost.metalCost;
-            food -= _cost.foodCost;
+            wood -= _cost.wood;
+            metal -= _cost.metal;
+            food -= _cost.food;
             return true;
         }
         else return false;
@@ -62,71 +38,34 @@ public struct PlayerResources
 
     public bool CanAfford(ResourceBundle _cost)
     {
-        return (wood >= _cost.woodCost || _cost.woodCost <= 0) && (metal >= _cost.metalCost || _cost.metalCost <= 0) && (food >= _cost.foodCost || _cost.foodCost <= 0);
-    }
-
-    public void DeductResource(ResourceType _type, int _deduction)
-    {
-        switch (_type)
-        {
-            case ResourceType.Wood:
-                wood -= _deduction;
-                break;
-            case ResourceType.Metal:
-                metal -= _deduction;
-                break;
-            case ResourceType.Food:
-                food -= _deduction;
-                break;
-        }
+        return (wood >= _cost.wood || _cost.wood <= 0) && (metal >= _cost.metal || _cost.metal <= 0) && (food >= _cost.food || _cost.food <= 0);
     }
 
     public void DeductResourceBundle(ResourceBundle _bundle)
     {
-        wood -= _bundle.woodCost;
-        metal -= _bundle.metalCost;
-        food -= _bundle.foodCost;
+        wood -= _bundle.wood;
+        metal -= _bundle.metal;
+        food -= _bundle.food;
     }
 
     public void AddResourceBundle(ResourceBundle _bundle)
     {
-        wood += _bundle.woodCost;
-        metal += _bundle.metalCost;
-        food += _bundle.foodCost;
-    }
-
-    public int Get(ResourceType _type)
-    {
-        int value = 0;
-        switch (_type)
+        food += _bundle.food;
+        if (food > foodMax) { food = foodMax; }
+        if (food < 0)
         {
-            case ResourceType.Wood:
-                value = wood;
-                break;
-            case ResourceType.Metal:
-                value = metal;
-                break;
-            case ResourceType.Food:
-                value = food;
-                break;
+            VillagerManager.GetInstance().AddStarveTicks(-food);
+            food = 0; 
         }
-        return value;
-    }
 
-    public int GetResourceMax(ResourceType _type)
-    {
-        switch (_type)
-        {
-            case ResourceType.Wood:
-                return woodMax;
-            case ResourceType.Metal:
-                return metalMax;
-            case ResourceType.Food:
-                return foodMax;
-            default:
-                break;
-        }
-        return 0;
+
+        wood += _bundle.wood;
+        if (wood > woodMax) { wood = woodMax; }
+        if (wood < 0) { wood = 0; }
+
+        metal += _bundle.metal;
+        if (metal > metalMax) { metal = metalMax; }
+        if (metal < 0) { metal = 0; }
     }
 
     public bool ResourceIsFull(ResourceType _type)
@@ -145,7 +84,7 @@ public struct PlayerResources
         return false;
     }
 
-    public void SetMaximum(ResourceType _type, int _newMax)
+    public void SetMaximum(ResourceType _type, float _newMax)
     {
         switch (_type)
         {
@@ -161,35 +100,35 @@ public struct PlayerResources
         }
     }
 
-    public bool AllGreaterOrEqualTo(int _amount)
+    public Vector3 GetResources()
     {
-        return wood >= _amount && metal >= _amount && food >= _amount;
+        return new Vector3(food, wood, metal);
+    }
+
+    public Vector3 GetCapacity()
+    {
+        return new Vector3(foodMax, woodMax, metalMax);
+    }
+
+    public void CheatSetMaxed()
+    {
+        food = foodMax;
+        wood = woodMax;
+        metal = metalMax;
     }
 }
 
-public class ResourceBatch
+public enum SoundType
 {
-    public float age;
-    public int amount;
-    public ResourceType type;
-
-    public ResourceBatch(int _amount, ResourceType _type)
-    {
-        age = 0f;
-        amount = _amount;
-        type = _type;
-    }
-
-    public void AddTime(float _time)
-    {
-        age += _time;
-    }
+    SoundEffect,
+    Music,
+    Ambient
 }
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
-
+    private static GameObject PuffEffect;
     [HideInInspector]
     public PlayerResources playerResources;
     [HideInInspector]
@@ -199,6 +138,8 @@ public class GameManager : MonoBehaviour
     private bool gameover = false;
     [HideInInspector]
     public bool victory = false;
+    [HideInInspector]
+    public bool freePlay = false;
     private float gameoverTimer = 5.0f;
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
@@ -212,8 +153,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool repairMessage = false;
     [HideInInspector]
-    public bool longhausDead;
-    [HideInInspector]
     public bool repairAll = false;
     private float volumeFull;
     private float panelRefreshTimer = 0.0f;
@@ -222,16 +161,45 @@ public class GameManager : MonoBehaviour
     public bool gameAlreadyWon = false;
     public int objectivesCompleted = 0;
     public List<int> objectives;
-    public int foodSinceObjective = 0;
-    public int lumberSinceObjective = 0;
-    public int metalSinceObjective = 0;
+    public float foodSinceObjective = 0;
+    public float lumberSinceObjective = 0;
+    public float metalSinceObjective = 0;
+    public bool cheatAlwaysMaxed = false;
+    public static bool ShowEnemyHealthbars = true;
+
+    private AudioSource music;
+    private AudioSource ambience;
+    private float musicVolume;
+    private float ambienceVolume;
+    private static GameObject ExplosionOne = null;
+    private static GameObject ExplosionTwo = null;
 
     public static GameManager GetInstance()
     {
         return instance;
     }
 
-    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
+    public static GameObject GetExplosion(int _variant)
+    {
+        if (_variant == 1)
+        {
+            if (!ExplosionOne)
+            {
+                ExplosionOne = Resources.Load("Explosion") as GameObject;
+            }
+            return ExplosionOne;
+        }
+        else
+        {
+            if (!ExplosionTwo)
+            {
+                ExplosionTwo = Resources.Load("ExplosionPetard") as GameObject;
+            }
+            return ExplosionTwo;
+        }
+    }
+
+    public static void CreateAudioEffect(string _sfxName, Vector3 _positon, SoundType _type = SoundType.SoundEffect, float _volume = 1.0f, bool _spatial = true, float _dopplerLevel = 0f)
     {
         GameObject spawnAudio = new GameObject("TemporarySoundObject");
         spawnAudio.transform.position = _positon;
@@ -243,32 +211,26 @@ public class GameManager : MonoBehaviour
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
         spawnAudioComp.maxDistance = 100f;
         spawnAudioComp.clip = audioClips[_sfxName];
+        switch (_type)
+        {
+            case SoundType.SoundEffect:
+            spawnAudioComp.volume = _volume * SuperManager.EffectsVolume;
+                break;
+            case SoundType.Music:
+            spawnAudioComp.volume = _volume * SuperManager.MusicVolume;
+                break;
+            case SoundType.Ambient:
+            spawnAudioComp.volume = _volume * SuperManager.AmbientVolume;
+                break;
+            default:
+                break;
+        }
         spawnAudioComp.Play();
-        spawnAudioComp.volume = _volume;
     }
 
     public static void IncrementRepairCount()
     {
         repairCount++;
-    }
-
-    public void AddBatch(ResourceBatch _newBatch)
-    {
-        playerResources.AddBatch(_newBatch);
-        switch (_newBatch.type)
-        {
-            case ResourceType.Wood:
-                lumberSinceObjective += _newBatch.amount;
-                break;
-            case ResourceType.Metal:
-                metalSinceObjective += _newBatch.amount;
-                break;
-            case ResourceType.Food:
-                foodSinceObjective += _newBatch.amount;
-                break;
-            default:
-                break;
-        }
     }
 
     public void CalculateStorageMaximum()
@@ -278,8 +240,7 @@ public class GameManager : MonoBehaviour
         int newFoodMax = Longhaus.foodStorage;
 
         // gets every structure and adds to find totals.
-        StorageStructure[] storageStructures = FindObjectsOfType<StorageStructure>();
-        foreach (StorageStructure storageStructure in storageStructures)
+        foreach (StorageStructure storageStructure in FindObjectsOfType<StorageStructure>())
         {
             if (storageStructure.GetHealth() > 0f)
             {
@@ -309,7 +270,7 @@ public class GameManager : MonoBehaviour
     {
         Vector3 resourceVelocity = Vector3.zero;
 
-        foreach (Structure structure in FindObjectsOfType<Structure>())
+        foreach (Structure structure in StructureManager.GetInstance().GetPlayerStructures())
         {
             resourceVelocity += structure.GetResourceDelta();
         }
@@ -407,7 +368,12 @@ public class GameManager : MonoBehaviour
             { "Explosion", Resources.Load("Audio/SFX/sfxExplosion") as AudioClip },
             { "Zap", Resources.Load("Audio/SFX/sfxLightning") as AudioClip },
             { "Thud", Resources.Load("Audio/SFX/sfxShockwave") as AudioClip },
-        };        objectives = SuperManager.GetInstance().GetCurrentWinConditions();
+        };
+        objectives = SuperManager.GetInstance().GetCurrentWinConditions();
+        music = GetComponents<AudioSource>()[0];
+        ambience = GetComponents<AudioSource>()[1];
+        musicVolume = music.volume;
+        ambienceVolume = ambience.volume;
     }
 
     // Start is called before the first frame update
@@ -419,28 +385,38 @@ public class GameManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
-        {
-            Soldier.SetMaxHealth(1.5f * Soldier.GetMaxHealth());
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
-        {
-            Soldier.SetDamage(1.3f * Soldier.GetDamage());
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
-        {
-            Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        CheckControls();
+        // get resourceDelta
+        ResourceBundle resourcesThisFrame = new ResourceBundle(GetResourceVelocity() * Time.deltaTime);
+        foodSinceObjective += Mathf.Clamp(resourcesThisFrame.food, 0f, resourcesThisFrame.food);
+        lumberSinceObjective += Mathf.Clamp(resourcesThisFrame.wood, 0f, resourcesThisFrame.wood);
+        metalSinceObjective += Mathf.Clamp(resourcesThisFrame.metal, 0f, resourcesThisFrame.metal);
+        playerResources.AddResourceBundle(resourcesThisFrame);
+
+
+        // Hold both mouse buttons
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
-            repairAll = true;
-            RepairAll();
+            if (SuperManager.DevMode)
+            {
+                // Press M
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    cheatAlwaysMaxed = !cheatAlwaysMaxed;
+                }
+            }
         }
+
+        if (SuperManager.DevMode && cheatAlwaysMaxed)
+        {
+            playerResources.CheatSetMaxed();
+        }
+
 
         if (!tutorialDone)
         {
@@ -484,6 +460,12 @@ public class GameManager : MonoBehaviour
 
                 switch (buildingI)
                 {
+                    case BuildPanel.Buildings.Ballista:
+                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Ballista))
+                        {
+                            continue;
+                        }
+                        break;
                     case BuildPanel.Buildings.Catapult:
                         if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
                         {
@@ -526,13 +508,13 @@ public class GameManager : MonoBehaviour
 
         if (!gameover)
         {
-            if (longhausDead)
+            if (GlobalData.longhausDead)
             {
                 gameover = true;
                 victory = false;
                 messageBox.ShowMessage("You Lost!", 3f);
-                GetComponents<AudioSource>()[0].DOFade(0f, 1f);
-                CreateAudioEffect("lose", Vector3.zero, 1f, false);
+                music.DOFade(0f, 0.5f);
+                CreateAudioEffect("lose", Vector3.zero, SoundType.Music, 1f, false);
             }
             else
             {
@@ -559,12 +541,70 @@ public class GameManager : MonoBehaviour
                     victory = true;
                     SuperManager.GetInstance().OnLevelComplete();
                     messageBox.ShowMessage("You Win!", 5f);
-                    GetComponents<AudioSource>()[0].DOFade(0f, 1f);
-                    CreateAudioEffect("win", Vector3.zero, 1f, false);
+                    music.DOFade(0f, 0.5f);
+                    CreateAudioEffect("win", Vector3.zero, SoundType.Music, 1f, false);
                 }
             }            
         }
 
+        if (gameover)
+        {
+            if (victory)
+            {
+                if (musicDelay == 3f)
+                {
+                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
+                }
+                musicDelay -= Time.deltaTime;
+                if (musicDelay < 0f && !musicBackOn)
+                {
+                    music.DOFade(musicVolume * SuperManager.MusicVolume, 2f);
+                    musicBackOn = true;
+                }
+            }
+            else
+            {
+                if (gameoverTimer == 5f)
+                {
+                    FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
+                }
+                gameoverTimer -= Time.deltaTime;
+                if (gameoverTimer < 0f && !switchingScene)
+                {
+                    //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                    switchingScene = true;
+                }
+            }
+        }
+        
+
+        if (!gameover || musicDelay < -2f)
+        {
+            music.volume = musicVolume * SuperManager.MusicVolume;
+            ambience.volume = ambienceVolume * SuperManager.AmbientVolume;
+        }
+
+    }
+
+    public void SaveMatch()
+    {
+        SuperManager.GetInstance().SaveCurrentMatch();
+    }
+
+    public void OnRestart()
+    {
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.ClearCurrentMatch();
+        superMan.PlayLevel(superMan.GetCurrentLevel());
+    }
+
+    public bool AllObjectivesCompleted()
+    {
+        return objectives.Count == objectivesCompleted;
+    }
+
+    public void UpdateObjectiveText()
+    {
         if (objectivesCompleted < objectives.Count)
         {
             string completion = "(" + (objectivesCompleted).ToString() + "/" + objectives.Count.ToString() + ") ";
@@ -583,31 +623,31 @@ public class GameManager : MonoBehaviour
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
                     break;
                 case SuperManager.Food:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.FoodII:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.FoodIII:
-                    objCompletion = " (" + foodSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/3000)";
                     break;
                 case SuperManager.Lumber:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.LumberII:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.LumberIII:
-                    objCompletion = " (" + lumberSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)lumberSinceObjective).ToString() + "/3000)";
                     break;
                 case SuperManager.Metal:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/1000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/1000)";
                     break;
                 case SuperManager.MetalII:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/2000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/2000)";
                     break;
                 case SuperManager.MetalIII:
-                    objCompletion = " (" + metalSinceObjective.ToString() + "/3000)";
+                    objCompletion = " (" + ((int)metalSinceObjective).ToString() + "/3000)";
                     break;
                 default:
                     break;
@@ -619,52 +659,60 @@ public class GameManager : MonoBehaviour
         {
             HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
         }
+    }
 
-        if (gameover)
+    private void CheckControls()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (victory)
-            {
-                if (musicDelay == 3f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
-                }
-                musicDelay -= Time.deltaTime;
-                if (musicDelay < 0f && !musicBackOn)
-                {
-                    GetComponents<AudioSource>()[0].DOFade(volumeFull, 2f);
-                    musicBackOn = true;
-                }
-            }
-            else
-            {
-                if (gameoverTimer == 5f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
-                }
-                gameoverTimer -= Time.deltaTime;
-                if (gameoverTimer < 0f && !switchingScene)
-                {
-                    //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
-                    switchingScene = true;
-                }
-            }
+            repairAll = true;
+            RepairAll();
         }
-    }
-    public void SaveMatch()
-    {
-        SuperManager.GetInstance().SaveCurrentMatch();
-    }
 
-    public void OnRestart()
-    {
-        SuperManager superMan = SuperManager.GetInstance();
-        superMan.ClearCurrentMatch();
-        superMan.PlayLevel(superMan.GetCurrentLevel());
-    }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ShowEnemyHealthbars = !ShowEnemyHealthbars;
+        }
 
-    public bool AllObjectivesCompleted()
-    {
-        return objectives.Count == objectivesCompleted;
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            HUDManager.GetInstance().SwitchTabs();
+        }
+
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            HUDManager.GetInstance().ToggleShowVillagers();
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            VillagerManager.GetInstance().TrainVillager();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+        }
     }
 
     private bool CheckNextWinConditionIsMet()
@@ -675,11 +723,11 @@ public class GameManager : MonoBehaviour
             switch (currentWinCondition)
             {
                 case SuperManager.Accumulate:
-                    return playerResources.AllGreaterOrEqualTo(1500);
+                    return playerResources.CanAfford(new ResourceBundle(1500f, 1500f, 1500f));
                 case SuperManager.AccumulateII:
-                    return playerResources.AllGreaterOrEqualTo(2500);
+                    return playerResources.CanAfford(new ResourceBundle(2500f, 2500f, 2500f));
                 case SuperManager.AccumulateIII:
-                    return playerResources.AllGreaterOrEqualTo(5000);
+                    return playerResources.CanAfford(new ResourceBundle(5000f, 5000f, 5000f));
                 case SuperManager.Slaughter:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 20;
                 case SuperManager.SlaughterII:
@@ -721,5 +769,19 @@ public class GameManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public bool GetGameLost()
+    {
+        return gameover && !victory;
+    }
+
+    public static GameObject GetPuffEffect()
+    {
+        if (!PuffEffect)
+        {
+            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+        }
+        return PuffEffect;
     }
 }

@@ -14,11 +14,11 @@ GameObject:
   - component: {fileID: 6871674551980845975}
   - component: {fileID: 6378638052756015766}
   m_Layer: 9
-  m_Name: PlainsEnvironment
+  m_Name: Plains
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &867630619333440026
 Transform:
@@ -80,7 +80,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3c4a13d7a1965644884d814a9d1e405b, type: 2}
+  - {fileID: 2100000, guid: ece8763b5c949c34db65574fb9758489, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

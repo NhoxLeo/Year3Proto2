@@ -20,7 +20,7 @@ public class SortTileBonusDescendingHelper : IComparer
 
 public abstract class ResourceStructure : Structure
 {
-    protected const float BaseMaxHealth = 100f;
+    protected const float BaseMaxHealth = 200f;
 
     public class SortTileBonusDescendingHelper : IComparer<ResourceStructure>
     {
@@ -113,12 +113,13 @@ public abstract class ResourceStructure : Structure
                 {
                     if (adjacentsToAttached[(TileBehaviour.TileCode)i].GetPlayable())
                     {
-                        GameObject newTileHighlight = Instantiate(GetTileHighlight(), transform);
+                        GameObject newTileHighlight = Instantiate(StructureManager.GetTileHighlight(), transform);
                         tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
                         Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
-                        highlightPos.y = 0.55f;
+                        highlightPos.y = StructureManager.HighlightSitHeight;
                         newTileHighlight.transform.position = highlightPos;
                         Structure adjStructure = adjacentsToAttached[(TileBehaviour.TileCode)i].GetAttached();
+                        bool tileCounted = false;
                         // If there is a structure on the tile...
                         if (adjStructure)
                         {
@@ -129,30 +130,19 @@ public abstract class ResourceStructure : Structure
                                 {
                                     envStructure.SetExploited(true);
                                     envStructure.SetExploiterID(ID);
-                                    newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                                    tileBonus++;
-                                    AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                                 }
-                                else
+                                // the structure will now definitely be exploited
+                                if (envStructure.GetExploiterID() == ID)
                                 {
-                                    if (envStructure.GetExploiterID() == ID)
-                                    {
-                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
-                                        tileBonus++;
-                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
-                                    }
-                                    else
-                                    {
-                                        newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
-                                    }
+                                    tileCounted = true;
                                 }
                             }
-                            else
-                            {
-                                newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
-                            }
+                        }
+                        if (tileCounted)
+                        {
+                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                            tileBonus++;
+                            AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
                         }
                         else
                         {
@@ -241,15 +231,6 @@ public abstract class ResourceStructure : Structure
         villagers[2] = transform.Find("Villager 3").gameObject;
     }
 
-    private GameObject GetTileHighlight()
-    {
-        if (!TileHighlight)
-        {
-            TileHighlight = Resources.Load("TileHighlight") as GameObject;
-        }
-        return TileHighlight;
-    }
-
     protected override void Update()
     {
         base.Update();
@@ -260,7 +241,7 @@ public abstract class ResourceStructure : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                GameManager.GetInstance().AddBatch(new ResourceBatch(tileBonus * batchSize * allocatedVillagers, resourceType));
+                //GameManager.GetInstance().AddBatch(new ResourceBatch(tileBonus * batchSize * allocatedVillagers, resourceType));
             }
         }
     }
@@ -272,13 +253,13 @@ public abstract class ResourceStructure : Structure
         switch (resourceType)
         {
             case ResourceType.Food:
-                resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * allocatedVillagers / productionTime);
-                break;
-            case ResourceType.Metal:
-                resourceDelta += new Vector3(0f, tileBonus * batchSize * allocatedVillagers / productionTime, 0f);
+                resourceDelta += new Vector3(tileBonus * batchSize * allocatedVillagers / productionTime, 0f, 0f);
                 break;
             case ResourceType.Wood:
-                resourceDelta += new Vector3(tileBonus * batchSize * allocatedVillagers / productionTime, 0f, 0f);
+                resourceDelta += new Vector3(0f, tileBonus * batchSize * allocatedVillagers / productionTime, 0f);
+                break;
+            case ResourceType.Metal:
+                resourceDelta += new Vector3(0f, 0f, tileBonus * batchSize * allocatedVillagers / productionTime);
                 break;
         }
 
@@ -311,10 +292,7 @@ public abstract class ResourceStructure : Structure
         float maxHealth = GetBaseMaxHealth();
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }

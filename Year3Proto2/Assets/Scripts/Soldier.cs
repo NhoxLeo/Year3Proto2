@@ -13,29 +13,32 @@ public class Soldier : MonoBehaviour
 
     private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
 
-    private static float MaxHealth = 18.0f;
-    private static float Damage = 3.0f;
-    private static float MovementSpeed = 0.5f;
+    private const float DamageBonusAgainstBatteringRams = 4f;
+
     // 0 idle, 1 moving, 2 attacking, 3 returning home
     // animation states line up (0, 1, 2), with moving state being used for state 3
     private int state = 0;
     private Enemy target = null;
     private Animator animator;
-    private static GameObject PuffEffect;
     private float health;
+    private float damage;
+    private float movementSpeed;
     private bool canHeal = false;
     private float healRate = 0.5f;
     private Barracks home;
     private bool returnHome;
-    private int ID;
     private int barracksID;
     private float searchTimer = 0f;
     private float searchDelay = 0.3f;
     private float avoidance = 0.05f;
     private List<Soldier> nearbySoldiers = new List<Soldier>();
     private SoldierPath path;
-    private bool waitingOnPath = false;
+    private bool waitOnPath = false;
     private bool haveHomePath = false;
+    private float walkHeight = 0f;
+    private bool deathCalled = false;
+    protected Healthbar healthbar;
+    protected bool showHealthBar = false;
 
     public TileBehaviour GetCurrentTile()
     {
@@ -76,6 +79,7 @@ public class Soldier : MonoBehaviour
 
     private void LookAtPosition(Vector3 _position)
     {
+        _position.y = transform.position.y;
         transform.LookAt(_position);
         // fixing animation problems
         transform.forward = transform.right;
@@ -85,12 +89,67 @@ public class Soldier : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        SetMovementSpeed(home.GetSoldierMovementSpeed());
+        SetDamage(home.GetSoldierDamage());
+        SetHealRate(home.GetSoldierHealRate());
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthbar.pulseOnHealthIncrease = false;
+        healthBarInst.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (healthbar)
+        {
+            if (health < GetMaxHealth())
+            {
+                healthbar.fillAmount = health / GetMaxHealth();
+                showHealthBar = true;
+            }
+            else
+            {
+                showHealthBar = false;
+            }
+            if (!GameManager.ShowEnemyHealthbars || !showHealthBar)
+            {
+                if (healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (!healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(true);
+                }
+            }
+        }
     }
 
     // Update is called once per frame
     private void FixedUpdate()
     {
+        walkHeight = 0.5f;
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            Structure attached = hit.transform.GetComponent<TileBehaviour>().GetAttached();
+            if (attached)
+            {
+                if (attached.GetStructureName() == StructureNames.MetalEnvironment)
+                {
+                    if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hitStruct, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                    {
+                        walkHeight = hitStruct.point.y;
+                    }
+                }
+            }
+        }
+
         // if the soldier has been recalled
         if (returnHome) { state = 3; }
         // if the soldier was responding to a recall but no longer needs to be recalled
@@ -123,10 +182,14 @@ public class Soldier : MonoBehaviour
         }
         if (canHeal)
         {
-            if (health != MaxHealth)
+            float maxHealth = GetMaxHealth();
+            if (health != maxHealth)
             {
                 health += healRate * Time.fixedDeltaTime;
-                if (health > MaxHealth) { health = MaxHealth; }
+                if (health > maxHealth)
+                {
+                    health = maxHealth;
+                }
             }
         }
     }
@@ -161,6 +224,7 @@ public class Soldier : MonoBehaviour
                         }
                     }
                     Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+                    newPosition.y = walkHeight;
                     LookAtPosition(newPosition);
                     transform.position = newPosition;
                 }
@@ -170,7 +234,7 @@ public class Soldier : MonoBehaviour
         else
         {
             haveHomePath = false;
-            if (toHome.magnitude < 0.25f)
+            if (toHome.magnitude < 0.45f)
             {
                 Vector3 avoidance = GetAvoidanceOnly();
                 if (avoidance == Vector3.zero)
@@ -180,6 +244,7 @@ public class Soldier : MonoBehaviour
                 else
                 {
                     Vector3 futurePos = transform.position + (avoidance * Time.fixedDeltaTime);
+                    futurePos.y = walkHeight;
                     LookAtPosition(home.transform.position);
                     transform.position = futurePos;
                     animator.SetInteger("State", 1);
@@ -189,7 +254,9 @@ public class Soldier : MonoBehaviour
             else
             {
                 LookAtPosition(home.transform.position);
-                transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
+                Vector3 futurePos = transform.position + (GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime);
+                futurePos.y = walkHeight;
+                transform.position = futurePos;
                 canHeal = false;
                 animator.SetInteger("State", 1);
             }
@@ -223,6 +290,7 @@ public class Soldier : MonoBehaviour
                 }
             }
             Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
+            newPosition.y = walkHeight;
             LookAtPosition(newPosition);
             transform.position = newPosition;
         }
@@ -230,10 +298,12 @@ public class Soldier : MonoBehaviour
         else
         {
             LookAtPosition(target.transform.position);
-            transform.position += GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime;
+            Vector3 futurePos = transform.position + (GetMotionToTarget(target.transform.position) * Time.fixedDeltaTime);
+            futurePos.y = walkHeight;
+            transform.position = futurePos;
             Vector3 toTarget = target.transform.position - transform.position;
             toTarget.y = 0f;
-            if (toTarget.magnitude < 0.2f)
+            if (toTarget.magnitude < (target.enemyName == EnemyNames.BatteringRam ? 0.5f : 0.2f))
             {
                 state = 2;
             }
@@ -267,7 +337,9 @@ public class Soldier : MonoBehaviour
         if (toHome.magnitude > 0.8f)
         {
             LookAtPosition(home.transform.position);
-            transform.position += GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime;
+            Vector3 futurePos = transform.position + (GetMotionToTarget(home.transform.position) * Time.fixedDeltaTime);
+            futurePos.y = walkHeight;
+            transform.position = futurePos;
             animator.SetInteger("State", 1);
         }
         else
@@ -276,24 +348,15 @@ public class Soldier : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        health = MaxHealth;
-        if (!PuffEffect)
-        {
-            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
-        }
-    }
-
     private void SearchForEnemies()
     {
-        if (waitingOnPath)
+        if (waitOnPath)
         {
             if (PathManager.GetInstance().RequestPath(this, ref path))
             {
                 target = path.target;
                 state = 1;
-                waitingOnPath = false;
+                waitOnPath = false;
                 haveHomePath = false;
             }
         }
@@ -305,12 +368,10 @@ public class Soldier : MonoBehaviour
                 searchTimer = 0f;
                 if (GetClosestEnemy())
                 {
-                    waitingOnPath = true;
+                    waitOnPath = true;
                 }
             }
         }
-
-
     }
 
     public bool ApplyDamage(float _damage)
@@ -318,26 +379,34 @@ public class Soldier : MonoBehaviour
         health -= _damage;
         if (health <= 0f)
         {
-            if (target)
+            if (!deathCalled)
             {
-                target.ForgetSoldier();
-            }
-            if (home)
-            {
-                /*
-                if (home.soldiers.Contains(this))
+                if (target)
                 {
-                    home.soldiers.Remove(this);
+                    target.ForgetSoldier();
                 }
-                */
+                if (home)
+                {
+                    home.OnSoldierDeath(this);
+                }
+                GameObject puff = Instantiate(GameManager.GetPuffEffect());
+                puff.transform.position = transform.position;
+                puff.transform.localScale *= 2f;
+                deathCalled = true;
+                Destroy(gameObject);
             }
-            GameObject puff = Instantiate(PuffEffect);
-            puff.transform.position = transform.position;
-            puff.transform.localScale *= 2f;
-            Destroy(gameObject);
             return true;
         }
         return false;
+    }
+
+    public void VillagerDeallocated()
+    {
+        if (target)
+        {
+            target.ForgetSoldier();
+        }
+        returnHome = true;
     }
 
     public void SwingContact()
@@ -345,9 +414,22 @@ public class Soldier : MonoBehaviour
         if (target && state == 2)
         {
             target.OnDamagedBySoldier(this);
-            if (target.Damage(Damage))
+            if (target.Damage(damage * (target.enemyName == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
             {
                 target = null;
+                Enemy closest = GetClosestEnemy();
+                if (closest)
+                {
+                    float distance = (transform.position - closest.transform.position).magnitude;
+                    if (distance < 0.5f)
+                    {
+                        target = closest;
+                    }
+                    else
+                    {
+                        waitOnPath = true;
+                    }
+                }
             }
             else
             {
@@ -364,7 +446,7 @@ public class Soldier : MonoBehaviour
         Vector3 avoidanceForce = GetAvoidanceForce();
         if (avoidanceForce != Vector3.zero)
         {
-            return avoidanceForce.normalized * MovementSpeed;
+            return avoidanceForce.normalized * movementSpeed;
         }
         return avoidanceForce;
     }
@@ -379,7 +461,7 @@ public class Soldier : MonoBehaviour
         {
             finalMotionVector += GetAvoidanceForce();
         }
-        return finalMotionVector.normalized * MovementSpeed;
+        return finalMotionVector.normalized * movementSpeed;
     }
 
     private Vector3 GetPathVector()
@@ -392,7 +474,7 @@ public class Soldier : MonoBehaviour
         {
              finalMotionVector += GetAvoidanceOnly();
         }
-        return finalMotionVector.normalized * MovementSpeed;
+        return finalMotionVector.normalized * movementSpeed;
     }
 
     private Vector3 GetAvoidanceForce()
@@ -467,16 +549,6 @@ public class Soldier : MonoBehaviour
         return returnHome;
     }
 
-    public void SetID(int _ID)
-    {
-        ID = _ID;
-    }
-
-    public int GetID()
-    {
-        return ID;
-    }
-
     public void SetState(int _state)
     {
         state = _state;
@@ -507,33 +579,51 @@ public class Soldier : MonoBehaviour
         return health;
     }
 
-    public static void SetMaxHealth(float _newMax)
+    public void SetDamage(float _damage)
     {
-        MaxHealth = _newMax;
+        damage = _damage;
     }
 
-    public static float GetMaxHealth()
+    public float GetDamage()
     {
-        return MaxHealth;
+        return damage;
     }
 
-    public static void SetDamage(float _damage)
+    public void SetMovementSpeed(float _speed)
     {
-        Damage = _damage;
+        movementSpeed = _speed;
     }
 
-    public static float GetDamage()
+    public float GetMovementSpeed()
     {
-        return Damage;
+        return movementSpeed;
+    }
+    private void OnDestroy()
+    {
+        if (healthbar)
+        {
+            Destroy(healthbar.gameObject);
+        }
     }
 
-    public static void SetMovementSpeed(float _speed)
+    private float GetMaxHealth()
     {
-        MovementSpeed = _speed;
+        if (home)
+        {
+            return home.GetSoldierMaxHealth();
+        }
+        else
+        {
+            return 0f;
+        }
     }
 
-    public static float GetMovementSpeed()
+    public void OnSetLevel()
     {
-        return MovementSpeed;
+        SetDamage(home.GetSoldierDamage());
+        SetHealRate(home.GetSoldierHealRate());
+        float oldMaxHealth = GetMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 }

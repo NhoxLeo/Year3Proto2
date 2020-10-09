@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TowerRange : MonoBehaviour
 {
-    DefenseStructure defenseParent;
-    int enemyStructureColliderLayer;
+    private DefenseStructure defenseParent;
+    private int enemyStructureColliderLayer;
 
     private void Start()
     {
@@ -27,12 +25,24 @@ public class TowerRange : MonoBehaviour
                 Enemy enemy = other.transform.parent.GetComponent<Enemy>();
                 if (enemy)
                 {
-                    if (!defenseParent) { GetParent(); }
+                    if (!defenseParent) 
+                    { 
+                        GetParent(); 
+                    }
                     if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
                     {
                         if (!defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
                             defenseParent.GetEnemies().Add(other.transform.parent);
+                            if (defenseParent.isPlaced)
+                            {
+                                if (!defenseParent.GetAlert() && defenseParent.GetAllocated() <= 0)
+                                {
+                                    defenseParent.Alert();
+                                    MessageBox messageBox = FindObjectOfType<MessageBox>();
+                                    messageBox.ShowMessage(defenseParent.GetStructureName() + " has no allocated villagers.", 3.0f);
+                                }
+                            }
                         }
                     }
                 }
@@ -49,12 +59,19 @@ public class TowerRange : MonoBehaviour
                 Enemy enemy = other.transform.parent.GetComponent<Enemy>();
                 if (enemy)
                 {
-                    if (!defenseParent) { GetParent(); }
+                    if (!defenseParent)
+                    { 
+                        GetParent(); 
+                    }
                     if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
                     {
                         if (defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
                             defenseParent.GetEnemies().Remove(other.transform.parent);
+                            if(defenseParent.GetEnemies().Count < 0)
+                            {
+                                Destroy(defenseParent.GetAlert().gameObject);
+                            }
                         }
                     }
                 }

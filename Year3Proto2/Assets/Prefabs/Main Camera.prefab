@@ -57,8 +57,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
-  far clip plane: 1000
+  near clip plane: 0.1
+  far clip plane: 100
   field of view: 50
   orthographic: 0
   orthographic size: 5
@@ -208,11 +208,6 @@ MonoBehaviour:
   mouseEdgeMove: 0
   mouseXBuffer: 64
   mouseYBuffer: 64
-  sensitivity: 3
+  keyboardSpeed: 25
   lerpSpeed: 10
-  xAxisMax: 6
-  xAxisMin: -14
-  zAxisMax: 6
-  zAxisMin: -14
-  scrollMax: 10
-  scrollMin: -2
+  inertiaFalloffSpeed: 7.5

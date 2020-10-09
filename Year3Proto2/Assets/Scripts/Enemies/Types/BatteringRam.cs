@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BatteringRam : Enemy
 {
+    private const float BaseHealth = 300f;
+    private const float BaseDamage = 30f;
 
     protected override void Awake()
     {
@@ -16,12 +18,32 @@ public class BatteringRam : Enemy
             StructureType.Longhaus,
             StructureType.Defense
         };
+
+        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+        healthbar = healthBarInst.GetComponent<Healthbar>();
+        healthbar.target = gameObject;
+        healthbar.fillAmount = 1f;
+        healthBarInst.SetActive(false);
     }
 
     private void FixedUpdate()
     {
         if (stunned) return;
-
+        walkHeight = 0.5f;
+        if (signature.startTile)
+        {
+            Structure attached = signature.startTile.GetAttached();
+            if (attached)
+            {
+                if (attached.GetStructureName() == StructureNames.MetalEnvironment)
+                {
+                    if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
+                    {
+                        walkHeight = hit.point.y;
+                    }
+                }
+            }
+        }
         if (!GlobalData.longhausDead)
         {
             switch (enemyState)
@@ -39,6 +61,7 @@ public class BatteringRam : Enemy
                             if ((target.transform.position - transform.position).magnitude < 0.5f)
                             {
                                 Vector3 newPosition = transform.position - (GetAvoidingMotionVector() * Time.fixedDeltaTime);
+                                newPosition.y = walkHeight;
                                 LookAtPosition(newPosition);
                                 transform.position = newPosition;
                             }
@@ -92,6 +115,7 @@ public class BatteringRam : Enemy
                                 break;
                             }
                             Vector3 newPosition = GetNextPositionPathFollow();
+                            newPosition.y = walkHeight;
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
                         }
@@ -101,7 +125,7 @@ public class BatteringRam : Enemy
 
                             // get the motion vector for this frame
                             Vector3 newPosition = transform.position + (GetAvoidingMotionVector() * Time.fixedDeltaTime);
-                            //Debug.DrawLine(transform.position, transform.position + GetMotionVector(), Color.green);
+                            newPosition.y = walkHeight;
                             LookAtPosition(newPosition);
                             transform.position = newPosition;
 
@@ -139,13 +163,17 @@ public class BatteringRam : Enemy
     public override void Action()
     {
         if (target.GetHealth() > 0)
-        { 
+        {
+            Vector3 lookPosition = target.transform.position;
+            lookPosition.y = transform.position.y;
+            LookAtPosition(lookPosition);
             action = true; 
         }
     }
 
     protected override void LookAtPosition(Vector3 _position)
     {
+        _position.y = transform.position.y;
         base.LookAtPosition(_position);
         // fixing animation problems
         transform.right = transform.forward;
@@ -154,15 +182,15 @@ public class BatteringRam : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(PuffEffect);
+        GameObject puff = Instantiate(GameManager.GetPuffEffect());
         puff.transform.localScale *= 4f;
         puff.transform.position = transform.position;
     }
 
     public void Initialize(int _level)
     {
-        baseHealth = 100f;
-        baseDamage = 30f;
+        baseHealth = BaseHealth;
+        baseDamage = BaseDamage;
         SetLevel(_level);
         finalSpeed = 0.25f;
         finalSpeed *= SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.SwiftFootwork) ? 1.4f : 1.0f;

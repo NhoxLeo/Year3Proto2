@@ -345,6 +345,6 @@
         }
     },
     "m_Path": "Shader Graphs",
-    "m_ConcretePrecision": 0,
+    "m_ConcretePrecision": 1,
     "m_ActiveOutputNodeGuidSerialized": "f1128fe7-abdc-4214-bb7b-06ce446f6ccd"
 }

@@ -1,18 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
+
+[Serializable]
+public enum Priority
+{
+    Food,
+    Wood,
+    Metal
+}
 
 public class VillagerManager : MonoBehaviour
 {
     private static VillagerManager instance;
 
-    private List<Structure> allocationStructures = new List<Structure>();
+    private readonly List<Structure> allocationStructures = new List<Structure>();
     private int villagers = 0;
     private int availableVillagers = 0;
     private int villagersManAllocated = 0;
-    private int starveTicks = 0;
-    private int villagerHungerModifier = 2;
-    private Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
+    private float starveTicks = 0;
+    private const float villagerHungerModifier = 2f;
+    private readonly Priority[] priorityOrder = new Priority[3] { Priority.Food, Priority.Wood, Priority.Metal };
 
     private void Awake()
     {
@@ -428,24 +438,24 @@ public class VillagerManager : MonoBehaviour
         return lowest;
     }
 
-    public int GetStarveTicks()
+    public float GetStarveTicks()
     {
         return starveTicks;
     }
 
-    public void SetStarveTicks(int _ticks)
+    public void SetStarveTicks(float _ticks)
     {
         starveTicks = _ticks;
     }
 
-    public void AddStarveTicks(int _ticks)
+    public void AddStarveTicks(float _ticks)
     {
         starveTicks += _ticks;
-        if (starveTicks >= 100)
+        if (starveTicks >= 100f)
         {
+            starveTicks = 0f;
             if (availableVillagers == 0)
             {
-                starveTicks = 0;
                 List<Structure> populated = new List<Structure>();
                 foreach (Structure structure in FindObjectsOfType<Structure>())
                 {
@@ -456,19 +466,13 @@ public class VillagerManager : MonoBehaviour
                 }
                 if (populated.Count > 0)
                 {
-                    Structure structure = populated[Random.Range(0, populated.Count)];
+                    Structure structure = populated[UnityEngine.Random.Range(0, populated.Count)];
                     structure.ManuallyAllocate(structure.GetAllocated() - 1);
                 }
-                villagers--;
-                availableVillagers--;
             }
-            else
-            {
-                villagers--;
-                availableVillagers--;
-            }
+            RemoveVillagers(1, false);
+            FindObjectOfType<MessageBox>().ShowMessage("A villager just starved!", 2.5f);
         }
-        RedistributeVillagers();
     }
 
     public int GetVillagers()
@@ -492,9 +496,25 @@ public class VillagerManager : MonoBehaviour
         availableVillagers++;
     }
 
-    public void RemoveVillagers(int _villagers)
+    public void RemoveVillagers(int _villagers, bool _wereManual)
     {
+        if (availableVillagers > 0)
+        {
+            if (availableVillagers >= _villagers)
+            {
+                availableVillagers -= _villagers;
+            }
+            else
+            {
+                availableVillagers = 0;
+            }
+        }
         villagers -= _villagers;
+        if (_wereManual)
+        {
+            villagersManAllocated -= _villagers;
+        }
+        RedistributeVillagers();
     }
 
     public int GetAvailable()
@@ -522,15 +542,13 @@ public class VillagerManager : MonoBehaviour
         availableVillagers++;
     }
 
-    public void ReturnVillagers(int _villagers)
+    public void ReturnVillagers(int _villagers, bool _wereManual)
     {
         availableVillagers += _villagers;
-    }
-
-    public void ReturnFromManual(int _villagers)
-    {
-        ReturnVillagers(_villagers);
-        villagersManAllocated -= _villagers;
+        if (_wereManual)
+        {
+            villagersManAllocated -= _villagers;
+        }
     }
 
     public void MarkAsAllocated(int _villagers)
@@ -543,7 +561,7 @@ public class VillagerManager : MonoBehaviour
         return villagers * villagerHungerModifier / Longhaus.productionTime;
     }
 
-    public int GetRationCost()
+    public float GetRationCost()
     {
         return villagers * -villagerHungerModifier;
     }
@@ -551,6 +569,11 @@ public class VillagerManager : MonoBehaviour
     public int GetManuallyAllocated()
     {
         return villagersManAllocated;
+    }
+
+    public void SetManuallyAllocated(int _allocated)
+    {
+        villagersManAllocated = _allocated;
     }
 
     public void MarkVillagersAsManAlloc(int _manuallyAllocated)
@@ -598,5 +621,60 @@ public class VillagerManager : MonoBehaviour
                 return result;
             }
         }
+    }
+
+    public void TrainVillager()
+    {
+        ResourceBundle cost = GetVillagerTrainCost();
+        if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
+        {
+            HUDManager.GetInstance().ShowResourceDelta(cost, true);
+            AddNewVillager();
+            RedistributeVillagers();
+        }
+    }
+
+    public ResourceBundle GetVillagerTrainCost()
+    {
+        return new ResourceBundle(50 + 10 * villagers, 0, 0);
+    }
+
+    public List<Priority> GetPriorities()
+    {
+        return new List<Priority>()
+        {
+            priorityOrder[0],
+            priorityOrder[1],
+            priorityOrder[2]
+        };
+    }
+
+    public void LoadPriorities(List<Priority> _priorities)
+    {
+        priorityOrder[0] = _priorities[0];
+        priorityOrder[1] = _priorities[1];
+        priorityOrder[2] = _priorities[2];
+        RedistributeVillagers();
+        int food = 0;
+        int wood = 0;
+        int metal = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            switch (priorityOrder[i])
+            {
+                case Priority.Food:
+                    food = i;
+                    break;
+                case Priority.Wood:
+                    wood = i;
+                    break;
+                case Priority.Metal:
+                    metal = i;
+                    break;
+                default:
+                    break;
+            }
+        }
+        FindObjectOfType<VillagerPriority>().LoadCardPriorites(food, wood, metal);
     }
 }

@@ -10,17 +10,16 @@ public class TileBehaviour : MonoBehaviour
     [Tooltip("Determines whether or not the player can place structures on the tile.")]
     private bool isPlayable;
 
-
-
     [SerializeField] 
-
     [Tooltip("Determines whether or not the enemy can spawn on the tile.")]
-
     private bool isValidSpawnTile;
 
-    private static GameObject cliffFacePrefab = null;
-
-    private static Transform cliffFaceParent = null;
+    private static GameObject CliffFacePrefab = null;
+    private static GameObject SnowCliffFacePrefab = null;
+    private static GameObject BoundaryPrefab = null;
+    private static GameObject SnowBoundaryPrefab = null;
+    private static Transform CliffFaceParent = null;
+    private static Material SnowMat = null;
 
     //Determines whether or not it is being approached by an airship.")]
     private bool isApproached;
@@ -235,6 +234,18 @@ public class TileBehaviour : MonoBehaviour
         GetCliffParent();
         SpawnCliffFaces();
         ID = GenerateID();
+        if (!isPlayable)
+        {
+            Instantiate(GetBoundaryPrefab(), transform.position + Vector3.up * 0.501f, Quaternion.identity);
+        }
+    }
+
+    private void Start()
+    {
+        if (SuperManager.GetInstance().GetSnow())
+        {
+            GetComponent<MeshRenderer>().material = GetSnowMat();
+        }
     }
 
     private void SpawnCliffFaces()
@@ -244,27 +255,38 @@ public class TileBehaviour : MonoBehaviour
         {
             if (!adjacentTiles.ContainsKey((TileCode)i))
             {
-                Instantiate(GetCliffFace(), transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.Euler(0f, 90f + 90f * i, 0f), cliffFaceParent);
+                GameObject cliffFace = Instantiate(GetCliffFace(), transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.Euler(0f, 90f + 90f * i, 0f), CliffFaceParent);
             }
         }
     }
 
     private static GameObject GetCliffFace()
     {
-        if (!cliffFacePrefab)
+        if (SuperManager.GetInstance().GetSnow())
         {
-            cliffFacePrefab = Resources.Load("IslandEdgeCliff1") as GameObject;
+            if (!SnowCliffFacePrefab)
+            {
+                SnowCliffFacePrefab = Resources.Load("IslandEdgeCliff_Snow") as GameObject;
+            }
+            return SnowCliffFacePrefab;
         }
-        return cliffFacePrefab;
+        else
+        {
+            if (!CliffFacePrefab)
+            {
+                CliffFacePrefab = Resources.Load("IslandEdgeCliff1") as GameObject;
+            }
+            return CliffFacePrefab;
+        }
     }
 
     private static Transform GetCliffParent()
     {
-        if (!cliffFaceParent)
+        if (!CliffFaceParent)
         {
-            cliffFaceParent = GameObject.Find("CliffFaces").transform;
+            CliffFaceParent = GameObject.Find("CliffFaces").transform;
         }
-        return cliffFaceParent;
+        return CliffFaceParent;
     }
 
     public Structure GetAttached()
@@ -322,5 +344,34 @@ public class TileBehaviour : MonoBehaviour
     public bool GetApproached()
     {
         return isApproached;
+    }
+
+    public static Material GetSnowMat()
+    {
+        if (!SnowMat)
+        {
+            SnowMat = Resources.Load("Materials/Ground_Grass_Snow") as Material;
+        }
+        return SnowMat;
+    }
+
+    public static GameObject GetBoundaryPrefab()
+    {
+        if (SuperManager.GetInstance().GetSnow())
+        {
+            if (!SnowBoundaryPrefab)
+            {
+                SnowBoundaryPrefab = Resources.Load("Boundary_Snow") as GameObject;
+            }
+            return SnowBoundaryPrefab;
+        }
+        else
+        {
+            if (!BoundaryPrefab)
+            {
+                BoundaryPrefab = Resources.Load("Boundary") as GameObject;
+            }
+            return BoundaryPrefab;
+        }
     }
 }

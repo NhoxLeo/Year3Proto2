@@ -5,15 +5,13 @@ using UnityEngine;
 public class ForestEnvironment : EnvironmentStructure
 {
     private bool exploitedState = false;
-    private MeshRenderer meshRenderer;
     private bool playable = false;
 
     protected override void Awake()
     {
         base.Awake();
-        environmentType = EnvironmentType.forest;
+        resourceType = ResourceType.Wood;
         structureName = StructureNames.LumberEnvironment;
-        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     protected override void Start()
@@ -27,13 +25,14 @@ public class ForestEnvironment : EnvironmentStructure
             meshRenderer.enabled = false;
         }
         */
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 
     protected override void Update()
     {
         base.Update();
         if (playable)
-            {
+        {
             if (exploited && !exploitedState)
             {
                 transform.GetChild(0).gameObject.SetActive(true);
@@ -57,5 +56,31 @@ public class ForestEnvironment : EnvironmentStructure
     public override float GetTrueMaxHealth()
     {
         return GetBaseMaxHealth();
+    }
+
+    public override void SetOpacity(float _opacity)
+    {
+        if (_opacity == 1f)
+        {
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        }
+        else
+        {
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        Color colour = meshRenderer.materials[1].color;
+        colour.a = _opacity;
+        meshRenderer.materials[1].color = colour;
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void SetMaterials(bool _snow)
+    {
+        base.SetMaterials(_snow);
+        transform.GetChild(0).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
     }
 }

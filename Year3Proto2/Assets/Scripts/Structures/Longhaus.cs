@@ -25,7 +25,13 @@ public class Longhaus : Structure
     {
         base.Awake();
         structureType = StructureType.Longhaus;
-        structureName = "Longhaus";
+        structureName = StructureNames.Longhaus;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 
     // Update is called once per frame
@@ -40,29 +46,13 @@ public class Longhaus : Structure
             if (remainingTime <= 0f)
             {
                 remainingTime = productionTime;
-                gameMan.AddBatch(new ResourceBatch(metalGen, ResourceType.Metal));
-                gameMan.AddBatch(new ResourceBatch(lumberGen, ResourceType.Wood));
-                gameMan.AddBatch(new ResourceBatch(foodGen, ResourceType.Food));
-                gameMan.AddBatch(new ResourceBatch(VillagerManager.GetInstance().GetRationCost(), ResourceType.Food));
             }
 
         }
 
         if (Input.GetKeyDown(KeyCode.N) && StructureManager.GetInstance().StructureIsSelected(this))
         {
-            TrainVillager();
-        }
-    }
-
-    public static void TrainVillager()
-    {
-        ResourceBundle cost = new ResourceBundle(0, 0, 100);
-        if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
-        {
-            VillagerManager villMan = VillagerManager.GetInstance();
-            villMan.AddNewVillager();
-            HUDManager.GetInstance().ShowResourceDelta(cost, true);
-            villMan.RedistributeVillagers();
+            VillagerManager.GetInstance().TrainVillager();
         }
     }
 
@@ -70,7 +60,7 @@ public class Longhaus : Structure
     {
         Vector3 resourceDelta = base.GetResourceDelta();
 
-        resourceDelta += new Vector3(lumberGen / productionTime, metalGen / productionTime, foodGen / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec());
+        resourceDelta += new Vector3(foodGen / productionTime - VillagerManager.GetInstance().GetFoodConsumptionPerSec(), lumberGen / productionTime, metalGen / productionTime);
 
         return resourceDelta;
     }
@@ -86,11 +76,22 @@ public class Longhaus : Structure
         float maxHealth = GetBaseMaxHealth();
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
+    }
+
+    protected override void OnDestroyed()
+    {
+        base.OnDestroyed();
+        GlobalData.longhausDead = true;
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        /*
+        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
+        */
     }
 }

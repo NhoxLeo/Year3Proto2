@@ -44,8 +44,6 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] private bool showDestroyConfirm = false;    // Whether to show the detruction confrimation button
     [SerializeField] private Tooltip destroyButtonConfirm;       // Button to confirm destruction of a building
 
-    [SerializeField] private Tooltip trainVillagerButton;        // Button to train a new villager for the Longhaus
-
     [Header("Tooltip")]                                          // Repair and Destroy tooltips
     [SerializeField] private RectTransform tooltipTransform;
 
@@ -105,16 +103,6 @@ public class BuildingInfo : MonoBehaviour
             destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
             destroyButtonConfirm.showTooltip = showDestroyConfirm;
         }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            targetStructure.Damage(50.0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            targetStructure.Damage(-50.0f);
-        }
     }
 
     public void SetInfo()
@@ -122,7 +110,6 @@ public class BuildingInfo : MonoBehaviour
         repairButton.gameObject.SetActive(true);
         repairButton.interactable = false;
         destroyButton.gameObject.SetActive(false);
-        trainVillagerButton.showTooltip = false;
 
         if (targetBuilding == null)
         {
@@ -189,9 +176,9 @@ public class BuildingInfo : MonoBehaviour
             case StructureNames.LightningTower:
                 LightningTower lightning = targetBuilding.GetComponent<LightningTower>();
                 statIcon.sprite = defenceSprite;
-                statHeadingText.text = "Fire Rate";
-                statValueText.text = lightning.GetFireRate().ToString("F");
-                statInfoText.text = "per second";
+                statHeadingText.text = "Lightning Bolts";
+                statValueText.text = "Up to " + lightning.GetProjectileCount().ToString("0");
+                statInfoText.text = "per discharge";
 
                 destroyButton.gameObject.SetActive(true);
                 repairButton.interactable = lightning.CanBeRepaired();
@@ -270,7 +257,6 @@ public class BuildingInfo : MonoBehaviour
                 statValueText.text = "Protect me!";
                 statInfoText.text = "";
 
-                trainVillagerButton.showTooltip = true;
                 repairButton.interactable = haus.CanBeRepaired();
                 break;
 
@@ -318,7 +304,8 @@ public class BuildingInfo : MonoBehaviour
             headingTextFloating.text = shortenedName + levelSuffix;
 
             upgradeButton.gameObject.SetActive(true);
-            upgradeButton.enabled = defenseStructure.GetLevel() < 3;
+            bool canAfford = GameManager.GetInstance().playerResources.CanAfford(structMan.QuoteUpgradeCostFor(defenseStructure));
+            upgradeButton.interactable = defenseStructure.GetLevel() < 3 && canAfford;
         }
         else
         {
@@ -397,15 +384,20 @@ public class BuildingInfo : MonoBehaviour
         if (targetStructure.GetStructureType() == StructureType.Defense)
         {
             ResourceBundle upgradeCost = structMan.QuoteUpgradeCostFor(defenseStructure);
-            if (upgradeCost.foodCost + upgradeCost.woodCost + upgradeCost.metalCost != 0)
+            if (upgradeCost.food + upgradeCost.wood + upgradeCost.metal != 0)
             {
+                HUDManager hudMan = HUDManager.GetInstance();
+                GameManager gameMan = GameManager.GetInstance();
                 costComponent.SetActive(true);
-                upgradeButton.interactable = true;
-                woodText.text = upgradeCost.woodCost.ToString();
-                metalText.text = upgradeCost.metalCost.ToString();
+                upgradeButton.interactable = gameMan.playerResources.CanAfford(upgradeCost);
+                woodText.text = ((int)upgradeCost.wood).ToString();
+                metalText.text = ((int)upgradeCost.metal).ToString();
+                // Set tooltip resource cost text colors based on if player can afford
+                woodText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, upgradeCost.wood, 0f)) ? hudMan.gainColour : hudMan.lossColour;
+                metalText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, 0f, upgradeCost.metal)) ? hudMan.gainColour : hudMan.lossColour;
 
                 tooltipDescription.gameObject.SetActive(true);
-                tooltipDescription.text = "Fully repairs tower. Increases durability and damage.";
+                tooltipDescription.text = "Increases durability and damage.";
             }
             else
             {
@@ -423,11 +415,16 @@ public class BuildingInfo : MonoBehaviour
         tooltipHeading.text = "Repair (R: Mass Repair)";
         ResourceBundle repairCost = targetStructure.RepairCost();
 
-        if (repairCost.woodCost + repairCost.metalCost != 0)
+        if (repairCost.wood + repairCost.metal != 0)
         {
+            HUDManager hudMan = HUDManager.GetInstance();
+            GameManager gameMan = GameManager.GetInstance();
             costComponent.SetActive(true);
-            woodText.text = repairCost.woodCost.ToString();
-            metalText.text = repairCost.metalCost.ToString();
+            woodText.text = ((int)repairCost.wood).ToString();
+            metalText.text = ((int)repairCost.metal).ToString();
+            // Set tooltip resource cost text colors based on if player can afford
+            woodText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, repairCost.wood, 0f)) ? hudMan.gainColour : hudMan.lossColour;
+            metalText.color = gameMan.playerResources.CanAfford(new ResourceBundle(0f, 0f, repairCost.metal)) ? hudMan.gainColour : hudMan.lossColour;
 
             tooltipDescription.gameObject.SetActive(true);
             tooltipDescription.text = repairButton.interactable ? "" : "Cannot repair while recently damaged";
@@ -449,8 +446,8 @@ public class BuildingInfo : MonoBehaviour
         tooltipHeading.text = "Destroy Building";
 
         costComponent.SetActive(true);
-        woodText.text = "+" + compensation.woodCost;
-        metalText.text = "+" + compensation.metalCost;
+        woodText.text = "+" + (int)compensation.wood;
+        metalText.text = "+" + (int)compensation.metal;
         tooltipDescription.gameObject.SetActive(true);
         tooltipDescription.text = "Villagers will be evacuated";
 
@@ -468,7 +465,6 @@ public class BuildingInfo : MonoBehaviour
                 {
                     HUDManager.GetInstance().ShowResourceDelta(cost, true);
                     defenseStructure.LevelUp();
-                    upgradeButton.enabled = defenseStructure.GetLevel() < 3;
                     SetInfo();
                 }
             }
@@ -502,11 +498,6 @@ public class BuildingInfo : MonoBehaviour
         showDestroyConfirm = false;
         destroyButton.gameObject.GetComponent<Image>().sprite = showDestroyConfirm ? minimizeSprite : destroySprite;
         destroyButtonConfirm.showTooltip = showDestroyConfirm;
-    }
-
-    public void TrainVillager()
-    {
-        Longhaus.TrainVillager();
     }
 
     public void SetVisibility(bool visible)

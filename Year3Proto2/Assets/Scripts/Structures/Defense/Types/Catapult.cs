@@ -7,12 +7,13 @@ public class Catapult : ProjectileDefenseStructure
     public GameObject boulder;
 
     private const float BoulderSpeed = 1f;
-    private const float BaseMaxHealth = 450f;
+    private const float BaseMaxHealth = 470f;
     private const float BaseDamage = 15f;
 
     private float damage;
     private float boulderExplosionRadius = 0.375f;
 
+    private MeshRenderer catapultMesh;
     protected override void Awake()
     {
         // set base stats
@@ -31,13 +32,14 @@ public class Catapult : ProjectileDefenseStructure
         {
             boulderExplosionRadius *= 1.5f;
         }
-        attackCost = new ResourceBundle(0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost, 0);
+        attackCost = new ResourceBundle(0, 0, superMan.GetResearchComplete(SuperManager.CatapultEfficiency) ? MetalCost / 2 : MetalCost);
         
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
+        catapultMesh = transform.GetChild(2).GetChild(0).GetComponent<MeshRenderer>();
     }
 
     public override void Launch(Transform _target)
@@ -51,7 +53,7 @@ public class Catapult : ProjectileDefenseStructure
         boulderBehaviour.damage = damage;
         boulderBehaviour.speed = BoulderSpeed;
         boulderBehaviour.explosionRadius = boulderExplosionRadius;
-        GameManager.CreateAudioEffect("catapultFire", transform.position, 0.6f);
+        GameManager.CreateAudioEffect("catapultFire", transform.position, SoundType.SoundEffect, 0.6f);
 
         /*
         Vector3 position = transform.position;
@@ -85,7 +87,9 @@ public class Catapult : ProjectileDefenseStructure
     {
         base.OnSetLevel();
         damage = GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()
@@ -108,10 +112,7 @@ public class Catapult : ProjectileDefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
     }
@@ -119,5 +120,22 @@ public class Catapult : ProjectileDefenseStructure
     private float GetBaseDamage()
     {
         return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.CatapultPower) ? 1.3f : 1.0f);
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        catapultMesh.materials[0].SetColor("_BaseColor", _colour);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }

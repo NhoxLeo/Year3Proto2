@@ -208,4 +208,10 @@ public class UIAnimator : MonoBehaviour
         pulseSeq.Play();
     }
 
+    private void OnDestroy()
+    {
+        entranceSequence.Kill(true);
+        pulseSeq.Kill(true);
+    }
+
 }

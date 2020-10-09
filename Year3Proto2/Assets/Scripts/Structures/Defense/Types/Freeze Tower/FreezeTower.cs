@@ -5,6 +5,7 @@ public class FreezeTower : DefenseStructure
     private FreezeTowerCannon[] cannons;
     private float freezeEffect;
     private const float BaseMaxHealth = 300f;
+    private Color normalEmissiveColour;
 
     protected override void Awake()
     {
@@ -24,7 +25,7 @@ public class FreezeTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
-
+        normalEmissiveColour = meshRenderer.materials[2].GetColor("_EmissiveColor");
     }
 
     protected override void Start()
@@ -69,7 +70,9 @@ public class FreezeTower : DefenseStructure
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()
@@ -92,11 +95,35 @@ public class FreezeTower : DefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        meshRenderer.materials[1].SetColor(colourReference, _colour);
+
+        meshRenderer.materials[2].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[2].SetColor("_EmissiveColor", _colour);
+        meshRenderer.materials[3].SetColor("_BaseColor", _colour);
+        meshRenderer.materials[3].SetColor("_EmissiveColor", _colour);
+        if (_colour == Color.white)
+        {
+            meshRenderer.materials[2].SetColor("_EmissiveColor", normalEmissiveColour);
+            meshRenderer.materials[3].SetColor("_EmissiveColor", normalEmissiveColour);
+        }
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }

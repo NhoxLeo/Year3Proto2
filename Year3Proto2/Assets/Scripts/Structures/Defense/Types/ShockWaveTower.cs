@@ -7,12 +7,13 @@ public class ShockWaveTower : DefenseStructure
     [SerializeField] private Transform particle;
     private float timer = 0.0f;
 
-    private const float BaseMaxHealth = 400f;
+    private const float BaseMaxHealth = 350f;
     private const float MinimumDelay = 3f;
 
     private float delay = MinimumDelay;
 
     private GameObject boulderModel;
+    private MeshRenderer boulderMesh;
     private Vector3 restingPosition;
     private Vector3 readyPosition;
 
@@ -36,6 +37,7 @@ public class ShockWaveTower : DefenseStructure
         targetableEnemies.Add(EnemyNames.BatteringRam);
 
         boulderModel = transform.GetChild(3).gameObject;
+        boulderMesh = boulderModel.GetComponent<MeshRenderer>();
     }
 
     protected override void Start()
@@ -61,7 +63,7 @@ public class ShockWaveTower : DefenseStructure
                 if (enemies.Count > 0 && timer <= 0.0f)
                 {
                     timer = delay;
-                    GameManager.CreateAudioEffect("Thud", transform.position, 0.6f);
+                    GameManager.CreateAudioEffect("Thud", transform.position, SoundType.SoundEffect, 0.6f);
                     Instantiate(particle, transform.position, particle.rotation);
                     enemies.ForEach(transform => {
                         Enemy enemy = transform.GetComponent<Enemy>();
@@ -69,6 +71,10 @@ public class ShockWaveTower : DefenseStructure
                         {
                             if (enemy.enemyName != EnemyNames.BatteringRam)
                             {
+                                if (enemy.enemyName == EnemyNames.Petard)
+                                {
+                                    enemy.GetComponent<Petard>().SetOffBarrel();
+                                }
                                 float distance = (this.transform.position - transform.position).magnitude;
                                 float damage = 5.0f * (1.0f / distance);
                                 enemy.Stun(damage);
@@ -98,7 +104,9 @@ public class ShockWaveTower : DefenseStructure
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        health = GetTrueMaxHealth();
+        float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
+        float difference = GetTrueMaxHealth() - oldMaxHealth;
+        health += difference;
     }
 
     public override float GetBaseMaxHealth()
@@ -121,11 +129,25 @@ public class ShockWaveTower : DefenseStructure
         maxHealth *= Mathf.Pow(SuperManager.ScalingFactor, level - 1);
 
         // poor timber multiplier
-        if (SuperManager.GetInstance().CurrentLevelHasModifier(SuperManager.PoorTimber))
-        {
-            maxHealth *= 0.5f;
-        }
+        maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
+    }
+
+    public override void SetColour(Color _colour)
+    {
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
+        {
+            colourReference = "_Color";
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        boulderMesh.materials[0].SetColor("_BaseColor", _colour);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
     }
 }

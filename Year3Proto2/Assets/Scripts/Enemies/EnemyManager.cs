@@ -152,14 +152,14 @@ public class EnemyManager : MonoBehaviour
 
     private readonly List<Enemy> enemies = new List<Enemy>();
     private int enemiesKilled = 0;
-    private int waveCounter = 0;
+    private int wave = 0;
 
     public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
         { EnemyNames.Invader, new EnemyDefinition(1.0f, 1) },
         { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) },
-        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 2) },
-        { EnemyNames.Petard, new EnemyDefinition(0.25f, 2) },
+        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 4) },
+        { EnemyNames.Petard, new EnemyDefinition(0.2f, 6) },
         { EnemyNames.BatteringRam, new EnemyDefinition(0.1f, 8) },
     };
 
@@ -174,6 +174,18 @@ public class EnemyManager : MonoBehaviour
         
         // wave 5
         new LevelSetting(0, 5, EnemyNames.Invader,         2),
+        new LevelSetting(0, 5, EnemyNames.HeavyInvader,    0),
+        new LevelSetting(0, 5, EnemyNames.Petard,          1),
+
+        // wave 7
+        new LevelSetting(0, 7, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(0, 7, EnemyNames.Petard,          0),
+        
+        // wave 11
+        new LevelSetting(0, 11, EnemyNames.Petard,         1),
+
+        // wave 15
+        new LevelSetting(0, 15, EnemyNames.BatteringRam,   1),
 
         // Level 2 --------------------------------
         // wave 1
@@ -182,13 +194,28 @@ public class EnemyManager : MonoBehaviour
         
         // wave 3
         new LevelSetting(1, 3, EnemyNames.Invader,         2),
+        new LevelSetting(1, 3, EnemyNames.HeavyInvader,    0),
         new LevelSetting(1, 3, EnemyNames.Petard,          1),
         
         // wave 5
+        new LevelSetting(1, 5, EnemyNames.Invader,         0),
         new LevelSetting(1, 5, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(1, 5, EnemyNames.Petard,          0),
+        new LevelSetting(1, 5, EnemyNames.FlyingInvader,   1),
         
         // wave 7
+        new LevelSetting(1, 7, EnemyNames.Invader,         3),
         new LevelSetting(1, 7, EnemyNames.Petard,          2),
+
+        // wave 9
+        new LevelSetting(1, 9, EnemyNames.FlyingInvader,   2),
+        new LevelSetting(1, 9, EnemyNames.BatteringRam,    1),
+        
+        // wave 11
+        new LevelSetting(1, 11, EnemyNames.HeavyInvader,   3),
+        
+        // wave 13
+        new LevelSetting(1, 13, EnemyNames.BatteringRam,   2),
 
         // Level 3 --------------------------------
         // wave 1
@@ -197,7 +224,7 @@ public class EnemyManager : MonoBehaviour
         new LevelSetting(2, 1, EnemyNames.Petard,          1),
         
         // wave 3
-        new LevelSetting(2, 3, EnemyNames.HeavyInvader,    2),
+        new LevelSetting(2, 3, EnemyNames.HeavyInvader,    0),
         new LevelSetting(2, 3, EnemyNames.FlyingInvader,   1),
         
         // wave 5
@@ -207,10 +234,18 @@ public class EnemyManager : MonoBehaviour
         
         // wave 7
         new LevelSetting(2, 7, EnemyNames.HeavyInvader,    3),
+        new LevelSetting(2, 7, EnemyNames.Petard,          0),
         new LevelSetting(2, 7, EnemyNames.FlyingInvader,   2),
         
         // wave 9
+        new LevelSetting(2, 9, EnemyNames.Invader,         0),
+        new LevelSetting(2, 9, EnemyNames.Petard,          3),
+        new LevelSetting(2, 9, EnemyNames.FlyingInvader,   0),
         new LevelSetting(2, 9, EnemyNames.BatteringRam,    2),
+        
+        // wave 11
+        new LevelSetting(2, 11, EnemyNames.Invader,        3),
+        new LevelSetting(2, 11, EnemyNames.FlyingInvader,  3),
 
         // Level 4 --------------------------------
         // wave 1
@@ -236,9 +271,16 @@ public class EnemyManager : MonoBehaviour
         // wave 9
         new LevelSetting(3, 9, EnemyNames.BatteringRam,    3),
     };
+    private readonly Dictionary<int, List<LevelSetting>> sortedLevelSettings = new Dictionary<int, List<LevelSetting>>()
+    {
+        {0, new List<LevelSetting>() },
+        {1, new List<LevelSetting>() },
+        {2, new List<LevelSetting>() },
+        {3, new List<LevelSetting>() }
+    };
 
-    private Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
-    private Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
+    private readonly Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
+    private readonly Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
 
     public static EnemyManager GetInstance()
     {
@@ -261,6 +303,33 @@ public class EnemyManager : MonoBehaviour
             temp.SetPrefab(Resources.Load("Enemies/" + key) as GameObject);
             Enemies[key] = temp;
             currentSettings.Add(key, (false, 0));
+        }
+
+        int index = 0;
+        // sort level settings
+        for (int i = 0; i < 4; i++)
+        {
+            List<LevelSetting> levelI = sortedLevelSettings[i];
+            bool loopCondition = true;
+            while (loopCondition)
+            {
+                if (index < levelSettings.Count)
+                {
+                    if (levelSettings[index].level == i)
+                    {
+                        levelI.Add(levelSettings[index++]);
+                    }
+                    else
+                    {
+                        loopCondition = false;
+                    }
+                }
+                else
+                {
+                    loopCondition = false;
+                }
+            }
+            sortedLevelSettings[i] = levelI;
         }
     }
 
@@ -324,9 +393,11 @@ public class EnemyManager : MonoBehaviour
         Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
-        if (airship) {
-            airship.spawnWave = waveCounter;
-            if (airship.GetTarget()) {
+        if (airship)
+        {
+            airship.spawnWave = wave;
+            if (airship.GetTarget())
+            {
                 airship.Embark(transforms, pointerParent);
             }
         }
@@ -354,7 +425,7 @@ public class EnemyManager : MonoBehaviour
             Vector3 location = new Vector3(Mathf.Sin(random) * distance * 0.75f, 0.0f, Mathf.Cos(random) * distance * 0.75f);
 
             FlyingInvader enemy = Instantiate(transform.gameObject, location, Quaternion.identity).GetComponent<FlyingInvader>();
-            enemy.SetSpawnWave(waveCounter);
+            enemy.SetSpawnWave(wave);
             enemy.Initialize(GetEnemyCurrentLevel(EnemyNames.FlyingInvader));
             RecordNewEnemy(enemy);
         }
@@ -373,12 +444,30 @@ public class EnemyManager : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
             {
-                if (tokens < 10f)
+                SpawnNextWave();
+            }
+            if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
-                    tokens = 10f;
+                    DebugSpawnEnemyAtCursor(EnemyNames.Invader);
                 }
-                spawning = true;
-                time = 0f;
+                if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.HeavyInvader);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.Petard);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.FlyingInvader);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha5))
+                {
+                    DebugSpawnEnemyAtCursor(EnemyNames.BatteringRam);
+                }
             }
         }
         if (spawning)
@@ -386,7 +475,7 @@ public class EnemyManager : MonoBehaviour
             time -= Time.deltaTime;
             if (time <= 0f)
             {
-                waveCounter++;
+                wave++;
 
                 UpdateSpawnSettings();
 
@@ -396,7 +485,7 @@ public class EnemyManager : MonoBehaviour
                 enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
 
                 Transform[] dedicatedEnemies = DedicateEnemies((int)enemiesToSpawn);
-                waveEnemyCounts.Add(waveCounter, new WaveData(dedicatedEnemies.Length));
+                waveEnemyCounts.Add(wave, new WaveData(dedicatedEnemies.Length));
 
                 // first spawn flying invaders
                 Transform[] remaining = SpawnFlyingInvaders(dedicatedEnemies);
@@ -487,7 +576,7 @@ public class EnemyManager : MonoBehaviour
                 }
             }
         }
-        
+
         while (tokensLeft >= cheapestEnemy.tokenCost) // while the system can still afford an enemy
         {
             // define randomMax
@@ -567,18 +656,19 @@ public class EnemyManager : MonoBehaviour
     * @Author: Samuel Fortune
     * @Parameter: SuperManager.MatchSaveData _data, the data to load information from
     * @Return: void
-    * @Description: Certain parameters of the EnemyWaveSystem, token data in particular, need to be loaded and saved.
+    * @Description: Certain parameters of the EnemyManager, token data in particular, need to be loaded and saved.
     ***************************************/
-    public void LoadSystemFromData(SuperManager.MatchSaveData _data)
+    public void LoadData(SuperManager.MatchSaveData _data)
     {
         spawning = _data.spawning;
-
-        weightageScalar = _data.waveSystemWeightageScalar;
-        tokenIncrement = _data.waveSystemTokenIncrement;
-        tokensScalar = _data.waveSystemTokenScalar;
-        time = _data.waveSystemTime;
-        timeVariance = _data.waveSystemTimeVariance;
-        tokens = _data.waveSystemTokens;
+        wave = _data.wave;
+        weightageScalar = _data.weightageScalar;
+        tokenIncrement = _data.tokenIncrement;
+        tokensScalar = _data.tokenScalar;
+        time = _data.time;
+        timeVariance = _data.timeVariance;
+        tokens = _data.tokens;
+        enemiesKilled = _data.enemiesKilled;
     }
 
     /**************************************
@@ -586,18 +676,20 @@ public class EnemyManager : MonoBehaviour
     * @Author: Samuel Fortune
     * @Parameter: ref SuperManager.MatchSaveData _data, the data to save information to
     * @Return: void
-    * @Description: Allows the SuperManager to load the state of the EnemyWaveSystem when it loads a match from file.
+    * @Description: Allows the SuperManager to load the state of the EnemyManager when it loads a match from file.
     ***************************************/
     public void SaveSystemToData(ref SuperManager.MatchSaveData _data)
     {
         _data.spawning = spawning;
-
-        _data.waveSystemWeightageScalar = weightageScalar;
-        _data.waveSystemTokenIncrement = tokenIncrement;
-        _data.waveSystemTokenScalar = tokensScalar;
-        _data.waveSystemTime = time;
-        _data.waveSystemTimeVariance = new SuperManager.SaveVector3(timeVariance);
-        _data.waveSystemTokens = tokens;
+        _data.enemiesKilled = enemiesKilled;
+        _data.spawnTime = time;
+        _data.wave = wave;
+        _data.weightageScalar = weightageScalar;
+        _data.tokenIncrement = tokenIncrement;
+        _data.tokenScalar = tokensScalar;
+        _data.time = time;
+        _data.timeVariance = new SuperManager.SaveVector3(timeVariance);
+        _data.tokens = tokens;
     }
 
     public int GetEnemiesAlive()
@@ -702,12 +794,16 @@ public class EnemyManager : MonoBehaviour
         {
             enemies.Remove(_enemy);
         }
+        else
+        {
+            Debug.LogError("Enemy " + _enemy.ToString() + " was killed, but it was not in enemies...");
+        }
         int wave = _enemy.GetSpawnWave();
         if (waveEnemyCounts.ContainsKey(wave))
         {
-            WaveData data = waveEnemyCounts[wave];
-            data.ReportEnemyDead();
-            waveEnemyCounts[wave] = data;
+            WaveData waveData = waveEnemyCounts[wave];
+            waveData.ReportEnemyDead();
+            waveEnemyCounts[wave] = waveData;
         }
     }
 
@@ -718,12 +814,12 @@ public class EnemyManager : MonoBehaviour
 
     public int GetWaveCurrent()
     {
-        return waveCounter;
+        return wave;
     }
 
     public void SetWave(int _wave)
     {
-        waveCounter = _wave;
+        wave = _wave;
     }
 
     public float GetTime()
@@ -738,14 +834,12 @@ public class EnemyManager : MonoBehaviour
 
     private void UpdateSpawnSettings()
     {
-        foreach (LevelSetting setting in levelSettings)
+        int currentLevel = SuperManager.GetInstance().GetCurrentLevel();
+        foreach (LevelSetting setting in sortedLevelSettings[currentLevel])
         {
-            if (setting.level == SuperManager.GetInstance().GetCurrentLevel())
+            if (setting.wave <= wave)
             {
-                if (setting.wave <= waveCounter)
-                {
-                    currentSettings[setting.enemy] = (setting.enemyLevel != 0, setting.enemyLevel);
-                }
+                currentSettings[setting.enemy] = (setting.enemyLevel != 0, setting.enemyLevel);
             }
         }
     }
@@ -774,7 +868,7 @@ public class EnemyManager : MonoBehaviour
         }
         else
         {
-            if (waveCounter > _wave)
+            if (wave > _wave)
             {
                 return true;
             }
@@ -790,5 +884,89 @@ public class EnemyManager : MonoBehaviour
     public void OnObjectiveComplete()
     {
         enemiesKilled = 0;
+    }
+
+    public void SpawnNextWave()
+    {
+        // get the time that would have passed
+        float timeSkipped = time;
+        time = 0f;
+
+        // get the increase of the increment that would have occured
+        float incrementIncrease = tokensScalar * timeSkipped;
+
+        // add to tokens based on the time that's passed.
+        tokens += (tokenIncrement + (incrementIncrease / 2f)) * timeSkipped;
+
+        // increase the increment
+        tokenIncrement += incrementIncrease;
+
+        spawning = true;
+    }
+
+    public bool GetCurrentWaveSurvived()
+    {
+        return GetWaveSurvived(wave);
+    }
+
+    public bool CanSpawnNextWave()
+    {
+        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;
+    }
+
+    public int GetEnemiesLeftCurrentWave()
+    {
+        if (waveEnemyCounts.ContainsKey(wave))
+        {
+            return waveEnemyCounts[wave].enemiesRemaining;
+        }
+        return 0;
+    }
+
+    public void DebugSpawnEnemyAtCursor(string _enemy)
+    {
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(mouseRay.origin, mouseRay.direction, out RaycastHit hitGround, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            if (!currentSettings[_enemy].Item1)
+            {
+                currentSettings[_enemy] = (true, 1);
+            }
+
+            GameObject newEnemyObject = Instantiate(Enemies[_enemy].GetPrefab(), hitGround.transform.position + Vector3.up * 0.5f, Quaternion.identity);
+            Enemy enemy = newEnemyObject.GetComponent<Enemy>();
+            RecordNewEnemy(enemy);
+
+            Invader invader = newEnemyObject.GetComponent<Invader>();
+            if (invader)
+            {
+                invader.Initialize(GetEnemyCurrentLevel(_enemy), Random.Range(0.8f, 1.5f));
+            }
+
+            HeavyInvader heavyInvader = newEnemyObject.GetComponent<HeavyInvader>();
+            if (heavyInvader)
+            {
+                heavyInvader.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+
+            FlyingInvader flying = newEnemyObject.GetComponent<FlyingInvader>();
+            if (flying)
+            {
+                flying.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+
+            Petard pet = newEnemyObject.GetComponent<Petard>();
+            if (pet)
+            {
+                pet.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+
+            BatteringRam ram = newEnemyObject.GetComponent<BatteringRam>();
+            if (ram)
+            {
+                ram.Initialize(GetEnemyCurrentLevel(_enemy));
+            }
+            enemy.SetSpawnWave(wave);
+        }
     }
 }
