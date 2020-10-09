@@ -39,7 +39,10 @@ public class BatteringRam : Enemy
                 {
                     if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
                     {
-                        walkHeight = hit.point.y;
+                        if (hit.transform.name.Contains("Hill"))
+                        {
+                            walkHeight = hit.point.y;
+                        }
                     }
                 }
             }

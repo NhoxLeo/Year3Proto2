@@ -1524,7 +1524,7 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
+    private static bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
     {
         _tile = null;
         Vector3 startPos = new Vector3(_x, 20, _z);
