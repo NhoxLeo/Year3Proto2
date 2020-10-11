@@ -91,7 +91,7 @@ public class ShockWaveTower : DefenseStructure
 
     public float GetAttackRate()
     {
-        return 1f / delay;
+        return allocatedVillagers == 0 ? 0f : 1f / delay;
     }
 
 

@@ -10,8 +10,8 @@ public class LevelEndscreen : MonoBehaviour
     public Color victoryColour;
     public Color defeatColour;
 
-    private bool showingVictory;
-    private bool showingDefeat;
+    public bool showingVictory = false;
+    public bool showingDefeat = false;
 
     void Update()
     {

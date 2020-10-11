@@ -154,6 +154,10 @@ public static class StructureMaterials
             case StructureNames.MetalResource + StructureNames.Alt:
                 paths.Add("Materials/Structures/Resource/mMinePlatform" + (_key.Item2 ? "_Snow" : ""));
                 break;
+            case StructureNames.Barracks:
+                paths.Add("Materials/Structures/Defense/mBarracks" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mBarracksGround" + (_key.Item2 ? "_Snow" : ""));
+                break;
             case StructureNames.Ballista:
                 paths.Add("Materials/Structures/Defense/mBallista" + (_key.Item2 ? "_Snow" : ""));
                 break;
@@ -203,7 +207,7 @@ public static class StructureNames
     public const string Barracks = "Barracks";
     public const string Ballista = "Ballista";
     public const string Catapult = "Catapult";
-    public const string FreezeTower = "Freeze Tower";
+    public const string FreezeTower = "Frost Tower";
     public const string ShockwaveTower = "Shockwave Tower";
     public const string LightningTower = "Lightning Tower";
 
@@ -1520,7 +1524,7 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    private bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
+    private static bool FindTileAtXZ(float _x, float _z, out TileBehaviour _tile)
     {
         _tile = null;
         Vector3 startPos = new Vector3(_x, 20, _z);

@@ -128,7 +128,7 @@ public enum SoundType
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
-
+    private static GameObject PuffEffect;
     [HideInInspector]
     public PlayerResources playerResources;
     [HideInInspector]
@@ -138,6 +138,8 @@ public class GameManager : MonoBehaviour
     private bool gameover = false;
     [HideInInspector]
     public bool victory = false;
+    [HideInInspector]
+    public bool freePlay = false;
     private float gameoverTimer = 5.0f;
     private float tutorialAMessageTimer = 5.0f;
     private float tutorialBMessageTimer = 3.0f;
@@ -162,6 +164,7 @@ public class GameManager : MonoBehaviour
     public float foodSinceObjective = 0;
     public float lumberSinceObjective = 0;
     public float metalSinceObjective = 0;
+    public int waveAtObjectiveStart = 0;
     public bool cheatAlwaysMaxed = false;
     public static bool ShowEnemyHealthbars = true;
 
@@ -383,18 +386,6 @@ public class GameManager : MonoBehaviour
         messageBox = FindObjectOfType<MessageBox>();
         buildPanel = FindObjectOfType<BuildPanel>();
         volumeFull = GetComponents<AudioSource>()[0].volume;
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
-        {
-            Soldier.SetMaxHealth(1.5f * Soldier.GetMaxHealth());
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage))
-        {
-            Soldier.SetDamage(1.3f * Soldier.GetDamage());
-        }
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed))
-        {
-            Soldier.SetMovementSpeed(1.3f * Soldier.GetMovementSpeed());
-        }
     }
 
     // Update is called once per frame
@@ -531,6 +522,14 @@ public class GameManager : MonoBehaviour
                 if (CheckNextWinConditionIsMet())
                 {
                     objectivesCompleted++;
+                    int currentWinCondition = objectives[objectivesCompleted];
+                    if (currentWinCondition == SuperManager.Survive ||
+                        currentWinCondition == SuperManager.SurviveII ||
+                        currentWinCondition == SuperManager.SurviveIII)
+                    {
+                        waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
+                    }
+                    FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
                     EnemyManager.GetInstance().OnObjectiveComplete();
                     foodSinceObjective = 0;
                     lumberSinceObjective = 0;
@@ -631,6 +630,15 @@ public class GameManager : MonoBehaviour
                     break;
                 case SuperManager.SlaughterIII:
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
+                    break;
+                case SuperManager.Survive:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart).ToString() + "/5)";
+                    break;
+                case SuperManager.SurviveII:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart).ToString() + "/10)";
+                    break;
+                case SuperManager.SurviveIII:
+                    objCompletion = " (" + EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart).ToString() + "/15)";
                     break;
                 case SuperManager.Food:
                     objCompletion = " (" + ((int)foodSinceObjective).ToString() + "/1000)";
@@ -745,11 +753,11 @@ public class GameManager : MonoBehaviour
                 case SuperManager.SlaughterIII:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
                 case SuperManager.Survive:
-                    return EnemyManager.GetInstance().GetWaveSurvived(5);
+                    return EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart) >= 5;
                 case SuperManager.SurviveII:
-                    return EnemyManager.GetInstance().GetWaveSurvived(10);
+                    return EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart) >= 10;
                 case SuperManager.SurviveIII:
-                    return EnemyManager.GetInstance().GetWaveSurvived(15);
+                    return EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart) >= 15;
                 case SuperManager.Food:
                     return foodSinceObjective >= 1000;
                 case SuperManager.FoodII:
@@ -769,15 +777,29 @@ public class GameManager : MonoBehaviour
                 case SuperManager.MetalIII:
                     return metalSinceObjective >= 3000;
                 case SuperManager.Villagers:
-                    return VillagerManager.GetInstance().GetVillagers() >= 15;
+                    return VillagerManager.GetInstance().GetVillagers() >= 20;
                 case SuperManager.VillagersII:
-                    return VillagerManager.GetInstance().GetVillagers() >= 35;
+                    return VillagerManager.GetInstance().GetVillagers() >= 40;
                 case SuperManager.VillagersIII:
-                    return VillagerManager.GetInstance().GetVillagers() >= 65;
+                    return VillagerManager.GetInstance().GetVillagers() >= 60;
                 default:
                     break;
             }
         }
         return false;
+    }
+
+    public bool GetGameLost()
+    {
+        return gameover && !victory;
+    }
+
+    public static GameObject GetPuffEffect()
+    {
+        if (!PuffEffect)
+        {
+            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
+        }
+        return PuffEffect;
     }
 }

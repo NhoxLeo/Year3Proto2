@@ -40,11 +40,11 @@ public class Airship : MonoBehaviour
     [SerializeField] private float speed = 2.4f;
     [SerializeField] private float distanceOffset = 0.75f;
     [SerializeField] private Transform[] transforms;
+    private List<Transform> spawnedAlready = new List<Transform>();
 
     private Transform target;
-    private float distance = float.MaxValue;
     public int spawnWave;
-
+    private bool hasStartedDeploying = false;
 
     private AirshipState airshipState;
 
@@ -103,8 +103,19 @@ public class Airship : MonoBehaviour
                     if (heading.sqrMagnitude < Mathf.Pow(distanceOffset, 2))
                     {
                         airshipState = AirshipState.Deploy;
-                        Destroy(alert.gameObject);
-                        StartCoroutine(Deploy(0.5f));
+                        if (alert)
+                        {
+                            Destroy(alert.gameObject);
+                        }
+                        hasStartedDeploying = true;
+                        StartCoroutine(Deploy(0.25f));
+                    }
+                    break;
+                case AirshipState.Deploy:
+                    if (!hasStartedDeploying)
+                    {
+                        hasStartedDeploying = true;
+                        StartCoroutine(Deploy(0.25f));
                     }
                     break;
             }
@@ -171,7 +182,7 @@ public class Airship : MonoBehaviour
             }
 
             enemy.SetSpawnWave(spawnWave);
-
+            spawnedAlready.Add(transforms[i]);
             yield return wait;
 
         }
@@ -276,7 +287,7 @@ public class Airship : MonoBehaviour
     {
         List<TileBehaviour> list = new List<TileBehaviour>(FindObjectsOfType<TileBehaviour>());
         list.RemoveAll(element => !element.GetSpawnTile() || element.GetApproached());
-
+        float distance = float.MaxValue;
         list.ForEach(tile =>
         {
             float newDistance = (tile.transform.position - transform.position).magnitude;
@@ -288,5 +299,65 @@ public class Airship : MonoBehaviour
         });
 
         return target;
+    }
+
+    public SuperManager.AirshipSaveData GenerateSaveData()
+    {
+        SuperManager.AirshipSaveData saveData = new SuperManager.AirshipSaveData()
+        {
+            enemies = new List<string>(),
+            position = new SuperManager.SaveVector3(transform.position),
+            targetPosition = new SuperManager.SaveVector3(target.position),
+            spawnWave = spawnWave,
+            state = airshipState,
+            initialLocation = new SuperManager.SaveVector3(initialLocation),
+            orientation = new SuperManager.SaveQuaternion(transform.rotation)
+        };
+        foreach (Transform enemy in transforms)
+        {
+            if (enemy)
+            {
+                if (!spawnedAlready.Contains(enemy))
+                {
+                    if (enemy.GetComponent<Invader>())
+                    {
+                        saveData.enemies.Add(EnemyNames.Invader);
+                    }
+                    else if (enemy.GetComponent<HeavyInvader>())
+                    {
+                        saveData.enemies.Add(EnemyNames.HeavyInvader);
+                    }
+                    else if (enemy.GetComponent<Petard>())
+                    {
+                        saveData.enemies.Add(EnemyNames.Petard);
+                    }
+                    else if (enemy.GetComponent<FlyingInvader>())
+                    {
+                        saveData.enemies.Add(EnemyNames.FlyingInvader);
+                    }
+                    else if (enemy.GetComponent<BatteringRam>())
+                    {
+                        saveData.enemies.Add(EnemyNames.BatteringRam);
+                    }
+                }
+            }
+        }
+        return saveData;
+    }
+
+    public void SetAirshipFromData(SuperManager.AirshipSaveData _data)
+    {
+        transform.position = _data.position;
+        transform.rotation = _data.orientation;
+        target = StructureManager.FindTileAtPosition((int)_data.targetPosition.x, (int)_data.targetPosition.z).transform;
+        List<Transform> enemies = new List<Transform>();
+        foreach (string enemy in _data.enemies)
+        {
+            enemies.Add(EnemyManager.Enemies[enemy].GetPrefab().transform);
+        }
+        transforms = enemies.ToArray();
+        airshipState = _data.state;
+        initialLocation = _data.initialLocation;
+        spawnWave = _data.spawnWave;
     }
 }

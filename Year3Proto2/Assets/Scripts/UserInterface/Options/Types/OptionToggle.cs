@@ -37,31 +37,23 @@ public class OptionToggle : OptionObject, OptionDataBase
     * @Parameter: n/a
     * @Return: void
     ***************************************/
+
     public void Toggle()
     {
-        if (toggle && data != null)
+        if (deserialised)
         {
-            data.value = !data.value;
-            OptionCallback optionCallback = data.GetCallback();
-            if(optionCallback != null)
-            {
-                optionCallback.Invoke();
-            }
+            data.value = toggle.isOn;
+            data.GetCallback().Invoke();
         }
     }
 
     public override void Deserialize()
     {
         data.value = PlayerPrefs.GetInt(key, data.defaultValue ? 1 : 0) != 0;
-        if (toggle && data != null)
-        {
-            toggle.isOn = data.value;
-            OptionCallback optionCallback = data.GetCallback();
-            if (optionCallback != null)
-            {
-                optionCallback.Invoke();
-            }
-        }
+        toggle.isOn = data.value;
+
+        data.GetCallback().Invoke();
+        deserialised = true;
     }
 
     public override void Serialize()
@@ -77,5 +69,10 @@ public class OptionToggle : OptionObject, OptionDataBase
     public override void SetData(OptionData _data)
     {
         data = (OptionToggleData) _data;
+    }
+
+    public Toggle GetToggle()
+    {
+        return toggle;
     }
 }
