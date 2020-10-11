@@ -8,17 +8,14 @@ public class FreezeTowerCannon : MonoBehaviour
     [SerializeField] private float damageDelay = 1.2f;
     [Range(0, 360)] [SerializeField] private float viewAngle = 60.0f;
     [SerializeField] private LayerMask targetMask;
-    [SerializeField] private Material material;
     [SerializeField] private ParticleSystem particle;
     private bool particlesPlaying = false;
 
-    private float time;
     private readonly List<Transform> targets = new List<Transform>();
     private FreezeTower parentTower = null;
 
     // Research 
     private float slowAmount = 1.0f;
-    private bool damageEnemies = false;
 
     private void Start()
     {
@@ -34,23 +31,6 @@ public class FreezeTowerCannon : MonoBehaviour
     {
         if (parentTower.isPlaced)
         {
-            if (targets.Count > 0 && damageEnemies)
-            {
-                time -= Time.deltaTime;
-                if (time <= 0.0f)
-                {
-                    targets.ForEach(target =>
-                    {
-                        if (target)
-                        {
-                            Enemy enemy = target.GetComponent<Enemy>();
-                            if (enemy) enemy.Damage(0.8f);
-                        }
-                    });
-                    time = damageDelay;
-                }
-            }
-
             targets.RemoveAll(target => !target);
             if (targets.Count > 0 && !particlesPlaying)
             {
@@ -150,10 +130,9 @@ public class FreezeTowerCannon : MonoBehaviour
         Gizmos.DrawLine(transform.position, lineB);
     }
 
-    public void Setup(float _slowPercentage, bool _damageEnemies)
+    public void Setup(float _slowPercentage)
     {
         slowAmount = _slowPercentage;
-        damageEnemies = _damageEnemies;
     }
 
     public List<Transform> GetTargets()
