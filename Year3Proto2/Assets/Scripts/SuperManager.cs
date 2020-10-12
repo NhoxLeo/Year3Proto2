@@ -266,6 +266,8 @@ public class SuperManager : MonoBehaviour
         public List<EnemySaveData> petards;
         public List<EnemySaveData> rams;
         public List<SoldierSaveData> soldiers;
+        public EnvironmentWeatherData environmentWeatherData;
+        public EnvironmentAmbientData environmentAmbientData;
         public int enemiesKilled;
         public float spawnTime;
         public bool spawning;
@@ -676,8 +678,11 @@ public class SuperManager : MonoBehaviour
         StructureManager structMan = StructureManager.GetInstance();
         VillagerManager villagerMan = VillagerManager.GetInstance();
         EnemyManager enemyMan = EnemyManager.GetInstance();
+        EnvironmentSystem environmentSystem = EnvironmentSystem.GetInstance();
 
         // easy stuff
+
+        environmentSystem.LoadData(_matchData);
         enemyMan.LoadData(_matchData);
         gameMan.repairAll = _matchData.repairAll;
         gameMan.repairMessage = _matchData.repairMessage;
@@ -818,6 +823,7 @@ public class SuperManager : MonoBehaviour
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
+        EnvironmentSystem.GetInstance().SaveSystemToData(ref save);
 
 
         // not so easy stuff...

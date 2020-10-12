@@ -25,7 +25,7 @@ public class BirdsEvent : EnvironmentAmbientEvent
 
     [SerializeField] private Vector3[] destinations;
     [SerializeField] private Vector3[] origins;
-    private Vector3 destination, origin;
+    private Vector3 origin;
 
     /**************************************
      * Name of the Function: Update
@@ -78,20 +78,27 @@ public class BirdsEvent : EnvironmentAmbientEvent
      * @Parameter: n/a
      * @Return: override void
      ***************************************/
-    public override void Invoke()
+    public override EnvironmentEvent Invoke(bool _data)
     {
-        Populate(ref destinations, false, originPoint);
-        Populate(ref origins, true, originPointTwo);
+        if(_data)
+        {
+            ambient = Instantiate(ambientPrefab, transform);
+        }  
+        else
+        {
+            Populate(ref destinations, false, originPoint);
+            Populate(ref origins, true, originPointTwo);
 
-        bool result = new System.Random().Next(0, 2) != 0;
+            bool result = new System.Random().Next(0, 2) != 0;
 
-        destination = result ? RandomFromArray(destinations) : RandomFromArray(origins);
-        origin = result ? RandomFromArray(origins) : RandomFromArray(destinations);
+            destination = result ? RandomFromArray(destinations) : RandomFromArray(origins);
+            origin = result ? RandomFromArray(origins) : RandomFromArray(destinations);
 
-        destinations = null;
-        origins = null;
-
-        ambient = Instantiate(ambientPrefab, origin, Quaternion.identity, transform);
+            destinations = null;
+            origins = null;
+            ambient = Instantiate(ambientPrefab, origin, Quaternion.identity, transform);
+        }
+        return this;
     } // End of scope will free array from memory.
 
     /**************************************
