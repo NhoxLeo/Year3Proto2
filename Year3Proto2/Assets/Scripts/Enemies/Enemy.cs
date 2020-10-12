@@ -495,13 +495,8 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public List<Soldier> GetSoldiersAttacking()
+    public int GetOtherSoldiersAttacking(Soldier _soldier)
     {
-        return attackingSoldiers;
-    }
-
-    public int GetNumSoldiersAttacking()
-    {
-        return attackingSoldiers.Count;
+        return attackingSoldiers.Count - (attackingSoldiers.Contains(_soldier) ? 1 : 0);
     }
 }

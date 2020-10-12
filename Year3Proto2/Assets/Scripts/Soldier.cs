@@ -62,7 +62,7 @@ public class Soldier : MonoBehaviour
                     // the distance to the enemy
                     float thisDistance = (enemy.transform.position - transform.position).magnitude;
                     // the number of soldiers already attacking the enemy
-                    int otherSoldierCount = enemy.GetNumSoldiersAttacking();
+                    int otherSoldierCount = enemy.GetOtherSoldiersAttacking(this);
                     // if this is the closest distance we've found so far
                     if (thisDistance < distance) // closest
                     {
