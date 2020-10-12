@@ -71,6 +71,7 @@ public abstract class Enemy : MonoBehaviour
 
     // Slow
     private int slowCount = 0;
+    private bool slowSuper = false;
 
     public abstract void Action();
 
