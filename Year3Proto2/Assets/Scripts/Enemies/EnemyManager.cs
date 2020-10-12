@@ -331,6 +331,8 @@ public class EnemyManager : MonoBehaviour
             }
             sortedLevelSettings[i] = levelI;
         }
+
+        UpdateSpawnSettings();
     }
 
     /**************************************
@@ -669,6 +671,7 @@ public class EnemyManager : MonoBehaviour
         timeVariance = _data.timeVariance;
         tokens = _data.tokens;
         enemiesKilled = _data.enemiesKilled;
+        UpdateSpawnSettings();
     }
 
     /**************************************
@@ -876,6 +879,11 @@ public class EnemyManager : MonoBehaviour
         return false;
     }
 
+    public int GetWavesSurvivedSinceWave(int _wave)
+    {
+        return wave + (GetCurrentWaveSurvived() ? 1 : 0) - _wave;
+    }
+
     public int GetEnemyCurrentLevel(string _enemyName)
     {
         return currentSettings[_enemyName].Item2;
@@ -967,6 +975,15 @@ public class EnemyManager : MonoBehaviour
                 ram.Initialize(GetEnemyCurrentLevel(_enemy));
             }
             enemy.SetSpawnWave(wave);
+        }
+    }
+
+    public void LoadAirships(List<SuperManager.AirshipSaveData> _airships)
+    {
+        foreach (SuperManager.AirshipSaveData data in _airships)
+        {
+            Airship airship = Instantiate(airshipPrefab, transform).GetComponent<Airship>();
+            airship.SetAirshipFromData(data);
         }
     }
 }

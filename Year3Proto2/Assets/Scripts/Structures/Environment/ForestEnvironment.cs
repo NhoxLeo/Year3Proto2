@@ -36,12 +36,14 @@ public class ForestEnvironment : EnvironmentStructure
             if (exploited && !exploitedState)
             {
                 transform.GetChild(0).gameObject.SetActive(true);
+                transform.GetChild(1).gameObject.SetActive(false);
                 meshRenderer.enabled = false;
                 exploitedState = true;
             }
             if (!exploited && exploitedState)
             {
                 transform.GetChild(0).gameObject.SetActive(false);
+                transform.GetChild(1).gameObject.SetActive(true);
                 meshRenderer.enabled = true;
                 exploitedState = false;
             }

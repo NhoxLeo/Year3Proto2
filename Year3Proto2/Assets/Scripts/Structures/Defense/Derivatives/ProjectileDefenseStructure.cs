@@ -84,6 +84,6 @@ public abstract class ProjectileDefenseStructure : DefenseStructure
 
     public float GetFireRate()
     {
-        return projectileRate;
+        return allocatedVillagers == 0 ? 0f : projectileRate;
     }
 }

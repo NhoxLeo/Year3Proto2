@@ -159,10 +159,10 @@ Material:
     - Boolean_5D7E2DBD: 1
     - Boolean_FDFFBAD1: 0
     - Vector1_1510CCCA: 0.6
-    - Vector1_1D9E69B2: 0.75
-    - Vector1_40E92133: 0.355
-    - Vector1_4E27F0EB: 0.5
-    - Vector1_935BE281: 0.74
+    - Vector1_1D9E69B2: 0.565
+    - Vector1_40E92133: 0.454
+    - Vector1_4E27F0EB: 0.386
+    - Vector1_935BE281: 0.797
     - Vector1_A7C4AA77: 0.5
     - Vector1_A97EEF39: 0.2
     - _AORemapMax: 1

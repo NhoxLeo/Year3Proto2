@@ -6,15 +6,16 @@ using DG.Tweening;
 public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
-
-    [HideInInspector]
-    public List<Soldier> soldiers;
-    private float trainTime = 10f;
+    private List<Soldier> soldiers;
+    private float trainTime = 6f;
     private float timeTrained = 0f;
-
     private const float BaseMaxHealth = 350f;
-    private const float BaseDamage = 3f;
-
+    private const float BaseSoldierDamage = 4f;
+    private const float BaseSoldierHealth = 30f;
+    private const float BaseSoldierMovementSpeed = 0.55f;
+    private bool soldierDamageUpgrade = false;
+    private bool soldierHealthUpgrade = false;
+    private bool soldierSpeedUpgrade = false;
     private Color normalEmissiveColour;
     public float GetTimeTrained()
     {
@@ -31,34 +32,9 @@ public class Barracks : DefenseStructure
         return allocatedVillagers;
     }
 
-    private void UpdateCapacity()
-    {
-        // recall excess soldiers
-        for (int i = 0; i < soldiers.Count; i++)
-        {
-            if (i >= allocatedVillagers)
-            {
-                soldiers[i].SetReturnHome(true);
-            }
-            else
-            {
-                soldiers[i].SetReturnHome(false);
-            }
-        }
-    }
-
-    private void SetHealRate(float _healRate)
-    {
-        foreach (Soldier soldier in soldiers)
-        {
-            soldier.SetHealRate(_healRate);
-        }
-    }
-
     protected override void Start()
     {
         base.Start();
-        //UpdateCapacity();
     }
 
     protected override void Awake()
@@ -71,10 +47,11 @@ public class Barracks : DefenseStructure
         SuperManager superMan = SuperManager.GetInstance();
         if (superMan.GetResearchComplete(SuperManager.BarracksSuper))
         {
-            trainTime = 5f;
-            float soldierMaxHealth = 30f * (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth) ? 1.5f : 1.0f);
-            SetHealRate(soldierMaxHealth / trainTime);
+            trainTime *= 0.5f;
         }
+        soldierDamageUpgrade = superMan.GetResearchComplete(SuperManager.BarracksSoldierDamage);
+        soldierHealthUpgrade = superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth);
+        soldierSpeedUpgrade = superMan.GetResearchComplete(SuperManager.BarracksSoldierSpeed);
 
         // set targets
         targetableEnemies.Add(EnemyNames.Invader);
@@ -96,6 +73,7 @@ public class Barracks : DefenseStructure
         base.Update();
         if (isPlaced)
         {
+            soldiers.RemoveAll(soldier => !soldier);
             if (soldiers.Count < allocatedVillagers)
             {
                 timeTrained += Time.deltaTime;
@@ -105,62 +83,51 @@ public class Barracks : DefenseStructure
                     SpawnSoldier();
                 }
             }
-            soldiers.RemoveAll(soldier => !soldier);
         }
+    }
+
+    private Soldier NewSoldierShared(float _health)
+    {
+        SuperManager superMan = SuperManager.GetInstance();
+        Soldier newSoldier = Instantiate(SoldierPrefab).GetComponent<Soldier>();
+        newSoldier.SetHome(this);
+        newSoldier.SetBarracksID(ID);
+        newSoldier.SetHealth(_health);
+        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
+        {
+            newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
+        }
+        else
+        {
+            newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
+        }
+        soldiers.Add(newSoldier);
+        return newSoldier;
     }
 
     private void SpawnSoldier()
     {
-        SuperManager superMan = SuperManager.GetInstance();
-        Soldier newSoldier = Instantiate(SoldierPrefab).GetComponent<Soldier>();
-        newSoldier.SetBarracksID(ID);
-        newSoldier.SetHome(this);
-        //float vectorSampler = Random.Range(0f, 1f);
-        //newSoldier.transform.position = transform.position + (transform.right * vectorSampler) - (transform.forward * (1f - vectorSampler));
+        Soldier newSoldier = NewSoldierShared(GetSoldierMaxHealth());
         newSoldier.transform.position = transform.position + (transform.right * Random.Range(-0.1f, 0.1f)) + (transform.forward * Random.Range(-0.1f, 0.1f));
-
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
-        {
-            newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
-        }
-        else
-        {
-            newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
-        }
-
-        soldiers.Add(newSoldier);
-
-        //GameManager.CreateAudioEffect("ResourceLoss", newSoldier.transform.position, SoundType.SoundEffect, 0.6f);
     }
 
     public void LoadSoldier(SuperManager.SoldierSaveData _saveData)
     {
-        SuperManager superMan = SuperManager.GetInstance();
-        Soldier newSoldier = Instantiate(SoldierPrefab).GetComponent<Soldier>();
-        newSoldier.SetBarracksID(ID);
-        newSoldier.SetHome(this);
+        Soldier newSoldier = NewSoldierShared(_saveData.health);
         newSoldier.transform.position = _saveData.position;
         newSoldier.transform.rotation = _saveData.orientation;
         newSoldier.SetState(_saveData.state);
-        newSoldier.SetHealth(_saveData.health);
         newSoldier.SetReturnHome(_saveData.returnHome);
-
-        if (superMan.GetResearchComplete(SuperManager.BarracksSoldierHealth))
-        {
-            newSoldier.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().enabled = false;
-        }
-        else
-        {
-            newSoldier.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
-        }
-
-        soldiers.Add(newSoldier);
     }
 
     protected override void OnSetLevel()
     {
         base.OnSetLevel();
-        Soldier.SetDamage(GetBaseDamage() * Mathf.Pow(SuperManager.ScalingFactor, level - 1));
+        soldiers.RemoveAll(soldier => !soldier);
+        foreach (Soldier soldier in soldiers)
+        {
+            soldier.OnSetLevel();
+        }
         float oldMaxHealth = GetTrueMaxHealth() / SuperManager.ScalingFactor;
         float difference = GetTrueMaxHealth() - oldMaxHealth;
         health += difference;
@@ -191,41 +158,70 @@ public class Barracks : DefenseStructure
         return maxHealth;
     }
 
-    private float GetBaseDamage()
-    {
-        return BaseDamage * (SuperManager.GetInstance().GetResearchComplete(SuperManager.BallistaPower) ? 1.3f : 1.0f);
-    }
-
     public override void SetColour(Color _colour)
     {
-        meshRenderer.materials[0].SetColor("_BaseColor", _colour);
-        meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
-        meshRenderer.materials[1].SetColor("_BaseColor", _colour);
-        if (_colour == Color.white)
+        string colourReference = "_BaseColor";
+        if (snowMatActive)
         {
-            meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+            colourReference = "_Color";
         }
+        else
+        {
+            meshRenderer.materials[0].SetColor("_EmissiveColor", _colour);
+            if (_colour == Color.white)
+            {
+                meshRenderer.materials[0].SetColor("_EmissiveColor", normalEmissiveColour);
+            }
+        }
+        meshRenderer.materials[0].SetColor(colourReference, _colour);
+        meshRenderer.materials[1].SetColor(colourReference, _colour);
     }
 
     public override void OnAllocation()
     {
         base.OnAllocation();
-
+        soldiers.RemoveAll(soldier => !soldier);
         for (int i = 0; i < soldiers.Count; i++)
         {
-            if (i > allocatedVillagers - 1)
+            if (i >= allocatedVillagers)
             {
                 soldiers[i].VillagerDeallocated();
             }
+            else
+            {
+                soldiers[i].SetReturnHome(false);
+            }
         }
-
-        soldiers.RemoveAll(soldier => !soldier);
     }
 
     public void OnSoldierDeath(Soldier _soldier)
     {
         soldiers.Remove(_soldier);
-        ManuallyAllocate(allocatedVillagers - 1);
-        VillagerManager.GetInstance().RemoveVillagers(1, false);
+    }
+
+    public override void OnPlace()
+    {
+        base.OnPlace();
+        SetMaterials(SuperManager.GetInstance().GetSnow());
+    }
+
+    public float GetSoldierMaxHealth()
+    {
+        return BaseSoldierHealth * (soldierHealthUpgrade ? 1.5f : 1f) * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
+    }
+
+    public float GetSoldierDamage()
+    {
+        return BaseSoldierDamage * (soldierDamageUpgrade ? 1.3f : 1f) * Mathf.Pow(SuperManager.ScalingFactor, level - 1);
+    }
+
+    public float GetSoldierMovementSpeed()
+    {
+        return BaseSoldierMovementSpeed * (soldierSpeedUpgrade ? 1.3f : 1f);
+    }
+
+    public float GetSoldierHealRate()
+    {
+        return GetSoldierMaxHealth() / trainTime * 1.5f;
     }
 }

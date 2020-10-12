@@ -36,10 +36,7 @@ public class FreezeTower : DefenseStructure
         freezeEffect = superManager.GetResearchComplete(SuperManager.FreezeTowerSlowEffect) ? 1.0f : 1.3f;
         foreach (FreezeTowerCannon cannon in cannons)
         {
-            cannon.Setup(
-                freezeEffect,
-                superManager.GetResearchComplete(SuperManager.FreezeTowerSuper)
-            );
+            cannon.Setup(freezeEffect);
         }
     }
 
@@ -49,14 +46,13 @@ public class FreezeTower : DefenseStructure
 
         foreach (FreezeTowerCannon cannon in cannons)
         {
-            cannon.GetTargets().ForEach(target => {
-                if (target)
+            cannon.GetTargets().RemoveAll(target => !target);
+            cannon.GetTargets().ForEach(target =>
+            {
+                Enemy enemy = target.GetComponent<Enemy>();
+                if (enemy)
                 {
-                    Enemy enemy = target.GetComponent<Enemy>();
-                    if (enemy)
-                    {
-                        enemy.Slow(false, 0.0f);
-                    }
+                    enemy.Slow(false, 0.0f);
                 }
             });
         }

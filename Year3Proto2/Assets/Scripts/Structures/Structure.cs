@@ -18,14 +18,12 @@ public enum ResourceType
 public abstract class Structure : MonoBehaviour
 {
     public TileBehaviour attachedTile = null;
-    public string displayName;
-    public Sprite icon;
     public bool isPlaced = false;
     public float sitHeight;
-    public string structureName;
+    protected string structureName;
     protected int ID;
     protected float health;
-    protected Healthbar healthBar;
+    protected Healthbar healthBar = null;
     protected StructureType structureType;
     protected float timeSinceLastHit = Mathf.Infinity;
     protected BuildingInfo buildingInfo;
@@ -178,9 +176,17 @@ public abstract class Structure : MonoBehaviour
         timeSinceLastHit = 0.0f;
         bool setInfo = health == GetTrueMaxHealth();
         health -= amount;
-        if (setInfo) { buildingInfo.SetInfo(); }
-        if (healthBar.gameObject.activeSelf == false) { healthBar.gameObject.SetActive(true); }
-
+        if (setInfo)
+        {
+            buildingInfo.SetInfo();
+        }
+        if (healthBar)
+        {
+            if (healthBar.gameObject.activeSelf == false)
+            {
+                healthBar.gameObject.SetActive(true);
+            }
+        }
         GameManager.CreateAudioEffect("buildingHit", transform.position, SoundType.SoundEffect, 0.6f);
 
         return health <= 0f;
@@ -243,7 +249,7 @@ public abstract class Structure : MonoBehaviour
             {
                 if (health == GetTrueMaxHealth())
                 {
-                    healthBar.gameObject.SetActive(false);
+                    HideHealthbar();
                 }
             }
             ShowRangeDisplay(false);
@@ -322,18 +328,21 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void Start()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
+        if (isPlaced)
         {
-            hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.6f, LayerMask.GetMask("Ground")))
+            {
+                hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
+            }
         }
-
-        StructureManager structMan = StructureManager.GetInstance();
-
-        GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, structMan.canvas.transform.Find("HUD/BuildingHealthbars"));
-        SetHealthbar(healthBarInst.GetComponent<Healthbar>());
-        healthBar.target = gameObject;
-        healthBar.fillAmount = 1.0f;
-        healthBarInst.SetActive(false);
+        if (structureType != StructureType.Environment)
+        {
+            GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
+            SetHealthbar(healthBarInst.GetComponent<Healthbar>());
+            healthBar.target = gameObject;
+            healthBar.fillAmount = 1.0f;
+            healthBarInst.SetActive(false);
+        }
     }
 
     protected virtual void Update()
@@ -360,13 +369,16 @@ public abstract class Structure : MonoBehaviour
             }
             else
             {
-                healthBar.fillAmount = health / GetTrueMaxHealth();
+                if (healthBar)
+                {
+                    healthBar.fillAmount = health / GetTrueMaxHealth();
+                }
             }
             RefreshWidget();
         }
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         if (healthBar) { Destroy(healthBar.gameObject); }
         if (attachedTile) { attachedTile.Detach(); }
