@@ -63,7 +63,7 @@ public class BoulderBehaviour : MonoBehaviour
             foreach (RaycastHit enemyHit in hitEnemies)
             { 
                 Enemy enemy = enemyHit.transform.GetComponent<Enemy>();
-                if (enemy.enemyName == EnemyNames.Petard)
+                if (enemy.GetName() == EnemyNames.Petard)
                 {
                     enemy.GetComponent<Petard>().SetOffBarrel();
                     continue;

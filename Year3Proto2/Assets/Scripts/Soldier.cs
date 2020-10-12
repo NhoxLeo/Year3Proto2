@@ -5,40 +5,34 @@ using System;
 
 public class Soldier : MonoBehaviour
 {
-
-    public static Enemy GetEnemy(Transform enemy)
-    {
-        return enemy.GetComponent<Enemy>();
-    }
-
-    private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
-
     private const float DamageBonusAgainstBatteringRams = 4f;
+    private const float SearchDelay = 0.3f;
+    private const float Avoidance = 0.005f;
 
     // 0 idle, 1 moving, 2 attacking, 3 returning home
     // animation states line up (0, 1, 2), with moving state being used for state 3
+    private bool canHeal = false;
+    private bool returnHome;
+    private bool waitOnPath = false;
+    private bool haveHomePath = false;
+    private bool deathCalled = false;
+    private bool showHealthBar = false;
     private int state = 0;
-    private Enemy target = null;
-    private Animator animator;
+    private int barracksID;
+    private float searchTimer = 0f;
+    private float walkHeight = 0f;
+    private float healRate = 0.5f;
     private float health;
     private float damage;
     private float movementSpeed;
-    private bool canHeal = false;
-    private float healRate = 0.5f;
-    private Barracks home;
-    private bool returnHome;
-    private int barracksID;
-    private float searchTimer = 0f;
-    private float searchDelay = 0.3f;
-    private float avoidance = 0.05f;
-    private List<Soldier> nearbySoldiers = new List<Soldier>();
+    private Vector3 restPosition;
     private SoldierPath path;
-    private bool waitOnPath = false;
-    private bool haveHomePath = false;
-    private float walkHeight = 0f;
-    private bool deathCalled = false;
-    protected Healthbar healthbar;
-    protected bool showHealthBar = false;
+    private Barracks home = null;
+    private Enemy target = null;
+    private Animator animator = null;
+    private Healthbar healthbar = null;
+    private List<Soldier> nearbySoldiers = new List<Soldier>();
+    private static Converter<Transform, Enemy> ToEnemyConverter = new Converter<Transform, Enemy>(GetEnemy);
 
     public TileBehaviour GetCurrentTile()
     {
@@ -49,27 +43,52 @@ public class Soldier : MonoBehaviour
         return null;
     }
 
-    public Enemy GetClosestEnemy()
+    public Enemy GetBestEnemy()
     {
-        Enemy closest = null;
+        // Gets the closest, except it tries to get an enemy that's not been targeted by another soldier already
+        Enemy best = null;
         List<Enemy> barracksEnemies = home.GetEnemies().ConvertAll(ToEnemyConverter);
+        // if the barracks has enemies
         if (barracksEnemies.Count > 0)
         {
-            float distance = Mathf.Infinity;
+            float distance = float.MaxValue;
+            int leastOtherSoldiers = int.MaxValue;
+            // for every enemy that the barracks can reach
             foreach (Enemy enemy in barracksEnemies)
             {
+                // if the enemy is spotted
                 if (enemy.IsBeingObserved())
                 {
+                    // the distance to the enemy
                     float thisDistance = (enemy.transform.position - transform.position).magnitude;
-                    if (thisDistance < distance)
+                    // the number of soldiers already attacking the enemy
+                    int otherSoldierCount = enemy.GetNumSoldiersAttacking();
+                    // if this is the closest distance we've found so far
+                    if (thisDistance < distance) // closest
                     {
-                        distance = thisDistance;
-                        closest = enemy;
+                        // can be less or equal number of soldiers targeting to change targets
+                        if (otherSoldierCount <= leastOtherSoldiers)
+                        {
+                            leastOtherSoldiers = otherSoldierCount;
+                            distance = thisDistance;
+                            best = enemy;
+                        }
                     }
+                    else // further than closest
+                    {
+                        // needs to be less soldiers targeting to change targets
+                        if (otherSoldierCount < leastOtherSoldiers)
+                        {
+                            leastOtherSoldiers = otherSoldierCount;
+                            distance = thisDistance;
+                            best = enemy;
+                        }
+                    }
+
                 }
             }
         }
-        return closest;
+        return best;
     }
 
     public TileBehaviour GetHomeTile()
@@ -92,6 +111,7 @@ public class Soldier : MonoBehaviour
         SetMovementSpeed(home.GetSoldierMovementSpeed());
         SetDamage(home.GetSoldierDamage());
         SetHealRate(home.GetSoldierHealRate());
+        home.UpdateSoldierRestLocations();
         transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         GameObject healthBarInst = Instantiate(StructureManager.HealthBarPrefab, StructureManager.GetInstance().canvas.transform.Find("HUD/BuildingHealthbars"));
         healthbar = healthBarInst.GetComponent<Healthbar>();
@@ -154,9 +174,9 @@ public class Soldier : MonoBehaviour
         }
 
         // if the soldier has been recalled
-        if (returnHome) { state = 3; }
+        if (returnHome) { SetState(3); }
         // if the soldier was responding to a recall but no longer needs to be recalled
-        if (state == 3 && !returnHome) { state = 0; }
+        if (state == 3 && !returnHome) { SetState(0); }
         // if the soldier is not responding to a recall
         if (state == 0 || state == 1) { SearchForEnemies(); }
 
@@ -202,7 +222,7 @@ public class Soldier : MonoBehaviour
         Vector3 toHome = home.transform.position - transform.position;
         toHome.y = 0f;
         // if you are further than 1.0f from target
-        if (toHome.magnitude > 0.5f)
+        if (toHome.magnitude > 0.65f)
         {
             animator.SetInteger("State", 1);
             if (!haveHomePath)
@@ -239,18 +259,31 @@ public class Soldier : MonoBehaviour
             haveHomePath = false;
             if (toHome.magnitude < 0.45f)
             {
-                Vector3 avoidance = GetAvoidanceOnly();
-                if (avoidance == Vector3.zero)
+                Vector3 toRestPos = restPosition - transform.position;
+                if (toRestPos.magnitude > 0.05f)
                 {
-                    animator.SetInteger("State", 0);
+                    LookAtPosition(restPosition);
+                    Vector3 futurePos = transform.position + (GetMotionToTarget(restPosition) * Time.fixedDeltaTime);
+                    futurePos.y = walkHeight;
+                    transform.position = futurePos;
+                    canHeal = false;
+                    animator.SetInteger("State", 1);
                 }
                 else
                 {
-                    Vector3 futurePos = transform.position + (avoidance * Time.fixedDeltaTime);
-                    futurePos.y = walkHeight;
-                    LookAtPosition(home.transform.position);
-                    transform.position = futurePos;
-                    animator.SetInteger("State", 1);
+                    Vector3 avoidance = GetAvoidanceOnly();
+                    if (avoidance == Vector3.zero)
+                    {
+                        animator.SetInteger("State", 0);
+                    }
+                    else
+                    {
+                        Vector3 futurePos = transform.position + (avoidance * Time.fixedDeltaTime);
+                        futurePos.y = walkHeight;
+                        LookAtPosition(home.transform.position);
+                        transform.position = futurePos;
+                        animator.SetInteger("State", 1);
+                    }
                 }
                 canHeal = true;
             }
@@ -272,7 +305,7 @@ public class Soldier : MonoBehaviour
         canHeal = false;
         if (!target)
         {
-            state = 0;
+            SetState(0);
             return;
         }
         float distanceFromTarget = (target.transform.position - transform.position).magnitude;
@@ -289,7 +322,7 @@ public class Soldier : MonoBehaviour
                 path.pathPoints.RemoveAt(0);
                 if (path.pathPoints.Count < 1)
                 {
-                    state = 0;
+                    SetState(0);
                 }
             }
             Vector3 newPosition = transform.position + (GetPathVector() * Time.fixedDeltaTime);
@@ -306,9 +339,9 @@ public class Soldier : MonoBehaviour
             transform.position = futurePos;
             Vector3 toTarget = target.transform.position - transform.position;
             toTarget.y = 0f;
-            if (toTarget.magnitude < (target.enemyName == EnemyNames.BatteringRam ? 0.5f : 0.2f))
+            if (toTarget.magnitude < (target.GetName() == EnemyNames.BatteringRam ? 0.5f : 0.2f))
             {
-                state = 2;
+                SetState(2);
             }
         }
     }
@@ -323,7 +356,7 @@ public class Soldier : MonoBehaviour
         }
         else
         {
-            state = 0;
+            SetState(0);
         }
     }
 
@@ -357,19 +390,24 @@ public class Soldier : MonoBehaviour
         {
             if (PathManager.GetInstance().RequestPath(this, ref path))
             {
+                if (target)
+                {
+                    target.OnSoldierStopChasing(this);
+                }
                 target = path.target;
-                state = 1;
+                SetState(1);
                 waitOnPath = false;
                 haveHomePath = false;
+                target.OnSoldierChase(this);
             }
         }
         else
         {
             searchTimer += Time.fixedDeltaTime;
-            if (searchTimer >= searchDelay)
+            if (searchTimer >= SearchDelay)
             {
                 searchTimer = 0f;
-                if (GetClosestEnemy())
+                if (GetBestEnemy())
                 {
                     waitOnPath = true;
                 }
@@ -417,16 +455,16 @@ public class Soldier : MonoBehaviour
         if (target && state == 2)
         {
             target.OnDamagedBySoldier(this);
-            if (target.Damage(damage * (target.enemyName == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
+            if (target.Damage(damage * (target.GetName() == EnemyNames.BatteringRam ? DamageBonusAgainstBatteringRams : 1f)))
             {
                 target = null;
-                Enemy closest = GetClosestEnemy();
-                if (closest)
+                Enemy best = GetBestEnemy();
+                if (best)
                 {
-                    float distance = (transform.position - closest.transform.position).magnitude;
+                    float distance = (transform.position - best.transform.position).magnitude;
                     if (distance < 0.5f)
                     {
-                        target = closest;
+                        target = best;
                     }
                     else
                     {
@@ -438,7 +476,7 @@ public class Soldier : MonoBehaviour
             {
                 if ((target.transform.position - transform.position).magnitude > 0.2f)
                 {
-                    state = 1;
+                    SetState(1);
                 }
             }
         }
@@ -460,7 +498,7 @@ public class Soldier : MonoBehaviour
         Vector3 toTarget = _target - transform.position;
         toTarget.y = 0f;
         Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        if (toTarget.magnitude > 0.25f)
         {
             finalMotionVector += GetAvoidanceForce();
         }
@@ -472,10 +510,10 @@ public class Soldier : MonoBehaviour
         // Get the vector between this enemy and the target
         Vector3 toTarget = path.pathPoints[0] - transform.position;
         toTarget.y = 0f;
-        Vector3 finalMotionVector = toTarget;
-        if (toTarget.magnitude > 1.5f)
+        Vector3 finalMotionVector = toTarget.normalized * movementSpeed;
+        if (toTarget.magnitude > 0.25f)
         {
-             finalMotionVector += GetAvoidanceOnly();
+            finalMotionVector += GetAvoidanceForce();
         }
         return finalMotionVector.normalized * movementSpeed;
     }
@@ -496,20 +534,15 @@ public class Soldier : MonoBehaviour
             soldierToThis.y = 0f;
             float inverseMag = 1f / soldierToThis.magnitude;
             if (inverseMag == Mathf.Infinity) { continue; }
-            /*
             // move the soldier a bit away also
-            Vector3 newSoldierPosition = soldier.transform.position + soldierToThis * avoidance * -0.05f;
+            Vector3 newSoldierPosition = soldier.transform.position + (soldierToThis.normalized * Avoidance * -0.15f);
             soldier.transform.position = newSoldierPosition;
-            */
-            finalMotionVector += soldierToThis.normalized * inverseMag * avoidance;
+
+            finalMotionVector += soldierToThis.normalized * inverseMag * Avoidance;
         }
         if (soldierWasNull)
         {
             nearbySoldiers.RemoveAll(soldier => !soldier);
-        }
-        if (finalMotionVector.magnitude < 0.25f)
-        {
-            return Vector3.zero;
         }
         return finalMotionVector;
     }
@@ -554,6 +587,10 @@ public class Soldier : MonoBehaviour
 
     public void SetState(int _state)
     {
+        if (_state == 0 && home)
+        {
+            home.UpdateSoldierRestLocations();
+        }
         state = _state;
     }
 
@@ -628,5 +665,26 @@ public class Soldier : MonoBehaviour
         float oldMaxHealth = GetMaxHealth() / SuperManager.ScalingFactor;
         float difference = GetMaxHealth() - oldMaxHealth;
         health += difference;
+    }
+
+    public static Enemy GetEnemy(Transform enemy)
+    {
+        return enemy.GetComponent<Enemy>();
+    }
+
+    public void TryFindNewTarget()
+    {
+        if ((state == 0 || state == 1) && !waitOnPath)
+        {
+            if (GetBestEnemy())
+            {
+                waitOnPath = true;
+            }
+        }
+    }
+
+    public void SetRestLocation(Vector3 _restLocation)
+    {
+        restPosition = _restLocation;
     }
 }

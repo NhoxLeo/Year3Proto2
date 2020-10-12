@@ -561,7 +561,7 @@ public class PathManager : MonoBehaviour
             TileBehaviour destination;
             if (!_home)
             {
-                newData.target = _soldier.GetClosestEnemy();
+                newData.target = _soldier.GetBestEnemy();
                 if (newData.target)
                 {
                     destination = newData.target.GetCurrentTile();
