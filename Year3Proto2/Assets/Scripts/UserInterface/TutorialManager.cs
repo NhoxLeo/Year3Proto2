@@ -1,22 +1,12 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using DG.Tweening;
+using UnityEngine.UI;
 
 public class TutorialManager : MonoBehaviour
 {
     private static TutorialManager instance = null;
-
-    [Header("Main")]
-    [SerializeField] private RectTransform focus;
-    [SerializeField] private RectTransform focusTransform;
-
-    [Header("Transforms")]
-    [SerializeField] private RectTransform farmButton;
-    [SerializeField] private RectTransform productionTab;
-    [SerializeField] private UIAnimator productionTabPanel;
-
-    private float pulseScaleMagnitude = 0.05f;
 
     public enum TutorialState
     {
@@ -24,11 +14,40 @@ public class TutorialManager : MonoBehaviour
         SelectFarm,
         PlaceFarm
     }
+
     public TutorialState tutorialState;
+
+    [System.Serializable]
+    public struct TutorialMessage
+    {
+        public string heading;
+        public string description;
+    }
+
+    [SerializeField] private List<TutorialMessage> tutorialMessages;
+
+    [Header("Main")]
+    [SerializeField] private RectTransform focus;
+
+    [SerializeField] private RectTransform focusTransform;
+    [SerializeField] private UIAnimator messagePanel;
+    [SerializeField] private RectTransform messageTransform;
+    [SerializeField] private TMP_Text messageHeading;
+    [SerializeField] private TMP_Text messageDescription;
+
+    [Header("Transforms")]
+    [SerializeField] private RectTransform farmButton;
+
+    [SerializeField] private RectTransform productionTab;
+    [SerializeField] private UIAnimator productionTabPanel;
+
+    private float pulseScaleMagnitude = 0.05f;
 
     private void Awake()
     {
         instance = this;
+
+        //tutorialMessages = new List<TutorialMessage>();
     }
 
     public static TutorialManager GetInstance()
@@ -36,32 +55,42 @@ public class TutorialManager : MonoBehaviour
         return instance;
     }
 
-    void Start()
-    {
-        
-    }
-
-
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))
         {
             AdvanceTutorialTo(TutorialState.SelectFarm);
         }
 
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            AdvanceTutorialTo(TutorialState.PlaceFarm);
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            AdvanceTutorialTo(TutorialState.Start);
+        }
+
         focus.transform.localScale = Vector3.one * (1.0f + pulseScaleMagnitude + Mathf.Sin(Time.time * 6.0f) * pulseScaleMagnitude);
+        if (focusTransform != null)
+        {
+            focus.position = Vector3.Lerp(focus.position, focusTransform.position, Time.unscaledDeltaTime * 10.0f);
+        }
 
         switch (tutorialState)
         {
             case TutorialState.Start:
+
                 break;
 
             case TutorialState.SelectFarm:
+
                 if (productionTabPanel.showElement && focusTransform != farmButton)
                 {
                     FocusOn(farmButton);
                 }
-                else
+                if (!productionTabPanel.showElement && focusTransform != productionTab)
                 {
                     FocusOn(productionTab);
                 }
@@ -69,6 +98,7 @@ public class TutorialManager : MonoBehaviour
 
             case TutorialState.PlaceFarm:
                 break;
+
             default:
                 break;
         }
@@ -78,7 +108,6 @@ public class TutorialManager : MonoBehaviour
     {
         focus.sizeDelta = Vector2.one * 480.0f;
         focus.transform.DOKill(true);
-        focus.DOMove(_rTrans.position, 0.4f).SetEase(Ease.OutQuint);
         focus.DOSizeDelta(_rTrans.sizeDelta, 0.4f).SetEase(Ease.OutQuint);
         focusTransform = _rTrans;
     }
@@ -87,7 +116,16 @@ public class TutorialManager : MonoBehaviour
     {
         tutorialState = _state;
 
-
+        SetMessage((int)tutorialState);
     }
 
+    private void SetMessage(int _message)
+    {
+        messageHeading.text = tutorialMessages[_message].heading;
+        messageDescription.text = tutorialMessages[_message].description;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(messageTransform);
+
+        messagePanel.SetVisibility(!(tutorialMessages[_message].heading == "" && tutorialMessages[_message].description == ""));
+        messagePanel.Pulse();
+    }
 }
