@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.41670424, g: 0.2657115, b: 0.18578996, a: 1}
+  m_IndirectSpecularColor: {r: 0.41929477, g: 0.26398677, b: 0.17905368, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1960,56 +1960,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 100552493}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &102326191
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 102326193}
-  - component: {fileID: 102326192}
-  m_Layer: 0
-  m_Name: EnvironmentSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &102326192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102326191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ff028b178179f44ba442dc7932bb392, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ambientEvents:
-  - {fileID: 2888226669773072460, guid: f939eeae86f74e94d9c572a0ce8f80d1, type: 3}
-  weatherEvents:
-  - {fileID: 5718429722591600440, guid: a25c70cc0774e44469e2afc5a9be26c1, type: 3}
-  - {fileID: 2284372076818493596, guid: 6d26f79ed5f628f4d9f476e6575708d1, type: 3}
-  ambientEvent: {fileID: 0}
-  weatherEvent: {fileID: 0}
---- !u!4 &102326193
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102326191}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 556, y: 322, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 10
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &109892675
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14455,36 +14405,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 793604426}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &795210055
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 795210056}
-  m_Layer: 0
-  m_Name: CliffFaces
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &795210056
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 795210055}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &797686948
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45005,11 +44925,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1498752169875928800, guid: 0062490a6299c9647892643895518e38,
-        type: 3}
-      propertyPath: weatherTarget
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2583936287728896004, guid: 0062490a6299c9647892643895518e38,
         type: 3}
       propertyPath: RotationBySpeedModule.enabled

@@ -706,30 +706,32 @@ public class GameManager : MonoBehaviour
         {
             VillagerManager.GetInstance().TrainVillager();
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (!EnemyManager.GetInstance().GetSpawnOnKeyMode())
         {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+            }
         }
     }
 
