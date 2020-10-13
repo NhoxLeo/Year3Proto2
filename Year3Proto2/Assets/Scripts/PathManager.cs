@@ -561,7 +561,7 @@ public class PathManager : MonoBehaviour
             TileBehaviour destination;
             if (!_home)
             {
-                newData.target = _soldier.GetClosestEnemy();
+                newData.target = _soldier.GetBestEnemy();
                 if (newData.target)
                 {
                     destination = newData.target.GetCurrentTile();
@@ -777,6 +777,16 @@ public class PathManager : MonoBehaviour
         {
             jobInfo.jobHandle.Complete();
             jobInfo.resultPath.Dispose();
+        }
+        foreach (SoldierPathData soldierInfo in soldierPaths.Values)
+        {
+            soldierInfo.jobHandle.Complete();
+            soldierInfo.nativePath.Dispose();
+        }
+        foreach (SoldierPathData soldierInfo in soldierHomeTrips.Values)
+        {
+            soldierInfo.jobHandle.Complete();
+            soldierInfo.nativePath.Dispose();
         }
     }
 }

@@ -7,8 +7,8 @@ public class ShockWaveTower : DefenseStructure
     [SerializeField] private Transform particle;
     private float timer = 0.0f;
 
-    private const float BaseMaxHealth = 350f;
-    private const float MinimumDelay = 3f;
+    private const float BaseMaxHealth = 350.0f;
+    private const float MinimumDelay = 3.0f;
 
     private float delay = MinimumDelay;
 
@@ -69,15 +69,16 @@ public class ShockWaveTower : DefenseStructure
                         Enemy enemy = transform.GetComponent<Enemy>();
                         if (enemy)
                         {
-                            if (enemy.enemyName != EnemyNames.BatteringRam)
+                            if (enemy.GetName() != EnemyNames.BatteringRam)
                             {
-                                if (enemy.enemyName == EnemyNames.Petard)
+                                if (enemy.GetName() == EnemyNames.Petard)
                                 {
                                     enemy.GetComponent<Petard>().SetOffBarrel();
                                 }
+                                bool super = SuperManager.GetInstance().GetResearchComplete(SuperManager.ShockwaveTowerSuper);
                                 float distance = (this.transform.position - transform.position).magnitude;
-                                float damage = 5.0f * (1.0f / distance);
-                                enemy.Stun(damage);
+                                float damage =  5.0f * (1.0f / distance); // Balance total damage
+                                enemy.Stun(super ? damage : 0);
                             }
                         }
                     });
@@ -91,7 +92,7 @@ public class ShockWaveTower : DefenseStructure
 
     public float GetAttackRate()
     {
-        return 1f / delay;
+        return allocatedVillagers == 0 ? 0f : 1f / delay;
     }
 
 

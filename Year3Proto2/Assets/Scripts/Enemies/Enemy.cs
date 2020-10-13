@@ -25,24 +25,15 @@ public enum EnemyState
 
 public abstract class Enemy : MonoBehaviour
 {
-    [HideInInspector]
-    protected static GameObject PuffEffect;
-    [HideInInspector]
     protected float baseHealth = 10.0f;
-    [HideInInspector]
     protected float baseDamage = 2.0f;
-    [HideInInspector]
     protected float health;
-    [HideInInspector]
     protected float damage;
-    [HideInInspector]
-    public bool nextReturnFalse = false;
     protected bool delayedDeathCalled = false;
     protected float delayedDeathTimer = 0f;
     protected float avoidForce = 0.05f;
     protected Structure target = null;
-    [HideInInspector]
-    public Soldier defenseTarget = null;
+    protected Soldier defenseTarget = null;
     protected EnemyState enemyState = EnemyState.Idle;
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     protected bool needToMoveAway;
@@ -53,12 +44,12 @@ public abstract class Enemy : MonoBehaviour
     protected Animator animator;
     protected bool action = false;
     [HideInInspector]
-    public string enemyName;
+    protected string enemyName;
     private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
     protected bool defending = false;
-    protected int observers = 0;
+    protected List<SpottingRange> observers = new List<SpottingRange>();
     protected bool hasPath = false;
     protected EnemyPath path;
     protected float updatePathTimer = 0f;
@@ -66,8 +57,10 @@ public abstract class Enemy : MonoBehaviour
     protected EnemyPathSignature signature;
     protected int level;
     protected Healthbar healthbar;
+    protected bool showHealthBar = false;
     private bool onKillCalled = false;
     protected float walkHeight = 0f;
+    private List<Soldier> attackingSoldiers = new List<Soldier>(); 
 
     // Stun
     protected bool stunned = false;
@@ -76,15 +69,12 @@ public abstract class Enemy : MonoBehaviour
 
     // Slow
     private int slowCount = 0;
+    private bool slowSuper = false;
 
     public abstract void Action();
 
     protected virtual void Awake()
     {
-        if (!PuffEffect)
-        {
-            PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
-        }
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
     }
@@ -149,12 +139,15 @@ public abstract class Enemy : MonoBehaviour
     {
         if (enemyName == EnemyNames.Invader || enemyName == EnemyNames.HeavyInvader)
         {
-            enemyState = EnemyState.Action;
-            defenseTarget = _soldier;
-            defending = true;
-            animator.SetBool("Attack", true);
-            action = true;
-            LookAtPosition(_soldier.transform.position);
+            if (!defending)
+            {
+                enemyState = EnemyState.Action;
+                defenseTarget = _soldier;
+                defending = true;
+                animator.SetBool("Attack", true);
+                action = true;
+                LookAtPosition(_soldier.transform.position);
+            }
         }
     }
 
@@ -189,11 +182,18 @@ public abstract class Enemy : MonoBehaviour
 
         if (healthbar)
         {
-            if (!GameManager.ShowEnemyHealthbars)
+            if (!GameManager.ShowEnemyHealthbars || !showHealthBar)
             {
                 if (healthbar.gameObject.activeSelf)
                 {
                     healthbar.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (!healthbar.gameObject.activeSelf)
+                {
+                    healthbar.gameObject.SetActive(true);
                 }
             }
         }
@@ -334,8 +334,6 @@ public abstract class Enemy : MonoBehaviour
         return finalMotionVector.normalized * currentSpeed;
     }
 
-
-
     public Structure GetTarget()
     {
         return target;
@@ -369,15 +367,14 @@ public abstract class Enemy : MonoBehaviour
     public bool Damage(float _damage)
     {
         health -= _damage;
-        if (healthbar && GameManager.ShowEnemyHealthbars)
+        if (healthbar)
         {
             if (health < GetTrueMaxHealth())
             {
-                healthbar.gameObject.SetActive(true);
                 healthbar.fillAmount = health / GetTrueMaxHealth();
+                showHealthBar = true;
             }
         }
-
         if (health <= 0f)
         {
             if (!onKillCalled)
@@ -391,19 +388,22 @@ public abstract class Enemy : MonoBehaviour
         return false;
     }
 
-    public void AddObserver()
+    public void SeenByObserver(SpottingRange _observer)
     {
-        observers++;
+        if (!observers.Contains(_observer))
+        {
+            observers.Add(_observer);
+        }
     }
 
-    public void RemoveObserver()
+    public void LostByObserver(SpottingRange _observer)
     {
-        observers--;
+        observers.Remove(_observer);
     }
 
     public bool IsBeingObserved()
     {
-        return observers > 0;
+        return observers.Count > 0;
     }
 
     public TileBehaviour GetCurrentTile()
@@ -463,5 +463,40 @@ public abstract class Enemy : MonoBehaviour
         {
             Destroy(healthbar.gameObject);
         }
+    }
+
+    public Soldier GetDefenseTarget()
+    {
+        return defenseTarget;
+    }
+
+    public string GetName()
+    {
+        return enemyName;
+    }
+
+    public void OnSoldierChase(Soldier _soldier)
+    {
+        // if the enemy doesn't already know about the soldier
+        if (!attackingSoldiers.Contains(_soldier))
+        {
+            // add the soldier to the list
+            attackingSoldiers.Add(_soldier);
+        }
+    }
+
+    public void OnSoldierStopChasing(Soldier _soldier)
+    {
+        // if the enemy knows about the soldier
+        if (attackingSoldiers.Contains(_soldier))
+        {
+            // forget about the soldier.
+            attackingSoldiers.Remove(_soldier);
+        }
+    }
+
+    public int GetOtherSoldiersAttacking(Soldier _soldier)
+    {
+        return attackingSoldiers.Count - (attackingSoldiers.Contains(_soldier) ? 1 : 0);
     }
 }

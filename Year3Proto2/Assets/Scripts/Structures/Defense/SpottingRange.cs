@@ -5,22 +5,27 @@ using UnityEngine;
 public class SpottingRange : MonoBehaviour
 {
     int enemyStructureColliderLayer;
+    List<GameObject> enemiesBeingObserved = new List<GameObject>();
 
     private void Start()
     {
         enemyStructureColliderLayer = LayerMask.NameToLayer("EnemyStructureCollider");
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.layer == enemyStructureColliderLayer)
         {
             if (other.transform.parent)
             {
-                Enemy enemyComponent = other.transform.parent.GetComponent<Enemy>();
-                if (enemyComponent)
+                if (!enemiesBeingObserved.Contains(other.transform.parent.gameObject))
                 {
-                    enemyComponent.AddObserver();
+                    enemiesBeingObserved.Add(other.transform.parent.gameObject);
+                    Enemy enemyComponent = other.transform.parent.GetComponent<Enemy>();
+                    if (enemyComponent)
+                    {
+                        enemyComponent.SeenByObserver(this);
+                    }
                 }
             }
         }
@@ -32,10 +37,14 @@ public class SpottingRange : MonoBehaviour
         {
             if (other.transform.parent)
             {
-                Enemy enemyComponent = other.transform.parent.GetComponent<Enemy>();
-                if (enemyComponent)
+                if (enemiesBeingObserved.Contains(other.transform.parent.gameObject))
                 {
-                    enemyComponent.RemoveObserver();
+                    enemiesBeingObserved.Remove(other.transform.parent.gameObject);
+                    Enemy enemyComponent = other.transform.parent.GetComponent<Enemy>();
+                    if (enemyComponent)
+                    {
+                        enemyComponent.LostByObserver(this);
+                    }
                 }
             }
         }

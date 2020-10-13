@@ -34,19 +34,13 @@ public class OptionSlider : OptionObject, OptionDataBase
 
     public override void Deserialize()
     {
-        if(slider && data != null)
-        {
-            slider.minValue = data.range.x;
-            slider.maxValue = data.range.y;
-            data.value = PlayerPrefs.GetFloat(key, data.defaultValue);
-            slider.value = data.value;
+        data.value = PlayerPrefs.GetFloat(key, data.defaultValue);
 
-            OptionCallback optionCallback = data.GetCallback();
-            if (optionCallback != null)
-            {
-                optionCallback.Invoke();
-            }
-        }
+        slider.minValue = data.range.x;
+        slider.maxValue = data.range.y;
+        slider.value = data.value;
+
+        data.GetCallback().Invoke();
     }
 
     public override OptionData GetData()
@@ -66,15 +60,10 @@ public class OptionSlider : OptionObject, OptionDataBase
 
     public void Refresh()
     {
-        if (slider && data != null)
+        if (deserialised)
         {
             data.value = slider.value;
-
-            OptionCallback optionCallback = data.GetCallback();
-            if (optionCallback != null)
-            {
-                optionCallback.Invoke();
-            }
+            data.GetCallback().Invoke();
         }
     }
 }

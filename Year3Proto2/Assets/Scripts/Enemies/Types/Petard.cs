@@ -35,7 +35,10 @@ public class Petard : Enemy
                 {
                     if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Structure")))
                     {
-                        walkHeight = hit.point.y;
+                        if (hit.transform.name.Contains("Hill"))
+                        {
+                            walkHeight = hit.point.y;
+                        }
                     }
                 }
             }
@@ -193,7 +196,7 @@ public class Petard : Enemy
     public override void OnKill()
     {
         base.OnKill();
-        GameObject puff = Instantiate(PuffEffect);
+        GameObject puff = Instantiate(GameManager.GetPuffEffect());
         puff.transform.position = transform.position;
     }
 

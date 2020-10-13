@@ -28,14 +28,15 @@ public abstract class DefenseStructure : Structure
         base.Start();
         if (isPlaced)
         {
-            CapsuleCollider capsule = GetComponentInChildren<TowerRange>().GetComponent<CapsuleCollider>();
-            SphereCollider sphere = GetComponentInChildren<TowerRange>().GetComponent<SphereCollider>();
+            TowerRange range = GetComponentInChildren<TowerRange>();
+            CapsuleCollider capsule = range.GetComponent<CapsuleCollider>();
+            SphereCollider sphere = range.GetComponent<SphereCollider>();
             if (capsule)
             {
                 foreach (Enemy enemy in FindObjectsOfType<Enemy>())
                 {
                     float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
-                    if (distanceFromEnemy <= capsule.radius)
+                    if (distanceFromEnemy <= capsule.radius * capsule.transform.localScale.x)
                     {
                         if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
                     }
@@ -46,7 +47,7 @@ public abstract class DefenseStructure : Structure
                 foreach (Enemy enemy in FindObjectsOfType<Enemy>())
                 {
                     float distanceFromEnemy = (enemy.transform.position - transform.position).magnitude;
-                    if (distanceFromEnemy <= sphere.radius)
+                    if (distanceFromEnemy <= sphere.radius * sphere.transform.localScale.x)
                     {
                         if (!enemies.Contains(enemy.transform)) { enemies.Add(enemy.transform); }
                     }
@@ -61,8 +62,9 @@ public abstract class DefenseStructure : Structure
         enemies.RemoveAll(enemy => !enemy);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         if (alert)
         {
             Destroy(alert.gameObject);

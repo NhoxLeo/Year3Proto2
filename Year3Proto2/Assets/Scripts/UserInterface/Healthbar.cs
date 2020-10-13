@@ -9,7 +9,7 @@ public class Healthbar : MonoBehaviour
     public GameObject target;
     public float fillAmount = 1.0f;
     private float fillBefore;
-
+    public bool pulseOnHealthIncrease = true;
     private Image bar;
 
     void Start()
@@ -21,7 +21,10 @@ public class Healthbar : MonoBehaviour
     {
         if (fillAmount != fillBefore)
         {
-            PulseTip();
+            if (pulseOnHealthIncrease || fillAmount < fillBefore)
+            {
+                PulseTip();
+            }
             fillBefore = fillAmount;
         }
 
