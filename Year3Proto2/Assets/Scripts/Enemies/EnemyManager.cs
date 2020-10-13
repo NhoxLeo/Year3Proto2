@@ -153,6 +153,7 @@ public class EnemyManager : MonoBehaviour
     private readonly List<Enemy> enemies = new List<Enemy>();
     private int enemiesKilled = 0;
     private int wave = 0;
+    private bool spawnOnKeyPress = false;
 
     public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
@@ -444,11 +445,18 @@ public class EnemyManager : MonoBehaviour
     {
         if (SuperManager.DevMode)
         {
-            if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
-            {
-                SpawnNextWave();
-            }
             if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+            {
+                if (Input.GetKeyDown(KeyCode.W))
+                {
+                    SpawnNextWave();
+                }
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    spawnOnKeyPress = !spawnOnKeyPress;
+                }
+            }
+            if (spawnOnKeyPress)
             {
                 if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
@@ -940,8 +948,8 @@ public class EnemyManager : MonoBehaviour
             {
                 currentSettings[_enemy] = (true, 1);
             }
-
-            GameObject newEnemyObject = Instantiate(Enemies[_enemy].GetPrefab(), hitGround.transform.position + Vector3.up * 0.5f, Quaternion.identity);
+            Vector3 spawnPosition = new Vector3(hitGround.point.x, 0.5f, hitGround.point.z);
+            GameObject newEnemyObject = Instantiate(Enemies[_enemy].GetPrefab(), spawnPosition, Quaternion.identity);
             Enemy enemy = newEnemyObject.GetComponent<Enemy>();
             RecordNewEnemy(enemy);
 
@@ -985,5 +993,10 @@ public class EnemyManager : MonoBehaviour
             Airship airship = Instantiate(airshipPrefab, transform).GetComponent<Airship>();
             airship.SetAirshipFromData(data);
         }
+    }
+
+    public bool GetSpawnOnKeyMode()
+    {
+        return spawnOnKeyPress;
     }
 }

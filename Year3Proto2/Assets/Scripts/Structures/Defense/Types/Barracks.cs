@@ -6,7 +6,7 @@ using DG.Tweening;
 public class Barracks : DefenseStructure
 {
     private static GameObject SoldierPrefab;
-    private List<Soldier> soldiers;
+    private List<Soldier> soldiers = new List<Soldier>();
     private float trainTime = 6f;
     private float timeTrained = 0f;
     private const float BaseMaxHealth = 350f;
@@ -17,6 +17,7 @@ public class Barracks : DefenseStructure
     private bool soldierHealthUpgrade = false;
     private bool soldierSpeedUpgrade = false;
     private Color normalEmissiveColour;
+    private List<Vector3> restLocations = new List<Vector3>();
     public float GetTimeTrained()
     {
         return timeTrained;
@@ -35,6 +36,7 @@ public class Barracks : DefenseStructure
     protected override void Start()
     {
         base.Start();
+        RefreshRestPositions();
     }
 
     protected override void Awake()
@@ -64,7 +66,6 @@ public class Barracks : DefenseStructure
         {
             SoldierPrefab = Resources.Load("Soldier") as GameObject;
         }
-        soldiers = new List<Soldier>();
         normalEmissiveColour = meshRenderer.materials[0].GetColor("_EmissiveColor");
     }
 
@@ -203,6 +204,7 @@ public class Barracks : DefenseStructure
     {
         base.OnPlace();
         SetMaterials(SuperManager.GetInstance().GetSnow());
+        RefreshRestPositions();
     }
 
     public float GetSoldierMaxHealth()
@@ -223,5 +225,44 @@ public class Barracks : DefenseStructure
     public float GetSoldierHealRate()
     {
         return GetSoldierMaxHealth() / trainTime * 1.5f;
+    }
+
+    public void AlertSoldiers()
+    {
+        foreach (Soldier soldier in soldiers)
+        {
+            soldier.TryFindNewTarget();
+        }
+    }
+
+    public Vector3 GetRestLocation(Soldier _soldier)
+    {
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            if (soldiers[i] == _soldier)
+            {
+                if (restLocations.Count >= i + 1)
+                {
+                    return restLocations[i];
+                }
+            }
+        }
+        return transform.position;
+    }
+
+    public void UpdateSoldierRestLocations()
+    {
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            soldiers[i].SetRestLocation(restLocations[i]);
+        }
+    }
+
+    public void RefreshRestPositions()
+    {
+        restLocations.Clear();
+        restLocations.Add(transform.GetChild(2).position);
+        restLocations.Add(transform.GetChild(3).position);
+        restLocations.Add(transform.GetChild(4).position);
     }
 }

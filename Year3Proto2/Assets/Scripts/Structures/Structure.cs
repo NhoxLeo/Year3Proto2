@@ -69,6 +69,7 @@ public abstract class Structure : MonoBehaviour
             // we are returning villagers to the manager's control.
             villMan.ReturnVillagers(-change, previousManualAllocation);
             allocatedVillagers = _villagers;
+            villMan.MarkVillagersAsManAlloc(allocatedVillagers);
             villMan.RedistributeVillagers();
         }
         else if (change > 0)
@@ -129,6 +130,11 @@ public abstract class Structure : MonoBehaviour
     public void SetAllocationWidget(VillagerAllocation _widget)
     {
         villagerWidget = _widget;
+    }
+
+    public VillagerAllocation GetAllocationWidget()
+    {
+        return villagerWidget;
     }
 
     public void SetWidgetVisibility(bool _visibility)
