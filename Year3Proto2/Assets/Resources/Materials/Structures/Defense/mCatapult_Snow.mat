@@ -12,7 +12,7 @@ Material:
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 2000
   stringTagMap:
@@ -27,7 +27,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_33D1CF7D:
-        m_Texture: {fileID: 2800000, guid: da2a0efd83271244fb91be03c1f42517, type: 3}
+        m_Texture: {fileID: 2800000, guid: 28a764ec778c6fa4c97b22e9d2112d5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_52ACA811:
@@ -35,7 +35,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_599CDFA:
-        m_Texture: {fileID: 2800000, guid: da2a0efd83271244fb91be03c1f42517, type: 3}
+        m_Texture: {fileID: 2800000, guid: 28a764ec778c6fa4c97b22e9d2112d5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_D4A94B7F:
@@ -43,7 +43,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_D7B06630:
-        m_Texture: {fileID: 2800000, guid: 94479e88473993b40a45a01665ecbdd6, type: 3}
+        m_Texture: {fileID: 2800000, guid: d8993d1054ec88441b21adc4986c923e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_E8065E2E:
@@ -59,7 +59,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseColorMap:
-        m_Texture: {fileID: 2800000, guid: 94479e88473993b40a45a01665ecbdd6, type: 3}
+        m_Texture: {fileID: 2800000, guid: d8993d1054ec88441b21adc4986c923e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BentNormalMap:
@@ -99,11 +99,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 94479e88473993b40a45a01665ecbdd6, type: 3}
+        m_Texture: {fileID: 2800000, guid: d8993d1054ec88441b21adc4986c923e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskMap:
-        m_Texture: {fileID: 2800000, guid: da2a0efd83271244fb91be03c1f42517, type: 3}
+        m_Texture: {fileID: 2800000, guid: 28a764ec778c6fa4c97b22e9d2112d5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalFromTexture_33A46B1F_Texture_0:
@@ -111,7 +111,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 2feda899f41f4f0499714f6a17a26724, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMapOS:
@@ -146,12 +146,12 @@ Material:
     - Boolean_5D7E2DBD: 1
     - Boolean_FDFFBAD1: 1
     - Vector1_1510CCCA: 1
-    - Vector1_1D9E69B2: 0.608
-    - Vector1_40E92133: 0.212
-    - Vector1_4E27F0EB: 0.446
-    - Vector1_935BE281: 0.327
-    - Vector1_A7C4AA77: 0.5
-    - Vector1_A97EEF39: 0.2
+    - Vector1_1D9E69B2: 0.718
+    - Vector1_40E92133: 0.417
+    - Vector1_4E27F0EB: 0.206
+    - Vector1_935BE281: 0.573
+    - Vector1_A7C4AA77: 0.8
+    - Vector1_A97EEF39: 0.16
     - _AORemapMax: 1
     - _AORemapMin: 0
     - _ATDistance: 1
@@ -204,7 +204,6 @@ Material:
     - _EnableFogOnTransparent: 1
     - _EnableGeometricSpecularAA: 0
     - _EnergyConservingSpecularColor: 1
-    - _HdrpVersion: 2
     - _HeightAmplitude: 0.02
     - _HeightCenter: 0.5
     - _HeightMapParametrization: 0
@@ -222,7 +221,7 @@ Material:
     - _MaterialID: 1
     - _Metallic: 0
     - _NormalMapSpace: 0
-    - _NormalScale: 1
+    - _NormalScale: 0
     - _PPDLodThreshold: 5
     - _PPDMaxSamples: 15
     - _PPDMinSamples: 5
@@ -275,7 +274,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_35E573F6: {r: 0.85595, g: 0.8982725, b: 0.95, a: 1}
+    - Color_35E573F6: {r: 0.8915094, g: 0.95128113, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
@@ -292,7 +291,7 @@ Material:
     - _UVDetailsMappingMask: {r: 1, g: 0, b: 0, a: 0}
     - _UVMappingMask: {r: 1, g: 0, b: 0, a: 0}
     - _UVMappingMaskEmissive: {r: 1, g: 0, b: 0, a: 0}
---- !u!114 &6034000539987815361
+--- !u!114 &657892276310197451
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

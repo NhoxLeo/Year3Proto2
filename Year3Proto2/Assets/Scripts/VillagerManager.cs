@@ -155,7 +155,7 @@ public class VillagerManager : MonoBehaviour
                 farms.Add(farmComponent);
             }
         }
-        float foodProductionPerSec = 0f;
+        float foodProductionPerSec = Longhaus.GetFoodProductionPerSec();
         for (int i = 0; i < farms.Count; i++)
         {
             Farm farm = farms[i];

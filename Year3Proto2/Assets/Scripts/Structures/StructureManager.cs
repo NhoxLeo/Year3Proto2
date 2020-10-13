@@ -296,6 +296,9 @@ public class StructureManager : MonoBehaviour
     private const float OpacityMaximum = 0.7f;
     private float opacity = OpacityMaximum;
     private const float ColourLerpAmount = 0.4f;
+    private static GameObject ProceduralGenerationParent = null;
+    private static GameObject LoadedStructuresParent = null;
+    private static GameObject NewStructuresParent = null;
 
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -1181,7 +1184,7 @@ public class StructureManager : MonoBehaviour
             // Put the manager back into moving mode.
             structureState = StructManState.Moving;
             structureFromStore = true;
-            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab);
+            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab, GetNewStructuresParent().transform);
             structureInstance.transform.position = Vector3.down * 10f;
             structure = structureInstance.GetComponent<Structure>();
             if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
@@ -1399,7 +1402,7 @@ public class StructureManager : MonoBehaviour
             if (structureDict == null) { DefineDictionaries(); }
         }
         // create the structure
-        Structure structure = Instantiate(structureDict[_environmentType].structurePrefab).GetComponent<Structure>();
+        Structure structure = Instantiate(structureDict[_environmentType].structurePrefab, GetProcGenParent().transform).GetComponent<Structure>();
         string structName = structure.name;
         structure.name = "PG " + structName;
         // move the new structure to the tile
@@ -1458,7 +1461,7 @@ public class StructureManager : MonoBehaviour
 
     public void LoadBuilding(SuperManager.StructureSaveData _saveData)
     {
-        Structure newStructure = Instantiate(structureDict[_saveData.structure].structurePrefab).GetComponent<Structure>();
+        Structure newStructure = Instantiate(structureDict[_saveData.structure].structurePrefab, GetLoadedStructuresParent().transform).GetComponent<Structure>();
         newStructure.transform.position = _saveData.position;
         if (FindTileAtXZ(_saveData.position.x, _saveData.position.z, out TileBehaviour tile))
         {
@@ -1691,6 +1694,33 @@ public class StructureManager : MonoBehaviour
             hoverEnvironment.SetOpacity(1.0f);
             hoverEnvironment = null;
         }
+    }
+
+    public static GameObject GetProcGenParent()
+    {
+        if (!ProceduralGenerationParent)
+        {
+            ProceduralGenerationParent = new GameObject("Procedural Generation");
+        }
+        return ProceduralGenerationParent;
+    }
+
+    public static GameObject GetLoadedStructuresParent()
+    {
+        if (!LoadedStructuresParent)
+        {
+            LoadedStructuresParent = new GameObject("Loaded Structures");
+        }
+        return LoadedStructuresParent;
+    }
+
+    public static GameObject GetNewStructuresParent()
+    {
+        if (!NewStructuresParent)
+        {
+            NewStructuresParent = new GameObject("Purchased Structures");
+        }
+        return NewStructuresParent;
     }
 }
 
