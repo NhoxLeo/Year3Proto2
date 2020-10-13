@@ -39,6 +39,7 @@ public abstract class Structure : MonoBehaviour
 
     public void HandleAllocation(int _villagers)
     {
+        InfoManager.RecordNewAction();
         if (allocatedVillagers == _villagers && manualAllocation)
         {
             if (structureType == StructureType.Defense)
@@ -299,8 +300,9 @@ public abstract class Structure : MonoBehaviour
         if (gameMan.playerResources.CanAfford(repairCost) && timeSinceLastHit >= 5.0f && !repairCost.IsEmpty())
         {
             GameManager.IncrementRepairCount();
-            if (!_mass) 
+            if (!_mass)
             {
+                InfoManager.RecordNewAction();
                 HUDManager.GetInstance().ShowResourceDelta(repairCost, true); 
             }
             gameMan.playerResources.DeductResourceBundle(repairCost);

@@ -279,6 +279,7 @@ public class SuperManager : MonoBehaviour
         public float spawnTime;
         public SaveVector3 timeVariance;
         public PlayerResources playerResources;
+        public InfoManagerSaveData infoData;
         public List<AirshipSaveData> airships;
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
@@ -478,6 +479,13 @@ public class SuperManager : MonoBehaviour
         {1, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
         {2, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
         {3, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) }
+    };
+    public static Dictionary<int, SpawnerData> spawnerSettings = new Dictionary<int, SpawnerData>()
+    {
+        {0, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) },
+        {1, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) },
+        {2, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) },
+        {3, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) }
     };
     private int currentLevel;
     [SerializeField]
@@ -697,6 +705,7 @@ public class SuperManager : MonoBehaviour
         villagerMan.SetStarveTicks(_matchData.starveTicks);
         villagerMan.SetManuallyAllocated(_matchData.manuallyAllocated);
         villagerMan.LoadPriorities(_matchData.priorities);
+        InfoManager.LoadSaveData(_matchData.infoData);
         // not so easy stuff...
 
         // structures
@@ -818,7 +827,8 @@ public class SuperManager : MonoBehaviour
             longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
             manuallyAllocated = villMan.GetManuallyAllocated(),
             priorities = villMan.GetPriorities(),
-            waveAtObjectiveStart = gameMan.waveAtObjectiveStart
+            waveAtObjectiveStart = gameMan.waveAtObjectiveStart,
+            infoData = InfoManager.GenerateSaveData()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
@@ -1226,5 +1236,10 @@ public class SuperManager : MonoBehaviour
     public bool GetSnow()
     {
         return currentLevel > 1;
+    }
+
+    public SpawnerData GetCurrentLevelSpawnerData()
+    {
+        return spawnerSettings[currentLevel];
     }
 }

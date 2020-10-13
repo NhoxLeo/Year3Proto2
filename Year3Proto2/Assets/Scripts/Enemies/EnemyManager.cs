@@ -124,9 +124,35 @@ public struct EnemyDefinition
     }
 }
 
+public struct SpawnerData
+{
+    public float tokenIncrement;
+    public float tokensScalar;
+    public Vector2 timeVariance;
+
+    public SpawnerData(float _tokenIncrement, float _tokensScalar, Vector2 _timeVariance)
+    {
+        tokenIncrement = _tokenIncrement;
+        tokensScalar = _tokensScalar;
+        timeVariance = _timeVariance;
+    }
+}
+
 public class EnemyManager : MonoBehaviour
 {
     private static EnemyManager instance = null;
+
+    public static float CalculatedMultiplier { get; private set; }
+    public static float ObjectiveMultiplier { get; private set; }
+    public static float APMMultiplier { get; private set; }
+    public static float StructuresPlacedMultiplier { get; private set; }
+    public static float ResearchMultiplier { get; private set; }
+    public static float ResourceGainMultiplier { get; private set; }
+    public static float ResourceMultiplier { get; private set; }
+    public static float ResourcesSpentMultiplier { get; private set; }
+    public static float TimeSkippedMultiplier { get; private set; }
+    public static float TileBonusMultiplier { get; private set; }
+
 
     [Header("Properties")]
     [SerializeField] private float weightageScalar = 0.01f; // 1% boost to tokens for each structure/research element
@@ -149,19 +175,19 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float distance = 0.0f;
 
     private MessageBox messageBox;
-
     private readonly List<Enemy> enemies = new List<Enemy>();
     private int enemiesKilled = 0;
     private int wave = 0;
     private bool spawnOnKeyPress = false;
+    private int researchElementsComplete = 0;
 
     public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
         { EnemyNames.Invader, new EnemyDefinition(1.0f, 1) },
-        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) },
-        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 4) },
-        { EnemyNames.Petard, new EnemyDefinition(0.2f, 6) },
-        { EnemyNames.BatteringRam, new EnemyDefinition(0.1f, 8) },
+        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 3) },
+        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 3) },
+        { EnemyNames.Petard, new EnemyDefinition(0.2f, 4) },
+        { EnemyNames.BatteringRam, new EnemyDefinition(0.15f, 6) },
     };
 
     private readonly List<LevelSetting> levelSettings = new List<LevelSetting>
@@ -334,6 +360,8 @@ public class EnemyManager : MonoBehaviour
         }
 
         UpdateSpawnSettings();
+
+        researchElementsComplete = SuperManager.GetInstance().GetResearch().ToList().RemoveAll(entry => entry.Value);
     }
 
     /**************************************
@@ -344,6 +372,7 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     private void Start()
     {
+
         messageBox = FindObjectOfType<MessageBox>();
         TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
         for (int i = 0; i < tiles.Length; i++)
@@ -356,6 +385,7 @@ public class EnemyManager : MonoBehaviour
         }
         distance += radiusOffset;
 
+        ApplySettings(SuperManager.GetInstance().GetCurrentLevelSpawnerData());
     }
 
     /**************************************
@@ -482,6 +512,7 @@ public class EnemyManager : MonoBehaviour
         }
         if (spawning)
         {
+            UpdateCalculatedMultiplier();
             time -= Time.deltaTime;
             if (time <= 0f)
             {
@@ -491,7 +522,7 @@ public class EnemyManager : MonoBehaviour
 
                 time = Random.Range(timeVariance.x, timeVariance.y);
 
-                float enemiesToSpawn = tokens * (1f + GetWeightage());
+                float enemiesToSpawn = tokens * CalculatedMultiplier;
                 enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
 
                 Transform[] dedicatedEnemies = DedicateEnemies((int)enemiesToSpawn);
@@ -998,5 +1029,44 @@ public class EnemyManager : MonoBehaviour
     public bool GetSpawnOnKeyMode()
     {
         return spawnOnKeyPress;
+    }
+
+    public void ApplySettings(SpawnerData _settings)
+    {
+        timeVariance = _settings.timeVariance;
+        tokenIncrement = _settings.tokenIncrement;
+        tokensScalar = _settings.tokensScalar;
+    }
+
+    public void UpdateCalculatedMultiplier()
+    {
+        // Objective Completion
+        ObjectiveMultiplier = 0.8f + (0.2f * GameManager.GetInstance().objectivesCompleted);
+        CalculatedMultiplier = ObjectiveMultiplier;
+
+        // Actions Per Minute
+        float APM = InfoManager.CurrentAPM;
+        APMMultiplier = 0.9f + (0.005f * APM == -1f ? 0f : APM);
+        CalculatedMultiplier *= APMMultiplier;
+
+        // Structures Placed
+        StructuresPlacedMultiplier = 0.9f + (0.01f * StructureManager.GetInstance().GetPlayerStructureCount());
+        CalculatedMultiplier *= StructuresPlacedMultiplier;
+
+        // Research
+        ResearchMultiplier = 0.95f + (0.005f * researchElementsComplete);
+        CalculatedMultiplier *= ResearchMultiplier;
+
+        // Resources Gained
+        Vector3 resourceVelocity = GameManager.GetInstance().GetResourceVelocity();
+        float resourceGainAverage = (resourceVelocity.x + resourceVelocity.y + resourceVelocity.z) / 3f;
+        ResourceGainMultiplier = 0.9f + (0.01f * resourceGainAverage);
+        CalculatedMultiplier *= ResourceGainMultiplier;
+
+        // Total Resources
+        Vector3 resourceTotals = GameManager.GetInstance().playerResources.GetResources();
+        float averageResourceTotal = (resourceTotals.x + resourceTotals.y + resourceTotals.z) / 3f;
+        ResourceMultiplier = 0.9f + (0.00005f * averageResourceTotal);
+        CalculatedMultiplier *= ResourceMultiplier;
     }
 }
