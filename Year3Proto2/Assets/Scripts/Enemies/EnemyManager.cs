@@ -551,9 +551,9 @@ public class EnemyManager : MonoBehaviour
 
                 tokens = 0.0f;
             }
-            float lowImpactMultiplier = (3 + FinalMultiplier) * 0.25f;
-            tokenIncrement += tokensScalar * Time.deltaTime;
-            tokens += tokenIncrement * lowImpactMultiplier * Time.deltaTime;
+            float lowImpactMultiplier = (7 + FinalMultiplier) * 0.125f;
+            tokenIncrement += tokensScalar * lowImpactMultiplier * Time.deltaTime;
+            tokens += tokenIncrement * Time.deltaTime;
         }
     }
 
