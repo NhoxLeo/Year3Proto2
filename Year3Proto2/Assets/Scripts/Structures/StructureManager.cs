@@ -259,7 +259,6 @@ public static class StructureNames
     }
 }
 
-[ExecuteInEditMode]
 public class StructureManager : MonoBehaviour
 {
     private static StructureManager instance = null;
@@ -296,6 +295,9 @@ public class StructureManager : MonoBehaviour
     private const float OpacityMaximum = 0.7f;
     private float opacity = OpacityMaximum;
     private const float ColourLerpAmount = 0.4f;
+    private static GameObject ProceduralGenerationParent = null;
+    private static GameObject LoadedStructuresParent = null;
+    private static GameObject NewStructuresParent = null;
 
     public static Dictionary<BuildPanel.Buildings, string> StructureDescriptions = new Dictionary<BuildPanel.Buildings, string>
     {
@@ -972,6 +974,8 @@ public class StructureManager : MonoBehaviour
         StructureType structType = structure.GetStructureType();
         if ((structureFromStore && BuyBuilding()) || !structureFromStore)
         {
+            InfoManager.RecordNewAction();
+            InfoManager.RecordNewStructurePlaced();
             GameManager.CreateAudioEffect("build", structure.transform.position, SoundType.SoundEffect, 0.6f);
             SetStructureColour(Color.white);
             // Attach the structure to the tile and vica versa
@@ -1039,6 +1043,7 @@ public class StructureManager : MonoBehaviour
                     structure.ManuallyAllocate(0);
                 }
             }
+            CalculateAverageTileBonus();
             TurnOffPreview();
         }
     }
@@ -1080,6 +1085,7 @@ public class StructureManager : MonoBehaviour
             ResourceBundle cost = structureCosts[structure.GetStructureName()];
             if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
             {
+                InfoManager.RecordResourcesSpent(cost);
                 IncreaseStructureCost(structure.GetStructureName());
                 HUDManager.GetInstance().ShowResourceDelta(cost, true);
                 return true;
@@ -1181,7 +1187,7 @@ public class StructureManager : MonoBehaviour
             // Put the manager back into moving mode.
             structureState = StructManState.Moving;
             structureFromStore = true;
-            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab);
+            GameObject structureInstance = Instantiate(structureDict[_building].structurePrefab, GetNewStructuresParent().transform);
             structureInstance.transform.position = Vector3.down * 10f;
             structure = structureInstance.GetComponent<Structure>();
             if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
@@ -1399,7 +1405,7 @@ public class StructureManager : MonoBehaviour
             if (structureDict == null) { DefineDictionaries(); }
         }
         // create the structure
-        Structure structure = Instantiate(structureDict[_environmentType].structurePrefab).GetComponent<Structure>();
+        Structure structure = Instantiate(structureDict[_environmentType].structurePrefab, GetProcGenParent().transform).GetComponent<Structure>();
         string structName = structure.name;
         structure.name = "PG " + structName;
         // move the new structure to the tile
@@ -1458,7 +1464,7 @@ public class StructureManager : MonoBehaviour
 
     public void LoadBuilding(SuperManager.StructureSaveData _saveData)
     {
-        Structure newStructure = Instantiate(structureDict[_saveData.structure].structurePrefab).GetComponent<Structure>();
+        Structure newStructure = Instantiate(structureDict[_saveData.structure].structurePrefab, GetLoadedStructuresParent().transform).GetComponent<Structure>();
         newStructure.transform.position = _saveData.position;
         if (FindTileAtXZ(_saveData.position.x, _saveData.position.z, out TileBehaviour tile))
         {
@@ -1615,7 +1621,14 @@ public class StructureManager : MonoBehaviour
                             // if the ResourceType of the structure being placed and the environment match
                             if (resourceType == attachedEnvironment.GetResourceType())
                             {
-                                resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                if (attachedEnvironment.GetExploited())
+                                {
+                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                                }
+                                else
+                                {
+                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                }
                             }
                             else
                             {
@@ -1691,6 +1704,49 @@ public class StructureManager : MonoBehaviour
             hoverEnvironment.SetOpacity(1.0f);
             hoverEnvironment = null;
         }
+    }
+
+    public static GameObject GetProcGenParent()
+    {
+        if (!ProceduralGenerationParent)
+        {
+            ProceduralGenerationParent = new GameObject("Procedural Generation");
+        }
+        return ProceduralGenerationParent;
+    }
+
+    public static GameObject GetLoadedStructuresParent()
+    {
+        if (!LoadedStructuresParent)
+        {
+            LoadedStructuresParent = new GameObject("Loaded Structures");
+        }
+        return LoadedStructuresParent;
+    }
+
+    public static GameObject GetNewStructuresParent()
+    {
+        if (!NewStructuresParent)
+        {
+            NewStructuresParent = new GameObject("Purchased Structures");
+        }
+        return NewStructuresParent;
+    }
+
+    private void CalculateAverageTileBonus()
+    {
+        int runningTotal = 0;
+        int count = 0;
+        foreach (Structure structure in playerStructureDict.Values)
+        {
+            if (structure.GetStructureType() == StructureType.Resource)
+            {
+                ResourceStructure resourceStructure = structure.GetComponent<ResourceStructure>();
+                runningTotal += resourceStructure.GetTileBonus();
+                count++;
+            }
+        }
+        InfoManager.RecordTileBonusAverage(runningTotal / (float)count);
     }
 }
 

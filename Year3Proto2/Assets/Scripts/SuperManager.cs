@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public static bool DevMode = false;
+    public static bool DevMode = true;
 
     // SETTINGS
     public static float AmbientVolume = 1.0f;
@@ -252,12 +252,34 @@ public class SuperManager : MonoBehaviour
     public struct MatchSaveData
     {
         public bool match;
+        public bool matchWon;
+        public bool tutorialDone;
+        public bool repairMessage;
+        public bool repairAll;
+        public bool spawning;
         public int levelID;
         public int objectivesCompleted;
-        public bool matchWon;
+        public int enemiesKilled;
+        public int wave;
+        public int nextStructureID;
+        public int villagers;
+        public int availableVillagers;
+        public int manuallyAllocated;
+        public int waveAtObjectiveStart;
+        public float weightageScalar;
+        public float tokenIncrement;
+        public float tokenScalar;
+        public float time;
+        public float tokens;
+        public float starveTicks;
+        public float tempFood;
+        public float tempLumber;
+        public float tempMetal;
+        public float longhausHealth;
+        public float spawnTime;
+        public SaveVector3 timeVariance;
         public PlayerResources playerResources;
-        public Dictionary<string, ResourceBundle> structureCosts;
-        public Dictionary<BuildPanel.Buildings, int> structureCounts;
+        public InfoManagerSaveData infoData;
         public List<AirshipSaveData> airships;
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
@@ -266,30 +288,9 @@ public class SuperManager : MonoBehaviour
         public List<EnemySaveData> petards;
         public List<EnemySaveData> rams;
         public List<SoldierSaveData> soldiers;
-        public int enemiesKilled;
-        public float spawnTime;
-        public bool spawning;
-        public float weightageScalar;
-        public float tokenIncrement;
-        public float tokenScalar;
-        public float time;
-        public SaveVector3 timeVariance;
-        public float tokens;
-        public int wave;
-        public bool tutorialDone;
-        public bool repairMessage;
-        public bool repairAll;
-        public int nextStructureID;
-        public int villagers;
-        public int availableVillagers;
-        public int manuallyAllocated;
-        public float starveTicks;
-        public float tempFood;
-        public float tempLumber;
-        public float tempMetal;
-        public float longhausHealth;
-        public int waveAtObjectiveStart;
         public List<Priority> priorities;
+        public Dictionary<string, ResourceBundle> structureCosts;
+        public Dictionary<BuildPanel.Buildings, int> structureCounts;
     }
 
     [Serializable]
@@ -450,7 +451,7 @@ public class SuperManager : MonoBehaviour
 
         new WinConditionDefinition(Slaughter, "Slaughter", "Kill 20 Enemies."),
         new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 50 Enemies."),
-        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 100 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 75 Enemies."),
 
         new WinConditionDefinition(Survive, "Survive", "Defend against 5 waves."),
         new WinConditionDefinition(SurviveII, "Survive II", "Defend against 10 waves."),
@@ -478,6 +479,13 @@ public class SuperManager : MonoBehaviour
         {1, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
         {2, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
         {3, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) }
+    };
+    public static Dictionary<int, SpawnerData> spawnerSettings = new Dictionary<int, SpawnerData>()
+    {
+        {0, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {1, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {2, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {3, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) }
     };
     private int currentLevel;
     [SerializeField]
@@ -697,6 +705,7 @@ public class SuperManager : MonoBehaviour
         villagerMan.SetStarveTicks(_matchData.starveTicks);
         villagerMan.SetManuallyAllocated(_matchData.manuallyAllocated);
         villagerMan.LoadPriorities(_matchData.priorities);
+        InfoManager.LoadSaveData(_matchData.infoData);
         // not so easy stuff...
 
         // structures
@@ -752,13 +761,17 @@ public class SuperManager : MonoBehaviour
 
         // soldiers
         Barracks[] allBarracks = FindObjectsOfType<Barracks>();
+        foreach (Barracks barr in allBarracks)
+        {
+            barr.RefreshRestPositions();
+        }
         foreach (SoldierSaveData saveData in _matchData.soldiers)
         {
-            foreach (Barracks barr in allBarracks)
+            for (int i = 0; i < allBarracks.Length; i++)
             {
-                if (barr.GetID() == saveData.barracksID)
+                if (allBarracks[i].GetID() == saveData.barracksID)
                 {
-                    barr.LoadSoldier(saveData);
+                    allBarracks[i].LoadSoldier(saveData);
                     break;
                 }
             }
@@ -814,7 +827,8 @@ public class SuperManager : MonoBehaviour
             longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
             manuallyAllocated = villMan.GetManuallyAllocated(),
             priorities = villMan.GetPriorities(),
-            waveAtObjectiveStart = gameMan.waveAtObjectiveStart
+            waveAtObjectiveStart = gameMan.waveAtObjectiveStart,
+            infoData = InfoManager.GenerateSaveData()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
@@ -1222,5 +1236,10 @@ public class SuperManager : MonoBehaviour
     public bool GetSnow()
     {
         return currentLevel > 1;
+    }
+
+    public SpawnerData GetCurrentLevelSpawnerData()
+    {
+        return spawnerSettings[currentLevel];
     }
 }

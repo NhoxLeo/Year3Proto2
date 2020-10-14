@@ -203,7 +203,7 @@ public class HUDManager : MonoBehaviour
 
         Vector3 resources = gameMan.playerResources.GetResources();
         Vector3 capacity = gameMan.playerResources.GetCapacity();
-        Vector3 velocity = gameMan.GetResourceVelocity();
+        Vector3 velocity = gameMan.CalculateResourceVelocity();
 
         float foodVel = velocity.x;
         string foodVelDP = AddSign(Mathf.Round(foodVel));
@@ -381,7 +381,8 @@ public class HUDManager : MonoBehaviour
         EnemyManager enemyMan = EnemyManager.GetInstance();
         if (enemyMan.CanSpawnNextWave())
         {
-            EnemyManager.GetInstance().SpawnNextWave();
+            InfoManager.RecordNewAction();
+            enemyMan.SpawnNextWave();
         }
     }
 

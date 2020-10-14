@@ -155,7 +155,7 @@ public class VillagerManager : MonoBehaviour
                 farms.Add(farmComponent);
             }
         }
-        float foodProductionPerSec = 0f;
+        float foodProductionPerSec = Longhaus.GetFoodProductionPerSec();
         for (int i = 0; i < farms.Count; i++)
         {
             Farm farm = farms[i];
@@ -352,7 +352,7 @@ public class VillagerManager : MonoBehaviour
             mineCap += 3 - mine.GetAllocated();
         }
 
-        Vector3 velocity = GameManager.GetInstance().GetResourceVelocity();
+        Vector3 velocity = GameManager.GetInstance().CalculateResourceVelocity();
 
         float foodProduction = velocity.z;
         float woodProduction = velocity.x;
@@ -515,6 +515,7 @@ public class VillagerManager : MonoBehaviour
             villagersManAllocated -= _villagers;
         }
         RedistributeVillagers();
+        InfoManager.RecordVillagerDeath(_villagers);
     }
 
     public int GetAvailable()
@@ -628,6 +629,8 @@ public class VillagerManager : MonoBehaviour
         ResourceBundle cost = GetVillagerTrainCost();
         if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
         {
+            InfoManager.RecordNewAction();
+            InfoManager.RecordResourcesSpent(cost);
             HUDManager.GetInstance().ShowResourceDelta(cost, true);
             AddNewVillager();
             RedistributeVillagers();
@@ -676,5 +679,15 @@ public class VillagerManager : MonoBehaviour
             }
         }
         FindObjectOfType<VillagerPriority>().LoadCardPriorites(food, wood, metal);
+    }
+
+    public string GetVillagerDebugInfo()
+    {
+        string heading = "Villager Stats:";
+        string villagerText = "\nTotal villagers: " + villagers.ToString();
+        string manuallyAllocated = "\nVillagers Manually Allocated: " + villagersManAllocated.ToString();
+        string available = "\nVillagers Available: " + availableVillagers.ToString();
+        string ticks = "\nStarve Ticks: " + starveTicks.ToString();
+        return heading + villagerText + manuallyAllocated + available + ticks;
     }
 }

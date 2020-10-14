@@ -175,6 +175,10 @@ public class GameManager : MonoBehaviour
     private static GameObject ExplosionOne = null;
     private static GameObject ExplosionTwo = null;
 
+    private const float ResourceVelocityUpdateDelay = 0.25f;
+    private float resourceVelocityUpdateTimer = 0f;
+    private Vector3 resourceVelocity = new Vector3();
+
     public static GameManager GetInstance()
     {
         return instance;
@@ -267,7 +271,7 @@ public class GameManager : MonoBehaviour
 
 
     // wood metal food
-    public Vector3 GetResourceVelocity()
+    public Vector3 CalculateResourceVelocity()
     {
         Vector3 resourceVelocity = Vector3.zero;
 
@@ -324,6 +328,7 @@ public class GameManager : MonoBehaviour
         }
         if (repairsWereDone)
         {
+            InfoManager.RecordNewAction();
             if (repairAll)
             {
                 if (tutorialDone) { messageBox.ShowMessage("All repairs done!", 1f); }
@@ -380,7 +385,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SuperManager superMan = SuperManager.GetInstance();
         playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
         messageBox = FindObjectOfType<MessageBox>();
@@ -392,8 +396,16 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         CheckControls();
+
+        resourceVelocityUpdateTimer -= Time.deltaTime;
+        if (resourceVelocityUpdateTimer <= 0f)
+        {
+            resourceVelocityUpdateTimer = ResourceVelocityUpdateDelay;
+            resourceVelocity = CalculateResourceVelocity();
+        }
+        
         // get resourceDelta
-        ResourceBundle resourcesThisFrame = new ResourceBundle(GetResourceVelocity() * Time.deltaTime);
+        ResourceBundle resourcesThisFrame = new ResourceBundle(resourceVelocity * Time.deltaTime);
         foodSinceObjective += Mathf.Clamp(resourcesThisFrame.food, 0f, resourcesThisFrame.food);
         lumberSinceObjective += Mathf.Clamp(resourcesThisFrame.wood, 0f, resourcesThisFrame.wood);
         metalSinceObjective += Mathf.Clamp(resourcesThisFrame.metal, 0f, resourcesThisFrame.metal);
@@ -629,7 +641,7 @@ public class GameManager : MonoBehaviour
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/50)";
                     break;
                 case SuperManager.SlaughterIII:
-                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/75)";
                     break;
                 case SuperManager.Survive:
                     objCompletion = " (" + EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart).ToString() + "/5)";
@@ -706,30 +718,32 @@ public class GameManager : MonoBehaviour
         {
             VillagerManager.GetInstance().TrainVillager();
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (!EnemyManager.GetInstance().GetSpawnOnKeyMode())
         {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+            }
         }
     }
 
@@ -751,7 +765,7 @@ public class GameManager : MonoBehaviour
                 case SuperManager.SlaughterII:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 50;
                 case SuperManager.SlaughterIII:
-                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
+                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 75;
                 case SuperManager.Survive:
                     return EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart) >= 5;
                 case SuperManager.SurviveII:
@@ -801,5 +815,10 @@ public class GameManager : MonoBehaviour
             PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
         }
         return PuffEffect;
+    }
+
+    public Vector3 GetResourceVelocity()
+    {
+        return resourceVelocity;
     }
 }

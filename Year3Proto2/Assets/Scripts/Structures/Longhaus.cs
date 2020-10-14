@@ -94,4 +94,9 @@ public class Longhaus : Structure
         meshRenderer.materials[1].SetColor("_BaseColor", _colour);
         */
     }
+
+    public static float GetFoodProductionPerSec()
+    {
+        return foodGen / productionTime;
+    }
 }

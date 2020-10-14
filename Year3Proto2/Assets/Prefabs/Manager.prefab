@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3233066537059433896}
   - component: {fileID: 4498777283510002559}
   - component: {fileID: 2192538920716962497}
+  - component: {fileID: 454818247796438586}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -52,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialDone: 0
   victory: 0
+  freePlay: 0
   repairMessage: 0
   repairAll: 0
   gameAlreadyWon: 0
@@ -60,6 +62,7 @@ MonoBehaviour:
   foodSinceObjective: 0
   lumberSinceObjective: 0
   metalSinceObjective: 0
+  waveAtObjectiveStart: 0
   cheatAlwaysMaxed: 0
 --- !u!114 &2034944319271232491
 MonoBehaviour:
@@ -304,6 +307,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &454818247796438586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 159336282052630998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003fc936f20306049a1b3b01353bf04a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1934217215400905385
 PrefabInstance:
   m_ObjectHideFlags: 0

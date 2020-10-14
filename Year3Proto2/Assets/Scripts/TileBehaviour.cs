@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-//[ExecuteInEditMode]
 public class TileBehaviour : MonoBehaviour
 {
     [SerializeField] 
@@ -20,6 +19,7 @@ public class TileBehaviour : MonoBehaviour
     private static GameObject SnowBoundaryPrefab = null;
     private static Transform CliffFaceParent = null;
     private static Material SnowMat = null;
+    private static GameObject BoundaryParent = null;
 
     //Determines whether or not it is being approached by an airship.")]
     private bool isApproached;
@@ -236,7 +236,7 @@ public class TileBehaviour : MonoBehaviour
         ID = GenerateID();
         if (!isPlayable)
         {
-            Instantiate(GetBoundaryPrefab(), transform.position + Vector3.up * 0.501f, Quaternion.identity);
+            Instantiate(GetBoundaryPrefab(), transform.position + Vector3.up * 0.501f, Quaternion.identity, GetBoundaryParent().transform);
         }
     }
 
@@ -284,7 +284,7 @@ public class TileBehaviour : MonoBehaviour
     {
         if (!CliffFaceParent)
         {
-            CliffFaceParent = GameObject.Find("CliffFaces").transform;
+            CliffFaceParent = new GameObject("Cliff Faces").transform;
         }
         return CliffFaceParent;
     }
@@ -373,5 +373,14 @@ public class TileBehaviour : MonoBehaviour
             }
             return BoundaryPrefab;
         }
+    }
+
+    public static GameObject GetBoundaryParent()
+    {
+        if (!BoundaryParent)
+        {
+            BoundaryParent = new GameObject("Boundary Objects");
+        }
+        return BoundaryParent;
     }
 }
