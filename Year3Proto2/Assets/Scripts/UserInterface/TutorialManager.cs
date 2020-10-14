@@ -75,7 +75,8 @@ public class TutorialManager : MonoBehaviour
         focus.transform.localScale = Vector3.one * (1.0f + pulseScaleMagnitude + Mathf.Sin(Time.time * 6.0f) * pulseScaleMagnitude);
         if (focusTransform != null)
         {
-            focus.position = Vector3.Lerp(focus.position, focusTransform.position, Time.unscaledDeltaTime * 10.0f);
+            //focus.position = Vector3.Lerp(focus.position, focusTransform.position, Time.unscaledDeltaTime * 10.0f);
+            focus.position = focusTransform.position;
         }
 
         switch (tutorialState)
