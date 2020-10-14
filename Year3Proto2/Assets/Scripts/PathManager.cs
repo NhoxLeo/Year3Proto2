@@ -452,7 +452,6 @@ public class PathManager : MonoBehaviour
     private Dictionary<Soldier, SoldierPathData> soldierPaths;
     private Dictionary<Soldier, SoldierPathData> soldierHomeTrips;
 
-    private TMP_Text debugText;
     private float totalTimeSync = 0f;
     private float totalTimeAsync = 0f;
     private float lastPathsClearTime = 0f;
@@ -606,7 +605,6 @@ public class PathManager : MonoBehaviour
 
     private void Start()
     {
-        debugText = FindObjectOfType<Canvas>().transform.Find("PathfindingDebug").GetComponent<TMP_Text>();
         calculatedPaths = new Dictionary<EnemyPathSignature, EnemyPath>();
         activeJobDict = new Dictionary<EnemyPathSignature, EnemyPathJobInfo>();
         completedEnemyPathJobs = new List<CompletedEnemyPathInfo>();
@@ -704,15 +702,6 @@ public class PathManager : MonoBehaviour
 
     private void Update()
     {
-        // toggle debugger
-        if (SuperManager.DevMode)
-        {
-            if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.P))
-            {
-                debugText.gameObject.SetActive(!debugText.gameObject.activeSelf);
-            }
-        }
-
         if (activeJobDict.Count > 0) // there is one pathfinding job active
         {
             totalTimeSync += Time.deltaTime;
@@ -757,18 +746,6 @@ public class PathManager : MonoBehaviour
             info.resultPath.Dispose();
             activeJobDict.Remove(info.signature);
         }
-
-        if (debugText.gameObject.activeSelf)
-        {
-            string heading = "Pathfinding Debugger Readout:";
-            string activeJobs = "\nActive Jobs: " + activeJobDict.Count.ToString();
-            string jobsCompleted = "\nJobs Completed: " + completedEnemyPathJobs.Count.ToString();
-            string totalTimeSyncString = "\nJob Active Time: " + totalTimeSync.ToString();
-            string totalTimeAsyncString = "\nCumulative Total Runtime: " + totalTimeAsync.ToString();
-
-            string soldierJobs = "\n\nSoldier Jobs: " + soldierPaths.Count.ToString();
-            debugText.text = heading + activeJobs + jobsCompleted + totalTimeSyncString + totalTimeAsyncString + soldierJobs;
-        }
     }
 
     public void Shutdown()
@@ -788,5 +765,18 @@ public class PathManager : MonoBehaviour
             soldierInfo.jobHandle.Complete();
             soldierInfo.nativePath.Dispose();
         }
+    }
+
+    public string GetPathfindingDebugInfo()
+    {
+        string enemy = "\nEnemy Pathfinding:";
+        string activeJobs = "\nActive Jobs: " + activeJobDict.Count.ToString();
+        string jobsCompleted = "\nJobs Completed: " + completedEnemyPathJobs.Count.ToString();
+        string totalTimeSyncString = "\nJob Active Time: " + totalTimeSync.ToString();
+        string totalTimeAsyncString = "\nCumulative Total Runtime: " + totalTimeAsync.ToString();
+        string soldiers = "\nSoldier Pathfinding:";
+        string soldierJobs = "\nCurrent Soldier Enemy Path Jobs: " + soldierPaths.Count.ToString();
+        string soldierHomeJobs = "\nCurrent Soldier Home Path Jobs: " + soldierHomeTrips.Count.ToString();
+        return enemy + activeJobs + jobsCompleted + totalTimeSyncString + totalTimeAsyncString + soldiers + soldierJobs + soldierHomeJobs;
     }
 }

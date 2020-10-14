@@ -151,6 +151,10 @@ public abstract class ResourceStructure : Structure
                         }
                         newTileHighlight.SetActive(false);
                     }
+                    else
+                    {
+                        AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
+                    }
                 }
                 else
                 {
