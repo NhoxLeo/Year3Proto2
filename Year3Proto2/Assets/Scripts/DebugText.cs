@@ -41,7 +41,8 @@ public class DebugText : MonoBehaviour
     private void UpdateDebugText()
     {
         debugText = InfoManager.GetStatsDebugInfo();
+        debugText += "\n\n" + EnemyManager.GetInstance().GetEnemySpawnInfo();
         debugText += "\n\n" + VillagerManager.GetInstance().GetVillagerDebugInfo();
-        debugText += "\n\n" + PathManager.GetInstance().GetPathfindingDebugInfo();
+        //debugText += "\n\n" + PathManager.GetInstance().GetPathfindingDebugInfo();
     }
 }

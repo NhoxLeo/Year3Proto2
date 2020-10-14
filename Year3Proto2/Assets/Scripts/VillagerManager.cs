@@ -515,6 +515,7 @@ public class VillagerManager : MonoBehaviour
             villagersManAllocated -= _villagers;
         }
         RedistributeVillagers();
+        InfoManager.RecordVillagerDeath(_villagers);
     }
 
     public int GetAvailable()
@@ -629,6 +630,7 @@ public class VillagerManager : MonoBehaviour
         if (FindObjectOfType<GameManager>().playerResources.AttemptPurchase(cost))
         {
             InfoManager.RecordNewAction();
+            InfoManager.RecordResourcesSpent(cost);
             HUDManager.GetInstance().ShowResourceDelta(cost, true);
             AddNewVillager();
             RedistributeVillagers();

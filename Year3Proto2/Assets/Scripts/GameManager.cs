@@ -641,7 +641,7 @@ public class GameManager : MonoBehaviour
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/50)";
                     break;
                 case SuperManager.SlaughterIII:
-                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/75)";
                     break;
                 case SuperManager.Survive:
                     objCompletion = " (" + EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart).ToString() + "/5)";
@@ -765,7 +765,7 @@ public class GameManager : MonoBehaviour
                 case SuperManager.SlaughterII:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 50;
                 case SuperManager.SlaughterIII:
-                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
+                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 75;
                 case SuperManager.Survive:
                     return EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart) >= 5;
                 case SuperManager.SurviveII:

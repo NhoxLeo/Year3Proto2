@@ -464,6 +464,7 @@ public class BuildingInfo : MonoBehaviour
                 if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
                 {
                     InfoManager.RecordNewAction();
+                    InfoManager.RecordResourcesSpent(cost);
                     HUDManager.GetInstance().ShowResourceDelta(cost, true);
                     defenseStructure.LevelUp();
                     SetInfo();

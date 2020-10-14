@@ -451,7 +451,7 @@ public class SuperManager : MonoBehaviour
 
         new WinConditionDefinition(Slaughter, "Slaughter", "Kill 20 Enemies."),
         new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 50 Enemies."),
-        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 100 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 75 Enemies."),
 
         new WinConditionDefinition(Survive, "Survive", "Defend against 5 waves."),
         new WinConditionDefinition(SurviveII, "Survive II", "Defend against 10 waves."),
@@ -482,10 +482,10 @@ public class SuperManager : MonoBehaviour
     };
     public static Dictionary<int, SpawnerData> spawnerSettings = new Dictionary<int, SpawnerData>()
     {
-        {0, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) },
-        {1, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) },
-        {2, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) },
-        {3, new SpawnerData(0.05f, 0.0001f, new Vector2(45, 90)) }
+        {0, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {1, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {2, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {3, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) }
     };
     private int currentLevel;
     [SerializeField]
