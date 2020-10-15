@@ -12,10 +12,10 @@
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
-public abstract class EnvironmentWeatherEvent : EnvironmentEvent
+public class EnvironmentWeatherEvent : EnvironmentEvent
 {
     [SerializeField] private Transform weatherPrefab;
-    [SerializeField] private Weather weather;
+    [SerializeField] private EnvironmentWeatherData environmentWeatherData;
     private Transform weatherObject;
 
     private void Update()
@@ -30,20 +30,36 @@ public abstract class EnvironmentWeatherEvent : EnvironmentEvent
         }
     }
 
+
+    public EnvironmentWeatherData SaveData(int _index)
+    {
+        environmentWeatherData.time = time;
+        environmentWeatherData.index = _index;
+        return environmentWeatherData;
+    }
+
+    public EnvironmentWeatherEvent LoadData(EnvironmentWeatherData _environmentWeatherData)
+    {
+        time = _environmentWeatherData.time;
+        environmentWeatherData = _environmentWeatherData;
+        Invoke(true);
+        return this;
+    }
+
     /**************************************
      * Name of the Function: Invoke
      * @Author: Tjeu Vreeburg
-     * @Parameter: n/a
+     * @Parameter: n/aW
      * @Return: override void
      ***************************************/
-    public override void Invoke()
+    public override EnvironmentEvent Invoke(bool _data)
     {
         if(weatherPrefab != null)
         {
             weatherObject = Instantiate(weatherPrefab, Vector3.zero, Quaternion.identity, transform.parent);
         }
-
-        LightingManager.Instance().SetWeather(weather, this);
+        LightingManager.Instance().SetWeather((Weather)environmentWeatherData.weather);
+        return this;
     }
 
     /**************************************

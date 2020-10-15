@@ -49,7 +49,7 @@ public class LightingManager : MonoBehaviour
         instance = GetComponent<LightingManager>();
     }
 
-    public void SetWeather(Weather _weatherType, EnvironmentWeatherEvent _weatherEvent)
+    public void SetWeather(Weather _weatherType)
     {
         weatherTarget = _weatherType;
 

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4498777283510002559}
   - component: {fileID: 2192538920716962497}
   - component: {fileID: 454818247796438586}
+  - component: {fileID: 8166598982722613853}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -319,6 +320,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 003fc936f20306049a1b3b01353bf04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8166598982722613853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 159336282052630998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ff028b178179f44ba442dc7932bb392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ambientEvents:
+  - {fileID: 2888226669773072460, guid: f939eeae86f74e94d9c572a0ce8f80d1, type: 3}
+  weatherEvents:
+  - {fileID: 5718429722591600440, guid: a25c70cc0774e44469e2afc5a9be26c1, type: 3}
+  - {fileID: 2284372076818493596, guid: 6d26f79ed5f628f4d9f476e6575708d1, type: 3}
+  ambientEvent: {fileID: 0}
+  weatherEvent: {fileID: 0}
 --- !u!1001 &1934217215400905385
 PrefabInstance:
   m_ObjectHideFlags: 0
