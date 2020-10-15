@@ -34,11 +34,11 @@ public class PauseMenu : MonoBehaviour
     {
         if (_paused)
         {
-            SuperManager.GetInstance().OnPause();
+            //SuperManager.GetInstance().OnPause();
         }
         else
         {
-            SuperManager.GetInstance().OnResume();
+            //SuperManager.GetInstance().OnResume();
         }
         HUDManager.GetInstance().SetHUD(!_paused);
         tool.showElement = _paused;

@@ -1524,6 +1524,10 @@ public class SuperManager : MonoBehaviour
         {
             musicAudio.Pause();
         }
+        if (windAmbienceAudio.isPlaying)
+        {
+            windAmbienceAudio.Pause();
+        }
     }
 
     public void OnResume()
@@ -1535,6 +1539,7 @@ public class SuperManager : MonoBehaviour
                 musicAudio.Play();
             }
         }
+        windAmbienceAudio.Play();
     }
 
     public static void UIClickSound()
