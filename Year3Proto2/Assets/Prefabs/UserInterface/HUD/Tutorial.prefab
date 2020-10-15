@@ -965,7 +965,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3647312524348955972}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -1097,6 +1097,7 @@ MonoBehaviour:
   messageTransform: {fileID: 2795731156024098237}
   messageHeading: {fileID: 6876870432602694384}
   messageDescription: {fileID: 897592341205166542}
+  nextButtonText: {fileID: 4368454032769832095}
   progressBar: {fileID: 3306758043327966927}
   farmButton: {fileID: 0}
   woodButton: {fileID: 0}
