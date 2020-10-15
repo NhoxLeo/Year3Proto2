@@ -279,6 +279,7 @@ public class SuperManager : MonoBehaviour
         public float spawnTime;
         public SaveVector3 timeVariance;
         public PlayerResources playerResources;
+        public InfoManagerSaveData infoData;
         public List<AirshipSaveData> airships;
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
@@ -290,6 +291,8 @@ public class SuperManager : MonoBehaviour
         public List<Priority> priorities;
         public Dictionary<string, ResourceBundle> structureCosts;
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
+        public EnvironmentWeatherData environmentWeatherData;
+        public EnvironmentAmbientData environmentAmbientData;
     }
 
     [Serializable]
@@ -450,7 +453,7 @@ public class SuperManager : MonoBehaviour
 
         new WinConditionDefinition(Slaughter, "Slaughter", "Kill 20 Enemies."),
         new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 50 Enemies."),
-        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 100 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 75 Enemies."),
 
         new WinConditionDefinition(Survive, "Survive", "Defend against 5 waves."),
         new WinConditionDefinition(SurviveII, "Survive II", "Defend against 10 waves."),
@@ -478,6 +481,13 @@ public class SuperManager : MonoBehaviour
         {1, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
         {2, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
         {3, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) }
+    };
+    public static Dictionary<int, SpawnerData> spawnerSettings = new Dictionary<int, SpawnerData>()
+    {
+        {0, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {1, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {2, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {3, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) }
     };
     private int currentLevel;
     [SerializeField]
@@ -676,8 +686,11 @@ public class SuperManager : MonoBehaviour
         StructureManager structMan = StructureManager.GetInstance();
         VillagerManager villagerMan = VillagerManager.GetInstance();
         EnemyManager enemyMan = EnemyManager.GetInstance();
+        EnvironmentSystem environmentSystem = EnvironmentSystem.GetInstance();
 
         // easy stuff
+
+        environmentSystem.LoadData(_matchData);
         enemyMan.LoadData(_matchData);
         gameMan.repairAll = _matchData.repairAll;
         gameMan.repairMessage = _matchData.repairMessage;
@@ -697,6 +710,7 @@ public class SuperManager : MonoBehaviour
         villagerMan.SetStarveTicks(_matchData.starveTicks);
         villagerMan.SetManuallyAllocated(_matchData.manuallyAllocated);
         villagerMan.LoadPriorities(_matchData.priorities);
+        InfoManager.LoadSaveData(_matchData.infoData);
         // not so easy stuff...
 
         // structures
@@ -818,10 +832,12 @@ public class SuperManager : MonoBehaviour
             longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
             manuallyAllocated = villMan.GetManuallyAllocated(),
             priorities = villMan.GetPriorities(),
-            waveAtObjectiveStart = gameMan.waveAtObjectiveStart
+            waveAtObjectiveStart = gameMan.waveAtObjectiveStart,
+            infoData = InfoManager.GenerateSaveData()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
+        EnvironmentSystem.GetInstance().SaveSystemToData(ref save);
 
 
         // not so easy stuff...
@@ -1226,5 +1242,10 @@ public class SuperManager : MonoBehaviour
     public bool GetSnow()
     {
         return currentLevel > 1;
+    }
+
+    public SpawnerData GetCurrentLevelSpawnerData()
+    {
+        return spawnerSettings[currentLevel];
     }
 }

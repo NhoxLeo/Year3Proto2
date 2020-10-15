@@ -90,9 +90,10 @@ public class HUDManager : MonoBehaviour
         RefreshResources();
         GetVictoryInfo();
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
-        resourceBar.SetVisibility(!showTutorial);
-        buildPanel.showPanel = !showTutorial;
-        helpScreen.SetVisibility(showTutorial);
+        //resourceBar.SetVisibility(!showTutorial);
+        //buildPanel.showPanel = !showTutorial;
+        //helpScreen.SetVisibility(showTutorial);
+        TutorialManager.GetInstance().AdvanceTutorialTo(showTutorial ? TutorialManager.TutorialState.Start : TutorialManager.TutorialState.End);
         showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
         LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);
@@ -203,7 +204,7 @@ public class HUDManager : MonoBehaviour
 
         Vector3 resources = gameMan.playerResources.GetResources();
         Vector3 capacity = gameMan.playerResources.GetCapacity();
-        Vector3 velocity = gameMan.GetResourceVelocity();
+        Vector3 velocity = gameMan.CalculateResourceVelocity();
 
         float foodVel = velocity.x;
         string foodVelDP = AddSign(Mathf.Round(foodVel));
@@ -381,7 +382,8 @@ public class HUDManager : MonoBehaviour
         EnemyManager enemyMan = EnemyManager.GetInstance();
         if (enemyMan.CanSpawnNextWave())
         {
-            EnemyManager.GetInstance().SpawnNextWave();
+            InfoManager.RecordNewAction();
+            enemyMan.SpawnNextWave();
         }
     }
 

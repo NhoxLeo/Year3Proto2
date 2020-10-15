@@ -175,6 +175,10 @@ public class GameManager : MonoBehaviour
     private static GameObject ExplosionOne = null;
     private static GameObject ExplosionTwo = null;
 
+    private const float ResourceVelocityUpdateDelay = 0.25f;
+    private float resourceVelocityUpdateTimer = 0f;
+    private Vector3 resourceVelocity = new Vector3();
+
     public static GameManager GetInstance()
     {
         return instance;
@@ -267,7 +271,7 @@ public class GameManager : MonoBehaviour
 
 
     // wood metal food
-    public Vector3 GetResourceVelocity()
+    public Vector3 CalculateResourceVelocity()
     {
         Vector3 resourceVelocity = Vector3.zero;
 
@@ -324,6 +328,7 @@ public class GameManager : MonoBehaviour
         }
         if (repairsWereDone)
         {
+            InfoManager.RecordNewAction();
             if (repairAll)
             {
                 if (tutorialDone) { messageBox.ShowMessage("All repairs done!", 1f); }
@@ -380,7 +385,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SuperManager superMan = SuperManager.GetInstance();
         playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
         messageBox = FindObjectOfType<MessageBox>();
@@ -392,8 +396,16 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         CheckControls();
+
+        resourceVelocityUpdateTimer -= Time.deltaTime;
+        if (resourceVelocityUpdateTimer <= 0f)
+        {
+            resourceVelocityUpdateTimer = ResourceVelocityUpdateDelay;
+            resourceVelocity = CalculateResourceVelocity();
+        }
+        
         // get resourceDelta
-        ResourceBundle resourcesThisFrame = new ResourceBundle(GetResourceVelocity() * Time.deltaTime);
+        ResourceBundle resourcesThisFrame = new ResourceBundle(resourceVelocity * Time.deltaTime);
         foodSinceObjective += Mathf.Clamp(resourcesThisFrame.food, 0f, resourcesThisFrame.food);
         lumberSinceObjective += Mathf.Clamp(resourcesThisFrame.wood, 0f, resourcesThisFrame.wood);
         metalSinceObjective += Mathf.Clamp(resourcesThisFrame.metal, 0f, resourcesThisFrame.metal);
@@ -522,18 +534,21 @@ public class GameManager : MonoBehaviour
                 if (CheckNextWinConditionIsMet())
                 {
                     objectivesCompleted++;
-                    int currentWinCondition = objectives[objectivesCompleted];
-                    if (currentWinCondition == SuperManager.Survive ||
-                        currentWinCondition == SuperManager.SurviveII ||
-                        currentWinCondition == SuperManager.SurviveIII)
+                    if (objectivesCompleted < objectives.Count)
                     {
-                        waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
+                        int currentWinCondition = objectives[objectivesCompleted];
+                        if (currentWinCondition == SuperManager.Survive ||
+                            currentWinCondition == SuperManager.SurviveII ||
+                            currentWinCondition == SuperManager.SurviveIII)
+                        {
+                            waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
+                        }
+                        FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
+                        EnemyManager.GetInstance().OnObjectiveComplete();
+                        foodSinceObjective = 0;
+                        lumberSinceObjective = 0;
+                        metalSinceObjective = 0;
                     }
-                    FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
-                    EnemyManager.GetInstance().OnObjectiveComplete();
-                    foodSinceObjective = 0;
-                    lumberSinceObjective = 0;
-                    metalSinceObjective = 0;
                 }
                 bool gameAlreadyWon = false;
                 SuperManager.MatchSaveData match = SuperManager.GetInstance().GetSavedMatch();
@@ -629,7 +644,7 @@ public class GameManager : MonoBehaviour
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/50)";
                     break;
                 case SuperManager.SlaughterIII:
-                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/75)";
                     break;
                 case SuperManager.Survive:
                     objCompletion = " (" + EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart).ToString() + "/5)";
@@ -675,7 +690,7 @@ public class GameManager : MonoBehaviour
         }
         else if (objectivesCompleted == objectives.Count)
         {
-            HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
+            HUDManager.GetInstance().SetVictoryInfo("Objectives Completed!", "Well done, you are now in freeplay.");
         }
     }
 
@@ -753,7 +768,7 @@ public class GameManager : MonoBehaviour
                 case SuperManager.SlaughterII:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 50;
                 case SuperManager.SlaughterIII:
-                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
+                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 75;
                 case SuperManager.Survive:
                     return EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart) >= 5;
                 case SuperManager.SurviveII:
@@ -803,5 +818,10 @@ public class GameManager : MonoBehaviour
             PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
         }
         return PuffEffect;
+    }
+
+    public Vector3 GetResourceVelocity()
+    {
+        return resourceVelocity;
     }
 }

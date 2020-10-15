@@ -12,27 +12,55 @@
 // Author       : Tjeu Vreeburg
 // Mail         : tjeu.vreeburg@gmail.com
 
+[System.Serializable]
+public struct EnvironmentAmbientData
+{
+    public int index;
+    public SuperManager.SaveVector3 position;
+    public SuperManager.SaveVector3 destination;
+
+    public EnvironmentAmbientData(int _index, Vector3 _position, Vector3 _destination)
+    {
+        index = _index;
+        position = new SuperManager.SaveVector3(_position);
+        destination = new SuperManager.SaveVector3(_destination);
+    }
+}
+
+[System.Serializable]
+public struct EnvironmentWeatherData
+{
+    public int index;
+    public int weather;
+    public float time;
+
+    public EnvironmentWeatherData(int _index, int _weather, float _time)
+    {
+        index = _index;
+        weather = _weather;
+        time = _time;
+    }
+}
+
 public class EnvironmentSystem : MonoBehaviour
 {
-    [Header("Attributes/Prefabrication")]
-    [SerializeField] private Vector2 time = new Vector2(60, 120);
-    [SerializeField] private Transform[] ambientEvents;
-    [SerializeField] private Transform[] weatherEvents;
+    private static EnvironmentSystem instance;
+
+    [Header("Prefabrication")]
+    [SerializeField] private EnvironmentAmbientEvent[] ambientEvents;
+    [SerializeField] private EnvironmentWeatherEvent[] weatherEvents;
 
     [Header("Current Events")]
     [SerializeField] private EnvironmentAmbientEvent ambientEvent;
     [SerializeField] private EnvironmentWeatherEvent weatherEvent;
 
-    /**************************************
-     * Name of the Function: Start
-     * @Author: Tjeu Vreeburg
-     * @Parameter: n/a
-     * @Return: void
-     ***************************************/
-    private void Start()
+    private int weatherIndex;
+    private int ambientIndex;
+    private bool loaded = false;
+
+    private void Awake()
     {
-        InvokeEvent(weatherEvents[0]);
-        InvokeEvent(ambientEvents[0]);
+        instance = this;
     }
 
     /**************************************
@@ -43,42 +71,85 @@ public class EnvironmentSystem : MonoBehaviour
      ***************************************/
     private void Update()
     {
-        if (weatherEvent.IsCompleted())
+        if (loaded)
         {
-            Destroy(weatherEvent.gameObject);
-            InvokeEvent(weatherEvents[Random.Range(0, weatherEvents.Length)]);
-        }
+            if (weatherEvent)
+            {
+                if (weatherEvent.IsCompleted())
+                {
+                    Destroy(weatherEvent.gameObject);
+                    weatherIndex = Random.Range(0, weatherEvents.Length);
+                    InvokeWeather();
+                }
+            }
+            else
+            {
+                InvokeWeather();
+            }
 
-
-        if (ambientEvent.IsCompleted())
-        {
-            Destroy(ambientEvent.gameObject);
-            InvokeEvent(ambientEvents[Random.Range(0, ambientEvents.Length)]);
+            if (ambientEvent)
+            {
+                if (ambientEvent.IsCompleted())
+                {
+                    Destroy(ambientEvent.gameObject);
+                    InvokeAmbient();
+                }
+            }
+            else
+            {
+                InvokeWeather();
+            }
         }
     }
 
-    /**************************************
-     * Name of the Function: InvokeEvent
-     * @Author: Tjeu Vreeburg
-     * @Parameter: Transform
-     * @Return: void
-     ***************************************/
-    private void InvokeEvent(Transform _transform)
+    private void InvokeAmbient()
     {
-        Transform transform = Instantiate(_transform, Vector3.zero, Quaternion.identity, this.transform);
-        EnvironmentWeatherEvent environmentWeatherEvent = transform.GetComponent<EnvironmentWeatherEvent>();
-        if (environmentWeatherEvent)
+        ambientIndex = Random.Range(0, ambientEvents.Length);
+        ambientEvent = Instantiate(ambientEvents[ambientIndex], transform)
+            .Invoke(false) as EnvironmentAmbientEvent;
+    }
+
+    private void InvokeWeather()
+    {
+        weatherIndex = Random.Range(0, weatherEvents.Length);
+        weatherEvent = Instantiate(weatherEvents[weatherIndex], transform)
+            .Invoke(false) as EnvironmentWeatherEvent;
+    }
+
+    public void LoadData(SuperManager.MatchSaveData _data)
+    {
+        if(_data.environmentAmbientData.Equals(default(EnvironmentAmbientData)))
         {
-            weatherEvent = environmentWeatherEvent;
-            weatherEvent.Invoke();
-            weatherEvent.SetTime(Random.Range(time.x, time.y));
+            InvokeAmbient();
+        } 
+        else
+        {
+            ambientEvent = Instantiate(ambientEvents[_data.environmentAmbientData.index], transform)
+                .LoadData(_data.environmentAmbientData);
         }
 
-        EnvironmentAmbientEvent environmentAmbientEvent = transform.GetComponent<EnvironmentAmbientEvent>();
-        if (environmentAmbientEvent)
+
+        if (_data.environmentWeatherData.Equals(default(EnvironmentWeatherData)))
         {
-            ambientEvent = environmentAmbientEvent;
-            ambientEvent.Invoke();
+            InvokeWeather();
         }
+        else
+        {
+            Instantiate(weatherEvents[_data.environmentWeatherData.index], transform)
+                .LoadData(_data.environmentWeatherData);
+        }
+
+        loaded = true;
+    }
+
+    public void SaveSystemToData(ref SuperManager.MatchSaveData _data)
+    {
+        if (weatherEvent) _data.environmentWeatherData = weatherEvent.SaveData(weatherIndex);
+        if (ambientEvent) _data.environmentAmbientData = ambientEvent.SaveData(ambientIndex);
+    }
+
+    public static EnvironmentSystem GetInstance()
+    {
+        return instance;
     }
 }
