@@ -429,7 +429,7 @@ public class EnemyManager : MonoBehaviour
         float random = UnityEngine.Random.Range(-180.0f, 180f);
         Vector3 location = new Vector3(Mathf.Sin(random) * distance, 0.0f, Mathf.Cos(random) * distance);
 
-        Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
+        Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity);
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
         if (airship)
@@ -516,9 +516,9 @@ public class EnemyManager : MonoBehaviour
                 }
             }
         }
+        CalculateFinalMultiplier();
         if (spawning)
         {
-            CalculateFinalMultiplier();
             time -= Time.deltaTime;
             if (time <= 0f)
             {
@@ -551,7 +551,7 @@ public class EnemyManager : MonoBehaviour
 
                 tokens = 0.0f;
             }
-            float lowImpactMultiplier = (7 + FinalMultiplier) * 0.125f;
+            float lowImpactMultiplier = (3 + FinalMultiplier) * 0.25f;
             tokenIncrement += tokensScalar * lowImpactMultiplier * Time.deltaTime;
             tokens += tokenIncrement * Time.deltaTime;
         }
@@ -1028,52 +1028,45 @@ public class EnemyManager : MonoBehaviour
     {
         GameManager gameMan = GameManager.GetInstance();
 
-        switch (updateTarget)
-        {
-            case 0:
-                // Objective Completion
-                ObjectiveMultiplier = 0.8f + (0.2f * gameMan.objectivesCompleted);
+        // Objective Completion
+        ObjectiveMultiplier = 0.8f + (0.2f * gameMan.objectivesCompleted);
 
-                // Resources Spent Recently
-                ResourcesSpentMultiplier = 1f + (0.000025f * InfoManager.CalculatedRecentSpent);
+        // Actions Per Minute
+        float APM = InfoManager.CurrentAPM;
+        APMMultiplier = 1f + (0.001f * (APM == -1f ? 0f : APM));
 
-                // Time Skipped
-                TimeSkippedMultiplier = 1f + (0.05f * (InfoManager.TimeSkipped / 60f));
+        // Structures Placed
+        StructuresPlacedMultiplier = 1f + (0.005f * StructureManager.GetInstance().GetPlayerStructureCount());
 
-                // Tile Bonus Average
-                TileBonusMultiplier = 0.9f + (0.02f * InfoManager.TileBonusAverage);
+        // Resources Gained
+        Vector3 resourceVelocity = gameMan.GetResourceVelocity();
+        float resourceGainTotal = resourceVelocity.x + resourceVelocity.y + resourceVelocity.z;
+        ResourceGainMultiplier = 0.9f + (0.005f * resourceGainTotal);
 
-                // Villagers Lost Recently
-                VillagersLostMultiplier = 1f - (0.05f * InfoManager.VillagersLostGradual);
+        // Total Resources
+        Vector3 resourceTotals = gameMan.playerResources.GetResources();
+        float trueResourceTotal = resourceTotals.x + resourceTotals.y + resourceTotals.z;
+        ResourceMultiplier = 0.9f + (0.00005f * trueResourceTotal);
 
-                // Structures Lost Recently
-                StructuresLostMultiplier = 1f - (0.05f * InfoManager.StructuresLostGradual);
+        // Resources Spent Recently
+        ResourcesSpentMultiplier = 1f + (0.0001f * InfoManager.CalculatedRecentSpent);
 
-                // Structures Placed
-                StructuresPlacedMultiplier = 1f + (0.002f * StructureManager.GetInstance().GetPlayerStructureCount());
-                updateTarget = 1;
-                break;
-            case 1:
-                // Actions Per Minute
-                float APM = InfoManager.CurrentAPM;
-                APMMultiplier = 1f + (0.001f * (APM == -1f ? 0f : APM));
+        // Time Skipped
+        TimeSkippedMultiplier = 1f + (0.005f * InfoManager.TimeSkipped);
 
-                // Resources Gained
-                Vector3 resourceVelocity = gameMan.GetResourceVelocity();
-                float resourceGainAverage = (resourceVelocity.x + resourceVelocity.y + resourceVelocity.z) / 3f;
-                ResourceGainMultiplier = 0.8f + (0.015f * resourceGainAverage);
+        // Tile Bonus Average
+        TileBonusMultiplier = 0.92f + (0.02f * InfoManager.TileBonusAverage);
 
-                // Total Resources
-                Vector3 resourceTotals = gameMan.playerResources.GetResources();
-                float averageResourceTotal = (resourceTotals.x + resourceTotals.y + resourceTotals.z) / 3f;
-                ResourceMultiplier = 0.9f + (0.00005f * averageResourceTotal);
-                updateTarget = 0;
-                break;
-        }
-        FinalMultiplier = ObjectiveMultiplier;
+        // Villagers Lost Recently
+        VillagersLostMultiplier = Mathf.Clamp(1f - (0.05f * InfoManager.VillagersLostGradual), 0.7f, 1f);
+
+        // Structures Lost Recently
+        StructuresLostMultiplier = Mathf.Clamp(1f - (0.05f * InfoManager.StructuresLostGradual), 0.7f, 1f);
+
+        FinalMultiplier = ResearchMultiplier;
+        FinalMultiplier *= ObjectiveMultiplier;
         FinalMultiplier *= APMMultiplier;
         FinalMultiplier *= StructuresPlacedMultiplier;
-        FinalMultiplier *= ResearchMultiplier;
         FinalMultiplier *= ResourceGainMultiplier;
         FinalMultiplier *= ResourceMultiplier;
         FinalMultiplier *= ResourcesSpentMultiplier;
@@ -1085,12 +1078,12 @@ public class EnemyManager : MonoBehaviour
 
     public string GetEnemySpawnInfo()
     {
-        float lowImpactMultiplier = (3 + FinalMultiplier) * 0.25f;
         List<string> strings = new List<string>
         {
             "Enemy Spawner Stats:",
             "\nTokens: " + ((int)(tokens * 100f) * 0.01f).ToString(),
-            "\nToken Gain Rate: " + ((int)(tokenIncrement * lowImpactMultiplier * 100f) * 0.01f).ToString(),
+            "\nToken Gain Rate: " + ((int)(tokenIncrement * 100f) * 0.01f).ToString(),
+            "\nTime until next wave: " + ((int)(time * 100f) * 0.01f).ToString(),
             "\n\nMultipliers:",
             "\nObjective Multiplier: " + ((int)(ObjectiveMultiplier * 100f) * 0.01f).ToString(),
             "\nAPM Multiplier: " + ((int)(APMMultiplier * 100f) * 0.01f).ToString(),
