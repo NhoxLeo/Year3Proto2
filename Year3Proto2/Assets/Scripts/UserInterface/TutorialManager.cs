@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -12,10 +13,14 @@ public class TutorialManager : MonoBehaviour
     {
         Start,
         SelectFarm,
-        PlaceFarm
+        PlaceFarm,
+        SelectLumberMill,
+        PlaceLumberMill,
+        End
     }
 
     public TutorialState tutorialState;
+    private int tutorialLength;
 
     [System.Serializable]
     public struct TutorialMessage
@@ -28,16 +33,18 @@ public class TutorialManager : MonoBehaviour
 
     [Header("Main")]
     [SerializeField] private RectTransform focus;
-
     [SerializeField] private RectTransform focusTransform;
     [SerializeField] private UIAnimator messagePanel;
     [SerializeField] private RectTransform messageTransform;
     [SerializeField] private TMP_Text messageHeading;
     [SerializeField] private TMP_Text messageDescription;
+    [SerializeField] private Image progressBar;
+    private bool updateLayout = false;
 
     [Header("Transforms")]
     [SerializeField] private RectTransform farmButton;
-
+    [SerializeField] private RectTransform woodButton;
+    [SerializeField] private RectTransform metalButton;
     [SerializeField] private RectTransform productionTab;
     [SerializeField] private UIAnimator productionTabPanel;
 
@@ -48,6 +55,10 @@ public class TutorialManager : MonoBehaviour
         instance = this;
 
         //tutorialMessages = new List<TutorialMessage>();
+
+        tutorialLength = Enum.GetNames(typeof(TutorialState)).Length;
+
+        SetMessage((int)tutorialState);
     }
 
     public static TutorialManager GetInstance()
@@ -57,32 +68,25 @@ public class TutorialManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.PageUp))
         {
-            AdvanceTutorialTo(TutorialState.SelectFarm);
+            GoToNext();
         }
-
-        if (Input.GetKeyDown(KeyCode.Y))
+        if (Input.GetKeyDown(KeyCode.PageDown))
         {
-            AdvanceTutorialTo(TutorialState.PlaceFarm);
-        }
-
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            AdvanceTutorialTo(TutorialState.Start);
+            GoToPrevious();
         }
 
         focus.transform.localScale = Vector3.one * (1.0f + pulseScaleMagnitude + Mathf.Sin(Time.time * 6.0f) * pulseScaleMagnitude);
         if (focusTransform != null)
         {
-            //focus.position = Vector3.Lerp(focus.position, focusTransform.position, Time.unscaledDeltaTime * 10.0f);
             focus.position = focusTransform.position;
         }
 
         switch (tutorialState)
         {
             case TutorialState.Start:
-
+                focus.gameObject.SetActive(false);
                 break;
 
             case TutorialState.SelectFarm:
@@ -98,15 +102,46 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case TutorialState.PlaceFarm:
+                focus.gameObject.SetActive(false);
+
+                break;
+
+            case TutorialState.SelectLumberMill:
+                if (productionTabPanel.showElement && focusTransform != woodButton)
+                {
+                    FocusOn(woodButton);
+                }
+                if (!productionTabPanel.showElement && focusTransform != productionTab)
+                {
+                    FocusOn(productionTab);
+                }
+
+                break;
+
+            case TutorialState.PlaceLumberMill:
+                focus.gameObject.SetActive(false);
+
                 break;
 
             default:
+                focus.gameObject.SetActive(false);
                 break;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (updateLayout)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(messageTransform);
         }
     }
 
     private void FocusOn(RectTransform _rTrans)
     {
+        if (_rTrans == null) { return; }
+
+        focus.gameObject.SetActive(true);
         focus.sizeDelta = Vector2.one * 480.0f;
         focus.transform.DOKill(true);
         focus.DOSizeDelta(_rTrans.sizeDelta, 0.4f).SetEase(Ease.OutQuint);
@@ -120,13 +155,42 @@ public class TutorialManager : MonoBehaviour
         SetMessage((int)tutorialState);
     }
 
+    public void GoToNext()
+    {
+        if ((int)tutorialState < tutorialLength - 1)
+        {
+            tutorialState++;
+            SetMessage((int)tutorialState);
+        }
+    }
+
+    public void GoToPrevious()
+    {
+        if (tutorialState > 0)
+        {
+            tutorialState--;
+            SetMessage((int)tutorialState);
+        }
+    }
+
     private void SetMessage(int _message)
     {
-        messageHeading.text = tutorialMessages[_message].heading;
-        messageDescription.text = tutorialMessages[_message].description;
-        LayoutRebuilder.ForceRebuildLayoutImmediate(messageTransform);
+        if (_message < tutorialMessages.Count)
+        {
+            messageHeading.text = tutorialMessages[_message].heading;
+            messageDescription.text = tutorialMessages[_message].description;
 
-        messagePanel.SetVisibility(!(tutorialMessages[_message].heading == "" && tutorialMessages[_message].description == ""));
-        messagePanel.Pulse();
+            messagePanel.SetVisibility(!(tutorialMessages[_message].heading == "" && tutorialMessages[_message].description == ""));
+            messagePanel.Pulse();
+
+            updateLayout = true;
+        }
+        else
+        {
+            messagePanel.SetVisibility(false);
+        }
+
+        float fill = (_message + 1) / (float)tutorialMessages.Count;
+        progressBar.DOFillAmount(fill, 0.3f);
     }
 }
