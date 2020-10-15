@@ -1328,7 +1328,7 @@ public class StructureManager : MonoBehaviour
             }
         }
 
-        Debug.Log("Starting Area grew to: " + startingAreaRadius.ToString() + " units away from the Longhaus.");
+        //Debug.Log("Starting Area grew to: " + startingAreaRadius.ToString() + " units away from the Longhaus.");
 
 
         // REMAINING GENERATION
@@ -1456,10 +1456,7 @@ public class StructureManager : MonoBehaviour
 
     private void ShowMessage(string _message, float _duration)
     {
-        if (GameManager.GetInstance().tutorialDone)
-        {
-            messageBox.ShowMessage(_message, _duration);
-        }
+        messageBox.ShowMessage(_message, _duration);
     }
 
     public void LoadBuilding(SuperManager.StructureSaveData _saveData)
@@ -1746,7 +1743,10 @@ public class StructureManager : MonoBehaviour
                 count++;
             }
         }
-        InfoManager.RecordTileBonusAverage(runningTotal / (float)count);
+        if (count != 0)
+        {
+            InfoManager.RecordTileBonusAverage(runningTotal / (float)count);
+        }
     }
 }
 
