@@ -23,22 +23,7 @@ public class PauseMenu : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                LevelEndscreen levelEndscreen = FindObjectOfType<LevelEndscreen>();
-                if (levelEndscreen)
-                {
-                    if (levelEndscreen.showingVictory)
-                    {
-                        levelEndscreen.HideEndscreen();
-                    }
-                    else if(levelEndscreen.showingDefeat)
-                    {
-                        levelEndscreen.DefeatGoToLevelSelect();
-                    }
-                    else
-                    {
-                        TogglePause();
-                    }
-                }
+                TogglePause();
             }
 
             Time.timeScale = isPaused ? 0.0f : 1.0f;
@@ -47,6 +32,14 @@ public class PauseMenu : MonoBehaviour
 
     public void Paused(bool _paused)
     {
+        if (_paused)
+        {
+            SuperManager.GetInstance().OnPause();
+        }
+        else
+        {
+            SuperManager.GetInstance().OnResume();
+        }
         HUDManager.GetInstance().SetHUD(!_paused);
         tool.showElement = _paused;
         isPaused = _paused;
@@ -78,19 +71,38 @@ public class PauseMenu : MonoBehaviour
 
     public void TogglePause()
     {
-        if (isActive)
+        LevelEndscreen levelEndscreen = FindObjectOfType<LevelEndscreen>();
+        if (levelEndscreen)
         {
-            if (currentAnimator != null)
+            if (levelEndscreen.showingVictory)
             {
-                currentAnimator.SetVisibility(false);
+                levelEndscreen.HideEndscreen();
             }
+            else if (levelEndscreen.showingDefeat)
+            {
+                levelEndscreen.DefeatGoToLevelSelect();
+            }
+            else
+            {
+                if (isActive)
+                {
+                    if (currentAnimator != null)
+                    {
+                        currentAnimator.SetVisibility(false);
+                    }
+                    PausedButtons(true);
+                    isActive = false;
+                }
+                else
+                {
+                    Paused(!isPaused);
+                }
+            }
+        }
+    }
 
-            PausedButtons(true);
-            isActive = false;
-        }
-        else
-        {
-            Paused(!isPaused);
-        }
+    public void OnQuitToTitleScreen()
+    {
+        SuperManager.GetInstance().OnBackToMenus();
     }
 }

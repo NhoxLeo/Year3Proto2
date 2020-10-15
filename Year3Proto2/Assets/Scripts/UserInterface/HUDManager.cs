@@ -114,7 +114,9 @@ public class HUDManager : MonoBehaviour
         if (updateTimer <= 0)
         {
             RefreshResources();
-            GameManager.GetInstance().UpdateObjectiveText();
+            GameManager gameMan = GameManager.GetInstance();
+            gameMan.UpdateObjectiveText();
+            gameMan.UpdateBuildPanel();
             updateTimer = updateInterval;
         }
 

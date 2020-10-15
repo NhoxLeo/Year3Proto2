@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.41929477, g: 0.2639839, b: 0.17905368, a: 1}
+  m_IndirectSpecularColor: {r: 0.41937917, g: 0.2639361, b: 0.17885293, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -30520,7 +30520,7 @@ PrefabInstance:
     - target: {fileID: 4848634543865203663, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4855982251494201090, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -30895,7 +30895,7 @@ PrefabInstance:
     - target: {fileID: 5685278550477011359, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5688528426815927094, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -31470,7 +31470,7 @@ PrefabInstance:
     - target: {fileID: 6807464382016469889, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 6814408990736712266, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -32226,7 +32226,7 @@ PrefabInstance:
     - target: {fileID: 7994149526497203577, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7994149526497203577, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -32262,6 +32262,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: SaveMatch
+      objectReference: {fileID: 0}
+    - target: {fileID: 7994149526497203577, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7994149526497203577, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7994149526497203577, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 1659728776}
+    - target: {fileID: 7994149526497203577, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: OnQuitToTitleScreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 7994149526497203577, guid: baca440b2bf69734497f80ed08a4d9ce,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8004444141811205665, guid: baca440b2bf69734497f80ed08a4d9ce,
         type: 3}
@@ -32843,6 +32868,18 @@ PrefabInstance:
     - {fileID: 1091074811877140676, guid: baca440b2bf69734497f80ed08a4d9ce, type: 3}
     - {fileID: 2545329192571304423, guid: baca440b2bf69734497f80ed08a4d9ce, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: baca440b2bf69734497f80ed08a4d9ce, type: 3}
+--- !u!114 &1659728776 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7454480641238334669, guid: baca440b2bf69734497f80ed08a4d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 1659728775}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab7a60409c4d13a4a8d00603821ef407, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1659728777 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 488115439549305570, guid: baca440b2bf69734497f80ed08a4d9ce,

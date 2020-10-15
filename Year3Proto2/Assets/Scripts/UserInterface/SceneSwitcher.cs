@@ -32,9 +32,6 @@ public class SceneSwitcher : MonoBehaviour
         GlobalData.curScene = curScene;
         Debug.Log("Current scene: " + curScene);
         clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
-        //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
-        
-
     }
 
     void Start()
@@ -58,7 +55,7 @@ public class SceneSwitcher : MonoBehaviour
         loadingScreen.SetActive(GlobalData.isLoadingIn);
         if (loadingScreen.activeSelf) 
         { 
-            Invoke("EndLoad", loadTime);
+            //Invoke("EndLoad", loadTime);
             loadingScreen.GetComponent<UIAnimator>().SetVisibility(true);
         }
     }
@@ -178,7 +175,7 @@ public class SceneSwitcher : MonoBehaviour
         }
     }
 
-    private void EndLoad()
+    public void EndLoad()
     {
         isFading = true;
         isSwitching = false;
@@ -206,5 +203,10 @@ public class SceneSwitcher : MonoBehaviour
         StartFade();
         targetScene = "Quit";
         Debug.Log("Silly human. You know you can't quit the game from the editor!");
+    }
+
+    public bool GetLoadingScreenIsActive()
+    {
+        return loadingScreen.activeSelf;
     }
 }
