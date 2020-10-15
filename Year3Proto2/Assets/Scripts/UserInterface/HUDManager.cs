@@ -93,7 +93,7 @@ public class HUDManager : MonoBehaviour
         //resourceBar.SetVisibility(!showTutorial);
         //buildPanel.showPanel = !showTutorial;
         //helpScreen.SetVisibility(showTutorial);
-        TutorialManager.GetInstance().AdvanceTutorialTo(showTutorial ? TutorialManager.TutorialState.Start : TutorialManager.TutorialState.End);
+        //TutorialManager.GetInstance().AdvanceTutorialTo(showTutorial ? TutorialManager.TutorialState.Start : TutorialManager.TutorialState.End, true);
         showVillagerWidgets.isOn = SuperManager.GetInstance().GetShowWidgets();
         UpdateVillagerWidgetMode();
         LayoutRebuilder.ForceRebuildLayoutImmediate(resourceBarTransform);

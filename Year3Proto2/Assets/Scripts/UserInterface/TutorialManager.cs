@@ -16,6 +16,14 @@ public class TutorialManager : MonoBehaviour
         PlaceFarm,
         SelectLumberMill,
         PlaceLumberMill,
+        SelectMine,
+        PlaceMine,
+        VillagerAllocation,
+        TrainVillager,
+        VillagerPriority,
+        SelectDefence,
+        AllocateDefence,
+        FinalMessage,
         End
     }
 
@@ -48,6 +56,11 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private RectTransform metalButton;
     [SerializeField] private RectTransform productionTab;
     [SerializeField] private UIAnimator productionTabPanel;
+    [SerializeField] private RectTransform defenceTab;
+    [SerializeField] private UIAnimator defenceTabPanel;
+    [SerializeField] private RectTransform trainVillagerButton;
+    [SerializeField] private RectTransform villagerPriorityPanel;
+    [SerializeField] private RectTransform objectivePanel;
 
     private float pulseScaleMagnitude = 0.05f;
 
@@ -58,6 +71,9 @@ public class TutorialManager : MonoBehaviour
         //tutorialMessages = new List<TutorialMessage>();
 
         tutorialLength = Enum.GetNames(typeof(TutorialState)).Length;
+
+        bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
+        GetInstance().AdvanceTutorialTo(showTutorial ? TutorialState.Start : TutorialState.End, true);
     }
 
     private void Start()
@@ -79,6 +95,11 @@ public class TutorialManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.PageDown))
         {
             GoToPrevious();
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            AdvanceTutorialTo(TutorialState.Start, true);
         }
 
         focus.transform.localScale = Vector3.one * (1.0f + pulseScaleMagnitude + Mathf.Sin(Time.time * 6.0f) * pulseScaleMagnitude);
@@ -123,8 +144,50 @@ public class TutorialManager : MonoBehaviour
 
             case TutorialState.PlaceLumberMill:
                 FocusOn(null);
-
                 break;
+
+            case TutorialState.SelectMine:
+                if (productionTabPanel.showElement && focusTransform != metalButton)
+                {
+                    FocusOn(metalButton);
+                }
+                if (!productionTabPanel.showElement && focusTransform != productionTab)
+                {
+                    FocusOn(productionTab);
+                }
+                break;
+
+            case TutorialState.PlaceMine:
+                FocusOn(null);
+                break;
+
+            case TutorialState.VillagerAllocation:
+                FocusOn(null);
+                break;
+
+            case TutorialState.TrainVillager:
+                FocusOn(trainVillagerButton);
+                break;
+
+            case TutorialState.VillagerPriority:
+                FocusOn(villagerPriorityPanel);
+                break;
+
+            case TutorialState.SelectDefence:
+                if (!defenceTabPanel.showElement && focusTransform != defenceTab)
+                {
+                    FocusOn(defenceTab);
+                }
+                break;
+
+            case TutorialState.AllocateDefence:
+                FocusOn(null);
+                break;
+
+            case TutorialState.FinalMessage:
+                FocusOn(objectivePanel);
+                break;
+
             case TutorialState.End:
                 FocusOn(null);
                 messagePanel.SetVisibility(false);
@@ -147,25 +210,28 @@ public class TutorialManager : MonoBehaviour
 
     private void FocusOn(RectTransform _rTrans)
     {
-        focusTransform = _rTrans;
-
-        if (focusTransform == null) 
+        if (_rTrans == null) 
         {
             focus.gameObject.SetActive(false);
-            return; 
+        }
+        else if (_rTrans != focusTransform)
+        {
+            focus.gameObject.SetActive(true);
+            focus.sizeDelta = Vector2.one * 480.0f;
+            focus.transform.DOKill(true);
+            focus.DOSizeDelta(_rTrans.sizeDelta, 0.4f).SetEase(Ease.OutQuint);
         }
 
-        focus.gameObject.SetActive(true);
-        focus.sizeDelta = Vector2.one * 480.0f;
-        focus.transform.DOKill(true);
-        focus.DOSizeDelta(_rTrans.sizeDelta, 0.4f).SetEase(Ease.OutQuint);
+        focusTransform = _rTrans;
     }
 
-    public void AdvanceTutorialTo(TutorialState _state)
+    public void AdvanceTutorialTo(TutorialState _state, bool _allowBacktrack)
     {
-        tutorialState = _state;
-
-        SetMessage((int)tutorialState);
+        if (_allowBacktrack || _state >= tutorialState)
+        {
+            tutorialState = _state;
+            SetMessage((int)tutorialState);
+        }
     }
 
     public void GoToNext()
@@ -223,6 +289,7 @@ public class TutorialManager : MonoBehaviour
 
         if (tutorialState == TutorialState.End)
         {
+            messagePanel.SetVisibility(false);
             SuperManager.GetInstance().SetShowTutorial(false);
         }
 
