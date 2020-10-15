@@ -463,6 +463,8 @@ public class BuildingInfo : MonoBehaviour
                 ResourceBundle cost = StructureManager.GetInstance().QuoteUpgradeCostFor(defenseStructure);
                 if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
                 {
+                    InfoManager.RecordNewAction();
+                    InfoManager.RecordResourcesSpent(cost);
                     HUDManager.GetInstance().ShowResourceDelta(cost, true);
                     defenseStructure.LevelUp();
                     SetInfo();
@@ -483,6 +485,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void DestroyBuilding()
     {
+        InfoManager.RecordNewAction();
         FindObjectOfType<StructureManager>().DestroySelectedBuilding();
     }
 

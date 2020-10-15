@@ -259,7 +259,6 @@ public static class StructureNames
     }
 }
 
-[ExecuteInEditMode]
 public class StructureManager : MonoBehaviour
 {
     private static StructureManager instance = null;
@@ -975,6 +974,8 @@ public class StructureManager : MonoBehaviour
         StructureType structType = structure.GetStructureType();
         if ((structureFromStore && BuyBuilding()) || !structureFromStore)
         {
+            InfoManager.RecordNewAction();
+            InfoManager.RecordNewStructurePlaced();
             GameManager.CreateAudioEffect("build", structure.transform.position, SoundType.SoundEffect, 0.6f);
             SetStructureColour(Color.white);
             // Attach the structure to the tile and vica versa
@@ -1042,6 +1043,7 @@ public class StructureManager : MonoBehaviour
                     structure.ManuallyAllocate(0);
                 }
             }
+            CalculateAverageTileBonus();
             TurnOffPreview();
         }
     }
@@ -1083,6 +1085,7 @@ public class StructureManager : MonoBehaviour
             ResourceBundle cost = structureCosts[structure.GetStructureName()];
             if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
             {
+                InfoManager.RecordResourcesSpent(cost);
                 IncreaseStructureCost(structure.GetStructureName());
                 HUDManager.GetInstance().ShowResourceDelta(cost, true);
                 return true;
@@ -1618,7 +1621,14 @@ public class StructureManager : MonoBehaviour
                             // if the ResourceType of the structure being placed and the environment match
                             if (resourceType == attachedEnvironment.GetResourceType())
                             {
-                                resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                if (attachedEnvironment.GetExploited())
+                                {
+                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
+                                }
+                                else
+                                {
+                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                }
                             }
                             else
                             {
@@ -1721,6 +1731,22 @@ public class StructureManager : MonoBehaviour
             NewStructuresParent = new GameObject("Purchased Structures");
         }
         return NewStructuresParent;
+    }
+
+    private void CalculateAverageTileBonus()
+    {
+        int runningTotal = 0;
+        int count = 0;
+        foreach (Structure structure in playerStructureDict.Values)
+        {
+            if (structure.GetStructureType() == StructureType.Resource)
+            {
+                ResourceStructure resourceStructure = structure.GetComponent<ResourceStructure>();
+                runningTotal += resourceStructure.GetTileBonus();
+                count++;
+            }
+        }
+        InfoManager.RecordTileBonusAverage(runningTotal / (float)count);
     }
 }
 
