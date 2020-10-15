@@ -838,6 +838,8 @@ public class SuperManager : MonoBehaviour
 
         FindObjectOfType<Longhaus>().SetHealth(_matchData.longhausHealth);
 
+        HUDManager.GetInstance().UpdateVillagerWidgetMode();
+
         return true;
     }
 
