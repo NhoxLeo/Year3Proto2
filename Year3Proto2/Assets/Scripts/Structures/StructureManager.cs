@@ -1746,7 +1746,10 @@ public class StructureManager : MonoBehaviour
                 count++;
             }
         }
-        InfoManager.RecordTileBonusAverage(runningTotal / (float)count);
+        if (count != 0)
+        {
+            InfoManager.RecordTileBonusAverage(runningTotal / (float)count);
+        }
     }
 }
 
