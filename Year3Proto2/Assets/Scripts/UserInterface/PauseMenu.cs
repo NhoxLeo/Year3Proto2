@@ -9,11 +9,11 @@ public class PauseMenu : MonoBehaviour
 
     private UIAnimator currentAnimator;
 
-    private void Start()
+    private void Awake()
     {
         tool = GetComponent<UIAnimator>();
         isPaused = false;
-        isHelp = SuperManager.GetInstance().GetShowTutorial();
+        isHelp = false;
         isActive = false;
     }
 

@@ -451,18 +451,21 @@ public class GameManager : MonoBehaviour
                 if (CheckNextWinConditionIsMet())
                 {
                     objectivesCompleted++;
-                    int currentWinCondition = objectives[objectivesCompleted];
-                    if (currentWinCondition == SuperManager.Survive ||
-                        currentWinCondition == SuperManager.SurviveII ||
-                        currentWinCondition == SuperManager.SurviveIII)
+                    if (objectivesCompleted < objectives.Count)
                     {
-                        waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
+                        int currentWinCondition = objectives[objectivesCompleted];
+                        if (currentWinCondition == SuperManager.Survive ||
+                            currentWinCondition == SuperManager.SurviveII ||
+                            currentWinCondition == SuperManager.SurviveIII)
+                        {
+                            waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
+                        }
+                        FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
+                        EnemyManager.GetInstance().OnObjectiveComplete();
+                        foodSinceObjective = 0;
+                        lumberSinceObjective = 0;
+                        metalSinceObjective = 0;
                     }
-                    FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
-                    EnemyManager.GetInstance().OnObjectiveComplete();
-                    foodSinceObjective = 0;
-                    lumberSinceObjective = 0;
-                    metalSinceObjective = 0;
                 }
                 bool gameAlreadyWon = false;
                 SuperManager.MatchSaveData match = SuperManager.GetInstance().GetSavedMatch();
@@ -582,7 +585,7 @@ public class GameManager : MonoBehaviour
         }
         else if (objectivesCompleted == objectives.Count)
         {
-            HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
+            HUDManager.GetInstance().SetVictoryInfo("Objectives Completed!", "Well done, you are now in freeplay.");
         }
     }
 

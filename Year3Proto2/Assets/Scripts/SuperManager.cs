@@ -306,6 +306,8 @@ public class SuperManager : MonoBehaviour
         public List<Priority> priorities;
         public Dictionary<string, ResourceBundle> structureCosts;
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
+        public EnvironmentWeatherData environmentWeatherData;
+        public EnvironmentAmbientData environmentAmbientData;
     }
 
     [Serializable]
@@ -737,8 +739,11 @@ public class SuperManager : MonoBehaviour
         StructureManager structMan = StructureManager.GetInstance();
         VillagerManager villagerMan = VillagerManager.GetInstance();
         EnemyManager enemyMan = EnemyManager.GetInstance();
+        EnvironmentSystem environmentSystem = EnvironmentSystem.GetInstance();
 
         // easy stuff
+
+        environmentSystem.LoadData(_matchData);
         enemyMan.LoadData(_matchData);
         gameMan.repairAll = _matchData.repairAll;
         gameMan.repairMessage = _matchData.repairMessage;
@@ -883,6 +888,7 @@ public class SuperManager : MonoBehaviour
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
+        EnvironmentSystem.GetInstance().SaveSystemToData(ref save);
 
 
         // not so easy stuff...

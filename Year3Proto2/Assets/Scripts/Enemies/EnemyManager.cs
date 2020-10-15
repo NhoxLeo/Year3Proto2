@@ -166,7 +166,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float time = 90.0f;
     [SerializeField] private float tokens = 0.0f;
     [SerializeField] private Vector2 timeVariance = new Vector2(45, 90);
-    [SerializeField] private bool spawning = false;
+    [SerializeField] public bool spawning = false;
 
     [Header("Enemies")]
     [SerializeField] private int maxEnemies = 300;

@@ -13,7 +13,7 @@
 // Mail         : tjeu.vreeburg@gmail.com
 public abstract class EnvironmentEvent : MonoBehaviour
 {
-    protected float time = 0.0f;
+    [SerializeField] protected float time = 0.0f;
     protected bool completed = false;
 
     /**************************************
@@ -22,7 +22,7 @@ public abstract class EnvironmentEvent : MonoBehaviour
      * @Parameter: n/a
      * @Return: abstract void
      ***************************************/
-    public abstract void Invoke();
+    public abstract EnvironmentEvent Invoke(bool _data);
 
     /**************************************
      * Name of the Function: Update
