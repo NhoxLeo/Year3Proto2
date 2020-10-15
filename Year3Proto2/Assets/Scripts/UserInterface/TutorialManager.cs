@@ -57,7 +57,10 @@ public class TutorialManager : MonoBehaviour
         //tutorialMessages = new List<TutorialMessage>();
 
         tutorialLength = Enum.GetNames(typeof(TutorialState)).Length;
+    }
 
+    private void Start()
+    {
         SetMessage((int)tutorialState);
     }
 
@@ -107,6 +110,7 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case TutorialState.SelectLumberMill:
+
                 if (productionTabPanel.showElement && focusTransform != woodButton)
                 {
                     FocusOn(woodButton);
@@ -122,9 +126,14 @@ public class TutorialManager : MonoBehaviour
                 focus.gameObject.SetActive(false);
 
                 break;
+            case TutorialState.End:
+                focus.gameObject.SetActive(false);
+                messagePanel.SetVisibility(false);
+                break;
 
             default:
                 focus.gameObject.SetActive(false);
+
                 break;
         }
     }
@@ -173,6 +182,18 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+    public void StartTutorial()
+    {
+        tutorialState = TutorialState.Start;
+        SetMessage((int)tutorialState);
+    }
+
+    public void EndTutorial()
+    {
+        tutorialState = TutorialState.End;
+        SetMessage((int)tutorialState);
+    }
+
     private void SetMessage(int _message)
     {
         if (_message < tutorialMessages.Count)
@@ -184,6 +205,7 @@ public class TutorialManager : MonoBehaviour
             messagePanel.Pulse();
 
             updateLayout = true;
+            Debug.Log("dasd");
         }
         else
         {
