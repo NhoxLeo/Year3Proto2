@@ -43,7 +43,6 @@ public abstract class Enemy : MonoBehaviour
     protected float currentAttackSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
-    [HideInInspector]
     protected string enemyName;
     private int spawnWave;
     protected Rigidbody body;

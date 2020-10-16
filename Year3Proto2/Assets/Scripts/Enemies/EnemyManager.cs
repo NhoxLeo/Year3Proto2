@@ -144,33 +144,32 @@ public class EnemyManager : MonoBehaviour
 {
     private static EnemyManager instance = null;
 
-    public static float FinalMultiplier { get; private set; }
-    public static float ObjectiveMultiplier { get; private set; }
-    public static float APMMultiplier { get; private set; }
-    public static float StructuresPlacedMultiplier { get; private set; }
-    public static float ResearchMultiplier { get; private set; }
-    public static float ResourceGainMultiplier { get; private set; }
-    public static float ResourceMultiplier { get; private set; }
-    public static float ResourcesSpentMultiplier { get; private set; }
-    public static float TimeSkippedMultiplier { get; private set; }
-    public static float TileBonusMultiplier { get; private set; }
-    public static float VillagersLostMultiplier { get; private set; }
-    public static float StructuresLostMultiplier { get; private set; }
+    private static float FinalMultiplier;
+    private static float ObjectiveMultiplier;
+    private static float APMMultiplier;
+    private static float StructuresPlacedMultiplier;
+    private static float ResearchMultiplier;
+    private static float ResourceGainMultiplier;
+    private static float ResourceMultiplier;
+    private static float ResourcesSpentMultiplier;
+    private static float TimeSkippedMultiplier;
+    private static float TileBonusMultiplier;
+    private static float VillagersLostMultiplier;
+    private static float StructuresLostMultiplier;
 
-    private int updateTarget = 0;
+    private float weightageScalar; 
+    private float tokenIncrement; 
+    private float tokensScalar; 
+    private Vector2 timeVariance;
+    private float time = 90f;
+    private float tokens = 0.0f;
+    public bool spawning = false;
 
-    [Header("Properties")]
-    [SerializeField] private float weightageScalar = 0.01f; // 1% boost to tokens for each structure/research element
-    [SerializeField] private float tokenIncrement = 0.05f; // 20 seconds to earn an Invader, 80 to earn a heavy, at base.
-    [SerializeField] private float tokensScalar = 0.0001f; // 0.05f every 500 seconds
-    [SerializeField] private float time = 90.0f;
-    [SerializeField] private float tokens = 0.0f;
-    [SerializeField] private Vector2 timeVariance = new Vector2(45, 90);
-    [SerializeField] public bool spawning = false;
+    private const int MaxTokens = 300;
+    private const int MinTokens = 12;
 
-    [Header("Enemies")]
-    [SerializeField] private int maxEnemies = 300;
-    [SerializeField] private int minEnemies = 3;
+    private const float NextWaveDelay = 10f;
+    private float nextWaveTimer = 0f;
 
     [Header("Airships")]
     [SerializeField] private Transform airshipPrefab;
@@ -186,7 +185,7 @@ public class EnemyManager : MonoBehaviour
     private bool spawnOnKeyPress = false;
     private int researchElementsComplete = 0;
 
-    public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
+    public static readonly Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
         { EnemyNames.Invader, new EnemyDefinition(1.0f, 4) },
         { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 12) },
@@ -194,7 +193,6 @@ public class EnemyManager : MonoBehaviour
         { EnemyNames.Petard, new EnemyDefinition(0.2f, 16) },
         { EnemyNames.BatteringRam, new EnemyDefinition(0.15f, 24) },
     };
-
     private readonly List<LevelSetting> levelSettings = new List<LevelSetting>
     {
         // Level 1 --------------------------------
@@ -310,9 +308,8 @@ public class EnemyManager : MonoBehaviour
         {2, new List<LevelSetting>() },
         {3, new List<LevelSetting>() }
     };
-
     private readonly Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
-    private readonly Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
+    private Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
 
     public static EnemyManager GetInstance()
     {
@@ -517,7 +514,7 @@ public class EnemyManager : MonoBehaviour
             }
         }
         CalculateFinalMultiplier();
-        if (spawning)
+        if (spawning && !SuperManager.GetInstance().GetShowTutorial())
         {
             time -= Time.deltaTime;
             if (time <= 0f)
@@ -528,10 +525,10 @@ public class EnemyManager : MonoBehaviour
 
                 time = UnityEngine.Random.Range(timeVariance.x, timeVariance.y);
 
-                float enemiesToSpawn = tokens * FinalMultiplier;
-                enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
+                float tokensThisWave = tokens * FinalMultiplier;
+                tokensThisWave = Mathf.Clamp(tokensThisWave, MinTokens, MaxTokens);
 
-                Transform[] dedicatedEnemies = DedicateEnemies((int)enemiesToSpawn);
+                Transform[] dedicatedEnemies = DedicateEnemies((int)tokensThisWave);
                 waveEnemyCounts.Add(wave, new WaveData(dedicatedEnemies.Length));
 
                 // first spawn flying invaders
@@ -555,6 +552,8 @@ public class EnemyManager : MonoBehaviour
             tokenIncrement += tokensScalar * lowImpactMultiplier * Time.deltaTime;
             tokens += tokenIncrement * Time.deltaTime;
         }
+        nextWaveTimer -= Time.deltaTime;
+
     }
 
     /**************************************
@@ -695,6 +694,7 @@ public class EnemyManager : MonoBehaviour
         timeVariance = _data.timeVariance;
         tokens = _data.tokens;
         enemiesKilled = _data.enemiesKilled;
+        waveEnemyCounts = _data.waveEnemyCounts;
         UpdateSpawnSettings();
     }
 
@@ -717,6 +717,7 @@ public class EnemyManager : MonoBehaviour
         _data.time = time;
         _data.timeVariance = new SuperManager.SaveVector3(timeVariance);
         _data.tokens = tokens;
+        _data.waveEnemyCounts = waveEnemyCounts;
     }
 
     public int GetEnemiesAlive()
@@ -905,7 +906,18 @@ public class EnemyManager : MonoBehaviour
 
     public int GetWavesSurvivedSinceWave(int _wave)
     {
-        return wave + (GetCurrentWaveSurvived() ? 1 : 0) - _wave;
+        int total = 0;
+        for (int i = _wave; i < waveEnemyCounts.Count; i++)
+        {
+            if (waveEnemyCounts.ContainsKey(i))
+            {
+                if (waveEnemyCounts[i].WaveSurvived())
+                {
+                    total++;
+                }
+            }
+        }
+        return total;
     }
 
     public int GetEnemyCurrentLevel(string _enemyName)
@@ -934,7 +946,7 @@ public class EnemyManager : MonoBehaviour
         // increase the increment
         tokenIncrement += incrementIncrease;
 
-        spawning = true;
+        nextWaveTimer = NextWaveDelay;
     }
 
     public bool GetCurrentWaveSurvived()
@@ -944,7 +956,16 @@ public class EnemyManager : MonoBehaviour
 
     public bool CanSpawnNextWave()
     {
-        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;
+        if (!SuperManager.GetInstance().GetShowTutorial() && spawning)
+        {
+            return nextWaveTimer <= 0f;
+        }
+        return false;
+    }
+
+    public int GetNextWaveWaitTime()
+    {
+        return Mathf.CeilToInt(nextWaveTimer);
     }
 
     public int GetEnemiesLeftCurrentWave()
