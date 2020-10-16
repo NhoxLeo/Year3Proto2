@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public static bool DevMode = true;
+    public static bool DevMode = false;
     public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
     public static float AmbientVolume = 1.0f;
@@ -527,9 +527,9 @@ public class SuperManager : MonoBehaviour
     public static Dictionary<int, SpawnerData> SpawnerSettings = new Dictionary<int, SpawnerData>()
     {
         {0, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
-        {1, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
-        {2, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
-        {3, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) }
+        {1, new SpawnerData(0.25f, 0.00045f, new Vector2(60, 100)) },
+        {2, new SpawnerData(0.3f, 0.0005f, new Vector2(60, 100)) },
+        {3, new SpawnerData(0.4f, 0.0006f, new Vector2(60, 100)) }
     };
     private int currentLevel;
     [SerializeField]
