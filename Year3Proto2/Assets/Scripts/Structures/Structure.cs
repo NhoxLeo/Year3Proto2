@@ -40,6 +40,18 @@ public abstract class Structure : MonoBehaviour
     public void HandleAllocation(int _villagers)
     {
         InfoManager.RecordNewAction();
+        TutorialManager tutMan = TutorialManager.GetInstance();
+        if (tutMan.State == TutorialManager.TutorialState.VillagerAllocation)
+        {
+            tutMan.GoToNext();
+        }
+        if (structureType == StructureType.Defense)
+        {
+            if (tutMan.State == TutorialManager.TutorialState.AllocateDefence)
+            {
+                tutMan.GoToNext();
+            }
+        }
         if (allocatedVillagers == _villagers && manualAllocation)
         {
             if (structureType == StructureType.Defense)
@@ -70,7 +82,10 @@ public abstract class Structure : MonoBehaviour
             // we are returning villagers to the manager's control.
             villMan.ReturnVillagers(-change, previousManualAllocation);
             allocatedVillagers = _villagers;
-            villMan.MarkVillagersAsManAlloc(allocatedVillagers);
+            if (!previousManualAllocation) 
+            {
+                villMan.MarkVillagersAsManAlloc(allocatedVillagers);
+            }
             villMan.RedistributeVillagers();
         }
         else if (change > 0)

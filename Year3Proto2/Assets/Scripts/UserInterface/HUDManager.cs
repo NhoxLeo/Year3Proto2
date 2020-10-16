@@ -156,13 +156,7 @@ public class HUDManager : MonoBehaviour
 
         EnemyManager enemyMan = EnemyManager.GetInstance();
         // Info Bar
-        int waveCurrent = enemyMan.GetWaveCurrent();
-        bool waveSurvived = enemyMan.GetWaveSurvived(waveCurrent);
-        int wavesSurvived = waveSurvived ? waveCurrent : waveCurrent - 1;
-        if (wavesSurvived < 0)
-        {
-            wavesSurvived = 0;
-        }
+        int wavesSurvived = enemyMan.GetWavesSurvived();
         string plural = (wavesSurvived == 1) ? "" : "s";
         victoryProgress.text = wavesSurvived.ToString() + " Invasion" + plural + " Survived";
 
@@ -361,21 +355,24 @@ public class HUDManager : MonoBehaviour
     public void FetchNextWaveInfo()
     {
         EnemyManager enemyMan = EnemyManager.GetInstance();
-
-        string time = "Time until the next wave spawns naturally: " + enemyMan.GetTime().ToString("0");
-        // Time until next wave spawns:  + spawnDelay
-        // You must clear the current wave before you can spawn the next one. Remaning enemies from current wave:  + enemies
+        string time = "Time until the next wave spawns naturally: " + enemyMan.GetTime().ToString("0") + "s";
         string remaining = "";
         if (!enemyMan.CanSpawnNextWave())
         {
-            remaining += "\n\nYou must clear the current wave before you can spawn the next one. Remaining enemies from current wave: " + enemyMan.GetEnemiesLeftCurrentWave();
+            remaining += "\n\nButton Cooldown: " + enemyMan.GetNextWaveWaitTime() + "s";
         }
-
-        //nextWave.text = ;
-        // enemies remaining from previous wave, necessary before spawning next wave
-        // time before next wave spawns
-        // 
-        nextWave.text = time + remaining;
+        if (SuperManager.GetInstance().GetShowTutorial())
+        {
+            nextWave.text = "The enemy will start attacking once you have completed the tutorial. You cannot summon the next wave.";
+        }
+        else if(!enemyMan.spawning)
+        {
+            nextWave.text = "The enemy will start attacking when you start building. You cannot summon the next wave.";
+        }
+        else
+        {
+            nextWave.text = time + remaining;
+        }
         LayoutRebuilder.ForceRebuildLayoutImmediate(nextWaveTooltip);
     }
 

@@ -125,6 +125,11 @@ public class SuperManager : MonoBehaviour
 
     // Structs
     #region Structs
+
+    #region SaveData
+
+    #region Vector3 & Quaternion
+
     [Serializable]
     public struct SaveQuaternion
     {
@@ -191,6 +196,10 @@ public class SuperManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Enemies
+
     [Serializable]
     public struct EnemySaveData
     {
@@ -201,17 +210,6 @@ public class SuperManager : MonoBehaviour
         public EnemyState state;
         public int enemyWave;
         public int level;
-    }
-
-    [Serializable]
-    public struct SoldierSaveData
-    {
-        public float health;
-        public SaveVector3 position;
-        public SaveQuaternion orientation;
-        public int barracksID;
-        public int state;
-        public bool returnHome;
     }
 
     [Serializable]
@@ -240,6 +238,25 @@ public class SuperManager : MonoBehaviour
         public int spawnWave;
     }
 
+    #endregion
+
+    #region Soldiers
+
+    [Serializable]
+    public struct SoldierSaveData
+    {
+        public float health;
+        public SaveVector3 position;
+        public SaveQuaternion orientation;
+        public int barracksID;
+        public int state;
+        public bool returnHome;
+    }
+
+    #endregion
+
+    #region Structures
+
     [Serializable]
     public struct StructureSaveData
     {
@@ -262,6 +279,10 @@ public class SuperManager : MonoBehaviour
         // defense structures
         public int level;
     }
+
+    #endregion
+
+    #region Match
 
     [Serializable]
     public struct MatchSaveData
@@ -308,7 +329,10 @@ public class SuperManager : MonoBehaviour
         public Dictionary<BuildPanel.Buildings, int> structureCounts;
         public EnvironmentWeatherData environmentWeatherData;
         public EnvironmentAmbientData environmentAmbientData;
+        public Dictionary<int, WaveData> waveEnemyCounts;
     }
+
+    #endregion
 
     [Serializable]
     public struct GameSaveData
@@ -322,6 +346,8 @@ public class SuperManager : MonoBehaviour
         public bool showWidgets;
         public bool showPriority;
     }
+
+    #endregion
 
     [Serializable]
     public struct ResearchElementDefinition
@@ -394,6 +420,7 @@ public class SuperManager : MonoBehaviour
             description = _description;
         }
     }
+
     #endregion
 
     private static SuperManager instance = null;
@@ -575,6 +602,7 @@ public class SuperManager : MonoBehaviour
         if (saveData.gameVersion != Application.version)
         {
             ClearCurrentMatch();
+            saveData.showTutorial = true;
         }
 
         saveData.gameVersion = Application.version;
@@ -1194,7 +1222,6 @@ public class SuperManager : MonoBehaviour
             File.Delete(StructureManager.GetSaveDataPath());
         }
         FileStream file = File.Create(StructureManager.GetSaveDataPath());
-
         bf.Serialize(file, saveData);
 
         file.Close();
@@ -1498,7 +1525,16 @@ public class SuperManager : MonoBehaviour
         string clipName = _victory ? "win" : "lose";
         float delay = GameManager.GetClipLength(clipName);
         GameManager.CreateAudioEffect(clipName, Vector3.zero, SoundType.Music, 1f, false);
-        Invoke("FadeMusicBackIn", delay);
+        if (_victory)
+        {
+            Invoke("FadeMusicBackIn", delay);
+        }
+        else
+        {
+            Invoke("TurnMusicOff", 0.2f);
+            Invoke("FadeWindBackIn", 0.2f);
+            Invoke("ModerateVolume", 0.25f);
+        }
     }
 
     public void PlayTitleScreenMusic()
@@ -1515,9 +1551,19 @@ public class SuperManager : MonoBehaviour
 
     public void FadeMusicBackIn()
     {
-        windAmbienceAudio.DOFade(0.1f * AmbientVolume, 0.5f);
+        FadeWindBackIn();
         musicAudio.DOFade(0.4f * MusicVolume, 0.5f);
         Invoke("ModerateVolume", 0.5f);
+    }
+
+    public void TurnMusicOff()
+    {
+        musicAudio.Stop();
+    }
+
+    public void FadeWindBackIn()
+    {
+        windAmbienceAudio.DOFade(0.1f * AmbientVolume, 0.5f);
     }
 
     public void OnPause()
