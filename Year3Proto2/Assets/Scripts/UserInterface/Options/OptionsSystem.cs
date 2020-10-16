@@ -54,12 +54,16 @@ public class OptionsSystem : MonoBehaviour
         OptionSwitcherData resolutionData = new OptionSwitcherData(Screen.resolutions.Length - 1, Screen.resolutions.Select(o => o.ToString()).ToArray());
         resolutionData.CallBack(() =>
         {
-            Resolution resolution = Screen.resolutions[resolutionData.value];    
+            Resolution resolution = Screen.resolutions[resolutionData.value];
             Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
         });
 
         OptionSwitcherData shadowQualityData = new OptionSwitcherData(2, new string[] { "Low", "Medium", "High", "Ultra" });
         shadowQualityData.CallBack(() => light.shadowResolution = (LightShadowResolution)Enum.ToObject(typeof(LightShadowResolution), shadowQualityData.value));
+
+        OptionSwitcherData antiAliasingData = new OptionSwitcherData(2, new string[] { "SMAA", "MSAA", "TXAA", "FXAA" });
+        antiAliasingData.CallBack(() => { });
+
 
         OptionSwitcherData ambienOcclusionData = new OptionSwitcherData(2, Enum.GetNames(typeof(ScalableSettingLevelParameter.Level)));
         ambienOcclusionData.CallBack(() => {
@@ -94,6 +98,8 @@ public class OptionsSystem : MonoBehaviour
 
         // Graphics
 
+
+        optionObjects.Add(InstantiateOption("ANTI_ALIASING", antiAliasingData, switcherPrefab, graphicsPanel));
         optionObjects.Add(InstantiateOption("SHADOW_QUALITY", shadowQualityData, switcherPrefab, graphicsPanel));
         optionObjects.Add(InstantiateOption("AMBIENT_OCLUSION", shadowQualityData, switcherPrefab, graphicsPanel));
 

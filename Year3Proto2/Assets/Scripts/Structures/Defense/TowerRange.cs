@@ -2,13 +2,18 @@
 
 public class TowerRange : MonoBehaviour
 {
-    private DefenseStructure defenseParent;
+    private DefenseStructure defenseParent = null;
+    private Barracks barracksParent = null;
     private int enemyStructureColliderLayer;
 
     private void Start()
     {
         GetParent();
         enemyStructureColliderLayer = LayerMask.NameToLayer("EnemyStructureCollider");
+        if (defenseParent.GetStructureName() == StructureNames.Barracks)
+        {
+            barracksParent = defenseParent.GetComponent<Barracks>();
+        }
     }
 
     private void GetParent()
@@ -29,18 +34,25 @@ public class TowerRange : MonoBehaviour
                     { 
                         GetParent(); 
                     }
-                    if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
+                    if (defenseParent.GetTargetableEnemies().Contains(enemy.GetName()))
                     {
                         if (!defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
                             defenseParent.GetEnemies().Add(other.transform.parent);
+                            if (barracksParent)
+                            {
+                                barracksParent.AlertSoldiers();
+                            }
                             if (defenseParent.isPlaced)
                             {
                                 if (!defenseParent.GetAlert() && defenseParent.GetAllocated() <= 0)
                                 {
-                                    defenseParent.Alert();
-                                    MessageBox messageBox = FindObjectOfType<MessageBox>();
-                                    messageBox.ShowMessage(defenseParent.GetStructureName() + " has no allocated villagers.", 3.0f);
+                                    if (defenseParent.GetStructureName() != StructureNames.FreezeTower)
+                                    {
+                                        defenseParent.Alert();
+                                        MessageBox messageBox = FindObjectOfType<MessageBox>();
+                                        messageBox.ShowMessage(defenseParent.GetStructureName() + " has no allocated villagers.", 3.0f);
+                                    }
                                 }
                             }
                         }
@@ -63,14 +75,18 @@ public class TowerRange : MonoBehaviour
                     { 
                         GetParent(); 
                     }
-                    if (defenseParent.GetTargetableEnemies().Contains(enemy.enemyName))
+                    if (defenseParent.GetTargetableEnemies().Contains(enemy.GetName()))
                     {
                         if (defenseParent.GetEnemies().Contains(other.transform.parent))
                         {
                             defenseParent.GetEnemies().Remove(other.transform.parent);
-                            if(defenseParent.GetEnemies().Count < 0)
+                            if (defenseParent.GetEnemies().Count == 0)
                             {
-                                Destroy(defenseParent.GetAlert().gameObject);
+                                Alert alert = defenseParent.GetAlert();
+                                if (alert)
+                                {
+                                    Destroy(alert.gameObject);
+                                }
                             }
                         }
                     }

@@ -14306,7 +14306,7 @@ GameObject:
   - component: {fileID: 3151625167024170121}
   - component: {fileID: 718153538794046014}
   - component: {fileID: 8485478408120677230}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: CatapultProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14354,7 +14354,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d92ef32394b5f474385d74b565a7bdd7, type: 2}
+  - {fileID: 2100000, guid: f6da10b3ba6e0b947be96d308ede23da, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

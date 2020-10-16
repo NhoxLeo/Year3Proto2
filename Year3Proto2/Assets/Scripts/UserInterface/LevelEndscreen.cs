@@ -53,6 +53,7 @@ public class LevelEndscreen : MonoBehaviour
         showingVictory = true;
 
         FindObjectOfType<HUDManager>().doShowHUD = false;
+        FindObjectOfType<EnemyManager>().SetSpawning(false);
     }
 
     public void ShowDeafeatScreen()
@@ -64,6 +65,7 @@ public class LevelEndscreen : MonoBehaviour
         showingDefeat = true;
 
         FindObjectOfType<HUDManager>().doShowHUD = false;
+        FindObjectOfType<EnemyManager>().SetSpawning(false);
     }
 
     public void HideEndscreen()
@@ -75,17 +77,22 @@ public class LevelEndscreen : MonoBehaviour
         showingDefeat = false;
 
         FindObjectOfType<HUDManager>().doShowHUD = true;
+        FindObjectOfType<EnemyManager>().SetSpawning(true);
     }
 
     public void DefeatGoToLevelSelect()
     {
-        SuperManager.GetInstance().ClearCurrentMatch();
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.ClearCurrentMatch();
+        superMan.OnBackToMenus();
         FindObjectOfType<SceneSwitcher>().SceneSwitch("LevelSelect");
     }
 
     public void VictoryGoToLevelSelect()
     {
-        SuperManager.GetInstance().SaveCurrentMatch();
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.SaveCurrentMatch();
+        superMan.OnBackToMenus();
         FindObjectOfType<SceneSwitcher>().SceneSwitch("ResearchTree");
     }
 }

@@ -1,15 +1,15 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-using System;
-using System.IO;
 using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
     public static bool DevMode = false;
-
+    public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
     public static float AmbientVolume = 1.0f;
     public static float MusicVolume = 1.0f;
@@ -24,6 +24,7 @@ public class SuperManager : MonoBehaviour
     public const float PoorTimberFactor = 0.75f;
 
     // Identifiers
+    #region Identifiers
     public const int NoRequirement = -1;
 
     // Modifiers
@@ -110,6 +111,25 @@ public class SuperManager : MonoBehaviour
     public const int ShockwaveTowerEfficiency = 34;
     public const int ShockwaveTowerSuper = 35;
 
+    // MUSIC
+    public const int CloudLine = 0;
+    public const int FerryLanding = 1;
+    public const int IdleWays = 2;
+    public const int Stillness = 3;
+    public const int StrangeDogWalk = 4;
+    public const int VulcanStreet = 5;
+    public const int Contention = 6;
+    public const int GreatExpectations = 7;
+    public const int PyrrhicVictory = 8;
+    #endregion
+
+    // Structs
+    #region Structs
+
+    #region SaveData
+
+    #region Vector3 & Quaternion
+
     [Serializable]
     public struct SaveQuaternion
     {
@@ -176,6 +196,10 @@ public class SuperManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Enemies
+
     [Serializable]
     public struct EnemySaveData
     {
@@ -186,17 +210,6 @@ public class SuperManager : MonoBehaviour
         public EnemyState state;
         public int enemyWave;
         public int level;
-    }
-
-    [Serializable]
-    public struct SoldierSaveData
-    {
-        public float health;
-        public SaveVector3 position;
-        public SaveQuaternion orientation;
-        public int barracksID;
-        public int state;
-        public bool returnHome;
     }
 
     [Serializable]
@@ -225,6 +238,25 @@ public class SuperManager : MonoBehaviour
         public int spawnWave;
     }
 
+    #endregion
+
+    #region Soldiers
+
+    [Serializable]
+    public struct SoldierSaveData
+    {
+        public float health;
+        public SaveVector3 position;
+        public SaveQuaternion orientation;
+        public int barracksID;
+        public int state;
+        public bool returnHome;
+    }
+
+    #endregion
+
+    #region Structures
+
     [Serializable]
     public struct StructureSaveData
     {
@@ -248,16 +280,42 @@ public class SuperManager : MonoBehaviour
         public int level;
     }
 
+    #endregion
+
+    #region Match
+
     [Serializable]
     public struct MatchSaveData
     {
         public bool match;
+        public bool matchWon;
+        public bool tutorialDone;
+        public bool repairMessage;
+        public bool repairAll;
+        public bool spawning;
         public int levelID;
         public int objectivesCompleted;
-        public bool matchWon;
+        public int enemiesKilled;
+        public int wave;
+        public int nextStructureID;
+        public int villagers;
+        public int availableVillagers;
+        public int manuallyAllocated;
+        public int waveAtObjectiveStart;
+        public float weightageScalar;
+        public float tokenIncrement;
+        public float tokenScalar;
+        public float time;
+        public float tokens;
+        public float starveTicks;
+        public float tempFood;
+        public float tempLumber;
+        public float tempMetal;
+        public float longhausHealth;
+        public float spawnTime;
+        public SaveVector3 timeVariance;
         public PlayerResources playerResources;
-        public Dictionary<string, ResourceBundle> structureCosts;
-        public Dictionary<BuildPanel.Buildings, int> structureCounts;
+        public InfoManagerSaveData infoData;
         public List<AirshipSaveData> airships;
         public List<StructureSaveData> structures;
         public List<InvaderSaveData> invaders;
@@ -266,31 +324,15 @@ public class SuperManager : MonoBehaviour
         public List<EnemySaveData> petards;
         public List<EnemySaveData> rams;
         public List<SoldierSaveData> soldiers;
-        public int enemiesKilled;
-        public float spawnTime;
-        public bool spawning;
-        public float weightageScalar;
-        public float tokenIncrement;
-        public float tokenScalar;
-        public float time;
-        public SaveVector3 timeVariance;
-        public float tokens;
-        public int wave;
-        public bool tutorialDone;
-        public bool repairMessage;
-        public bool repairAll;
-        public int nextStructureID;
-        public int villagers;
-        public int availableVillagers;
-        public int manuallyAllocated;
-        public float starveTicks;
-        public float tempFood;
-        public float tempLumber;
-        public float tempMetal;
-        public float longhausHealth;
-        public int waveAtObjectiveStart;
         public List<Priority> priorities;
+        public Dictionary<string, ResourceBundle> structureCosts;
+        public Dictionary<BuildPanel.Buildings, int> structureCounts;
+        public EnvironmentWeatherData environmentWeatherData;
+        public EnvironmentAmbientData environmentAmbientData;
+        public Dictionary<int, WaveData> waveEnemyCounts;
     }
+
+    #endregion
 
     [Serializable]
     public struct GameSaveData
@@ -305,6 +347,7 @@ public class SuperManager : MonoBehaviour
         public bool showPriority;
     }
 
+    #endregion
 
     [Serializable]
     public struct ResearchElementDefinition
@@ -378,6 +421,8 @@ public class SuperManager : MonoBehaviour
         }
     }
 
+    #endregion
+
     private static SuperManager instance = null;
     private GameSaveData saveData;
     public static List<ResearchElementDefinition> ResearchDefinitions = new List<ResearchElementDefinition>()
@@ -450,7 +495,7 @@ public class SuperManager : MonoBehaviour
 
         new WinConditionDefinition(Slaughter, "Slaughter", "Kill 20 Enemies."),
         new WinConditionDefinition(SlaughterII, "Slaughter II", "Kill 50 Enemies."),
-        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 100 Enemies."),
+        new WinConditionDefinition(SlaughterIII, "Slaughter III", "Kill 75 Enemies."),
 
         new WinConditionDefinition(Survive, "Survive", "Defend against 5 waves."),
         new WinConditionDefinition(SurviveII, "Survive II", "Defend against 10 waves."),
@@ -479,9 +524,114 @@ public class SuperManager : MonoBehaviour
         {2, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) },
         {3, (new Vector4(10, -18, 10, -18), new Vector2(-8, 10)) }
     };
+    public static Dictionary<int, SpawnerData> SpawnerSettings = new Dictionary<int, SpawnerData>()
+    {
+        {0, new SpawnerData(0.2f, 0.0004f, new Vector2(60, 100)) },
+        {1, new SpawnerData(0.25f, 0.00045f, new Vector2(60, 100)) },
+        {2, new SpawnerData(0.3f, 0.0005f, new Vector2(60, 100)) },
+        {3, new SpawnerData(0.4f, 0.0006f, new Vector2(60, 100)) }
+    };
     private int currentLevel;
     [SerializeField]
     private bool startMaxed;
+
+    // Music
+    // Audio Clips
+    private Dictionary<int, AudioClip> GameMusic = new Dictionary<int, AudioClip>();
+    private Dictionary<int, string> GameMusicDetails = new Dictionary<int, string>();
+    private AudioClip windAmbience = null;
+    private static AudioClip UIClick = null;
+
+    // Audio sources
+    private AudioSource musicAudio;
+    private AudioSource windAmbienceAudio;
+
+    // Management
+    private const float MusicDelayMinimum = 5f;
+    private float nextSongTimer = 0f;
+    private List<int> recentlyPlayedSongs = new List<int>();
+    private List<int> songHistory = new List<int>();
+    private bool moderateVolume = true;
+    private bool playWindAmbience = false;
+    private bool musicControls = false;
+
+
+    void Awake()
+    {
+        if (instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = GetComponent<SuperManager>();
+        DontDestroyOnLoad(gameObject);
+        string sceneName = SceneManager.GetActiveScene().name;
+        switch (sceneName)
+        {
+            case "Level 2":
+                currentLevel = 1;
+                break;
+            case "Level 3":
+                currentLevel = 2;
+                break;
+            case "Level 4":
+                currentLevel = 3;
+                break;
+            default:
+                currentLevel = 0;
+                break;
+        }
+        if (startMaxed) { StartNewGame(false); }
+        else { ReadGameData(); }
+
+        LoadMusic();
+
+        AudioSource[] sources = GetComponents<AudioSource>();
+
+        musicAudio = sources[0];
+        musicAudio.clip = GameMusic[GreatExpectations];
+        musicAudio.volume = 0.4f;
+        musicAudio.Play();
+        nextSongTimer = musicAudio.clip.length + GetMusicDelayRandom();
+        recentlyPlayedSongs.Add(GreatExpectations);
+
+        windAmbienceAudio = sources[1];
+        windAmbienceAudio.clip = windAmbience;
+        windAmbienceAudio.loop = true;
+
+        if (saveData.gameVersion != Application.version)
+        {
+            ClearCurrentMatch();
+            saveData.showTutorial = true;
+        }
+
+        saveData.gameVersion = Application.version;
+    }
+
+    private void Update()
+    {
+        // Hold both mouse buttons
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+        {
+            // Press D
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                WipeReloadScene(false);
+            }
+            if (DevMode)
+            {
+                // Press S
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                    startMaxed = true;
+                    WipeReloadScene(true);
+                    PlayerPrefs.DeleteAll();
+                }
+            }
+        }
+
+        MusicPlayerUpdate();
+    }
 
     public static SuperManager GetInstance()
     {
@@ -577,65 +727,6 @@ public class SuperManager : MonoBehaviour
         return LevelDefinitions[currentLevel].objectives;
     }
 
-    void Awake()
-    {
-        if (instance)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        instance = GetComponent<SuperManager>();
-        DontDestroyOnLoad(gameObject);
-        string sceneName = SceneManager.GetActiveScene().name;
-        switch (sceneName)
-        {
-            case "Level 2":
-                currentLevel = 1;
-                break;
-            case "Level 3":
-                currentLevel = 2;
-                break;
-            case "Level 4":
-                currentLevel = 3;
-                break;
-            default:
-                currentLevel = 0;
-                break;
-        }
-        if (startMaxed) { StartNewGame(false); }
-        else { ReadGameData(); }
-
-        if (saveData.gameVersion != Application.version)
-        {
-            ClearCurrentMatch();
-        }
-
-        saveData.gameVersion = Application.version;
-    }
-
-    private void Update()
-    {
-        // Hold both mouse buttons
-        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
-        {
-            // Press D
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                WipeReloadScene(false);
-            }
-            if (DevMode)
-            {
-                // Press S
-                if (Input.GetKeyDown(KeyCode.S))
-                {
-                    startMaxed = true;
-                    WipeReloadScene(true);
-                    PlayerPrefs.DeleteAll();
-                }
-            }
-        }
-    }
-
     private void WipeReloadScene(bool _override)
     {
         if (File.Exists(StructureManager.GetSaveDataPath()))
@@ -676,12 +767,14 @@ public class SuperManager : MonoBehaviour
         StructureManager structMan = StructureManager.GetInstance();
         VillagerManager villagerMan = VillagerManager.GetInstance();
         EnemyManager enemyMan = EnemyManager.GetInstance();
+        EnvironmentSystem environmentSystem = EnvironmentSystem.GetInstance();
 
         // easy stuff
+
+        environmentSystem.LoadData(_matchData);
         enemyMan.LoadData(_matchData);
         gameMan.repairAll = _matchData.repairAll;
         gameMan.repairMessage = _matchData.repairMessage;
-        gameMan.tutorialDone = _matchData.tutorialDone;
         gameMan.playerResources = _matchData.playerResources;
         gameMan.gameAlreadyWon = _matchData.matchWon;
         gameMan.objectivesCompleted = _matchData.objectivesCompleted;
@@ -697,6 +790,7 @@ public class SuperManager : MonoBehaviour
         villagerMan.SetStarveTicks(_matchData.starveTicks);
         villagerMan.SetManuallyAllocated(_matchData.manuallyAllocated);
         villagerMan.LoadPriorities(_matchData.priorities);
+        InfoManager.LoadSaveData(_matchData.infoData);
         // not so easy stuff...
 
         // structures
@@ -752,13 +846,17 @@ public class SuperManager : MonoBehaviour
 
         // soldiers
         Barracks[] allBarracks = FindObjectsOfType<Barracks>();
+        foreach (Barracks barr in allBarracks)
+        {
+            barr.RefreshRestPositions();
+        }
         foreach (SoldierSaveData saveData in _matchData.soldiers)
         {
-            foreach (Barracks barr in allBarracks)
+            for (int i = 0; i < allBarracks.Length; i++)
             {
-                if (barr.GetID() == saveData.barracksID)
+                if (allBarracks[i].GetID() == saveData.barracksID)
                 {
-                    barr.LoadSoldier(saveData);
+                    allBarracks[i].LoadSoldier(saveData);
                     break;
                 }
             }
@@ -767,6 +865,8 @@ public class SuperManager : MonoBehaviour
         enemyMan.LoadAirships(_matchData.airships);
 
         FindObjectOfType<Longhaus>().SetHealth(_matchData.longhausHealth);
+
+        HUDManager.GetInstance().UpdateVillagerWidgetMode();
 
         return true;
     }
@@ -790,7 +890,6 @@ public class SuperManager : MonoBehaviour
             levelID = currentLevel,
             repairAll = gameMan.repairAll,
             repairMessage = gameMan.repairMessage,
-            tutorialDone = gameMan.tutorialDone,
             structureCosts = structMan.structureCosts,
             structureCounts = structMan.structureCounts,
             playerResources = gameMan.playerResources,
@@ -814,10 +913,12 @@ public class SuperManager : MonoBehaviour
             longhausHealth = FindObjectOfType<Longhaus>().GetHealth(),
             manuallyAllocated = villMan.GetManuallyAllocated(),
             priorities = villMan.GetPriorities(),
-            waveAtObjectiveStart = gameMan.waveAtObjectiveStart
+            waveAtObjectiveStart = gameMan.waveAtObjectiveStart,
+            infoData = InfoManager.GenerateSaveData()
         };
 
         EnemyManager.GetInstance().SaveSystemToData(ref save);
+        EnvironmentSystem.GetInstance().SaveSystemToData(ref save);
 
 
         // not so easy stuff...
@@ -1001,6 +1102,27 @@ public class SuperManager : MonoBehaviour
         return saveData.research[_ID];
     }
 
+    public bool GetResearchComplete(BuildPanel.Buildings _building)
+    {
+        switch (_building)
+        {
+            case BuildPanel.Buildings.Ballista:
+                return GetResearchComplete(Ballista);
+            case BuildPanel.Buildings.Catapult:
+                return GetResearchComplete(Catapult);
+            case BuildPanel.Buildings.Barracks:
+                return GetResearchComplete(Barracks);
+            case BuildPanel.Buildings.FreezeTower:
+                return GetResearchComplete(FreezeTower);
+            case BuildPanel.Buildings.ShockwaveTower:
+                return GetResearchComplete(ShockwaveTower);
+            case BuildPanel.Buildings.LightningTower:
+                return GetResearchComplete(LightningTower);
+            default:
+                return true;
+        }
+    }
+
     public Dictionary<int, bool> GetResearch()
     {
         if (saveData.research == null)
@@ -1100,7 +1222,6 @@ public class SuperManager : MonoBehaviour
             File.Delete(StructureManager.GetSaveDataPath());
         }
         FileStream file = File.Create(StructureManager.GetSaveDataPath());
-
         bf.Serialize(file, saveData);
 
         file.Close();
@@ -1222,5 +1343,261 @@ public class SuperManager : MonoBehaviour
     public bool GetSnow()
     {
         return currentLevel > 1;
+    }
+
+    public SpawnerData GetCurrentLevelSpawnerData()
+    {
+        return SpawnerSettings[currentLevel];
+    }
+
+    private void LoadMusic()
+    {
+        GameMusic.Add(CloudLine, Resources.Load("Audio/Music/Blue Dot Sessions - Cloud Line") as AudioClip);
+        GameMusic.Add(FerryLanding, Resources.Load("Audio/Music/Blue Dot Sessions - Ferry Landing") as AudioClip);
+        GameMusic.Add(IdleWays, Resources.Load("Audio/Music/Blue Dot Sessions - Idle Ways") as AudioClip);
+        GameMusic.Add(Stillness, Resources.Load("Audio/Music/Blue Dot Sessions - Stillness") as AudioClip);
+        GameMusic.Add(StrangeDogWalk, Resources.Load("Audio/Music/Blue Dot Sessions - Strange Dog Walk") as AudioClip);
+        GameMusic.Add(VulcanStreet, Resources.Load("Audio/Music/Blue Dot Sessions - Vulcan Street") as AudioClip);
+        GameMusic.Add(Contention, Resources.Load("Audio/Music/Kai Engel - Contention") as AudioClip);
+        GameMusic.Add(GreatExpectations, Resources.Load("Audio/Music/Kai Engel - Great Expectations") as AudioClip);
+        GameMusic.Add(PyrrhicVictory, Resources.Load("Audio/Music/Lobo Loco - Pyrrhic Victory") as AudioClip);
+
+        GameMusicDetails.Add(CloudLine, "Cloud Line - Blue Dot Sessions");
+        GameMusicDetails.Add(FerryLanding, "Ferry Landing - Blue Dot Sessions");
+        GameMusicDetails.Add(IdleWays, "Idle Ways - Blue Dot Sessions");
+        GameMusicDetails.Add(Stillness, "Stillness - Blue Dot Sessions");
+        GameMusicDetails.Add(StrangeDogWalk, "Strange Dog Walk - Blue Dot Sessions");
+        GameMusicDetails.Add(VulcanStreet, "Vulcan Street - Blue Dot Sessions");
+        GameMusicDetails.Add(Contention, "Contention - Kai Engel");
+        GameMusicDetails.Add(GreatExpectations, "Great Expectations - Kai Engel");
+        GameMusicDetails.Add(PyrrhicVictory, "Pyrrhic Victory - Lobo Loco");
+
+        windAmbience = Resources.Load("Audio/SFX/sfxWindAmbience") as AudioClip;
+        UIClick = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
+    }
+
+    private void MusicPlayerUpdate()
+    {
+        if (musicControls)
+        {
+            if (Input.GetKeyDown(KeyCode.Period))
+            {
+                nextSongTimer = 0f;
+            }
+            if (Input.GetKeyDown(KeyCode.Comma))
+            {
+                if (musicAudio.time < 10f && songHistory.Count > 1)
+                {
+                    musicAudio.clip = GameMusic[songHistory[songHistory.Count - 2]];
+                    Debug.Log("Now Playing " + GameMusicDetails[songHistory[songHistory.Count - 2]]);
+                    musicAudio.Play();
+                    nextSongTimer = musicAudio.clip.length + GetMusicDelayRandom();
+                    recentlyPlayedSongs.Add(songHistory[songHistory.Count - 2]);
+                    if (recentlyPlayedSongs.Count > 3)
+                    {
+                        recentlyPlayedSongs.RemoveAt(0);
+                    }
+                    songHistory.RemoveAt(songHistory.Count - 1);
+                }
+                musicAudio.time = 0f;
+            }
+        }
+
+        nextSongTimer -= Time.deltaTime;
+        if (nextSongTimer <= 0f)
+        {
+            if (GetMenuMusic())
+            {
+                musicAudio.clip = GameMusic[GreatExpectations];
+            }
+            else
+            {
+                songHistory.Add(PickNewRandomTrack());
+            }
+            nextSongTimer = musicAudio.clip.length + GetMusicDelayRandom();
+            musicAudio.Play();
+        }
+        if (moderateVolume)
+        {
+            musicAudio.volume = 0.4f * MusicVolume;
+            windAmbienceAudio.volume = playWindAmbience ? 0.1f * AmbientVolume : 0f;
+        }
+    }
+
+    private int PickNewRandomTrack()
+    {
+        // pick a new track to play
+        List<int> validSongs = new List<int>();
+        for (int i = 0; i < GameMusic.Count; i++)
+        {
+            validSongs.Add(i);
+        }
+
+        if (recentlyPlayedSongs.Count > 0)
+        {
+            for (int i = 0; i < recentlyPlayedSongs.Count; i++)
+            {
+                validSongs.Remove(recentlyPlayedSongs[i]);
+            }
+        }
+
+        if (validSongs.Contains(GreatExpectations))
+        {
+            validSongs.Remove(GreatExpectations);
+        }
+
+        int song = validSongs[UnityEngine.Random.Range(0, validSongs.Count)];
+        Debug.Log("Now Playing " + GameMusicDetails[song]);
+        musicAudio.clip = GameMusic[song];
+        recentlyPlayedSongs.Add(song);
+        if (recentlyPlayedSongs.Count > 3)
+        {
+            recentlyPlayedSongs.RemoveAt(0);
+        }
+        return song;
+    }
+
+    private bool GetMenuMusic()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+        switch (sceneName)
+        {
+            case "SamDev":
+                return false;
+            case "Level 2":
+                return false;
+            case "Level 3":
+                return false;
+            case "Level 4":
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    private float GetMusicDelayRandom()
+    {
+        return MusicDelayMinimum * UnityEngine.Random.Range(1f, 2f);
+    }
+
+    public void OnApplicationFocus(bool focus)
+    {
+        if (!focus)
+        {
+            GameManager gameMan = GameManager.GetInstance();
+            if (gameMan)
+            {
+                gameMan.AttemptPause();
+            }
+        }
+    }
+
+    public void OnMatchStart()
+    {
+        nextSongTimer = 0f;
+        windAmbienceAudio.Play();
+        windAmbienceAudio.DOFade(0.1f * AmbientVolume, 0.5f);
+        playWindAmbience = true;
+        moderateVolume = false;
+        Invoke("ModerateVolume", 0.5f);
+        musicControls = true;
+        songHistory.Clear();
+    }
+
+    public void OnBackToMenus()
+    {
+        windAmbienceAudio.DOFade(0f, 0.5f);
+        musicAudio.DOFade(0f, 0.5f);
+        Invoke("PlayTitleScreenMusic", 0.5f);
+        moderateVolume = false;
+        playWindAmbience = false;
+        Invoke("ModerateVolume", 0.5f);
+        musicControls = false;
+        songHistory.Clear();
+    }
+
+    public void PlayGameoverMusic(bool _victory)
+    {
+        // fade out music and play victory/loss music, then fade the music back in
+        windAmbienceAudio.DOFade(0f, 0.2f);
+        musicAudio.DOFade(0f, 0.2f);
+        moderateVolume = false;
+        string clipName = _victory ? "win" : "lose";
+        float delay = GameManager.GetClipLength(clipName);
+        GameManager.CreateAudioEffect(clipName, Vector3.zero, SoundType.Music, 1f, false);
+        if (_victory)
+        {
+            Invoke("FadeMusicBackIn", delay);
+        }
+        else
+        {
+            Invoke("TurnMusicOff", 0.2f);
+            Invoke("FadeWindBackIn", 0.2f);
+            Invoke("ModerateVolume", 0.25f);
+        }
+    }
+
+    public void PlayTitleScreenMusic()
+    {
+        musicAudio.clip = GameMusic[GreatExpectations];
+        musicAudio.Play();
+        nextSongTimer = musicAudio.clip.length + GetMusicDelayRandom();
+    }
+
+    public void ModerateVolume()
+    {
+        moderateVolume = true;
+    }
+
+    public void FadeMusicBackIn()
+    {
+        FadeWindBackIn();
+        musicAudio.DOFade(0.4f * MusicVolume, 0.5f);
+        Invoke("ModerateVolume", 0.5f);
+    }
+
+    public void TurnMusicOff()
+    {
+        musicAudio.Stop();
+    }
+
+    public void FadeWindBackIn()
+    {
+        windAmbienceAudio.DOFade(0.1f * AmbientVolume, 0.5f);
+    }
+
+    public void OnPause()
+    {
+        if (musicAudio.isPlaying)
+        {
+            musicAudio.Pause();
+        }
+        if (windAmbienceAudio.isPlaying)
+        {
+            windAmbienceAudio.Pause();
+        }
+    }
+
+    public void OnResume()
+    {
+        if (musicAudio.clip)
+        {
+            if (musicAudio.clip.length != musicAudio.time)
+            {
+                musicAudio.Play();
+            }
+        }
+        windAmbienceAudio.Play();
+    }
+
+    public static void UIClickSound()
+    {
+        GameObject spawnAudio = new GameObject("TemporarySoundObject");
+        AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
+        DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
+        spawnAudioDestroy.SetLifetime(UIClick.length);
+        spawnAudioComp.clip = UIClick;
+        spawnAudioComp.volume = 0.825f * EffectsVolume;
+        spawnAudioComp.Play();
     }
 }

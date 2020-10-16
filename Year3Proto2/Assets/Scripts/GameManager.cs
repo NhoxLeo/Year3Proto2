@@ -131,22 +131,12 @@ public class GameManager : MonoBehaviour
     private static GameObject PuffEffect;
     [HideInInspector]
     public PlayerResources playerResources;
-    [HideInInspector]
-    public bool tutorialDone = false;
     private static Dictionary<string, AudioClip> audioClips;
-    private float batchMaxAge = 3.0f;
     private bool gameover = false;
     [HideInInspector]
     public bool victory = false;
     [HideInInspector]
     public bool freePlay = false;
-    private float gameoverTimer = 5.0f;
-    private float tutorialAMessageTimer = 5.0f;
-    private float tutorialBMessageTimer = 3.0f;
-    private float tutorialDelay = 2.0f;
-    private bool musicBackOn = false;
-    private bool switchingScene = false;
-    private float musicDelay = 3.0f;
     private static int repairCount = 0;
     private MessageBox messageBox;
     private BuildPanel buildPanel;
@@ -154,9 +144,6 @@ public class GameManager : MonoBehaviour
     public bool repairMessage = false;
     [HideInInspector]
     public bool repairAll = false;
-    private float volumeFull;
-    private float panelRefreshTimer = 0.0f;
-    private float panelRefreshCooldown = 0.5f;
     [HideInInspector]
     public bool gameAlreadyWon = false;
     public int objectivesCompleted = 0;
@@ -167,13 +154,13 @@ public class GameManager : MonoBehaviour
     public int waveAtObjectiveStart = 0;
     public bool cheatAlwaysMaxed = false;
     public static bool ShowEnemyHealthbars = true;
-
-    private AudioSource music;
-    private AudioSource ambience;
-    private float musicVolume;
-    private float ambienceVolume;
+    private int loadingFrameCounter = 0;
     private static GameObject ExplosionOne = null;
     private static GameObject ExplosionTwo = null;
+
+    private const float ResourceVelocityUpdateDelay = 0.25f;
+    private float resourceVelocityUpdateTimer = 0f;
+    private Vector3 resourceVelocity = new Vector3();
 
     public static GameManager GetInstance()
     {
@@ -229,6 +216,11 @@ public class GameManager : MonoBehaviour
         spawnAudioComp.Play();
     }
 
+    public static float GetClipLength(string _clipName)
+    {
+        return audioClips[_clipName].length;
+    }
+
     public static void IncrementRepairCount()
     {
         repairCount++;
@@ -267,7 +259,7 @@ public class GameManager : MonoBehaviour
 
 
     // wood metal food
-    public Vector3 GetResourceVelocity()
+    public Vector3 CalculateResourceVelocity()
     {
         Vector3 resourceVelocity = Vector3.zero;
 
@@ -324,13 +316,14 @@ public class GameManager : MonoBehaviour
         }
         if (repairsWereDone)
         {
+            InfoManager.RecordNewAction();
             if (repairAll)
             {
-                if (tutorialDone) { messageBox.ShowMessage("All repairs done!", 1f); }
+                messageBox.ShowMessage("All repairs done!", 1f);
             }
             else if (repairsWereFailed)
             {
-                if (tutorialDone) { messageBox.ShowMessage("Couldn't repair everything...", 2f); }
+                messageBox.ShowMessage("Couldn't repair everything...", 2f);
             }
             HUDManager.GetInstance().ShowResourceDelta(total, true);
         }
@@ -338,11 +331,11 @@ public class GameManager : MonoBehaviour
         {
             if (repairsWereFailed)
             {
-                if (tutorialDone) { messageBox.ShowMessage("Couldn't repair anything...", 2f); }
+                messageBox.ShowMessage("Couldn't repair anything...", 2f);
             }
             else
             {
-                if (tutorialDone) { messageBox.ShowMessage("There was nothing to repair...", 2f); }
+                messageBox.ShowMessage("There was nothing to repair...", 2f);
             }
         }
         
@@ -371,29 +364,48 @@ public class GameManager : MonoBehaviour
             { "Thud", Resources.Load("Audio/SFX/sfxShockwave") as AudioClip },
         };
         objectives = SuperManager.GetInstance().GetCurrentWinConditions();
-        music = GetComponents<AudioSource>()[0];
-        ambience = GetComponents<AudioSource>()[1];
-        musicVolume = music.volume;
-        ambienceVolume = ambience.volume;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        SuperManager superMan = SuperManager.GetInstance();
         playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
         messageBox = FindObjectOfType<MessageBox>();
         buildPanel = FindObjectOfType<BuildPanel>();
-        volumeFull = GetComponents<AudioSource>()[0].volume;
+    }
+
+    private void LateUpdate()
+    {
+        if (loadingFrameCounter < 20)
+        {
+            loadingFrameCounter++;
+            if (loadingFrameCounter == 20)
+            {
+                SuperManager.GetInstance().OnMatchStart();
+                SceneSwitcher switcher = FindObjectOfType<SceneSwitcher>();
+                if (switcher.GetLoadingScreenIsActive())
+                {
+                    switcher.EndLoad();
+                }
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         CheckControls();
+
+        resourceVelocityUpdateTimer -= Time.deltaTime;
+        if (resourceVelocityUpdateTimer <= 0f)
+        {
+            resourceVelocityUpdateTimer = ResourceVelocityUpdateDelay;
+            resourceVelocity = CalculateResourceVelocity();
+        }
+        
         // get resourceDelta
-        ResourceBundle resourcesThisFrame = new ResourceBundle(GetResourceVelocity() * Time.deltaTime);
+        ResourceBundle resourcesThisFrame = new ResourceBundle(resourceVelocity * Time.deltaTime);
         foodSinceObjective += Mathf.Clamp(resourcesThisFrame.food, 0f, resourcesThisFrame.food);
         lumberSinceObjective += Mathf.Clamp(resourcesThisFrame.wood, 0f, resourcesThisFrame.wood);
         metalSinceObjective += Mathf.Clamp(resourcesThisFrame.metal, 0f, resourcesThisFrame.metal);
@@ -418,93 +430,10 @@ public class GameManager : MonoBehaviour
             playerResources.CheatSetMaxed();
         }
 
-
-        if (!tutorialDone)
-        {
-            tutorialDelay -= Time.deltaTime;
-            if (tutorialDelay <= 0f)
-            {
-                if (tutorialAMessageTimer == 5f)
-                {
-                    //messageBox.ShowMessage("Your goal is to collect 3000 of each resource...", 4.5f);
-                }
-                tutorialAMessageTimer -= Time.deltaTime;
-                if (tutorialAMessageTimer <= 0f)
-                {
-                    if (tutorialBMessageTimer == 3f)
-                    {
-                        //messageBox.ShowMessage("...good luck, have fun!", 3f);
-                    }
-                    tutorialBMessageTimer -= Time.deltaTime;
-                    if (tutorialBMessageTimer <= 0f)
-                    {
-                        tutorialDone = true;
-                    }
-                }
-            }
-        }
-
         if (repairCount > 5 && !repairMessage && !repairAll)
         {
             messageBox.ShowMessage("You can press R to mass repair", 3f);
             if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
-        }
-
-        panelRefreshTimer -= Time.deltaTime;
-        if (panelRefreshTimer <= 0f)
-        {
-            panelRefreshTimer = panelRefreshCooldown;
-            // do refresh
-            for (int i = 1; i <= 12; i++)
-            {
-                BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
-
-                switch (buildingI)
-                {
-                    case BuildPanel.Buildings.Ballista:
-                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Ballista))
-                        {
-                            continue;
-                        }
-                        break;
-                    case BuildPanel.Buildings.Catapult:
-                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Catapult))
-                        {
-                            continue;
-                        }
-                        break;
-                    case BuildPanel.Buildings.Barracks:
-                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.Barracks))
-                        {
-                            continue;
-                        }
-                        break;
-                    case BuildPanel.Buildings.FreezeTower:
-                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTower))
-                        {
-                            continue;
-                        }
-                        break;
-                    case BuildPanel.Buildings.ShockwaveTower:
-                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.ShockwaveTower))
-                        {
-                            continue;
-                        }
-                        break;
-                    case BuildPanel.Buildings.LightningTower:
-                        if (!SuperManager.GetInstance().GetResearchComplete(SuperManager.LightningTower))
-                        {
-                            continue;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
-                bool playerCanAfford = playerResources.CanAfford(cost);
-                Color colour = playerCanAfford ? Color.white : buildPanel.cannotAfford;
-                buildPanel.SetButtonColour(buildingI, colour);
-            }
         }
 
         if (!gameover)
@@ -514,26 +443,29 @@ public class GameManager : MonoBehaviour
                 gameover = true;
                 victory = false;
                 messageBox.ShowMessage("You Lost!", 3f);
-                music.DOFade(0f, 0.5f);
-                CreateAudioEffect("lose", Vector3.zero, SoundType.Music, 1f, false);
+                SuperManager.GetInstance().PlayGameoverMusic(victory);
+                FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
             }
             else
             {
                 if (CheckNextWinConditionIsMet())
                 {
                     objectivesCompleted++;
-                    int currentWinCondition = objectives[objectivesCompleted];
-                    if (currentWinCondition == SuperManager.Survive ||
-                        currentWinCondition == SuperManager.SurviveII ||
-                        currentWinCondition == SuperManager.SurviveIII)
+                    if (objectivesCompleted < objectives.Count)
                     {
-                        waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
+                        int currentWinCondition = objectives[objectivesCompleted];
+                        if (currentWinCondition == SuperManager.Survive ||
+                            currentWinCondition == SuperManager.SurviveII ||
+                            currentWinCondition == SuperManager.SurviveIII)
+                        {
+                            waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
+                        }
+                        FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
+                        EnemyManager.GetInstance().OnObjectiveComplete();
+                        foodSinceObjective = 0;
+                        lumberSinceObjective = 0;
+                        metalSinceObjective = 0;
                     }
-                    FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
-                    EnemyManager.GetInstance().OnObjectiveComplete();
-                    foodSinceObjective = 0;
-                    lumberSinceObjective = 0;
-                    metalSinceObjective = 0;
                 }
                 bool gameAlreadyWon = false;
                 SuperManager.MatchSaveData match = SuperManager.GetInstance().GetSavedMatch();
@@ -548,51 +480,13 @@ public class GameManager : MonoBehaviour
                 {
                     gameover = true;
                     victory = true;
+                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
                     SuperManager.GetInstance().OnLevelComplete();
                     messageBox.ShowMessage("You Win!", 5f);
-                    music.DOFade(0f, 0.5f);
-                    CreateAudioEffect("win", Vector3.zero, SoundType.Music, 1f, false);
+                    SuperManager.GetInstance().PlayGameoverMusic(victory);
                 }
             }            
         }
-
-        if (gameover)
-        {
-            if (victory)
-            {
-                if (musicDelay == 3f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
-                }
-                musicDelay -= Time.deltaTime;
-                if (musicDelay < 0f && !musicBackOn)
-                {
-                    music.DOFade(musicVolume * SuperManager.MusicVolume, 2f);
-                    musicBackOn = true;
-                }
-            }
-            else
-            {
-                if (gameoverTimer == 5f)
-                {
-                    FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
-                }
-                gameoverTimer -= Time.deltaTime;
-                if (gameoverTimer < 0f && !switchingScene)
-                {
-                    //FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
-                    switchingScene = true;
-                }
-            }
-        }
-        
-
-        if (!gameover || musicDelay < -2f)
-        {
-            music.volume = musicVolume * SuperManager.MusicVolume;
-            ambience.volume = ambienceVolume * SuperManager.AmbientVolume;
-        }
-
     }
 
     public void SaveMatch()
@@ -612,6 +506,22 @@ public class GameManager : MonoBehaviour
         return objectives.Count == objectivesCompleted;
     }
 
+    public void UpdateBuildPanel()
+    {
+        for (int i = 1; i <= 12; i++)
+        {
+            BuildPanel.Buildings buildingI = (BuildPanel.Buildings)i;
+            if (!SuperManager.GetInstance().GetResearchComplete(buildingI))
+            {
+                continue;
+            }
+            ResourceBundle cost = StructureManager.GetInstance().structureCosts[StructureNames.BuildPanelToString(buildingI)];
+            bool playerCanAfford = playerResources.CanAfford(cost);
+            Color colour = playerCanAfford ? Color.white : buildPanel.cannotAfford;
+            buildPanel.SetButtonColour(buildingI, colour);
+        }
+    }
+
     public void UpdateObjectiveText()
     {
         if (objectivesCompleted < objectives.Count)
@@ -629,7 +539,7 @@ public class GameManager : MonoBehaviour
                     objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/50)";
                     break;
                 case SuperManager.SlaughterIII:
-                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/100)";
+                    objCompletion = " (" + EnemyManager.GetInstance().GetEnemiesKilled().ToString() + "/75)";
                     break;
                 case SuperManager.Survive:
                     objCompletion = " (" + EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart).ToString() + "/5)";
@@ -675,7 +585,7 @@ public class GameManager : MonoBehaviour
         }
         else if (objectivesCompleted == objectives.Count)
         {
-            HUDManager.GetInstance().SetVictoryInfo("(" + objectivesCompleted.ToString() + "/" + objectivesCompleted.ToString() + ") All Objectives Completed!", "Well done, you are now in freeplay.");
+            HUDManager.GetInstance().SetVictoryInfo("Objectives Completed!", "Well done, you are now in freeplay.");
         }
     }
 
@@ -706,30 +616,32 @@ public class GameManager : MonoBehaviour
         {
             VillagerManager.GetInstance().TrainVillager();
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (!EnemyManager.GetInstance().GetSpawnOnKeyMode())
         {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 3 : 7);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 1 : 8);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 2 : 9);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 4 : 10);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 5 : 11);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                buildPanel.SelectBuilding(HUDManager.GetInstance().GetCurrentTab() == 0 ? 6 : 12);
+            }
         }
     }
 
@@ -751,7 +663,7 @@ public class GameManager : MonoBehaviour
                 case SuperManager.SlaughterII:
                     return EnemyManager.GetInstance().GetEnemiesKilled() >= 50;
                 case SuperManager.SlaughterIII:
-                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 100;
+                    return EnemyManager.GetInstance().GetEnemiesKilled() >= 75;
                 case SuperManager.Survive:
                     return EnemyManager.GetInstance().GetWavesSurvivedSinceWave(waveAtObjectiveStart) >= 5;
                 case SuperManager.SurviveII:
@@ -801,5 +713,15 @@ public class GameManager : MonoBehaviour
             PuffEffect = Resources.Load("EnemyPuffEffect") as GameObject;
         }
         return PuffEffect;
+    }
+
+    public Vector3 GetResourceVelocity()
+    {
+        return resourceVelocity;
+    }
+
+    public void AttemptPause()
+    {
+        FindObjectOfType<PauseMenu>().Paused(true);
     }
 }
