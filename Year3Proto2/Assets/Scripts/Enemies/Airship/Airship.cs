@@ -200,7 +200,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform Array, Transform
     * @Return: void
     ***************************************/
-    public void Embark(Transform[] _transforms, Transform _pointerParent)
+    public void Embark(Transform[] _transforms)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
@@ -210,9 +210,14 @@ public class Airship : MonoBehaviour
             initialLocation = transform.position;
 
             // Instantiate and Setup pointer.
-            this.alert = Instantiate(alertPrefab, _pointerParent);
+            Canvas canvas = FindObjectOfType<Canvas>();
+            this.alert = Instantiate(alertPrefab, canvas.transform);
             Alert alert = this.alert.GetComponent<Alert>();
-            if (alert) alert.SetTarget(transform);
+            if (alert)
+            {
+                alert.SetTarget(transform);
+                alert.transform.SetAsFirstSibling();
+            }
 
             transforms = _transforms;
             airshipState = AirshipState.Move;
