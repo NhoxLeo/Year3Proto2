@@ -27,7 +27,7 @@ public class TutorialManager : MonoBehaviour
         End
     }
 
-    public TutorialState tutorialState;
+    public TutorialState State { get; private set; }
     private int tutorialLength;
 
     [System.Serializable]
@@ -73,12 +73,12 @@ public class TutorialManager : MonoBehaviour
         tutorialLength = Enum.GetNames(typeof(TutorialState)).Length;
 
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
-        GetInstance().AdvanceTutorialTo(showTutorial ? TutorialState.Start : TutorialState.End, true);
+        AdvanceTutorialTo(showTutorial ? TutorialState.Start : TutorialState.End, true);
     }
 
     private void Start()
     {
-        SetMessage((int)tutorialState);
+        SetMessage((int)State);
     }
 
     public static TutorialManager GetInstance()
@@ -108,7 +108,7 @@ public class TutorialManager : MonoBehaviour
             focus.position = focusTransform.position;
         }
 
-        switch (tutorialState)
+        switch (State)
         {
             case TutorialState.Start:
                 FocusOn(null);
@@ -227,41 +227,41 @@ public class TutorialManager : MonoBehaviour
 
     public void AdvanceTutorialTo(TutorialState _state, bool _allowBacktrack)
     {
-        if (_allowBacktrack || _state >= tutorialState)
+        if (_allowBacktrack || _state >= State)
         {
-            tutorialState = _state;
-            SetMessage((int)tutorialState);
+            State = _state;
+            SetMessage((int)State);
         }
     }
 
     public void GoToNext()
     {
-        if ((int)tutorialState < tutorialLength - 1)
+        if ((int)State < tutorialLength - 1)
         {
-            tutorialState++;
-            SetMessage((int)tutorialState);
+            State++;
+            SetMessage((int)State);
         }
     }
 
     public void GoToPrevious()
     {
-        if (tutorialState > 0)
+        if (State > 0)
         {
-            tutorialState--;
-            SetMessage((int)tutorialState);
+            State--;
+            SetMessage((int)State);
         }
     }
 
     public void StartTutorial()
     {
-        tutorialState = TutorialState.Start;
-        SetMessage((int)tutorialState);
+        State = TutorialState.Start;
+        SetMessage((int)State);
     }
 
     public void EndTutorial()
     {
-        tutorialState = TutorialState.End;
-        SetMessage((int)tutorialState);
+        State = TutorialState.End;
+        SetMessage((int)State);
     }
 
     private void SetMessage(int _message)
@@ -282,12 +282,17 @@ public class TutorialManager : MonoBehaviour
             messagePanel.SetVisibility(false);
         }
 
-        if (tutorialState == TutorialState.End - 1)
+        if (State == TutorialState.Start)
+        {
+            nextButtonText.text = "Begin";
+        }
+
+        if (State == TutorialState.End - 1)
         {
             nextButtonText.text = "End";
         }
 
-        if (tutorialState == TutorialState.End)
+        if (State == TutorialState.End)
         {
             messagePanel.SetVisibility(false);
             SuperManager.GetInstance().SetShowTutorial(false);

@@ -74,6 +74,12 @@ public class VillagerManager : MonoBehaviour
         priorityOrder[_wood] = Priority.Wood;
         priorityOrder[_metal] = Priority.Metal;
         RedistributeVillagers();
+
+        TutorialManager tutMan = TutorialManager.GetInstance();
+        if (tutMan.State == TutorialManager.TutorialState.VillagerPriority)
+        {
+            tutMan.GoToNext();
+        }
     }
 
     public void IncreasePriority(Priority _priority)
@@ -617,7 +623,7 @@ public class VillagerManager : MonoBehaviour
                         structure.DeallocateAll();
                     }
                     availableVillagers -= result;
-                    villagersManAllocated = villagers;
+                    villagersManAllocated += result;
                 }
                 return result;
             }
@@ -634,6 +640,12 @@ public class VillagerManager : MonoBehaviour
             HUDManager.GetInstance().ShowResourceDelta(cost, true);
             AddNewVillager();
             RedistributeVillagers();
+
+            TutorialManager tutMan = TutorialManager.GetInstance();
+            if (tutMan.State == TutorialManager.TutorialState.TrainVillager)
+            {
+                tutMan.GoToNext();
+            }
         }
     }
 

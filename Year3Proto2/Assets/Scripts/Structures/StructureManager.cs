@@ -29,6 +29,8 @@ public enum StructManState
     Moving
 };
 
+#region Structs
+
 [Serializable]
 public struct ResourceBundle
 {
@@ -101,6 +103,8 @@ public struct ProceduralGenerationParameters
     public bool useSeed;
     public int seed;
 }
+
+#endregion
 
 public static class StructureMaterials
 {
@@ -270,11 +274,9 @@ public class StructureManager : MonoBehaviour
     private StructManState structureState = StructManState.Selecting;
     private bool firstStructurePlaced = false;
     private bool structureFromStore = false;
-    private Structure hoveroverStructure = null;
     private Structure selectedStructure = null;
     private Structure structure = null;
     private TileBehaviour structureOldTile = null;
-    private float hoveroverTime = 0f;
     private int nextStructureID = 0;
     protected static GameObject TileHighlight = null;
     public Transform selectedTileHighlight = null;
@@ -399,6 +401,111 @@ public class StructureManager : MonoBehaviour
     [HideInInspector]
     public float recursiveFGrowthChance;
 
+    private void Awake()
+    {
+        instance = this;
+        PathSaveData = GetSaveDataPath();
+        PathPGP = GetPGPPath();
+        DefineDictionaries();
+        panel = FindObjectOfType<BuildPanel>();
+        buildingInfo = FindObjectOfType<BuildingInfo>();
+        canvas = FindObjectOfType<Canvas>();
+        messageBox = FindObjectOfType<MessageBox>();
+        envInfo = FindObjectOfType<EnvInfo>();
+        HealthBarPrefab = Resources.Load("BuildingHP") as GameObject;
+        villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
+        buildingPuff = Resources.Load("BuildEffect") as GameObject;
+        GlobalData.longhausDead = false;
+    }
+
+    private void Start()
+    {
+        SuperManager superMan = SuperManager.GetInstance();
+#if UNITY_EDITOR
+        // before we start, lets get rid of any NON PG clones
+        ProceduralGenerationWindow.ClearClones(true);
+#endif
+        LoadPGPFromFile();
+        if (Application.isPlaying)
+        {
+            if (!superMan.LoadCurrentMatch())
+            {
+                // if there is no current match
+                editorGenerated = false;
+                foreach (Structure structure in FindObjectsOfType<Structure>())
+                {
+                    if (structure.name.Contains("PG"))
+                    {
+                        editorGenerated = true;
+                        break;
+                    }
+                }
+                if (!editorGenerated)
+                {
+                    ProceduralGeneration(useSeed, seed);
+                }
+
+            }
+            // add the Longhaus to the player structure dictionary
+            playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
+            resourceHighlights = new List<Transform>()
+            {
+                Instantiate(GetTileHighlight()).transform,
+                Instantiate(GetTileHighlight()).transform,
+                Instantiate(GetTileHighlight()).transform,
+                Instantiate(GetTileHighlight()).transform
+            };
+            for (int i = 0; i < resourceHighlights.Count; i++)
+            {
+                resourceHighlights[i].gameObject.SetActive(false);
+            }
+            for (int i = 1; i <= 12; i++)
+            {
+                Vector3 cost = CalculateStructureCost(StructureNames.BuildPanelToString((BuildPanel.Buildings)i));
+                panel.GetToolInfo().cost[i] = new Vector2(cost.y, cost.z);
+            }
+        }
+
+    }
+
+    private void Update()
+    {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        //envInfo.SetVisibility(false);
+        if (!isOverUI)
+        {
+            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
+            switch (structureState)
+            {
+                case StructManState.Selecting:
+                    UpdateSelecting(mouseRay);
+                    break;
+                case StructManState.Selected:
+                    UpdateSelected(mouseRay);
+                    break;
+                case StructManState.Moving:
+                    UpdateMoving(mouseRay);
+                    break;
+            }
+        }
+        if (isOverUI)
+        {
+            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
+            HideBuilding();
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            mpAtRightDown = Input.mousePosition;
+        }
+    }
+
     public static StructureManager GetInstance()
     {
         return instance;
@@ -436,23 +543,6 @@ public class StructureManager : MonoBehaviour
             { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Structures/Environment/Hills")          as GameObject,  new ResourceBundle(0,       0,       0)) },
             { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Structures/Environment/Plains")         as GameObject,  new ResourceBundle(0,       0,       0)) },
         };
-    }
-
-    private void Awake()
-    {
-        instance = this;
-        PathSaveData = GetSaveDataPath();
-        PathPGP = GetPGPPath();
-        DefineDictionaries();
-        panel = FindObjectOfType<BuildPanel>();
-        buildingInfo = FindObjectOfType<BuildingInfo>();
-        canvas = FindObjectOfType<Canvas>();
-        messageBox = FindObjectOfType<MessageBox>();
-        envInfo = FindObjectOfType<EnvInfo>();
-        HealthBarPrefab = Resources.Load("BuildingHP") as GameObject;
-        villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
-        buildingPuff = Resources.Load("BuildEffect") as GameObject;
-        GlobalData.longhausDead = false;
     }
 
     private void OnApplicationQuit()
@@ -508,56 +598,6 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        SuperManager superMan = SuperManager.GetInstance();
-#if UNITY_EDITOR
-        // before we start, lets get rid of any NON PG clones
-        ProceduralGenerationWindow.ClearClones(true);
-#endif
-        LoadPGPFromFile();
-        if (Application.isPlaying)
-        {
-            if (!superMan.LoadCurrentMatch())
-            {
-                // if there is no current match
-                editorGenerated = false;
-                foreach (Structure structure in FindObjectsOfType<Structure>())
-                {
-                    if (structure.name.Contains("PG"))
-                    {
-                        editorGenerated = true;
-                        break;
-                    }
-                }
-                if (!editorGenerated)
-                {
-                    ProceduralGeneration(useSeed, seed);
-                }
-
-            }
-            // add the Longhaus to the player structure dictionary
-            playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
-            resourceHighlights = new List<Transform>()
-            {
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform
-            };
-            for (int i = 0; i < resourceHighlights.Count; i++)
-            {
-                resourceHighlights[i].gameObject.SetActive(false);
-            }
-            for (int i = 1; i <= 12; i++)
-            {
-                Vector3 cost = CalculateStructureCost(StructureNames.BuildPanelToString((BuildPanel.Buildings)i));
-                panel.GetToolInfo().cost[i] = new Vector2(cost.y, cost.z);
-            }
-        }
-
-    }
-
     private void LoadPGPFromFile()
     {
         // try to access file
@@ -593,44 +633,6 @@ public class StructureManager : MonoBehaviour
             useSeed = PGP.useSeed;
             bf.Serialize(file, PGP);
             file.Close();
-        }
-    }
-
-    private void Update()
-    {
-        if (!Application.isPlaying)
-        {
-            return;
-        }
-
-        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //envInfo.SetVisibility(false);
-        if (!isOverUI)
-        {
-            if (!tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(true); }
-            switch (structureState)
-            {
-                case StructManState.Selecting:
-                    UpdateSelecting(mouseRay);
-                    break;
-                case StructManState.Selected:
-                    UpdateSelected(mouseRay);
-                    break;
-                case StructManState.Moving:
-                    UpdateMoving(mouseRay);
-                    break;
-            }
-        }
-        if (isOverUI)
-        {
-            if (tileHighlight.gameObject.activeSelf) { tileHighlight.gameObject.SetActive(false); }
-            HideBuilding();
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            mpAtRightDown = Input.mousePosition;
         }
     }
 
@@ -1045,6 +1047,7 @@ public class StructureManager : MonoBehaviour
             }
             CalculateAverageTileBonus();
             TurnOffPreview();
+            NotifyTutorial(structure.GetStructureName(), true);
         }
     }
 
@@ -1193,6 +1196,7 @@ public class StructureManager : MonoBehaviour
             if (selectedTileHighlight.gameObject.activeSelf) { selectedTileHighlight.gameObject.SetActive(false); }
             selectedStructure = null;
             buildingInfo.showPanel = false;
+            NotifyTutorial(structure.GetStructureName(), false);
             return true;
         }
         return false;
@@ -1746,6 +1750,74 @@ public class StructureManager : MonoBehaviour
         if (count != 0)
         {
             InfoManager.RecordTileBonusAverage(runningTotal / (float)count);
+        }
+    }
+
+    private void NotifyTutorial(string _structureName, bool _structureWasPlaced)
+    {
+        TutorialManager tutMan = TutorialManager.GetInstance();
+        switch (_structureName)
+        {
+            case StructureNames.FoodResource:
+                if (_structureWasPlaced)
+                {
+                    if (tutMan.State == TutorialManager.TutorialState.PlaceFarm)
+                    {
+                        tutMan.GoToNext();
+                    }
+                }
+                else
+                {
+                    if (tutMan.State == TutorialManager.TutorialState.SelectFarm)
+                    {
+                        tutMan.GoToNext();
+                    }
+                }
+                break;
+            case StructureNames.LumberResource:
+                if (_structureWasPlaced)
+                {
+                    if (tutMan.State == TutorialManager.TutorialState.PlaceLumberMill)
+                    {
+                        tutMan.GoToNext();
+                    }
+                }
+                else
+                {
+                    if (tutMan.State == TutorialManager.TutorialState.SelectLumberMill)
+                    {
+                        tutMan.GoToNext();
+                    }
+                }
+                break;
+            case StructureNames.MetalResource:
+                if (_structureWasPlaced)
+                {
+                    if (tutMan.State == TutorialManager.TutorialState.PlaceMine)
+                    {
+                        tutMan.GoToNext();
+                    }
+                }
+                else
+                {
+                    if (tutMan.State == TutorialManager.TutorialState.SelectMine)
+                    {
+                        tutMan.GoToNext();
+                    }
+                }
+                break;
+            case StructureNames.Ballista:
+            case StructureNames.Barracks:
+                if (_structureWasPlaced)
+                {
+                    if (tutMan.State == TutorialManager.TutorialState.SelectDefence)
+                    {
+                        tutMan.GoToNext();
+                    }
+                }
+                break;
+            default:
+                break;
         }
     }
 }
