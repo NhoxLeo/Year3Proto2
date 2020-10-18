@@ -142,6 +142,7 @@ MonoBehaviour:
   - {fileID: 2888226669773072460, guid: f939eeae86f74e94d9c572a0ce8f80d1, type: 3}
   weatherEvents:
   - {fileID: 5718429722591600440, guid: a25c70cc0774e44469e2afc5a9be26c1, type: 3}
+  - {fileID: 5718429722591600440, guid: a25c70cc0774e44469e2afc5a9be26c1, type: 3}
   - {fileID: 2284372076818493596, guid: 6d26f79ed5f628f4d9f476e6575708d1, type: 3}
   ambientEvent: {fileID: 0}
   weatherEvent: {fileID: 0}
@@ -157,18 +158,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9288ec39486596045b2c73980b8e8fbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weightageScalar: 0.01
-  tokenIncrement: 0.05
-  tokensScalar: 0.0001
-  time: 90
-  tokens: 0
-  timeVariance: {x: 45, y: 90}
   spawning: 0
-  maxEnemies: 300
-  minEnemies: 3
   airshipPrefab: {fileID: 3056834929655612559, guid: 8eb991c5726be7640a78e32e6e27599e,
     type: 3}
-  pointerParent: {fileID: 0}
   enemiesPerAirship: 9
   radiusOffset: 0
   distance: 0

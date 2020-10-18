@@ -727,7 +727,11 @@ public class GameManager : MonoBehaviour
         {
             pauseMenu.Paused(true);
             pauseMenu.PausedActive(false);
-            pauseMenu.GetCurrentAnimator().showElement = false;
+            UIAnimator animator = pauseMenu.GetCurrentAnimator();
+            if(animator)
+            {
+                animator.showElement = false;
+            }
         }
     }
 }

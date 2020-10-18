@@ -82,10 +82,6 @@ public class EnvironmentSystem : MonoBehaviour
                     InvokeWeather();
                 }
             }
-            else
-            {
-                InvokeWeather();
-            }
 
             if (ambientEvent)
             {
@@ -95,9 +91,14 @@ public class EnvironmentSystem : MonoBehaviour
                     InvokeAmbient();
                 }
             }
-            else
+        }
+        else
+        {
+            if(!SuperManager.GetInstance().GetSavedMatch().match)
             {
                 InvokeWeather();
+                InvokeAmbient();
+                loaded = true;
             }
         }
     }
@@ -118,24 +119,15 @@ public class EnvironmentSystem : MonoBehaviour
 
     public void LoadData(SuperManager.MatchSaveData _data)
     {
-        if(_data.environmentAmbientData.Equals(default(EnvironmentAmbientData)))
-        {
-            InvokeAmbient();
-        } 
-        else
+        if(!_data.environmentAmbientData.Equals(default(EnvironmentAmbientData)))
         {
             ambientEvent = Instantiate(ambientEvents[_data.environmentAmbientData.index], transform)
                 .LoadData(_data.environmentAmbientData);
         }
 
-
-        if (_data.environmentWeatherData.Equals(default(EnvironmentWeatherData)))
-        {
-            InvokeWeather();
-        }
-        else
-        {
-            Instantiate(weatherEvents[_data.environmentWeatherData.index], transform)
+        if (!_data.environmentWeatherData.Equals(default(EnvironmentWeatherData)))
+        { 
+            weatherEvent = Instantiate(weatherEvents[_data.environmentWeatherData.index], transform)
                 .LoadData(_data.environmentWeatherData);
         }
 
