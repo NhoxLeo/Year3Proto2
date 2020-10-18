@@ -43,8 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a85c1e699c31ca44391e69d8564e6189, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 120
-  weatherPrefab: {fileID: 0}
+  time: 10
+  weatherPrefab: {fileID: 935777108695165476, guid: 34500c2efef6cb04eb9c1c13a582f6d8,
+    type: 3}
   environmentWeatherData:
     index: 0
     weather: 1

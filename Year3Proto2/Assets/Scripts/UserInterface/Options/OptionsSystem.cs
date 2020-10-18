@@ -61,11 +61,11 @@ public class OptionsSystem : MonoBehaviour
         OptionSwitcherData shadowQualityData = new OptionSwitcherData(2, new string[] { "Low", "Medium", "High", "Ultra" });
         shadowQualityData.CallBack(() => light.shadowResolution = (LightShadowResolution)Enum.ToObject(typeof(LightShadowResolution), shadowQualityData.value));
 
-        OptionSwitcherData antiAliasingData = new OptionSwitcherData(0, new string[] { "NONE", "FAA", "TAA", "SMAA" });
+        OptionSwitcherData antiAliasingData = new OptionSwitcherData(2, new string[] { "NONE", "FAA", "SMAA" });
         antiAliasingData.CallBack(() => {
-            HDAdditionalCameraData.AntialiasingMode value = (HDAdditionalCameraData.AntialiasingMode)antiAliasingData.value;
-            Camera.main.GetComponent<HDAdditionalCameraData>().antialiasing = value;
-            Debug.Log(value);
+            int value = antiAliasingData.value;
+            HDAdditionalCameraData.AntialiasingMode antialiasingMode = (HDAdditionalCameraData.AntialiasingMode) ((value == 2) ? 3 : value);
+            Camera.main.GetComponent<HDAdditionalCameraData>().antialiasing = antialiasingMode;
         });
 
         OptionSwitcherData ambienOcclusionData = new OptionSwitcherData(2, Enum.GetNames(typeof(ScalableSettingLevelParameter.Level)));

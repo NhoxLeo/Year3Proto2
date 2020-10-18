@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -74,15 +75,6 @@ public class EnvironmentSystem : MonoBehaviour
     {
         if (loaded)
         {
-            if(currentParticles) 
-            {
-                if (currentParticles.isStopped)
-                {
-                    currentParticles = weatherEvent.GetWeather();
-                    currentParticles.Play();
-                }
-            }
-
             if (weatherEvent)
             {
                 if (weatherEvent.IsCompleted())
@@ -132,8 +124,7 @@ public class EnvironmentSystem : MonoBehaviour
         weatherEvent = Instantiate(weatherEvents[weatherIndex], transform)
             .Invoke(false) as EnvironmentWeatherEvent;
 
-        currentParticles = weatherEvent.GetWeather();
-        currentParticles.Play();
+        StartCoroutine(ClearParticleEvent());
     }
 
     public void LoadData(SuperManager.MatchSaveData _data)
@@ -162,5 +153,26 @@ public class EnvironmentSystem : MonoBehaviour
     public static EnvironmentSystem GetInstance()
     {
         return instance;
+    }
+
+    IEnumerator ClearParticleEvent()
+    {
+        ParticleSystem particleSystem = currentParticles;
+
+        currentParticles = weatherEvent.GetWeather();
+
+        if(currentParticles)
+        {
+            currentParticles.Play();
+        }
+
+        yield return new WaitForSeconds(3);
+
+        if(particleSystem)
+        {
+            Destroy(particleSystem.gameObject);
+        }
+
+        yield return null;
     }
 }
