@@ -57,6 +57,7 @@ public class EnvironmentSystem : MonoBehaviour
     private int weatherIndex;
     private int ambientIndex;
     private bool loaded = false;
+    private ParticleSystem currentParticles;
 
     private void Awake()
     {
@@ -73,12 +74,27 @@ public class EnvironmentSystem : MonoBehaviour
     {
         if (loaded)
         {
+            if(currentParticles) 
+            {
+                if (currentParticles.isStopped)
+                {
+                    currentParticles = weatherEvent.GetWeather();
+                    currentParticles.Play();
+                }
+            }
+
             if (weatherEvent)
             {
                 if (weatherEvent.IsCompleted())
                 {
                     Destroy(weatherEvent.gameObject);
                     weatherIndex = Random.Range(0, weatherEvents.Length);
+
+                    if(currentParticles)
+                    {
+                        currentParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+                    }
+
                     InvokeWeather();
                 }
             }
@@ -115,6 +131,9 @@ public class EnvironmentSystem : MonoBehaviour
         weatherIndex = Random.Range(0, weatherEvents.Length);
         weatherEvent = Instantiate(weatherEvents[weatherIndex], transform)
             .Invoke(false) as EnvironmentWeatherEvent;
+
+        currentParticles = weatherEvent.GetWeather();
+        currentParticles.Play();
     }
 
     public void LoadData(SuperManager.MatchSaveData _data)
