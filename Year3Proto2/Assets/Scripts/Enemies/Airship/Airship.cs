@@ -79,7 +79,7 @@ public class Airship : MonoBehaviour
 
                     if (heading.sqrMagnitude < distanceOffset * 4.0f)
                     {
-                        Destroy(gameObject);
+                        Destroy();
                     }
 
                     break;
@@ -128,7 +128,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Float
     * @Return: IEnumerator
     ***************************************/
-    
+
     private IEnumerator Deploy(float seconds)
     {
         if (SuperManager.waveHornStart)
@@ -147,7 +147,7 @@ public class Airship : MonoBehaviour
             EnemyManager.GetInstance().RecordNewEnemy(enemy);
 
             Invader invader = instantiatedTransform.GetComponent<Invader>();
-            if(invader)
+            if (invader)
             {
                 int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Invader);
                 invader.Initialize(level, Random.Range(0.8f, 1.5f));
@@ -224,7 +224,7 @@ public class Airship : MonoBehaviour
             return;
         }
 
-        Destroy(gameObject);
+        Destroy();
     }
 
     /**************************************
@@ -364,5 +364,14 @@ public class Airship : MonoBehaviour
         airshipState = _data.state;
         initialLocation = _data.initialLocation;
         spawnWave = _data.spawnWave;
+    }
+
+    private void Destroy()
+    {
+        GameObject puff = Instantiate(GameManager.GetPuffEffect());
+        puff.transform.position = transform.position;
+        puff.transform.localScale *= 2f;
+
+        Destroy(gameObject);
     }
 }

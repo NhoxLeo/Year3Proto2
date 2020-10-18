@@ -62,7 +62,7 @@ public abstract class DefenseStructure : Structure
         enemies.RemoveAll(enemy => !enemy);
         if (alert)
         {
-            if (allocatedVillagers >= 1)
+            if (allocatedVillagers >= 1 || enemies.Count <= 0)
             {
                 Destroy(alert.gameObject);
             }
@@ -97,7 +97,10 @@ public abstract class DefenseStructure : Structure
     public override void OnSelected()
     {
         base.OnSelected();
-        if (alert) Destroy(alert.gameObject);
+        if (alert)
+        {
+            Destroy(alert.gameObject);
+        }
     }
 
     public override void ShowRangeDisplay(bool _active)

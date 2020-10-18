@@ -68,6 +68,7 @@ public abstract class Enemy : MonoBehaviour
 
     // Slow
     private int slowCount = 0;
+    private bool slowed = false;
     private bool slowSuper = false;
 
     public abstract void Action();
@@ -86,6 +87,8 @@ public abstract class Enemy : MonoBehaviour
             startTile = null,
             validStructureTypes = structureTypes
         };
+
+        slowSuper = SuperManager.GetInstance().GetResearchComplete(SuperManager.FrostTowerSuper);
     }
 
     public void Stun(float _damage)
@@ -93,12 +96,12 @@ public abstract class Enemy : MonoBehaviour
         animator.enabled = false;
         stunned = true;
         stunTime = stunDuration;
-
         Damage(_damage);
     }
 
     public void Slow(bool _newSlow, float _slowAmount)
-    {
+    { 
+        slowed = _newSlow;
         if (_newSlow)
         {
             if (slowCount == 0)
@@ -365,7 +368,7 @@ public abstract class Enemy : MonoBehaviour
 
     public bool Damage(float _damage)
     {
-        health -= _damage;
+        health -= (slowSuper && slowed ? 1.6f : 1.0f) *_damage;
         if (healthbar)
         {
             if (health < GetTrueMaxHealth())

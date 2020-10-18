@@ -69,6 +69,11 @@ public class PauseMenu : MonoBehaviour
         currentAnimator = _animator;
     }
 
+    public UIAnimator GetCurrentAnimator()
+    {
+        return currentAnimator;
+    }
+
     public void TogglePause()
     {
         LevelEndscreen levelEndscreen = FindObjectOfType<LevelEndscreen>();

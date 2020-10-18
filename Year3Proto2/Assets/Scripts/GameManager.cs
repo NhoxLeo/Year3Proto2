@@ -722,6 +722,12 @@ public class GameManager : MonoBehaviour
 
     public void AttemptPause()
     {
-        FindObjectOfType<PauseMenu>().Paused(true);
+        PauseMenu pauseMenu = FindObjectOfType<PauseMenu>();
+        if(pauseMenu)
+        {
+            pauseMenu.Paused(true);
+            pauseMenu.PausedActive(false);
+            pauseMenu.GetCurrentAnimator().showElement = false;
+        }
     }
 }

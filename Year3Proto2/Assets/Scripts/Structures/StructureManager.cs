@@ -172,7 +172,7 @@ public static class StructureMaterials
                 paths.Add("Materials/Structures/Defense/mLightningCrystal");
                 paths.Add("Materials/Structures/Defense/mLightningTower" + (_key.Item2 ? "_Snow" : ""));
                 break;
-            case StructureNames.FreezeTower:
+            case StructureNames.FrostTower:
                 paths.Add("Materials/Structures/Defense/mFreezeTower" + (_key.Item2 ? "_Snow" : ""));
                 paths.Add("Materials/Structures/Defense/mFreezeGround" + (_key.Item2 ? "_Snow" : ""));
                 paths.Add("Materials/Structures/Defense/mFreezeFaceTwo");
@@ -211,7 +211,7 @@ public static class StructureNames
     public const string Barracks = "Barracks";
     public const string Ballista = "Ballista";
     public const string Catapult = "Catapult";
-    public const string FreezeTower = "Frost Tower";
+    public const string FrostTower = "Frost Tower";
     public const string ShockwaveTower = "Shockwave Tower";
     public const string LightningTower = "Lightning Tower";
 
@@ -239,8 +239,8 @@ public static class StructureNames
                 return Catapult;
             case BuildPanel.Buildings.Barracks:
                 return Barracks;
-            case BuildPanel.Buildings.FreezeTower:
-                return FreezeTower;
+            case BuildPanel.Buildings.FrostTower:
+                return FrostTower;
             case BuildPanel.Buildings.ShockwaveTower:
                 return ShockwaveTower;
             case BuildPanel.Buildings.LightningTower:
@@ -306,7 +306,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
         { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
         { BuildPanel.Buildings.Barracks, "Spawns soldiers, who automatically attack enemies." },
-        { BuildPanel.Buildings.FreezeTower, "Sprays enemies with ice to slow them down." },
+        { BuildPanel.Buildings.FrostTower, "Sprays enemies with ice to slow them down." },
         { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
         { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies." },
         { BuildPanel.Buildings.Farm, "Collects Food from nearby field tiles. Bonus if constructed on field." },
@@ -322,7 +322,7 @@ public class StructureManager : MonoBehaviour
         { StructureNames.Ballista, BuildPanel.Buildings.Ballista },
         { StructureNames.Catapult, BuildPanel.Buildings.Catapult },
         { StructureNames.Barracks, BuildPanel.Buildings.Barracks },
-        { StructureNames.FreezeTower, BuildPanel.Buildings.FreezeTower },
+        { StructureNames.FrostTower, BuildPanel.Buildings.FrostTower },
         { StructureNames.ShockwaveTower, BuildPanel.Buildings.ShockwaveTower },
         { StructureNames.LightningTower, BuildPanel.Buildings.LightningTower },
         { StructureNames.FoodResource, BuildPanel.Buildings.Farm },
@@ -337,7 +337,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Ballista, 0 },
         { BuildPanel.Buildings.Catapult, 0 },
         { BuildPanel.Buildings.Barracks, 0 },
-        { BuildPanel.Buildings.FreezeTower, 0 },
+        { BuildPanel.Buildings.FrostTower, 0 },
         { BuildPanel.Buildings.ShockwaveTower, 0 },
         { BuildPanel.Buildings.LightningTower, 0 },
         { BuildPanel.Buildings.Farm, 0 },
@@ -353,7 +353,7 @@ public class StructureManager : MonoBehaviour
         { StructureNames.Barracks,          new ResourceBundle(0,       150,     25) },
         { StructureNames.Ballista,          new ResourceBundle(0,       200,     125) },
         { StructureNames.Catapult,          new ResourceBundle(0,       50,      250) },
-        { StructureNames.FreezeTower,       new ResourceBundle(0,       100,     150) },
+        { StructureNames.FrostTower,       new ResourceBundle(0,       100,     150) },
         { StructureNames.ShockwaveTower,    new ResourceBundle(0,       100,     200) },
         { StructureNames.LightningTower,    new ResourceBundle(0,       50,      200) },
 
@@ -526,7 +526,7 @@ public class StructureManager : MonoBehaviour
             { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(0,       150,     25)) },
             { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(0,       200,     125)) },
             { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower")     as GameObject,  new ResourceBundle(0,       50,      250)) },
-            { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(0,       100,     150)) },
+            { StructureNames.FrostTower,        new StructureDefinition(Resources.Load("Structures/Defense/Frost Tower")        as GameObject,  new ResourceBundle(0,       100,     150)) },
             { StructureNames.ShockwaveTower,    new StructureDefinition(Resources.Load("Structures/Defense/Shockwave Tower")    as GameObject,  new ResourceBundle(0,       100,     200)) },
             { StructureNames.LightningTower,    new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")    as GameObject,  new ResourceBundle(0,       50,      200)) },
 
@@ -1021,7 +1021,7 @@ public class StructureManager : MonoBehaviour
                 firstStructurePlaced = true;
             }
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (structure.IsStructure(StructureNames.FreezeTower))
+            if (structure.IsStructure(StructureNames.FrostTower))
             {
                 villWidget = false;
             }
@@ -1516,7 +1516,7 @@ public class StructureManager : MonoBehaviour
             playerStructureDict.Add(_saveData.ID, newStructure);
             StructureType structType = newStructure.GetStructureType();
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (newStructure.IsStructure(StructureNames.FreezeTower))
+            if (newStructure.IsStructure(StructureNames.FrostTower))
             {
                 villWidget = false;
             }
