@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 //
 // Bachelor of Software Engineering
@@ -75,6 +76,7 @@ public static class EnemyMaterials
     }
 }
 
+[Serializable]
 public struct WaveData
 {
     public int enemiesRemaining;
@@ -124,46 +126,72 @@ public struct EnemyDefinition
     }
 }
 
+public struct SpawnerData
+{
+    public float tokenIncrement;
+    public float tokensScalar;
+    public Vector2 timeVariance;
+
+    public SpawnerData(float _tokenIncrement, float _tokensScalar, Vector2 _timeVariance)
+    {
+        tokenIncrement = _tokenIncrement;
+        tokensScalar = _tokensScalar;
+        timeVariance = _timeVariance;
+    }
+}
+
 public class EnemyManager : MonoBehaviour
 {
     private static EnemyManager instance = null;
 
-    [Header("Properties")]
-    [SerializeField] private float weightageScalar = 0.01f; // 1% boost to tokens for each structure/research element
-    [SerializeField] private float tokenIncrement = 0.05f; // 20 seconds to earn an Invader, 80 to earn a heavy, at base.
-    [SerializeField] private float tokensScalar = 0.0001f; // 0.05f every 500 seconds
-    [SerializeField] private float time = 90.0f;
-    [SerializeField] private float tokens = 0.0f;
-    [SerializeField] private Vector2 timeVariance = new Vector2(45, 90);
-    [SerializeField] private bool spawning = false;
+    private static float FinalMultiplier;
+    private static float ObjectiveMultiplier;
+    private static float APMMultiplier;
+    private static float StructuresPlacedMultiplier;
+    private static float ResearchMultiplier;
+    private static float ResourceGainMultiplier;
+    private static float ResourceMultiplier;
+    private static float ResourcesSpentMultiplier;
+    private static float TimeSkippedMultiplier;
+    private static float TileBonusMultiplier;
+    private static float VillagersLostMultiplier;
+    private static float StructuresLostMultiplier;
 
-    [Header("Enemies")]
-    [SerializeField] private int maxEnemies = 300;
-    [SerializeField] private int minEnemies = 3;
+    private float weightageScalar; 
+    private float tokenIncrement; 
+    private float tokensScalar; 
+    private Vector2 timeVariance;
+    private float time = 90f;
+    private float tokens = 0.0f;
+    public bool spawning = false;
+
+    private const int MaxTokens = 300;
+    private const int MinTokens = 12;
+
+    private const float NextWaveDelay = 10f;
+    private float nextWaveTimer = 0f;
 
     [Header("Airships")]
     [SerializeField] private Transform airshipPrefab;
-    [SerializeField] private Transform pointerParent;
     [SerializeField] private int enemiesPerAirship = 9;
     [SerializeField] private float radiusOffset;
     [SerializeField] private float distance = 0.0f;
 
     private MessageBox messageBox;
-
     private readonly List<Enemy> enemies = new List<Enemy>();
     private int enemiesKilled = 0;
     private int wave = 0;
     private bool spawnOnKeyPress = false;
+    private int researchElementsComplete = 0;
 
-    public static Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
+    public static readonly Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
-        { EnemyNames.Invader, new EnemyDefinition(1.0f, 1) },
-        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 4) },
-        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 4) },
-        { EnemyNames.Petard, new EnemyDefinition(0.2f, 6) },
-        { EnemyNames.BatteringRam, new EnemyDefinition(0.1f, 8) },
+        { EnemyNames.Invader, new EnemyDefinition(1.0f, 4) },
+        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 12) },
+        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 12) },
+        { EnemyNames.Petard, new EnemyDefinition(0.2f, 16) },
+        { EnemyNames.BatteringRam, new EnemyDefinition(0.15f, 24) },
     };
-
     private readonly List<LevelSetting> levelSettings = new List<LevelSetting>
     {
         // Level 1 --------------------------------
@@ -279,9 +307,8 @@ public class EnemyManager : MonoBehaviour
         {2, new List<LevelSetting>() },
         {3, new List<LevelSetting>() }
     };
-
     private readonly Dictionary<string, (bool, int)> currentSettings = new Dictionary<string, (bool, int)>();
-    private readonly Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
+    private Dictionary<int, WaveData> waveEnemyCounts = new Dictionary<int, WaveData>();
 
     public static EnemyManager GetInstance()
     {
@@ -334,6 +361,9 @@ public class EnemyManager : MonoBehaviour
         }
 
         UpdateSpawnSettings();
+
+        researchElementsComplete = SuperManager.GetInstance().GetResearch().ToList().RemoveAll(entry => entry.Value);
+        ResearchMultiplier = 0.99f + (0.001f * researchElementsComplete);
     }
 
     /**************************************
@@ -344,6 +374,7 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     private void Start()
     {
+
         messageBox = FindObjectOfType<MessageBox>();
         TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
         for (int i = 0; i < tiles.Length; i++)
@@ -356,6 +387,7 @@ public class EnemyManager : MonoBehaviour
         }
         distance += radiusOffset;
 
+        ApplySettings(SuperManager.GetInstance().GetCurrentLevelSpawnerData());
     }
 
     /**************************************
@@ -390,10 +422,10 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     public void SpawnAirship(Transform[] transforms)
     {
-        float random = Random.Range(-180.0f, 180f);
+        float random = UnityEngine.Random.Range(-180.0f, 180f);
         Vector3 location = new Vector3(Mathf.Sin(random) * distance, 0.0f, Mathf.Cos(random) * distance);
 
-        Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity, transform);
+        Transform instantiatedAirship = Instantiate(airshipPrefab, location, Quaternion.identity);
 
         Airship airship = instantiatedAirship.GetComponent<Airship>();
         if (airship)
@@ -401,7 +433,7 @@ public class EnemyManager : MonoBehaviour
             airship.spawnWave = wave;
             if (airship.GetTarget())
             {
-                airship.Embark(transforms, pointerParent);
+                airship.Embark(transforms);
             }
         }
     }
@@ -424,7 +456,7 @@ public class EnemyManager : MonoBehaviour
         }
         foreach (Transform transform in flyingInvaders)
         {
-            float random = Random.Range(-180.0f, 180f);
+            float random = UnityEngine.Random.Range(-180.0f, 180f);
             Vector3 location = new Vector3(Mathf.Sin(random) * distance * 0.75f, 0.0f, Mathf.Cos(random) * distance * 0.75f);
 
             FlyingInvader enemy = Instantiate(transform.gameObject, location, Quaternion.identity).GetComponent<FlyingInvader>();
@@ -480,7 +512,8 @@ public class EnemyManager : MonoBehaviour
                 }
             }
         }
-        if (spawning)
+        CalculateFinalMultiplier();
+        if (spawning && !SuperManager.GetInstance().GetShowTutorial())
         {
             time -= Time.deltaTime;
             if (time <= 0f)
@@ -489,12 +522,12 @@ public class EnemyManager : MonoBehaviour
 
                 UpdateSpawnSettings();
 
-                time = Random.Range(timeVariance.x, timeVariance.y);
+                time = UnityEngine.Random.Range(timeVariance.x, timeVariance.y);
 
-                float enemiesToSpawn = tokens * (1f + GetWeightage());
-                enemiesToSpawn = Mathf.Clamp(enemiesToSpawn, minEnemies, maxEnemies);
+                float tokensThisWave = tokens * FinalMultiplier;
+                tokensThisWave = Mathf.Clamp(tokensThisWave, MinTokens, MaxTokens);
 
-                Transform[] dedicatedEnemies = DedicateEnemies((int)enemiesToSpawn);
+                Transform[] dedicatedEnemies = DedicateEnemies((int)tokensThisWave);
                 waveEnemyCounts.Add(wave, new WaveData(dedicatedEnemies.Length));
 
                 // first spawn flying invaders
@@ -514,10 +547,12 @@ public class EnemyManager : MonoBehaviour
 
                 tokens = 0.0f;
             }
-
-            tokenIncrement += tokensScalar * Time.deltaTime;
+            float lowImpactMultiplier = (3 + FinalMultiplier) * 0.25f;
+            tokenIncrement += tokensScalar * lowImpactMultiplier * Time.deltaTime;
             tokens += tokenIncrement * Time.deltaTime;
         }
+        nextWaveTimer -= Time.deltaTime;
+
     }
 
     /**************************************
@@ -602,7 +637,7 @@ public class EnemyManager : MonoBehaviour
             }
 
             // define spawnNumber
-            float spawnNumber = Random.Range(0f, randomMax);
+            float spawnNumber = UnityEngine.Random.Range(0f, randomMax);
             bool enemySpawned = false;
             foreach (EnemyDefinition enemy in enemiesThisWave)
             {
@@ -634,27 +669,6 @@ public class EnemyManager : MonoBehaviour
         return enemies.ToArray();
     }
 
-    /**************************************
-    * Name of the Function: GetWeightage
-    * @Author: Tjeu Vreeburg
-    * @Parameter: n/a
-    * @Return: float
-    ***************************************/
-    private float GetWeightage()
-    {
-        SuperManager superMan = SuperManager.GetInstance();
-        if (superMan)
-        {
-            // Data is serialized correctly
-            if (superMan.CheckData())
-            {
-                int researchCompleted = superMan.GetResearch().ToList().RemoveAll(entry => !entry.Value);
-                int currentStructures = StructureManager.GetInstance().GetPlayerStructureCount();
-                return (researchCompleted + currentStructures) * weightageScalar;
-            }
-        }
-        return 0;
-    }
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
@@ -679,6 +693,7 @@ public class EnemyManager : MonoBehaviour
         timeVariance = _data.timeVariance;
         tokens = _data.tokens;
         enemiesKilled = _data.enemiesKilled;
+        waveEnemyCounts = _data.waveEnemyCounts;
         UpdateSpawnSettings();
     }
 
@@ -701,6 +716,7 @@ public class EnemyManager : MonoBehaviour
         _data.time = time;
         _data.timeVariance = new SuperManager.SaveVector3(timeVariance);
         _data.tokens = tokens;
+        _data.waveEnemyCounts = waveEnemyCounts;
     }
 
     public int GetEnemiesAlive()
@@ -889,7 +905,18 @@ public class EnemyManager : MonoBehaviour
 
     public int GetWavesSurvivedSinceWave(int _wave)
     {
-        return wave + (GetCurrentWaveSurvived() ? 1 : 0) - _wave;
+        int total = 0;
+        for (int i = _wave; i < waveEnemyCounts.Count; i++)
+        {
+            if (waveEnemyCounts.ContainsKey(i))
+            {
+                if (waveEnemyCounts[i].WaveSurvived())
+                {
+                    total++;
+                }
+            }
+        }
+        return total;
     }
 
     public int GetEnemyCurrentLevel(string _enemyName)
@@ -907,6 +934,7 @@ public class EnemyManager : MonoBehaviour
         // get the time that would have passed
         float timeSkipped = time;
         time = 0f;
+        InfoManager.RecordTimeSkipped(timeSkipped);
 
         // get the increase of the increment that would have occured
         float incrementIncrease = tokensScalar * timeSkipped;
@@ -917,7 +945,7 @@ public class EnemyManager : MonoBehaviour
         // increase the increment
         tokenIncrement += incrementIncrease;
 
-        spawning = true;
+        nextWaveTimer = NextWaveDelay;
     }
 
     public bool GetCurrentWaveSurvived()
@@ -927,7 +955,16 @@ public class EnemyManager : MonoBehaviour
 
     public bool CanSpawnNextWave()
     {
-        return GetCurrentWaveSurvived() || GetWaveCurrent() == 0;
+        if (!SuperManager.GetInstance().GetShowTutorial() && spawning)
+        {
+            return nextWaveTimer <= 0f;
+        }
+        return false;
+    }
+
+    public int GetNextWaveWaitTime()
+    {
+        return Mathf.CeilToInt(nextWaveTimer);
     }
 
     public int GetEnemiesLeftCurrentWave()
@@ -956,7 +993,7 @@ public class EnemyManager : MonoBehaviour
             Invader invader = newEnemyObject.GetComponent<Invader>();
             if (invader)
             {
-                invader.Initialize(GetEnemyCurrentLevel(_enemy), Random.Range(0.8f, 1.5f));
+                invader.Initialize(GetEnemyCurrentLevel(_enemy), UnityEngine.Random.Range(0.8f, 1.5f));
             }
 
             HeavyInvader heavyInvader = newEnemyObject.GetComponent<HeavyInvader>();
@@ -998,5 +1035,94 @@ public class EnemyManager : MonoBehaviour
     public bool GetSpawnOnKeyMode()
     {
         return spawnOnKeyPress;
+    }
+
+    public void ApplySettings(SpawnerData _settings)
+    {
+        timeVariance = _settings.timeVariance;
+        tokenIncrement = _settings.tokenIncrement;
+        tokensScalar = _settings.tokensScalar;
+    }
+
+    public void CalculateFinalMultiplier()
+    {
+        GameManager gameMan = GameManager.GetInstance();
+
+        // Objective Completion
+        ObjectiveMultiplier = 0.8f + (0.2f * gameMan.objectivesCompleted);
+
+        // Actions Per Minute
+        float APM = InfoManager.CurrentAPM;
+        APMMultiplier = 1f + (0.001f * (APM == -1f ? 0f : APM));
+
+        // Structures Placed
+        StructuresPlacedMultiplier = 1f + (0.005f * StructureManager.GetInstance().GetPlayerStructureCount());
+
+        // Resources Gained
+        Vector3 resourceVelocity = gameMan.GetResourceVelocity();
+        float resourceGainTotal = resourceVelocity.x + resourceVelocity.y + resourceVelocity.z;
+        ResourceGainMultiplier = 0.9f + (0.005f * resourceGainTotal);
+
+        // Total Resources
+        Vector3 resourceTotals = gameMan.playerResources.GetResources();
+        float trueResourceTotal = resourceTotals.x + resourceTotals.y + resourceTotals.z;
+        ResourceMultiplier = 0.9f + (0.00005f * trueResourceTotal);
+
+        // Resources Spent Recently
+        ResourcesSpentMultiplier = 1f + (0.0001f * InfoManager.CalculatedRecentSpent);
+
+        // Time Skipped
+        TimeSkippedMultiplier = 1f + (0.005f * InfoManager.TimeSkipped);
+
+        // Tile Bonus Average
+        TileBonusMultiplier = 0.92f + (0.02f * InfoManager.TileBonusAverage);
+
+        // Villagers Lost Recently
+        VillagersLostMultiplier = Mathf.Clamp(1f - (0.05f * InfoManager.VillagersLostGradual), 0.7f, 1f);
+
+        // Structures Lost Recently
+        StructuresLostMultiplier = Mathf.Clamp(1f - (0.05f * InfoManager.StructuresLostGradual), 0.7f, 1f);
+
+        FinalMultiplier = ResearchMultiplier;
+        FinalMultiplier *= ObjectiveMultiplier;
+        FinalMultiplier *= APMMultiplier;
+        FinalMultiplier *= StructuresPlacedMultiplier;
+        FinalMultiplier *= ResourceGainMultiplier;
+        FinalMultiplier *= ResourceMultiplier;
+        FinalMultiplier *= ResourcesSpentMultiplier;
+        FinalMultiplier *= TimeSkippedMultiplier;
+        FinalMultiplier *= TileBonusMultiplier;
+        FinalMultiplier *= VillagersLostMultiplier;
+        FinalMultiplier *= StructuresLostMultiplier;
+    }
+
+    public string GetEnemySpawnInfo()
+    {
+        List<string> strings = new List<string>
+        {
+            "Enemy Spawner Stats:",
+            "\nTokens: " + ((int)(tokens * 100f) * 0.01f).ToString(),
+            "\nToken Gain Rate: " + ((int)(tokenIncrement * 100f) * 0.01f).ToString(),
+            "\nTime until next wave: " + ((int)(time * 100f) * 0.01f).ToString(),
+            "\n\nMultipliers:",
+            "\nObjective Multiplier: " + ((int)(ObjectiveMultiplier * 100f) * 0.01f).ToString(),
+            "\nAPM Multiplier: " + ((int)(APMMultiplier * 100f) * 0.01f).ToString(),
+            "\nStructures Placed Multiplier: " + ((int)(StructuresPlacedMultiplier * 100f) * 0.01f).ToString(),
+            "\nResearch Multiplier: " + ((int)(ResearchMultiplier * 100f) * 0.01f).ToString(),
+            "\nResource Gain Multiplier: " + ((int)(ResourceGainMultiplier * 100f) * 0.01f).ToString(),
+            "\nResource Multiplier: " + ((int)(ResourceMultiplier * 100f) * 0.01f).ToString(),
+            "\nResources Spent Multiplier: " + ((int)(ResourcesSpentMultiplier * 100f) * 0.01f).ToString(),
+            "\nTime Skipped Multiplier: " + ((int)(TimeSkippedMultiplier * 100f) * 0.01f).ToString(),
+            "\nTile Bonus Multiplier: " + ((int)(TileBonusMultiplier * 100f) * 0.01f).ToString(),
+            "\nVillagers Lost Multiplier: " + ((int)(VillagersLostMultiplier * 100f) * 0.01f).ToString(),
+            "\nStructures Lost Multiplier: " + ((int)(StructuresLostMultiplier * 100f) * 0.01f).ToString(),
+            "\n\nFinal Multiplier: " + ((int)(FinalMultiplier * 100f) * 0.01f).ToString(),
+        };
+        string returnString = "";
+        foreach (string element in strings)
+        {
+            returnString += element;
+        }
+        return returnString;
     }
 }

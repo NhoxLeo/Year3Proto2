@@ -60,6 +60,13 @@ public abstract class DefenseStructure : Structure
     {
         base.Update();
         enemies.RemoveAll(enemy => !enemy);
+        if (alert)
+        {
+            if (allocatedVillagers >= 1 || enemies.Count <= 0)
+            {
+                Destroy(alert.gameObject);
+            }
+        }
     }
 
     protected override void OnDestroy()
@@ -76,14 +83,13 @@ public abstract class DefenseStructure : Structure
         Canvas canvas = FindObjectOfType<Canvas>();
         if (canvas)
         {
-            Transform transform = Instantiate(alertPrefab, canvas.transform);
-            Alert alert = transform.GetComponent<Alert>();
-            if (alert)
+            Alert newAlert = Instantiate(alertPrefab, canvas.transform).GetComponent<Alert>();
+            if (newAlert)
             {
-                Vector3 position = this.transform.localPosition;
+                Vector3 position = transform.localPosition;
                 position.y = 1.0f;
-                alert.SetTarget(position);
-                this.alert = alert;
+                newAlert.SetTarget(position);
+                alert = newAlert;
             }
         }
     }
@@ -91,7 +97,10 @@ public abstract class DefenseStructure : Structure
     public override void OnSelected()
     {
         base.OnSelected();
-        if (alert) Destroy(alert.gameObject);
+        if (alert)
+        {
+            Destroy(alert.gameObject);
+        }
     }
 
     public override void ShowRangeDisplay(bool _active)
