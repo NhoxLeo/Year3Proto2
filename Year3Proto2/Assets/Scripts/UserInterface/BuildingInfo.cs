@@ -151,7 +151,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = barracks.CanBeRepaired();
                 break;
 
-            case StructureNames.FreezeTower:
+            case StructureNames.FrostTower:
                 FreezeTower freeze = targetBuilding.GetComponent<FreezeTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Slow effect";
@@ -463,6 +463,8 @@ public class BuildingInfo : MonoBehaviour
                 ResourceBundle cost = StructureManager.GetInstance().QuoteUpgradeCostFor(defenseStructure);
                 if (GameManager.GetInstance().playerResources.AttemptPurchase(cost))
                 {
+                    InfoManager.RecordNewAction();
+                    InfoManager.RecordResourcesSpent(cost);
                     HUDManager.GetInstance().ShowResourceDelta(cost, true);
                     defenseStructure.LevelUp();
                     SetInfo();
@@ -483,6 +485,7 @@ public class BuildingInfo : MonoBehaviour
 
     public void DestroyBuilding()
     {
+        InfoManager.RecordNewAction();
         FindObjectOfType<StructureManager>().DestroySelectedBuilding();
     }
 

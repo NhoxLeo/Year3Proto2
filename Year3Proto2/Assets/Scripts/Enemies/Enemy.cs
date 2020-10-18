@@ -29,14 +29,11 @@ public abstract class Enemy : MonoBehaviour
     protected float baseDamage = 2.0f;
     protected float health;
     protected float damage;
-    [HideInInspector]
-    public bool nextReturnFalse = false;
     protected bool delayedDeathCalled = false;
     protected float delayedDeathTimer = 0f;
     protected float avoidForce = 0.05f;
     protected Structure target = null;
-    [HideInInspector]
-    public Soldier defenseTarget = null;
+    protected Soldier defenseTarget = null;
     protected EnemyState enemyState = EnemyState.Idle;
     protected List<GameObject> enemiesInArea = new List<GameObject>();
     protected bool needToMoveAway;
@@ -46,8 +43,7 @@ public abstract class Enemy : MonoBehaviour
     protected float currentAttackSpeed = 0.0f;
     protected Animator animator;
     protected bool action = false;
-    [HideInInspector]
-    public string enemyName;
+    protected string enemyName;
     private int spawnWave;
     protected Rigidbody body;
     protected List<StructureType> structureTypes;
@@ -63,6 +59,7 @@ public abstract class Enemy : MonoBehaviour
     protected bool showHealthBar = false;
     private bool onKillCalled = false;
     protected float walkHeight = 0f;
+    private List<Soldier> attackingSoldiers = new List<Soldier>(); 
 
     // Stun
     protected bool stunned = false;
@@ -71,6 +68,7 @@ public abstract class Enemy : MonoBehaviour
 
     // Slow
     private int slowCount = 0;
+    private bool slowed = false;
     private bool slowSuper = false;
 
     public abstract void Action();
@@ -89,6 +87,8 @@ public abstract class Enemy : MonoBehaviour
             startTile = null,
             validStructureTypes = structureTypes
         };
+
+        slowSuper = SuperManager.GetInstance().GetResearchComplete(SuperManager.FrostTowerSuper);
     }
 
     public void Stun(float _damage)
@@ -96,12 +96,12 @@ public abstract class Enemy : MonoBehaviour
         animator.enabled = false;
         stunned = true;
         stunTime = stunDuration;
-
         Damage(_damage);
     }
 
     public void Slow(bool _newSlow, float _slowAmount)
-    {
+    { 
+        slowed = _newSlow;
         if (_newSlow)
         {
             if (slowCount == 0)
@@ -368,7 +368,7 @@ public abstract class Enemy : MonoBehaviour
 
     public bool Damage(float _damage)
     {
-        health -= _damage;
+        health -= (slowSuper && slowed ? 1.6f : 1.0f) *_damage;
         if (healthbar)
         {
             if (health < GetTrueMaxHealth())
@@ -465,5 +465,40 @@ public abstract class Enemy : MonoBehaviour
         {
             Destroy(healthbar.gameObject);
         }
+    }
+
+    public Soldier GetDefenseTarget()
+    {
+        return defenseTarget;
+    }
+
+    public string GetName()
+    {
+        return enemyName;
+    }
+
+    public void OnSoldierChase(Soldier _soldier)
+    {
+        // if the enemy doesn't already know about the soldier
+        if (!attackingSoldiers.Contains(_soldier))
+        {
+            // add the soldier to the list
+            attackingSoldiers.Add(_soldier);
+        }
+    }
+
+    public void OnSoldierStopChasing(Soldier _soldier)
+    {
+        // if the enemy knows about the soldier
+        if (attackingSoldiers.Contains(_soldier))
+        {
+            // forget about the soldier.
+            attackingSoldiers.Remove(_soldier);
+        }
+    }
+
+    public int GetOtherSoldiersAttacking(Soldier _soldier)
+    {
+        return attackingSoldiers.Count - (attackingSoldiers.Contains(_soldier) ? 1 : 0);
     }
 }

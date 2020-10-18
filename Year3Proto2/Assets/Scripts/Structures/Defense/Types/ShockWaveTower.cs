@@ -69,9 +69,9 @@ public class ShockWaveTower : DefenseStructure
                         Enemy enemy = transform.GetComponent<Enemy>();
                         if (enemy)
                         {
-                            if (enemy.enemyName != EnemyNames.BatteringRam)
+                            if (enemy.GetName() != EnemyNames.BatteringRam)
                             {
-                                if (enemy.enemyName == EnemyNames.Petard)
+                                if (enemy.GetName() == EnemyNames.Petard)
                                 {
                                     enemy.GetComponent<Petard>().SetOffBarrel();
                                 }

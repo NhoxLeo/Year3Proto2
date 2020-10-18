@@ -41,6 +41,8 @@ public class OptionSlider : OptionObject, OptionDataBase
         slider.value = data.value;
 
         data.GetCallback().Invoke();
+
+        deserialised = true;
     }
 
     public override OptionData GetData()

@@ -44,7 +44,8 @@ public class UIAnimator : MonoBehaviour
     {
         Pop,
         VerticalShake,
-        HorizontalShake
+        HorizontalShake,
+        RightShake
     }
 
     public EntranceAnimation entrance;
@@ -56,7 +57,7 @@ public class UIAnimator : MonoBehaviour
     private bool soundSet;
 
 
-    void Start()
+    void Awake()
     {
         //rTransform = GetComponent<RectTransform>();
         //width = rTransform.rect.width;
@@ -67,6 +68,10 @@ public class UIAnimator : MonoBehaviour
         canvas.interactable = interactable;
         canvas.blocksRaycasts = interactable;
 
+    }
+
+    private void Start()
+    {
         if (!showElement)
         {
             EntranceInitialize();
@@ -201,11 +206,31 @@ public class UIAnimator : MonoBehaviour
 
     public void Pulse()
     {
-        pulseSeq.Kill(true);
-        pulseSeq = DOTween.Sequence()
-            .Append(transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f));
+        switch (pulse)
+        {
+            case PulseAnimation.Pop:
+                pulseSeq.Kill(true);
+                pulseSeq = DOTween.Sequence()
+                    .Append(transform.DOPunchScale(new Vector3(0.1f, 0.1f, 0.0f), 0.15f, 1, 0.5f));
 
-        pulseSeq.Play();
+                pulseSeq.Play();
+                break;
+            case PulseAnimation.VerticalShake:
+                break;
+            case PulseAnimation.HorizontalShake:
+                break;
+            case PulseAnimation.RightShake:
+                pulseSeq.Kill(true);
+                pulseSeq = DOTween.Sequence()
+                    .Append(transform.DOPunchPosition(Vector3.right * 12.0f, 0.25f, 3, 1.0f));
+
+                pulseSeq.Play();
+                break;
+            default:
+                break;
+        }
+
+
     }
 
     private void OnDestroy()

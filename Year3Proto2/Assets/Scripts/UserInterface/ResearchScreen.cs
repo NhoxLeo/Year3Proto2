@@ -41,6 +41,7 @@ public class ResearchScreen : MonoBehaviour
 
     public List<SuperManager.ResearchElementDefinition> researchDefinitions;
     public Dictionary<int, bool> completedResearch;
+    private int loadingFrameCounter = 0;
 
     // Scrolling
     public bool dragging;
@@ -106,6 +107,22 @@ public class ResearchScreen : MonoBehaviour
                 localPos.x = 200.0f + squeeze;
             }
             cardPanel.localPosition = localPos;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (loadingFrameCounter < 20)
+        {
+            loadingFrameCounter++;
+            if (loadingFrameCounter == 20)
+            {
+                SceneSwitcher switcher = FindObjectOfType<SceneSwitcher>();
+                if (switcher.GetLoadingScreenIsActive())
+                {
+                    switcher.EndLoad();
+                }
+            }
         }
     }
 

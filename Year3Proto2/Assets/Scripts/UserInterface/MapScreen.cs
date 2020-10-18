@@ -59,6 +59,7 @@ public class MapScreen : MonoBehaviour
     private Transform levelGroup;
     private Transform levelPanel;
     private Transform modifierGroup;
+    private int loadingFrameCounter = 0;
 
     private void Start()
     {
@@ -98,6 +99,22 @@ public class MapScreen : MonoBehaviour
             }
         }
         SetSelectedLevel(SuperManager.GetInstance().GetSavedMatch().match ? SuperManager.GetInstance().GetSavedMatch().levelID : 0);
+    }
+
+    private void LateUpdate()
+    {
+        if (loadingFrameCounter < 20)
+        {
+            loadingFrameCounter++;
+            if (loadingFrameCounter == 20)
+            {
+                SceneSwitcher switcher = FindObjectOfType<SceneSwitcher>();
+                if (switcher.GetLoadingScreenIsActive())
+                {
+                    switcher.EndLoad();
+                }
+            }
+        }
     }
 
     private void RefreshLevelPanel()

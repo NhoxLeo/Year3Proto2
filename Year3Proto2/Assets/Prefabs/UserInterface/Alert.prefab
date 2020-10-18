@@ -92,3 +92,4 @@ MonoBehaviour:
   offScreenScale: 0.4
   xOffset: 200
   yOffset: 70
+  targetTransform: {fileID: 0}

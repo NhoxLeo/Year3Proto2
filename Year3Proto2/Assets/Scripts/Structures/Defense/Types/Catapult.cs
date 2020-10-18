@@ -39,15 +39,25 @@ public class Catapult : ProjectileDefenseStructure
         targetableEnemies.Add(EnemyNames.HeavyInvader);
         targetableEnemies.Add(EnemyNames.Petard);
         targetableEnemies.Add(EnemyNames.BatteringRam);
-        catapultMesh = transform.GetChild(2).GetChild(0).GetComponent<MeshRenderer>();
+        catapultMesh = transform.GetChild(2).GetComponent<MeshRenderer>();
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (target)
+        {
+            Vector3 difference = catapultMesh.transform.position - target.position;
+            difference.y = 0.0f;
+
+            Quaternion rotation = Quaternion.LookRotation(-difference);
+            catapultMesh.transform.rotation = Quaternion.Slerp(catapultMesh.transform.rotation, rotation * Quaternion.AngleAxis(90.0f, Vector3.up), Time.deltaTime * 2.5f);
+        }
     }
 
     public override void Launch(Transform _target)
     {
-        Vector3 position = transform.position;
-        position.y = 1.5f;
-
-        GameObject newBoulder = Instantiate(boulder, position, Quaternion.identity, transform);
+        GameObject newBoulder = Instantiate(boulder, projectileLocation.position, Quaternion.identity, transform);
         BoulderBehaviour boulderBehaviour = newBoulder.GetComponent<BoulderBehaviour>();
         boulderBehaviour.target = _target.position;
         boulderBehaviour.damage = damage;
@@ -76,7 +86,7 @@ public class Catapult : ProjectileDefenseStructure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        projectileRate = 0.2f + (allocatedVillagers * 0.1f);
+        projectileRate = 0.2f + (allocatedVillagers * 0.05f);
         if (allocatedVillagers != 0)
         {
             projectileDelay = 1f / projectileRate;
