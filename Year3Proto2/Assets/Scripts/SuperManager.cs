@@ -1485,7 +1485,7 @@ public class SuperManager : MonoBehaviour
         if (!focus)
         {
             GameManager gameMan = GameManager.GetInstance();
-            if (gameMan)
+            if (gameMan && !Application.isEditor)
             {
                 gameMan.AttemptPause();
             }
