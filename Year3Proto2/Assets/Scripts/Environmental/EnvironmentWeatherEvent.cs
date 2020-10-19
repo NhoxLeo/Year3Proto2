@@ -16,7 +16,7 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
 {
     [SerializeField] private Transform weatherPrefab;
     [SerializeField] private EnvironmentWeatherData environmentWeatherData;
-    private Transform weatherObject;
+    private ParticleSystem weatherObject;
 
     private void Update()
     {
@@ -29,7 +29,6 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
             completed = true;
         }
     }
-
 
     public EnvironmentWeatherData SaveData(int _index)
     {
@@ -56,7 +55,12 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
     {
         if(weatherPrefab != null)
         {
-            weatherObject = Instantiate(weatherPrefab, Vector3.zero, Quaternion.identity, transform.parent);
+            Transform weatherTransform = Instantiate(weatherPrefab, Vector3.zero, Quaternion.identity);
+            ParticleSystem weatherObject = weatherTransform.GetComponent<ParticleSystem>();
+            if(weatherObject)
+            {
+                this.weatherObject = weatherObject;
+            }
         }
         LightingManager.Instance().SetWeather((Weather)environmentWeatherData.weather);
         return this;
@@ -68,7 +72,7 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
      * @Parameter: n/a
      * @Return: Transform
      ***************************************/
-    public Transform GetWeather()
+    public ParticleSystem GetWeather()
     {
         return weatherObject;
     }

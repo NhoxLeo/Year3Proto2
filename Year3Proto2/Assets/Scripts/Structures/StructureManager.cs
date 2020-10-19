@@ -1332,8 +1332,6 @@ public class StructureManager : MonoBehaviour
             }
         }
 
-        //Debug.Log("Starting Area grew to: " + startingAreaRadius.ToString() + " units away from the Longhaus.");
-
 
         // REMAINING GENERATION
 
@@ -1689,7 +1687,6 @@ public class StructureManager : MonoBehaviour
                 }
             }
             hoverEnvironment.SetOpacity(opacity);
-            //Debug.Log("Opacity: " + opacity.ToString());
         }
         else
         {
@@ -1782,13 +1779,6 @@ public class StructureManager : MonoBehaviour
                         tutMan.GoToNext();
                     }
                 }
-                else
-                {
-                    if (tutMan.State == TutorialManager.TutorialState.SelectLumberMill)
-                    {
-                        tutMan.GoToNext();
-                    }
-                }
                 break;
             case StructureNames.MetalResource:
                 if (_structureWasPlaced)
@@ -1798,9 +1788,13 @@ public class StructureManager : MonoBehaviour
                         tutMan.GoToNext();
                     }
                 }
-                else
+                break;
+            case StructureNames.FoodStorage:
+            case StructureNames.LumberStorage:
+            case StructureNames.MetalStorage:
+                if (_structureWasPlaced)
                 {
-                    if (tutMan.State == TutorialManager.TutorialState.SelectMine)
+                    if (tutMan.State == TutorialManager.TutorialState.Storages)
                     {
                         tutMan.GoToNext();
                     }
@@ -1808,6 +1802,10 @@ public class StructureManager : MonoBehaviour
                 break;
             case StructureNames.Ballista:
             case StructureNames.Barracks:
+            case StructureNames.Catapult:
+            case StructureNames.LightningTower:
+            case StructureNames.ShockwaveTower:
+            case StructureNames.FrostTower:
                 if (_structureWasPlaced)
                 {
                     if (tutMan.State == TutorialManager.TutorialState.SelectDefence)

@@ -30,7 +30,7 @@ public class SceneSwitcher : MonoBehaviour
         loadingCanvas = loadingScreen.GetComponent<CanvasGroup>();
         curScene = SceneManager.GetActiveScene().name;
         GlobalData.curScene = curScene;
-        Debug.Log("Current scene: " + curScene);
+        //Debug.Log("Current scene: " + curScene);
         clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
     }
 
@@ -93,7 +93,7 @@ public class SceneSwitcher : MonoBehaviour
             else
             {
                 SceneManager.LoadScene(targetScene);
-                Debug.Log("Switched from " + curScene + " to " + targetScene);
+                //Debug.Log("Switched from " + curScene + " to " + targetScene);
             }
 
             isSwitching = false;
@@ -202,7 +202,7 @@ public class SceneSwitcher : MonoBehaviour
     {
         StartFade();
         targetScene = "Quit";
-        Debug.Log("Silly human. You know you can't quit the game from the editor!");
+        //Debug.Log("Silly human. You know you can't quit the game from the editor!");
     }
 
     public bool GetLoadingScreenIsActive()

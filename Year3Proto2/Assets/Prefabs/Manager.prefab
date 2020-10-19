@@ -157,18 +157,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9288ec39486596045b2c73980b8e8fbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weightageScalar: 0.01
-  tokenIncrement: 0.05
-  tokensScalar: 0.0001
-  time: 90
-  tokens: 0
-  timeVariance: {x: 45, y: 90}
   spawning: 0
-  maxEnemies: 300
-  minEnemies: 3
   airshipPrefab: {fileID: 3056834929655612559, guid: 8eb991c5726be7640a78e32e6e27599e,
     type: 3}
-  pointerParent: {fileID: 0}
   enemiesPerAirship: 9
   radiusOffset: 0
   distance: 0

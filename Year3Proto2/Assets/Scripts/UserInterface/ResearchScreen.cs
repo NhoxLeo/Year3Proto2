@@ -59,7 +59,7 @@ public class ResearchScreen : MonoBehaviour
         GetResearchInfo();
 
         InitializeCards();
-        Debug.Log(Screen.width / Screen.height);
+        //Debug.Log(Screen.width / Screen.height);
 
         if (Screen.width / Screen.height >= 2.0f)
         {

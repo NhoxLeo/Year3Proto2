@@ -1389,7 +1389,7 @@ public class SuperManager : MonoBehaviour
                 if (musicAudio.time < 10f && songHistory.Count > 1)
                 {
                     musicAudio.clip = GameMusic[songHistory[songHistory.Count - 2]];
-                    Debug.Log("Now Playing " + GameMusicDetails[songHistory[songHistory.Count - 2]]);
+                    //Debug.Log("Now Playing " + GameMusicDetails[songHistory[songHistory.Count - 2]]);
                     musicAudio.Play();
                     nextSongTimer = musicAudio.clip.length + GetMusicDelayRandom();
                     recentlyPlayedSongs.Add(songHistory[songHistory.Count - 2]);
@@ -1447,7 +1447,7 @@ public class SuperManager : MonoBehaviour
         }
 
         int song = validSongs[UnityEngine.Random.Range(0, validSongs.Count)];
-        Debug.Log("Now Playing " + GameMusicDetails[song]);
+        //Debug.Log("Now Playing " + GameMusicDetails[song]);
         musicAudio.clip = GameMusic[song];
         recentlyPlayedSongs.Add(song);
         if (recentlyPlayedSongs.Count > 3)
@@ -1485,7 +1485,7 @@ public class SuperManager : MonoBehaviour
         if (!focus)
         {
             GameManager gameMan = GameManager.GetInstance();
-            if (gameMan)
+            if (gameMan && !Application.isEditor)
             {
                 gameMan.AttemptPause();
             }
@@ -1596,6 +1596,7 @@ public class SuperManager : MonoBehaviour
         AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(UIClick.length);
+        spawnAudioDestroy.SetUnscaledTime(true);
         spawnAudioComp.clip = UIClick;
         spawnAudioComp.volume = 0.825f * EffectsVolume;
         spawnAudioComp.Play();

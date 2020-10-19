@@ -87,7 +87,7 @@ public class VillagerManager : MonoBehaviour
         // if the first element is the priority to be increased...
         if (priorityOrder[0] == _priority)
         {
-            Debug.Log(PriorityToString(_priority) + " was already first priority.");
+            //Debug.Log(PriorityToString(_priority) + " was already first priority.");
             // there's nothing to do.
             return;
         }
@@ -100,8 +100,8 @@ public class VillagerManager : MonoBehaviour
                 Priority temp = priorityOrder[i - 1];
                 priorityOrder[i - 1] = _priority;
                 priorityOrder[i] = temp;
-                Debug.Log(PriorityToString(_priority) + " is now priority " + i.ToString() + " and " +
-                    PriorityToString(priorityOrder[i]) + " is now priority " + (i + 1).ToString());
+                //Debug.Log(PriorityToString(_priority) + " is now priority " + i.ToString() + " and " +
+                    //PriorityToString(priorityOrder[i]) + " is now priority " + (i + 1).ToString());
             }
         }
         RedistributeVillagers();

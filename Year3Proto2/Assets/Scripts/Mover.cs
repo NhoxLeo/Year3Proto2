@@ -2,8 +2,8 @@
 
 public class Mover : MonoBehaviour
 {
-    public Vector3 moveSpeed;
-    public float startDelay;
+    public Vector3 moveSpeed = new Vector3(0.5f, 0f, 0.5f);
+    public float startDelay = 0.5f;
 
     private float age;
 

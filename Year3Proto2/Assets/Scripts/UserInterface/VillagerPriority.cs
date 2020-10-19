@@ -279,7 +279,7 @@ public class VillagerPriority : MonoBehaviour
             dragOffset = Vector3.zero;
         }
 
-        Debug.Log("Dragging " + _type);
+        //Debug.Log("Dragging " + _type);
     }
 
     public void ReleaseCard(string _type)
