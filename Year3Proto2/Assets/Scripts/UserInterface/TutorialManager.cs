@@ -14,10 +14,9 @@ public class TutorialManager : MonoBehaviour
         Start,
         SelectFarm,
         PlaceFarm,
-        SelectLumberMill,
         PlaceLumberMill,
-        SelectMine,
         PlaceMine,
+        Storages,
         VillagerAllocation,
         TrainVillager,
         VillagerPriority,
@@ -54,6 +53,8 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private RectTransform farmButton;
     [SerializeField] private RectTransform woodButton;
     [SerializeField] private RectTransform metalButton;
+    [SerializeField] private RectTransform storageButton;
+    [SerializeField] private RectTransform defenceButton;
     [SerializeField] private RectTransform productionTab;
     [SerializeField] private UIAnimator productionTabPanel;
     [SerializeField] private RectTransform defenceTab;
@@ -127,10 +128,9 @@ public class TutorialManager : MonoBehaviour
 
             case TutorialState.PlaceFarm:
                 FocusOn(null);
-
                 break;
 
-            case TutorialState.SelectLumberMill:
+            case TutorialState.PlaceLumberMill:
                 if (productionTabPanel.showElement && focusTransform != woodButton)
                 {
                     FocusOn(woodButton);
@@ -139,14 +139,9 @@ public class TutorialManager : MonoBehaviour
                 {
                     FocusOn(productionTab);
                 }
-
                 break;
 
-            case TutorialState.PlaceLumberMill:
-                FocusOn(null);
-                break;
-
-            case TutorialState.SelectMine:
+            case TutorialState.PlaceMine:
                 if (productionTabPanel.showElement && focusTransform != metalButton)
                 {
                     FocusOn(metalButton);
@@ -156,9 +151,15 @@ public class TutorialManager : MonoBehaviour
                     FocusOn(productionTab);
                 }
                 break;
-
-            case TutorialState.PlaceMine:
-                FocusOn(null);
+            case TutorialState.Storages:
+                if (productionTabPanel.showElement && focusTransform != storageButton)
+                {
+                    FocusOn(storageButton);
+                }
+                if (!productionTabPanel.showElement && focusTransform != productionTab)
+                {
+                    FocusOn(productionTab);
+                }
                 break;
 
             case TutorialState.VillagerAllocation:
@@ -174,6 +175,10 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case TutorialState.SelectDefence:
+                if (defenceTabPanel.showElement && focusTransform != defenceButton)
+                {
+                    FocusOn(defenceButton);
+                }
                 if (!defenceTabPanel.showElement && focusTransform != defenceTab)
                 {
                     FocusOn(defenceTab);

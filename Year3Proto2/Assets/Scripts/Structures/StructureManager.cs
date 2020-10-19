@@ -1782,13 +1782,6 @@ public class StructureManager : MonoBehaviour
                         tutMan.GoToNext();
                     }
                 }
-                else
-                {
-                    if (tutMan.State == TutorialManager.TutorialState.SelectLumberMill)
-                    {
-                        tutMan.GoToNext();
-                    }
-                }
                 break;
             case StructureNames.MetalResource:
                 if (_structureWasPlaced)
@@ -1798,9 +1791,11 @@ public class StructureManager : MonoBehaviour
                         tutMan.GoToNext();
                     }
                 }
-                else
+                break;
+            case StructureNames.LumberStorage:
+                if (_structureWasPlaced)
                 {
-                    if (tutMan.State == TutorialManager.TutorialState.SelectMine)
+                    if (tutMan.State == TutorialManager.TutorialState.Storages)
                     {
                         tutMan.GoToNext();
                     }

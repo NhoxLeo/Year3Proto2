@@ -86,6 +86,7 @@ public abstract class DefenseStructure : Structure
             Alert newAlert = Instantiate(alertPrefab, canvas.transform).GetComponent<Alert>();
             if (newAlert)
             {
+                newAlert.transform.SetAsFirstSibling();
                 Vector3 position = transform.localPosition;
                 position.y = 1.0f;
                 newAlert.SetTarget(position);

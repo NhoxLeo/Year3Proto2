@@ -1596,6 +1596,7 @@ public class SuperManager : MonoBehaviour
         AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(UIClick.length);
+        spawnAudioDestroy.SetUnscaledTime(true);
         spawnAudioComp.clip = UIClick;
         spawnAudioComp.volume = 0.825f * EffectsVolume;
         spawnAudioComp.Play();
