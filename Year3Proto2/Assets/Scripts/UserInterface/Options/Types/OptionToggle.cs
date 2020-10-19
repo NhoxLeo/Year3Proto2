@@ -75,8 +75,6 @@ public class OptionToggle : OptionObject, OptionDataBase
     {
         return toggle;
     }
-<<<<<<< Updated upstream
-=======
 
     public override void Reset()
     {
@@ -84,5 +82,4 @@ public class OptionToggle : OptionObject, OptionDataBase
         toggle.isOn = data.value;
         data.GetCallback().Invoke();
     }
->>>>>>> Stashed changes
 }
