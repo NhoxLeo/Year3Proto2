@@ -80,13 +80,13 @@ public class OptionsSystem : MonoBehaviour
         OptionSliderData masterVolumeData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f);
         masterVolumeData.CallBack(() => AudioListener.volume = masterVolumeData.value);
 
-        OptionSliderData soundEffectData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
+        OptionSliderData soundEffectData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f);
         soundEffectData.CallBack(() => SuperManager.EffectsVolume = soundEffectData.value);
 
-        OptionSliderData ambientEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
+        OptionSliderData ambientEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f);
         ambientEffectsData.CallBack(() => SuperManager.AmbientVolume = ambientEffectsData.value);
 
-        OptionSliderData musicEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.25f);
+        OptionSliderData musicEffectsData = new OptionSliderData(new Vector2(0.0f, 1.0f), 0.5f);
         musicEffectsData.CallBack(() => SuperManager.MusicVolume = musicEffectsData.value);
 
         OptionSliderData cameraMovementData = new OptionSliderData(new Vector2(2.0f, 6.0f), 4.0f);
@@ -118,6 +118,11 @@ public class OptionsSystem : MonoBehaviour
         optionObjects.Add(InstantiateOption("CAMERA_SENSITIVITY", cameraMovementData, sliderPrefab, controlsPanel));
 
         optionObjects.ForEach(optionObject => optionObject.Deserialize());
+    }
+
+    public void ResetToDefault()
+    {
+        optionObjects.ForEach(optionObject => optionObject.Reset());
     }
 
     public OptionObject InstantiateOption(string _key, OptionData _optionData, Transform _prefab, Transform _parent)

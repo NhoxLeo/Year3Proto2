@@ -75,4 +75,10 @@ public class OptionToggle : OptionObject, OptionDataBase
     {
         return toggle;
     }
+
+    public override void Reset()
+    {
+        data.value = data.defaultValue;
+        data.GetCallback().Invoke();
+    }
 }
