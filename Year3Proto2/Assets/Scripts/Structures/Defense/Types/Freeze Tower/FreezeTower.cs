@@ -11,10 +11,10 @@ public class FreezeTower : DefenseStructure
     {
         // set base stats
         base.Awake();
-        structureName = StructureNames.FreezeTower;
+        structureName = StructureNames.FrostTower;
 
         // research
-        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.FreezeTowerRange))
+        if (SuperManager.GetInstance().GetResearchComplete(SuperManager.FrostTowerRange))
         {
             GetComponentInChildren<TowerRange>().transform.localScale *= 1.25f;
             GetComponentInChildren<SpottingRange>().transform.localScale *= 1.25f;
@@ -33,7 +33,7 @@ public class FreezeTower : DefenseStructure
         base.Start();
         SuperManager superManager = SuperManager.GetInstance();
         cannons = GetComponentsInChildren<FreezeTowerCannon>();
-        freezeEffect = superManager.GetResearchComplete(SuperManager.FreezeTowerSlowEffect) ? 1.0f : 1.3f;
+        freezeEffect = superManager.GetResearchComplete(SuperManager.FrostTowerSlowEffect) ? 1.0f : 1.3f;
         foreach (FreezeTowerCannon cannon in cannons)
         {
             cannon.Setup(freezeEffect);

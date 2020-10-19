@@ -151,7 +151,7 @@ public class BuildingInfo : MonoBehaviour
                 repairButton.interactable = barracks.CanBeRepaired();
                 break;
 
-            case StructureNames.FreezeTower:
+            case StructureNames.FrostTower:
                 FreezeTower freeze = targetBuilding.GetComponent<FreezeTower>();
                 statIcon.sprite = defenceSprite;
                 statHeadingText.text = "Slow effect";

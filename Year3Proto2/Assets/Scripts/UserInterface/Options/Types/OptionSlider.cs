@@ -41,6 +41,8 @@ public class OptionSlider : OptionObject, OptionDataBase
         slider.value = data.value;
 
         data.GetCallback().Invoke();
+
+        deserialised = true;
     }
 
     public override OptionData GetData()
@@ -65,5 +67,12 @@ public class OptionSlider : OptionObject, OptionDataBase
             data.value = slider.value;
             data.GetCallback().Invoke();
         }
+    }
+
+    public override void Reset()
+    {
+        data.value = data.defaultValue;
+        slider.value = data.value;
+        data.GetCallback().Invoke();
     }
 }

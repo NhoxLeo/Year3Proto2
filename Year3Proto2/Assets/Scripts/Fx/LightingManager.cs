@@ -20,11 +20,9 @@ using UnityEngine.Rendering;
 
 public enum Weather
 {
-    DayClear = 0,
-    DayFoggy = 1,
-    DayRainy = 2,
-    DayStormy = 3,
-    Night = 4
+    Clear = 0,
+    Rainy = 1,
+    Snowy = 2,
 }
 
 public class LightingManager : MonoBehaviour
@@ -32,7 +30,6 @@ public class LightingManager : MonoBehaviour
     [SerializeField] private Volume[] sfVolumes;
 
     [SerializeField] private Color daylightColor;
-    [SerializeField] private Color nightColor;
 
     [SerializeField] private Weather weatherCurrent;
     [SerializeField] private Weather weatherTarget;
@@ -55,11 +52,11 @@ public class LightingManager : MonoBehaviour
 
         if (weatherCurrent != weatherTarget)
         {
-            int volIndexTar = (int)weatherTarget;
-            DOTween.To(() => sfVolumes[volIndexTar].weight, y => sfVolumes[volIndexTar].weight = y, 1.0f, 5.0f);
+            int targetIndex = (int) weatherTarget;
+            DOTween.To(() => sfVolumes[targetIndex].weight, y => sfVolumes[targetIndex].weight = y, 1.0f, 5.0f);
 
-            int volIndexCur = (int)weatherCurrent;
-            DOTween.To(() => sfVolumes[volIndexCur].weight, x => sfVolumes[volIndexCur].weight = x, 0.0f, 5.0f).SetEase(Ease.InQuad);
+            int currentIndex = (int) weatherCurrent;
+            DOTween.To(() => sfVolumes[currentIndex].weight, x => sfVolumes[currentIndex].weight = x, 0.0f, 5.0f).SetEase(Ease.InQuad);
         }
 
         weatherCurrent = weatherTarget;
