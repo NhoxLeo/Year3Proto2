@@ -46,6 +46,7 @@ public class InfoManager : MonoBehaviour
         MatchDuration = 0;
         TimeSkipped = 0;
         ActionsTotal = 0;
+        TileBonusAverage = 0;
         ResourcesSpentRecently = new List<(float, SuperManager.SaveVector3)>();
         VillagersLost = new List<float>();
         StructuresLost = new List<float>();
@@ -61,11 +62,11 @@ public class InfoManager : MonoBehaviour
             switch (InfoUpdateTarget)
             {
                 case 0:
-                    ResourcesSpentRecently.RemoveAll(match => Time.time - match.Item1 >= 30f);
+                    ResourcesSpentRecently.RemoveAll(match => Time.time - match.Item1 >= 60f);
                     CalculatedRecentSpent = 0f;
                     foreach ((float, SuperManager.SaveVector3) element in ResourcesSpentRecently)
                     {
-                        float timeMultiplier = element.Item1 * 0.0334f;
+                        float timeMultiplier = (60f - (Time.time - element.Item1)) * 0.0167f;
                         CalculatedRecentSpent += element.Item2.x * timeMultiplier;
                         CalculatedRecentSpent += element.Item2.y * timeMultiplier;
                         CalculatedRecentSpent += element.Item2.z * timeMultiplier;
@@ -73,20 +74,20 @@ public class InfoManager : MonoBehaviour
                     InfoUpdateTarget = 1;
                     break;
                 case 1:
-                    VillagersLost.RemoveAll(match => Time.time - match >= 30f);
+                    VillagersLost.RemoveAll(match => Time.time - match >= 60f);
                     VillagersLostGradual = 0f;
                     foreach (float villagerLost in VillagersLost)
                     {
-                        VillagersLostGradual += villagerLost * 0.0334f;
+                        VillagersLostGradual += (60f - (Time.time - villagerLost)) * 0.0167f;
                     }
                     InfoUpdateTarget = 2;
                     break;
                 case 2:
-                    StructuresLost.RemoveAll(match => Time.time - match >= 30f);
+                    StructuresLost.RemoveAll(match => Time.time - match >= 60f);
                     StructuresLostGradual = 0f;
                     foreach (float structureLost in StructuresLost)
                     {
-                        StructuresLostGradual += structureLost * 0.0334f;
+                        StructuresLostGradual += (60f - (Time.time - structureLost)) * 0.0167f;
                     }
                     InfoUpdateTarget = 0;
                     break;
