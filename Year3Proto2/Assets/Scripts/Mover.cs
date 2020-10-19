@@ -2,16 +2,18 @@
 
 public class Mover : MonoBehaviour
 {
-    private float radius = 10f;
-    private float angle = 0f;
+    public Vector3 moveSpeed = new Vector3(0.5f, 0f, 0.5f);
+    public float startDelay = 0.5f;
+
+    private float age;
 
     void Update()
     {
-        angle += Time.deltaTime * 0.1f;
-        if (angle > 180f)
+        age += Time.deltaTime;
+
+        if (age >= startDelay)
         {
-            angle = -180f;
+            transform.position += moveSpeed * Time.deltaTime;
         }
-        transform.position = new Vector3(Mathf.Sin(angle) * radius, 0.0f, Mathf.Cos(angle) * radius);
     }
 }
