@@ -27,7 +27,7 @@ public class Alert : MonoBehaviour
 
     private Image indicator;
     private RectTransform rectTransform;
-    private Transform targetTransform = null;
+    [SerializeField] private Transform targetTransform = null;
     private Vector3 targetPosition = Vector3.zero;
     private Vector3 center;
 

@@ -173,7 +173,6 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Airships")]
     [SerializeField] private Transform airshipPrefab;
-    [SerializeField] private Transform pointerParent;
     [SerializeField] private int enemiesPerAirship = 9;
     [SerializeField] private float radiusOffset;
     [SerializeField] private float distance = 0.0f;
@@ -434,7 +433,7 @@ public class EnemyManager : MonoBehaviour
             airship.spawnWave = wave;
             if (airship.GetTarget())
             {
-                airship.Embark(transforms, pointerParent);
+                airship.Embark(transforms);
             }
         }
     }

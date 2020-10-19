@@ -79,7 +79,7 @@ public class Airship : MonoBehaviour
 
                     if (heading.sqrMagnitude < distanceOffset * 4.0f)
                     {
-                        Destroy(gameObject);
+                        Destroy();
                     }
 
                     break;
@@ -128,7 +128,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Float
     * @Return: IEnumerator
     ***************************************/
-    
+
     private IEnumerator Deploy(float seconds)
     {
         if (SuperManager.waveHornStart)
@@ -147,7 +147,7 @@ public class Airship : MonoBehaviour
             EnemyManager.GetInstance().RecordNewEnemy(enemy);
 
             Invader invader = instantiatedTransform.GetComponent<Invader>();
-            if(invader)
+            if (invader)
             {
                 int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Invader);
                 invader.Initialize(level, Random.Range(0.8f, 1.5f));
@@ -200,7 +200,7 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform Array, Transform
     * @Return: void
     ***************************************/
-    public void Embark(Transform[] _transforms, Transform _pointerParent)
+    public void Embark(Transform[] _transforms)
     {
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
@@ -210,16 +210,21 @@ public class Airship : MonoBehaviour
             initialLocation = transform.position;
 
             // Instantiate and Setup pointer.
-            this.alert = Instantiate(alertPrefab, _pointerParent);
+            Canvas canvas = FindObjectOfType<Canvas>();
+            this.alert = Instantiate(alertPrefab, canvas.transform);
             Alert alert = this.alert.GetComponent<Alert>();
-            if (alert) alert.SetTarget(transform);
+            if (alert)
+            {
+                alert.SetTarget(transform);
+                alert.transform.SetAsFirstSibling();
+            }
 
             transforms = _transforms;
             airshipState = AirshipState.Move;
             return;
         }
 
-        Destroy(gameObject);
+        Destroy();
     }
 
     /**************************************
@@ -359,5 +364,14 @@ public class Airship : MonoBehaviour
         airshipState = _data.state;
         initialLocation = _data.initialLocation;
         spawnWave = _data.spawnWave;
+    }
+
+    private void Destroy()
+    {
+        GameObject puff = Instantiate(GameManager.GetPuffEffect());
+        puff.transform.position = transform.position;
+        puff.transform.localScale *= 2f;
+
+        Destroy(gameObject);
     }
 }

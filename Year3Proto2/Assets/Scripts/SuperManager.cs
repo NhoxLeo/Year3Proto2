@@ -88,12 +88,12 @@ public class SuperManager : MonoBehaviour
     public const int CatapultSuper = 17;
 
     // FREEZE TOWER
-    public const int FreezeTower = 18;
-    public const int FreezeTowerRange = 19;
-    public const int FreezeTowerSlowEffect = 20;
-    public const int FreezeTowerFortification = 21;
-    public const int FreezeTowerEfficiency = 22;
-    public const int FreezeTowerSuper = 23;
+    public const int FrostTower = 18;
+    public const int FrostTowerRange = 19;
+    public const int FrostTowerSlowEffect = 20;
+    public const int FrostTowerFortification = 21;
+    public const int FrostTowerEfficiency = 22;
+    public const int FrostTowerSuper = 23;
 
     // LIGHTNING TOWER
     public const int LightningTower = 24;
@@ -449,12 +449,12 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
         new ResearchElementDefinition(CatapultSuper, Catapult, "Cluster Bomb", "Smaller boulders erupt from the inital explosion.", 500, true),
 
-        new ResearchElementDefinition(FreezeTower, NoRequirement, "Freeze Tower", "The Freeze Tower slows down enemies making it easier for other defenses to hit them.", 300),
-        new ResearchElementDefinition(FreezeTowerRange, FreezeTower, "Range Boost", "Extends tower range by 25%.", 200),
-        new ResearchElementDefinition(FreezeTowerSlowEffect, FreezeTower, "Slow Effect", "Slows Enemies by +30%.", 200),
-        new ResearchElementDefinition(FreezeTowerFortification, FreezeTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(FreezeTowerEfficiency, FreezeTower, "N/A", "Not yet implemented.", 0),
-        new ResearchElementDefinition(FreezeTowerSuper, FreezeTower, "Blizzard", "Frost effect damages enemies.", 500, true),
+        new ResearchElementDefinition(FrostTower, NoRequirement, "Frost Tower", "The Frost Tower slows down enemies making it easier for other defenses to hit them.", 300),
+        new ResearchElementDefinition(FrostTowerRange, FrostTower, "Range Boost", "Extends tower range by 25%.", 200),
+        new ResearchElementDefinition(FrostTowerSlowEffect, FrostTower, "Slow Effect", "Slows Enemies by +30%.", 200),
+        new ResearchElementDefinition(FrostTowerFortification, FrostTower, "Fortification", "Improves building durability by 50%.", 200),
+        new ResearchElementDefinition(FrostTowerEfficiency, FrostTower, "N/A", "Not yet implemented.", 0),
+        new ResearchElementDefinition(FrostTowerSuper, FrostTower, "Blizzard", "Frost effect makes enemies more vulnerable", 500, true),
 
         new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
         new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
@@ -468,7 +468,7 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
         new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "N/A", "Not yet implemented.", 0),
-        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "N/A", "Not yet implemented.", 0, true),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages enemies based on how far from impact point.", 0, true),
     };
     public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
     {
@@ -1112,8 +1112,8 @@ public class SuperManager : MonoBehaviour
                 return GetResearchComplete(Catapult);
             case BuildPanel.Buildings.Barracks:
                 return GetResearchComplete(Barracks);
-            case BuildPanel.Buildings.FreezeTower:
-                return GetResearchComplete(FreezeTower);
+            case BuildPanel.Buildings.FrostTower:
+                return GetResearchComplete(FrostTower);
             case BuildPanel.Buildings.ShockwaveTower:
                 return GetResearchComplete(ShockwaveTower);
             case BuildPanel.Buildings.LightningTower:
@@ -1485,7 +1485,7 @@ public class SuperManager : MonoBehaviour
         if (!focus)
         {
             GameManager gameMan = GameManager.GetInstance();
-            if (gameMan)
+            if (gameMan && !Application.isEditor)
             {
                 gameMan.AttemptPause();
             }
@@ -1596,6 +1596,7 @@ public class SuperManager : MonoBehaviour
         AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(UIClick.length);
+        spawnAudioDestroy.SetUnscaledTime(true);
         spawnAudioComp.clip = UIClick;
         spawnAudioComp.volume = 0.825f * EffectsVolume;
         spawnAudioComp.Play();

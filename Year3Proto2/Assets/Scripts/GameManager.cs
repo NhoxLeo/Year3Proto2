@@ -194,6 +194,8 @@ public class GameManager : MonoBehaviour
         AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
         DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
         spawnAudioDestroy.SetLifetime(audioClips[_sfxName].length);
+        spawnAudioDestroy.SetUnscaledTime(true);
+
         spawnAudioComp.spatialBlend = _spatial ? 1.0f : 0.0f;
         spawnAudioComp.dopplerLevel = _dopplerLevel;
         spawnAudioComp.rolloffMode = AudioRolloffMode.Linear;
@@ -722,6 +724,16 @@ public class GameManager : MonoBehaviour
 
     public void AttemptPause()
     {
-        FindObjectOfType<PauseMenu>().Paused(true);
+        PauseMenu pauseMenu = FindObjectOfType<PauseMenu>();
+        if(pauseMenu)
+        {
+            pauseMenu.Paused(true);
+            pauseMenu.PausedActive(false);
+            UIAnimator animator = pauseMenu.GetCurrentAnimator();
+            if(animator)
+            {
+                animator.showElement = false;
+            }
+        }
     }
 }
