@@ -12,7 +12,7 @@ public class AspectRatioFix : MonoBehaviour {
 		XPos = StartLocation.x/initialAspect;
 		XPos *= CameraLocationTracker.Aspect*1.05f;
 		gameObject.transform.localPosition = new Vector3(XPos,StartLocation.y,StartLocation.z);
-		Debug.Log (CameraLocationTracker.Aspect);
+		//Debug.Log (CameraLocationTracker.Aspect);
 	}
 	void Update()
 	{
