@@ -87,7 +87,7 @@ public class EnvironmentSystem : MonoBehaviour
                         currentParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
                     }
 
-                    InvokeWeather();
+                    InvokeWeather(true);
                 }
             }
 
@@ -104,7 +104,7 @@ public class EnvironmentSystem : MonoBehaviour
         {
             if(!SuperManager.GetInstance().GetSavedMatch().match)
             {
-                InvokeWeather();
+                InvokeWeather(false);
                 InvokeAmbient();
                 loaded = true;
             }
@@ -118,9 +118,9 @@ public class EnvironmentSystem : MonoBehaviour
             .Invoke(false) as EnvironmentAmbientEvent;
     }
 
-    private void InvokeWeather()
+    private void InvokeWeather(bool _random)
     {
-        weatherIndex = Random.Range(0, weatherEvents.Length);
+        weatherIndex = _random ? Random.Range(0, weatherEvents.Length) : 0;
         weatherEvent = Instantiate(weatherEvents[weatherIndex], transform)
             .Invoke(false) as EnvironmentWeatherEvent;
 
