@@ -67,5 +67,15 @@ public class OptionSlider : OptionObject, OptionDataBase
             data.value = slider.value;
             data.GetCallback().Invoke();
         }
+<<<<<<< Updated upstream
+=======
+    }
+
+    public override void Reset()
+    {
+        data.value = data.defaultValue;
+        slider.value = data.value;
+        data.GetCallback().Invoke();
+>>>>>>> Stashed changes
     }
 }
