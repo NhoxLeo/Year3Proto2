@@ -1,40 +1,46 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
+﻿using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
     [Header("Movement")]
-
-    [SerializeField] [Tooltip("Keybinding for moving the camera up")]
+    [SerializeField]
+    [Tooltip("Keybinding for moving the camera up")]
     private KeyCode moveNorth;
 
-    [SerializeField] [Tooltip("Keybinding for moving the camera right")]
+    [SerializeField]
+    [Tooltip("Keybinding for moving the camera right")]
     private KeyCode moveEast;
 
-    [SerializeField] [Tooltip("Keybinding for moving the camera down")]
+    [SerializeField]
+    [Tooltip("Keybinding for moving the camera down")]
     private KeyCode moveSouth;
 
-    [SerializeField] [Tooltip("Keybinding for moving the camera left")]
+    [SerializeField]
+    [Tooltip("Keybinding for moving the camera left")]
     private KeyCode moveWest;
 
-    [SerializeField] [Tooltip("Whether to move camera if mouse near edge of screen")]
+    [SerializeField]
+    [Tooltip("Whether to move camera if mouse near edge of screen")]
     private bool mouseEdgeMove = true;
 
-    [SerializeField] [Tooltip("Buffer zone for mouse camera control at edge of screen")]
+    [SerializeField]
+    [Tooltip("Buffer zone for mouse camera control at edge of screen")]
     private float mouseXBuffer = 50.0f;
 
-    [SerializeField] [Tooltip("Buffer zone for mouse camera control at edge of screen")]
+    [SerializeField]
+    [Tooltip("Buffer zone for mouse camera control at edge of screen")]
     private float mouseYBuffer = 50.0f;
 
-    [SerializeField] [Tooltip("Multiplier for movement with keyboard")]
+    [SerializeField]
+    [Tooltip("Multiplier for movement with keyboard")]
     private float keyboardSpeed = 30.0f;
 
-    [SerializeField] [Tooltip("Rate at which camera lerps movement")]
+    [SerializeField]
+    [Tooltip("Rate at which camera lerps movement")]
     private float lerpSpeed = 10.0f;
 
-    [SerializeField] [Tooltip("Rate at which camera lerps movement")]
+    [SerializeField]
+    [Tooltip("Rate at which camera lerps movement")]
     private float inertiaFalloffSpeed = 5.0f;
 
     private float xAxisMax;
@@ -57,7 +63,7 @@ public class CameraController : MonoBehaviour
 
     private Vector2 lastFrameMousePos;
 
-    void Start()
+    private void Start()
     {
         float quarterPi = Mathf.Deg2Rad * 45.0f;
         north = Vector3.RotateTowards(Vector3.forward, Vector3.right, quarterPi, 5f).normalized;
@@ -75,71 +81,73 @@ public class CameraController : MonoBehaviour
         scrollMax = settings.Item2.y;
     }
 
-    void Update()
+    private void Update()
     {
-        inertia = Vector2.Lerp(inertia, Vector2.zero, inertiaFalloffSpeed * Time.smoothDeltaTime);
-
-        float mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
-        scrollOffset += mouseScroll;
-
-        if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }
-        if (scrollOffset < scrollMin) { scrollOffset = scrollMin; }
-
-        Vector2 mp = Input.mousePosition;
-        float mouseMult = (StructureManager.GetInstance().isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
-
-        float scrollMoveCoeff = 1f + (-scrollOffset + 10f) * 0.15f;
-        float resolutionMod = 1080.0f / Screen.height;
-        float movementCoeff = SuperManager.CameraSensitivity * scrollMoveCoeff * 0.0007f;
-
-        if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
+        if (!PauseMenu.GetInstance().isPaused)
         {
-            inertia = Vector2.zero;
-            cameraZoomMidPoint += north * movementCoeff * resolutionMod * (lastFrameMousePos.y - mp.y);
-            cameraZoomMidPoint += east * movementCoeff * resolutionMod * (lastFrameMousePos.x - mp.x);
+            inertia = Vector2.Lerp(inertia, Vector2.zero, inertiaFalloffSpeed * Time.smoothDeltaTime);
+
+            float mouseScroll = Mathf.Clamp(Input.mouseScrollDelta.y, -50f, 50f);
+            scrollOffset += mouseScroll;
+
+            if (scrollOffset > scrollMax) { scrollOffset = scrollMax; }
+            if (scrollOffset < scrollMin) { scrollOffset = scrollMin; }
+
+            Vector2 mp = Input.mousePosition;
+            float mouseMult = (StructureManager.GetInstance().isOverUI || GlobalData.isPaused || !mouseEdgeMove) ? 0.0f : 1.0f;
+
+            float scrollMoveCoeff = 1f + (-scrollOffset + 10f) * 0.15f;
+            float resolutionMod = 1080.0f / Screen.height;
+            float movementCoeff = SuperManager.CameraSensitivity * scrollMoveCoeff * 0.0007f;
+
+            if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
+            {
+                inertia = Vector2.zero;
+                cameraZoomMidPoint += north * movementCoeff * resolutionMod * (lastFrameMousePos.y - mp.y);
+                cameraZoomMidPoint += east * movementCoeff * resolutionMod * (lastFrameMousePos.x - mp.x);
+            }
+            else if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
+            {
+                float maxInertia = Screen.height * 0.33f;
+                inertia = Vector2.ClampMagnitude(movementCoeff * resolutionMod * (lastFrameMousePos - mp), maxInertia);
+            }
+            else
+            {
+                // Inertia motion
+                cameraZoomMidPoint += east * inertia.x;
+                cameraZoomMidPoint += north * inertia.y;
+
+                // Keyboard and mouse edge motion
+                float northKey = Input.GetKey(moveNorth) ? 1.0f : 0.0f;
+                float northMouse = Mathf.Clamp((mp.y - (Screen.height - mouseYBuffer)) / mouseYBuffer, 0.0f, 1.0f) * mouseMult;
+                float northMove = Mathf.Max(northKey, northMouse);
+
+                float eastKey = Input.GetKey(moveEast) ? 1.0f : 0.0f;
+                float eastMouse = Mathf.Clamp((mp.x - (Screen.width - mouseXBuffer)) / mouseXBuffer, 0.0f, 1.0f) * mouseMult;
+                float eastMove = Mathf.Max(eastKey, eastMouse);
+
+                float southKey = Input.GetKey(moveSouth) ? 1.0f : 0.0f;
+                float southMouse = Mathf.Clamp(1.0f - (mp.y / mouseYBuffer), 0.0f, 1.0f) * mouseMult;
+                float southMove = Mathf.Max(southKey, southMouse);
+
+                float westKey = Input.GetKey(moveWest) ? 1.0f : 0.0f;
+                float westMouse = Mathf.Clamp(1.0f - (mp.x / mouseXBuffer), 0.0f, 1.0f) * mouseMult;
+                float westMove = Mathf.Max(westKey, westMouse);
+
+                cameraZoomMidPoint += northMove * north * movementCoeff * keyboardSpeed;
+                cameraZoomMidPoint += eastMove * east * movementCoeff * keyboardSpeed;
+                cameraZoomMidPoint += southMove * south * movementCoeff * keyboardSpeed;
+                cameraZoomMidPoint += westMove * west * movementCoeff * keyboardSpeed;
+            }
+
+            if (cameraZoomMidPoint.x > xAxisMax) { cameraZoomMidPoint.x = xAxisMax; }
+            if (cameraZoomMidPoint.x < xAxisMin) { cameraZoomMidPoint.x = xAxisMin; }
+            if (cameraZoomMidPoint.z > zAxisMax) { cameraZoomMidPoint.z = zAxisMax; }
+            if (cameraZoomMidPoint.z < zAxisMin) { cameraZoomMidPoint.z = zAxisMin; }
+
+            transform.position = Vector3.Lerp(transform.position, cameraZoomMidPoint + transform.forward * scrollOffset * .5f, Time.smoothDeltaTime * lerpSpeed);
+
+            lastFrameMousePos = mp;
         }
-        else if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
-        {
-            float maxInertia = Screen.height * 0.33f;
-            inertia = Vector2.ClampMagnitude(movementCoeff * resolutionMod * (lastFrameMousePos - mp), maxInertia);
-        }
-        else
-        {
-            // Inertia motion
-            cameraZoomMidPoint += east * inertia.x;
-            cameraZoomMidPoint += north * inertia.y;
-
-            // Keyboard and mouse edge motion
-            float northKey = Input.GetKey(moveNorth) ? 1.0f : 0.0f;
-            float northMouse = Mathf.Clamp((mp.y - (Screen.height - mouseYBuffer)) / mouseYBuffer, 0.0f, 1.0f) * mouseMult;
-            float northMove = Mathf.Max(northKey, northMouse);
-
-            float eastKey = Input.GetKey(moveEast) ? 1.0f : 0.0f;
-            float eastMouse = Mathf.Clamp((mp.x - (Screen.width - mouseXBuffer)) / mouseXBuffer, 0.0f, 1.0f) * mouseMult;
-            float eastMove = Mathf.Max(eastKey, eastMouse);
-
-            float southKey = Input.GetKey(moveSouth) ? 1.0f : 0.0f;
-            float southMouse = Mathf.Clamp(1.0f - (mp.y / mouseYBuffer), 0.0f, 1.0f) * mouseMult;
-            float southMove = Mathf.Max(southKey, southMouse);
-
-            float westKey = Input.GetKey(moveWest) ? 1.0f : 0.0f;
-            float westMouse = Mathf.Clamp(1.0f - (mp.x / mouseXBuffer), 0.0f, 1.0f) * mouseMult;
-            float westMove = Mathf.Max(westKey, westMouse);
-
-            cameraZoomMidPoint += northMove * north * movementCoeff * keyboardSpeed;
-            cameraZoomMidPoint += eastMove * east * movementCoeff * keyboardSpeed;
-            cameraZoomMidPoint += southMove * south * movementCoeff * keyboardSpeed;
-            cameraZoomMidPoint += westMove * west * movementCoeff * keyboardSpeed;
-        }
-
-
-        if (cameraZoomMidPoint.x > xAxisMax) { cameraZoomMidPoint.x = xAxisMax; }
-        if (cameraZoomMidPoint.x < xAxisMin) { cameraZoomMidPoint.x = xAxisMin; }
-        if (cameraZoomMidPoint.z > zAxisMax) { cameraZoomMidPoint.z = zAxisMax; }
-        if (cameraZoomMidPoint.z < zAxisMin) { cameraZoomMidPoint.z = zAxisMin; }
-
-        transform.position = Vector3.Lerp(transform.position, cameraZoomMidPoint + transform.forward * scrollOffset * .5f, Time.smoothDeltaTime * lerpSpeed);
-
-        lastFrameMousePos = mp;
     }
 }

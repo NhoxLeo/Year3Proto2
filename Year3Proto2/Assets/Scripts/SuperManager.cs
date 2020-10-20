@@ -555,6 +555,7 @@ public class SuperManager : MonoBehaviour
     private bool playWindAmbience = false;
     private bool musicControls = false;
 
+    #region Unity Messages
 
     void Awake()
     {
@@ -632,6 +633,20 @@ public class SuperManager : MonoBehaviour
 
         MusicPlayerUpdate();
     }
+
+    public void OnApplicationFocus(bool focus)
+    {
+        if (!focus)
+        {
+            GameManager gameMan = GameManager.GetInstance();
+            if (gameMan && !Application.isEditor)
+            {
+                gameMan.AttemptPause();
+            }
+        }
+    }
+
+    #endregion
 
     public static SuperManager GetInstance()
     {
@@ -1185,6 +1200,7 @@ public class SuperManager : MonoBehaviour
     {
         return saveData.researchPoints;
     }
+
     public void AddResearchPoints(int _researchPoints)
     {
         saveData.researchPoints += _researchPoints;
@@ -1480,18 +1496,6 @@ public class SuperManager : MonoBehaviour
         return MusicDelayMinimum * UnityEngine.Random.Range(1f, 2f);
     }
 
-    public void OnApplicationFocus(bool focus)
-    {
-        if (!focus)
-        {
-            GameManager gameMan = GameManager.GetInstance();
-            if (gameMan && !Application.isEditor)
-            {
-                gameMan.AttemptPause();
-            }
-        }
-    }
-
     public void OnMatchStart()
     {
         nextSongTimer = 0f;
@@ -1600,5 +1604,10 @@ public class SuperManager : MonoBehaviour
         spawnAudioComp.clip = UIClick;
         spawnAudioComp.volume = 0.825f * EffectsVolume;
         spawnAudioComp.Play();
+    }
+
+    public static void SetBonusHighlightHeight(Transform _bonusHighlight, float _height)
+    {
+        _bonusHighlight.GetComponent<MeshRenderer>().material.SetFloat("_Height", _height);
     }
 }

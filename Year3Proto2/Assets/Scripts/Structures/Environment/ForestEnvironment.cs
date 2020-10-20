@@ -12,6 +12,7 @@ public class ForestEnvironment : EnvironmentStructure
         base.Awake();
         resourceType = ResourceType.Wood;
         structureName = StructureNames.LumberEnvironment;
+        bonusHighlightSitHeight = 0.6f;
     }
 
     protected override void Start()
