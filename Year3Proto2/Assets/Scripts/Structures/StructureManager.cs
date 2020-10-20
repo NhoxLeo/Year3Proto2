@@ -279,6 +279,7 @@ public class StructureManager : MonoBehaviour
     private TileBehaviour structureOldTile = null;
     private int nextStructureID = 0;
     protected static GameObject TileHighlight = null;
+    protected static GameObject BonusHighlight = null;
     public Transform selectedTileHighlight = null;
     public Transform tileHighlight = null;
     [HideInInspector]
@@ -291,6 +292,7 @@ public class StructureManager : MonoBehaviour
     private List<Transform> resourceHighlights;
     private EnvironmentStructure hoverEnvironment = null;
     public const float HighlightSitHeight = 0.54f;
+    public const float BonusHighlightSitHeight = 1f;
     private bool opacityAscending = false;
     private const float OpacitySpeed = 0.6f;
     private const float OpacityMinimum = 0.1f;
@@ -332,6 +334,7 @@ public class StructureManager : MonoBehaviour
         { StructureNames.LumberStorage, BuildPanel.Buildings.LumberPile },
         { StructureNames.MetalStorage, BuildPanel.Buildings.MetalStorage }
     };
+
     public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
     {
         { BuildPanel.Buildings.Ballista, 0 },
@@ -347,6 +350,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, 0 },
         { BuildPanel.Buildings.MetalStorage, 0 }
     };
+
     public Dictionary<string, ResourceBundle> structureCosts = new Dictionary<string, ResourceBundle>
     {
         // NAME                                                fC       wC       mC    
@@ -365,7 +369,9 @@ public class StructureManager : MonoBehaviour
         { StructureNames.LumberStorage,     new ResourceBundle(0,       120,     40) },
         { StructureNames.MetalStorage,      new ResourceBundle(0,       160,     40) }
     };
+
     private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
+
     [HideInInspector]
     public bool isOverUI = false;
 
@@ -400,6 +406,8 @@ public class StructureManager : MonoBehaviour
     public float recursiveHGrowthChance;
     [HideInInspector]
     public float recursiveFGrowthChance;
+
+    #region Unity Messages
 
     private void Awake()
     {
@@ -450,10 +458,11 @@ public class StructureManager : MonoBehaviour
             playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
             resourceHighlights = new List<Transform>()
             {
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform
             };
             for (int i = 0; i < resourceHighlights.Count; i++)
             {
@@ -506,6 +515,13 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    private void OnApplicationQuit()
+    {
+        SuperManager.GetInstance().SaveCurrentMatch();
+    }
+
+    #endregion
+
     public static StructureManager GetInstance()
     {
         return instance;
@@ -543,11 +559,6 @@ public class StructureManager : MonoBehaviour
             { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Structures/Environment/Hills")          as GameObject,  new ResourceBundle(0,       0,       0)) },
             { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Structures/Environment/Plains")         as GameObject,  new ResourceBundle(0,       0,       0)) },
         };
-    }
-
-    private void OnApplicationQuit()
-    {
-        SuperManager.GetInstance().SaveCurrentMatch();
     }
 
     public static string GetSaveDataPath()
@@ -1584,32 +1595,52 @@ public class StructureManager : MonoBehaviour
         return TileHighlight;
     }
 
+    public static GameObject GetBonusHighlight()
+    {
+        if (!BonusHighlight)
+        {
+            BonusHighlight = Resources.Load("BonusHighlight") as GameObject;
+        }
+        return BonusHighlight;
+    }
+
     private void SetPreview(TileBehaviour _hitTile)
     {
         ResourceStructure resStruct = structure.GetComponent<ResourceStructure>();
-        
         // if the structure is a ResourceStructure...
         if (resStruct)
         {
             ResourceType resourceType = resStruct.GetResourceType();
+            Structure attachedToTile = _hitTile.GetAttached();
+            resourceHighlights[4].gameObject.SetActive(false);
+            if (attachedToTile)
+            {
+                if (attachedToTile.GetStructureType() == StructureType.Environment)
+                {
+                    EnvironmentStructure environmentAttachedToTile = attachedToTile.GetComponent<EnvironmentStructure>();
+                    if (environmentAttachedToTile.GetResourceType() == resStruct.GetResourceType())
+                    {
+                        Vector3 highlightPos = _hitTile.transform.position;
+                        highlightPos.y = BonusHighlightSitHeight;
+                        resourceHighlights[4].position = highlightPos;
+                        // enable it
+                        resourceHighlights[4].gameObject.SetActive(true);
+                        SuperManager.SetBonusHighlightHeight(resourceHighlights[4], environmentAttachedToTile.GetBonusHighlightSitHeight());
+                    }
+                }
+            }
+
             Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacents = _hitTile.GetAdjacentTiles();
             
             // for each tilecode
             for (int i = 0; i < 4; i++)
             {
+                resourceHighlights[i].gameObject.SetActive(false);
                 TileBehaviour.TileCode tileCode = (TileBehaviour.TileCode)i;
 
                 // if _hitTile has a tile in that direction...
                 if (adjacents.ContainsKey(tileCode))
                 {
-                    // move the corresponding tilehighligh to the tile's position
-                    Vector3 highlightPos = adjacents[tileCode].transform.position;
-                    highlightPos.y = HighlightSitHeight;
-                    resourceHighlights[i].position = highlightPos;
-
-                    // enable it
-                    resourceHighlights[i].gameObject.SetActive(true);
-
                     // set it to the right colour
                     Structure attached = adjacents[tileCode].GetAttached();
                     if (attached)
@@ -1620,33 +1651,20 @@ public class StructureManager : MonoBehaviour
                             // if the ResourceType of the structure being placed and the environment match
                             if (resourceType == attachedEnvironment.GetResourceType())
                             {
-                                if (attachedEnvironment.GetExploited())
+                                if (!attachedEnvironment.GetExploited())
                                 {
-                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                }
-                                else
-                                {
-                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                    // enable it
+                                    resourceHighlights[i].gameObject.SetActive(true);
+                                    // move the corresponding tilehighligh to the tile's position
+                                    Vector3 highlightPos = adjacents[tileCode].transform.position;
+                                    highlightPos.y = BonusHighlightSitHeight;
+                                    resourceHighlights[i].position = highlightPos;
+                                    // set the shader height value
+                                    SuperManager.SetBonusHighlightHeight(resourceHighlights[i], attachedEnvironment.GetBonusHighlightSitHeight());
                                 }
                             }
-                            else
-                            {
-                                resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                            }
-                        }
-                        else
-                        {
-                            resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                         }
                     }
-                    else
-                    {
-                        resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                    }
-                }
-                else
-                {
-                    resourceHighlights[i].gameObject.SetActive(false);
                 }
             }
         }
