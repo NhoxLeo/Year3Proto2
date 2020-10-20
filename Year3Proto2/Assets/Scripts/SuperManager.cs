@@ -1605,4 +1605,9 @@ public class SuperManager : MonoBehaviour
         spawnAudioComp.volume = 0.825f * EffectsVolume;
         spawnAudioComp.Play();
     }
+
+    public static void SetBonusHighlightHeight(Transform _bonusHighlight, float _height)
+    {
+        _bonusHighlight.GetComponent<MeshRenderer>().material.SetFloat("_Height", _height);
+    }
 }
