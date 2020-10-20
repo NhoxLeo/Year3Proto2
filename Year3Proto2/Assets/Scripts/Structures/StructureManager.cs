@@ -295,7 +295,7 @@ public class StructureManager : MonoBehaviour
     public const float BonusHighlightSitHeight = 1f;
     private bool opacityAscending = false;
     private const float OpacitySpeed = 0.6f;
-    private const float OpacityMinimum = 0.1f;
+    private const float OpacityMinimum = 0.2f;
     private const float OpacityMaximum = 0.7f;
     private float opacity = OpacityMaximum;
     private const float ColourLerpAmount = 0.4f;
