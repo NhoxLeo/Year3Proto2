@@ -9,8 +9,16 @@ public class PauseMenu : MonoBehaviour
 
     private UIAnimator currentAnimator;
 
+    private static PauseMenu instance;
+
+    public static PauseMenu GetInstance()
+    {
+        return instance;
+    }
+
     private void Awake()
     {
+        instance = this;
         tool = GetComponent<UIAnimator>();
         isPaused = false;
         isHelp = false;
