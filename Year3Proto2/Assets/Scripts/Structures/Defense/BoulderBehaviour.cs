@@ -85,13 +85,12 @@ public class BoulderBehaviour : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name.Contains("Forest"))
+        if (collision.gameObject.name.Contains("Hill"))
         {
-            return;
-        }
-        if (!smallBoulder || (smallBoulder && timePassed > 0.2f))
-        {
-            Contact();
+            if (!smallBoulder || (smallBoulder && timePassed > 0.2f))
+            {
+                Contact();
+            }
         }
     }
     /*
