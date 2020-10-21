@@ -484,6 +484,11 @@ public class StructureManager : MonoBehaviour
             return;
         }
 
+        if (GameManager.GetInstance().GetGameLost())
+        {
+            return;
+        }
+
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         //envInfo.SetVisibility(false);
@@ -649,6 +654,8 @@ public class StructureManager : MonoBehaviour
 
     private void UpdateSelecting(Ray _mouseRay)
     {
+
+        
         // if the right mouse button isn't being held down...
         if (!Input.GetMouseButton(1))
         {
