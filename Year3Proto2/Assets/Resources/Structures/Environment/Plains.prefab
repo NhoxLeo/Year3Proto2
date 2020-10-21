@@ -47,11 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedTile: {fileID: 0}
-  displayName: 
-  icon: {fileID: 0}
   isPlaced: 0
   sitHeight: 0.5
-  structureName: 
   fromSaveData: 0
   saveDataStartFrame: 0
 --- !u!33 &7900202285779034415

@@ -10,6 +10,7 @@ public abstract class EnvironmentStructure : Structure
     protected bool exploited = false;
     protected int exploiterID = -1;
     protected float bonusHighlightSitHeight = 0.4f;
+    
 
     protected override void Awake()
     {

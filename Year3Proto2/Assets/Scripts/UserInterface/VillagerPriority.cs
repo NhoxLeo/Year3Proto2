@@ -185,31 +185,49 @@ public class VillagerPriority : MonoBehaviour
             switch (_type)
             {
                 case "Food":
-                    if (foodPriority > 0)
+                    if (foodPriority == 1)
                     {
-                        foodPriority--;
+                        foodPriority = 0;
                         if (woodPriority == foodPriority) { woodPriority++; }
                         if (metalPriority == foodPriority) { metalPriority++; }
+                    }
+                    else if (foodPriority == 2)
+                    {
+                        foodPriority = 0;
+                        woodPriority++;
+                        metalPriority++;
                     }
                     foodCard.transform.SetAsLastSibling();
                     break;
 
                 case "Wood":
-                    if (woodPriority > 0)
+                    if (woodPriority == 1)
                     {
-                        woodPriority--;
+                        woodPriority = 0;
                         if (foodPriority == woodPriority) { foodPriority++; }
                         if (metalPriority == woodPriority) { metalPriority++; }
+                    }
+                    else if (woodPriority == 2)
+                    {
+                        woodPriority = 0;
+                        foodPriority++;
+                        metalPriority++;
                     }
                     woodCard.transform.SetAsLastSibling();
                     break;
 
                 case "Metal":
-                    if (metalPriority > 0)
+                    if (metalPriority == 1)
                     {
-                        metalPriority--;
+                        metalPriority = 0;
                         if (foodPriority == metalPriority) { foodPriority++; }
                         if (woodPriority == metalPriority) { woodPriority++; }
+                    }
+                    else if (metalPriority == 2)
+                    {
+                        metalPriority = 0;
+                        foodPriority++;
+                        woodPriority++;
                     }
                     metalCard.transform.SetAsLastSibling();
                     break;
