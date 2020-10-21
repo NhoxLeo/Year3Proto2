@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public static bool DevMode = false;
+    public static bool DevMode = true;
     public static bool raining = false;
     public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
@@ -93,24 +93,21 @@ public class SuperManager : MonoBehaviour
     public const int FrostTowerRange = 19;
     public const int FrostTowerSlowEffect = 20;
     public const int FrostTowerFortification = 21;
-    public const int FrostTowerEfficiency = 22;
-    public const int FrostTowerSuper = 23;
+    public const int FrostTowerSuper = 22;
 
     // LIGHTNING TOWER
-    public const int LightningTower = 24;
-    public const int LightningTowerRange = 25;
-    public const int LightningTowerPower = 26;
-    public const int LightningTowerFortification = 27;
-    public const int LightningTowerEfficiency = 28;
-    public const int LightningTowerSuper = 29;
+    public const int LightningTower = 23;
+    public const int LightningTowerRange = 24;
+    public const int LightningTowerPower = 25;
+    public const int LightningTowerFortification = 26;
+    public const int LightningTowerSuper = 27;
 
     // SHOCKWAVE TOWER
-    public const int ShockwaveTower = 30;
-    public const int ShockwaveTowerRange = 31;
-    public const int ShockwaveTowerStunDuration = 32;
-    public const int ShockwaveTowerFortification = 33;
-    public const int ShockwaveTowerEfficiency = 34;
-    public const int ShockwaveTowerSuper = 35;
+    public const int ShockwaveTower = 28;
+    public const int ShockwaveTowerRange = 29;
+    public const int ShockwaveTowerStunDuration = 30;
+    public const int ShockwaveTowerFortification = 31;
+    public const int ShockwaveTowerSuper = 32;
 
     // MUSIC
     public const int CloudLine = 0;
@@ -448,28 +445,25 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
-        new ResearchElementDefinition(CatapultSuper, Catapult, "Cluster Bomb", "Smaller boulders erupt from the inital explosion.", 500, true),
+        new ResearchElementDefinition(CatapultSuper, Catapult, "Cluster Bomb", "Smaller boulders erupt from the explosion.", 500, true),
 
         new ResearchElementDefinition(FrostTower, NoRequirement, "Frost Tower", "The Frost Tower slows down enemies making it easier for other defenses to hit them.", 300),
         new ResearchElementDefinition(FrostTowerRange, FrostTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(FrostTowerSlowEffect, FrostTower, "Slow Effect", "Slows Enemies by +30%.", 200),
         new ResearchElementDefinition(FrostTowerFortification, FrostTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(FrostTowerEfficiency, FrostTower, "N/A", "Not yet implemented.", 0),
-        new ResearchElementDefinition(FrostTowerSuper, FrostTower, "Blizzard", "Frost effect makes enemies more vulnerable", 500, true),
+        new ResearchElementDefinition(FrostTowerSuper, FrostTower, "Blizzard", "Frost makes enemies more vulnerable", 500, true),
 
         new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
         new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(LightningTowerPower, LightningTower, "Power", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(LightningTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "N/A", "Not yet implemented.", 0),
         new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Chain Lightning", "Lightning jumps from enemy to enemy.", 500, true),
 
         new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Shockwave Tower releases high energy shockwaves that momentarily stun enemies.", 300),
         new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
         new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "N/A", "Not yet implemented.", 0),
-        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages enemies based on how far from impact point.", 0, true),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages close enemies.", 0, true),
     };
     public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
     {
