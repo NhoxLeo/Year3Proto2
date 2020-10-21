@@ -649,7 +649,10 @@ public class SuperManager : MonoBehaviour
             GameManager gameMan = GameManager.GetInstance();
             if (gameMan && !Application.isEditor)
             {
-                gameMan.AttemptPause();
+                if (!gameMan.GetGameLost())
+                {
+                    gameMan.AttemptPause();
+                }
             }
         }
     }
@@ -1366,7 +1369,7 @@ public class SuperManager : MonoBehaviour
 
     public bool GetSnow()
     {
-        return currentLevel > 1;
+        return currentLevel == 1 || currentLevel == 3;
     }
 
     public SpawnerData GetCurrentLevelSpawnerData()
@@ -1445,7 +1448,7 @@ public class SuperManager : MonoBehaviour
         if (moderateVolume)
         {
             musicAudio.volume = 0.4f * MusicVolume;
-            windAmbienceAudio.volume = playWindAmbience ? 0.1f * AmbientVolume : 0f;
+            windAmbienceAudio.volume = playWindAmbience ? 0.15f * AmbientVolume : 0f;
             if(raining)
             {
                 rainAmbienceAudio.volume = AmbientVolume;

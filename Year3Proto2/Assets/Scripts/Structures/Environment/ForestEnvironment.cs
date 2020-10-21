@@ -86,4 +86,6 @@ public class ForestEnvironment : EnvironmentStructure
         base.SetMaterials(_snow);
         transform.GetChild(0).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
     }
+
+
 }

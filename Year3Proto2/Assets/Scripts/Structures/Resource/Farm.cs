@@ -5,8 +5,8 @@ using UnityEngine;
 public class Farm : ResourceStructure
 {
     public bool wasPlacedOnPlains = false;
-    protected Dictionary<TileBehaviour.TileCode, GameObject> fences;
-    protected Dictionary<TileBehaviour.TileCode, GameObject> closedFences;
+    private Dictionary<TileBehaviour.TileCode, GameObject> fences;
+    private Dictionary<TileBehaviour.TileCode, GameObject> closedFences;
 
     // Start is called before the first frame update
     protected override void Start()

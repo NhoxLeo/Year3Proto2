@@ -55,6 +55,8 @@ public abstract class ResourceStructure : Structure
     protected static GameObject TileHighlight = null;
     protected static GameObject Fencing = null;
     private GameObject[] villagers = new GameObject[3];
+    private List<GameObject> workingVillagers = new List<GameObject>();
+
     public virtual int GetProductionVolume()
     {
         return tileBonus * batchSize * allocatedVillagers;
@@ -89,6 +91,10 @@ public abstract class ResourceStructure : Structure
         {
             tileHighlights.Clear();
         }
+        if (workingVillagers != null)
+        {
+            workingVillagers.Clear();
+        }
 
         string adjStructType = StructureNames.LumberEnvironment;
         switch (resourceType)
@@ -102,8 +108,6 @@ public abstract class ResourceStructure : Structure
             default:
                 break;
         }
-
-            
 
         if (attachedTile)
         {
@@ -140,6 +144,8 @@ public abstract class ResourceStructure : Structure
                         }
                         if (tileCounted)
                         {
+                            workingVillagers.Add(transform.Find("Working Villager " + i.ToString()).gameObject);
+
                             GameObject newTileHighlight = Instantiate(StructureManager.GetBonusHighlight(), transform);
                             tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
                             Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
@@ -167,11 +173,17 @@ public abstract class ResourceStructure : Structure
                 }
             }
         }
+        RefreshVillagers();
     }
 
     protected virtual void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
     {
 
+    }
+
+    protected virtual Vector3 GetWorkLocation()
+    {
+        return Vector3.zero;
     }
 
     public override void OnSelected()
@@ -283,10 +295,25 @@ public abstract class ResourceStructure : Structure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        //update villager models
+        RefreshVillagers();
+    }
+
+    public void RefreshVillagers()
+    {
+        int allocated = 0;
+        for (int i = 0; i < workingVillagers.Count; i++)
+        {
+            workingVillagers[i].SetActive(allocatedVillagers > i);
+            if (allocatedVillagers > i)
+            {
+                allocated++;
+            }
+        }
+        int remainingVillagers = allocatedVillagers - allocated;
+
         for (int i = 0; i < villagers.Length; i++)
         {
-            villagers[i].SetActive(allocatedVillagers > i);
+            villagers[i].SetActive(remainingVillagers > i);
         }
     }
 
