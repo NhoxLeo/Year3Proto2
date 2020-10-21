@@ -42,6 +42,8 @@ public class Airship : MonoBehaviour
     [SerializeField] private Transform[] transforms;
     private List<Transform> spawnedAlready = new List<Transform>();
 
+    private Dictionary<string, int> enemyLevels = new Dictionary<string, int>();
+
     private Transform target;
     public int spawnWave;
     private bool hasStartedDeploying = false;
@@ -149,36 +151,31 @@ public class Airship : MonoBehaviour
             Invader invader = instantiatedTransform.GetComponent<Invader>();
             if (invader)
             {
-                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Invader);
-                invader.Initialize(level, Random.Range(0.8f, 1.5f));
+                invader.Initialize(enemyLevels[EnemyNames.Invader], Random.Range(0.8f, 1.5f));
             }
 
             HeavyInvader heavyInvader = instantiatedTransform.GetComponent<HeavyInvader>();
             if (heavyInvader)
             {
-                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.HeavyInvader);
-                heavyInvader.Initialize(level);
+                heavyInvader.Initialize(enemyLevels[EnemyNames.HeavyInvader]);
             }
 
             FlyingInvader flying = instantiatedTransform.GetComponent<FlyingInvader>();
             if (flying)
             {
-                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.FlyingInvader);
-                flying.Initialize(level);
+                flying.Initialize(enemyLevels[EnemyNames.FlyingInvader]);
             }
 
             Petard pet = instantiatedTransform.GetComponent<Petard>();
             if (pet)
             {
-                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.Petard);
-                pet.Initialize(level);
+                pet.Initialize(enemyLevels[EnemyNames.Petard]);
             }
 
             BatteringRam ram = instantiatedTransform.GetComponent<BatteringRam>();
             if (ram)
             {
-                int level = EnemyManager.GetInstance().GetEnemyCurrentLevel(EnemyNames.BatteringRam);
-                ram.Initialize(level);
+                ram.Initialize(enemyLevels[EnemyNames.BatteringRam]);
             }
 
             enemy.SetSpawnWave(spawnWave);
@@ -200,8 +197,9 @@ public class Airship : MonoBehaviour
     * @Parameter: Transform Array, Transform
     * @Return: void
     ***************************************/
-    public void Embark(Transform[] _transforms)
+    public void Embark(Transform[] _transforms, Dictionary<string, int> _enemyLevels)
     {
+        enemyLevels = _enemyLevels;
         TileBehaviour tileBehaviour = target.GetComponent<TileBehaviour>();
         // Check if target is a tile.
         if (tileBehaviour)
