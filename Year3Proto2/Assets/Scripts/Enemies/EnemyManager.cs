@@ -420,7 +420,7 @@ public class EnemyManager : MonoBehaviour
     * @Parameter: n/a
     * @Return: void
     ***************************************/
-    public void SpawnAirship(Transform[] transforms)
+    public void SpawnAirship(Transform[] transforms, Dictionary<string, int> _enemyLevels)
     {
         float random = UnityEngine.Random.Range(-180.0f, 180f);
         Vector3 location = new Vector3(Mathf.Sin(random) * distance, 0.0f, Mathf.Cos(random) * distance);
@@ -433,7 +433,7 @@ public class EnemyManager : MonoBehaviour
             airship.spawnWave = wave;
             if (airship.GetTarget())
             {
-                airship.Embark(transforms);
+                airship.Embark(transforms, _enemyLevels);
             }
         }
     }
@@ -533,13 +533,22 @@ public class EnemyManager : MonoBehaviour
                 // first spawn flying invaders
                 Transform[] remaining = SpawnFlyingInvaders(dedicatedEnemies);
 
+                Dictionary<string, int> enemyLevels = new Dictionary<string, int>
+                {
+                    { EnemyNames.Invader, currentSettings[EnemyNames.Invader].Item2 },
+                    { EnemyNames.HeavyInvader, currentSettings[EnemyNames.HeavyInvader].Item2 },
+                    { EnemyNames.Petard, currentSettings[EnemyNames.Petard].Item2 },
+                    { EnemyNames.FlyingInvader, currentSettings[EnemyNames.FlyingInvader].Item2 },
+                    { EnemyNames.BatteringRam, currentSettings[EnemyNames.BatteringRam].Item2 }
+                };
+
                 if (remaining.Length > 0)
                 {
                     //Dedicate enemies to airships
                     List<Transform[]> dedicatedAirships = DedicateAirships(remaining);
                     for (int i = 0; i < dedicatedAirships.Count; i++)
                     {
-                        SpawnAirship(dedicatedAirships[i]);
+                        SpawnAirship(dedicatedAirships[i], enemyLevels);
                     }
 
                     messageBox.ShowMessage("Invaders incoming!", 3.5f);
