@@ -23,6 +23,7 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         isHelp = false;
         isActive = false;
+        Time.timeScale = 1.0f;
     }
 
     private void Update()
