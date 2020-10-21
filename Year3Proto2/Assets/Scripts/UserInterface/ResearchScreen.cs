@@ -59,7 +59,7 @@ public class ResearchScreen : MonoBehaviour
         GetResearchInfo();
 
         InitializeCards();
-        Debug.Log(Screen.width / Screen.height);
+        //Debug.Log(Screen.width / Screen.height);
 
         if (Screen.width / Screen.height >= 2.0f)
         {
@@ -70,6 +70,11 @@ public class ResearchScreen : MonoBehaviour
     }
 
     private void Update()
+    {
+
+    }
+
+    private void LateUpdate()
     {
         if (Input.GetKeyDown(KeyCode.M))
         {
@@ -108,10 +113,7 @@ public class ResearchScreen : MonoBehaviour
             }
             cardPanel.localPosition = localPos;
         }
-    }
 
-    private void LateUpdate()
-    {
         if (loadingFrameCounter < 20)
         {
             loadingFrameCounter++;

@@ -172,7 +172,7 @@ public static class StructureMaterials
                 paths.Add("Materials/Structures/Defense/mLightningCrystal");
                 paths.Add("Materials/Structures/Defense/mLightningTower" + (_key.Item2 ? "_Snow" : ""));
                 break;
-            case StructureNames.FreezeTower:
+            case StructureNames.FrostTower:
                 paths.Add("Materials/Structures/Defense/mFreezeTower" + (_key.Item2 ? "_Snow" : ""));
                 paths.Add("Materials/Structures/Defense/mFreezeGround" + (_key.Item2 ? "_Snow" : ""));
                 paths.Add("Materials/Structures/Defense/mFreezeFaceTwo");
@@ -211,7 +211,7 @@ public static class StructureNames
     public const string Barracks = "Barracks";
     public const string Ballista = "Ballista";
     public const string Catapult = "Catapult";
-    public const string FreezeTower = "Frost Tower";
+    public const string FrostTower = "Frost Tower";
     public const string ShockwaveTower = "Shockwave Tower";
     public const string LightningTower = "Lightning Tower";
 
@@ -239,8 +239,8 @@ public static class StructureNames
                 return Catapult;
             case BuildPanel.Buildings.Barracks:
                 return Barracks;
-            case BuildPanel.Buildings.FreezeTower:
-                return FreezeTower;
+            case BuildPanel.Buildings.FrostTower:
+                return FrostTower;
             case BuildPanel.Buildings.ShockwaveTower:
                 return ShockwaveTower;
             case BuildPanel.Buildings.LightningTower:
@@ -279,6 +279,7 @@ public class StructureManager : MonoBehaviour
     private TileBehaviour structureOldTile = null;
     private int nextStructureID = 0;
     protected static GameObject TileHighlight = null;
+    protected static GameObject BonusHighlight = null;
     public Transform selectedTileHighlight = null;
     public Transform tileHighlight = null;
     [HideInInspector]
@@ -291,9 +292,10 @@ public class StructureManager : MonoBehaviour
     private List<Transform> resourceHighlights;
     private EnvironmentStructure hoverEnvironment = null;
     public const float HighlightSitHeight = 0.54f;
+    public const float BonusHighlightSitHeight = 1f;
     private bool opacityAscending = false;
     private const float OpacitySpeed = 0.6f;
-    private const float OpacityMinimum = 0.1f;
+    private const float OpacityMinimum = 0.2f;
     private const float OpacityMaximum = 0.7f;
     private float opacity = OpacityMaximum;
     private const float ColourLerpAmount = 0.4f;
@@ -306,7 +308,7 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
         { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
         { BuildPanel.Buildings.Barracks, "Spawns soldiers, who automatically attack enemies." },
-        { BuildPanel.Buildings.FreezeTower, "Sprays enemies with ice to slow them down." },
+        { BuildPanel.Buildings.FrostTower, "Sprays enemies with ice to slow them down." },
         { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
         { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies." },
         { BuildPanel.Buildings.Farm, "Collects Food from nearby field tiles. Bonus if constructed on field." },
@@ -322,7 +324,7 @@ public class StructureManager : MonoBehaviour
         { StructureNames.Ballista, BuildPanel.Buildings.Ballista },
         { StructureNames.Catapult, BuildPanel.Buildings.Catapult },
         { StructureNames.Barracks, BuildPanel.Buildings.Barracks },
-        { StructureNames.FreezeTower, BuildPanel.Buildings.FreezeTower },
+        { StructureNames.FrostTower, BuildPanel.Buildings.FrostTower },
         { StructureNames.ShockwaveTower, BuildPanel.Buildings.ShockwaveTower },
         { StructureNames.LightningTower, BuildPanel.Buildings.LightningTower },
         { StructureNames.FoodResource, BuildPanel.Buildings.Farm },
@@ -332,12 +334,13 @@ public class StructureManager : MonoBehaviour
         { StructureNames.LumberStorage, BuildPanel.Buildings.LumberPile },
         { StructureNames.MetalStorage, BuildPanel.Buildings.MetalStorage }
     };
+
     public Dictionary<BuildPanel.Buildings, int> structureCounts = new Dictionary<BuildPanel.Buildings, int>
     {
         { BuildPanel.Buildings.Ballista, 0 },
         { BuildPanel.Buildings.Catapult, 0 },
         { BuildPanel.Buildings.Barracks, 0 },
-        { BuildPanel.Buildings.FreezeTower, 0 },
+        { BuildPanel.Buildings.FrostTower, 0 },
         { BuildPanel.Buildings.ShockwaveTower, 0 },
         { BuildPanel.Buildings.LightningTower, 0 },
         { BuildPanel.Buildings.Farm, 0 },
@@ -347,13 +350,14 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Mine, 0 },
         { BuildPanel.Buildings.MetalStorage, 0 }
     };
+
     public Dictionary<string, ResourceBundle> structureCosts = new Dictionary<string, ResourceBundle>
     {
         // NAME                                                fC       wC       mC    
         { StructureNames.Barracks,          new ResourceBundle(0,       150,     25) },
         { StructureNames.Ballista,          new ResourceBundle(0,       200,     125) },
         { StructureNames.Catapult,          new ResourceBundle(0,       50,      250) },
-        { StructureNames.FreezeTower,       new ResourceBundle(0,       100,     150) },
+        { StructureNames.FrostTower,       new ResourceBundle(0,       100,     150) },
         { StructureNames.ShockwaveTower,    new ResourceBundle(0,       100,     200) },
         { StructureNames.LightningTower,    new ResourceBundle(0,       50,      200) },
 
@@ -365,7 +369,9 @@ public class StructureManager : MonoBehaviour
         { StructureNames.LumberStorage,     new ResourceBundle(0,       120,     40) },
         { StructureNames.MetalStorage,      new ResourceBundle(0,       160,     40) }
     };
+
     private Dictionary<int, Structure> playerStructureDict = new Dictionary<int, Structure>();
+
     [HideInInspector]
     public bool isOverUI = false;
 
@@ -400,6 +406,8 @@ public class StructureManager : MonoBehaviour
     public float recursiveHGrowthChance;
     [HideInInspector]
     public float recursiveFGrowthChance;
+
+    #region Unity Messages
 
     private void Awake()
     {
@@ -450,10 +458,11 @@ public class StructureManager : MonoBehaviour
             playerStructureDict.Add(GetNewID(), FindObjectOfType<Longhaus>());
             resourceHighlights = new List<Transform>()
             {
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform,
-                Instantiate(GetTileHighlight()).transform
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform,
+                Instantiate(GetBonusHighlight()).transform
             };
             for (int i = 0; i < resourceHighlights.Count; i++)
             {
@@ -506,6 +515,13 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    private void OnApplicationQuit()
+    {
+        SuperManager.GetInstance().SaveCurrentMatch();
+    }
+
+    #endregion
+
     public static StructureManager GetInstance()
     {
         return instance;
@@ -526,7 +542,7 @@ public class StructureManager : MonoBehaviour
             { StructureNames.Barracks,          new StructureDefinition(Resources.Load("Structures/Defense/Barracks")           as GameObject,  new ResourceBundle(0,       150,     25)) },
             { StructureNames.Ballista,          new StructureDefinition(Resources.Load("Structures/Defense/Ballista Tower")     as GameObject,  new ResourceBundle(0,       200,     125)) },
             { StructureNames.Catapult,          new StructureDefinition(Resources.Load("Structures/Defense/Catapult Tower")     as GameObject,  new ResourceBundle(0,       50,      250)) },
-            { StructureNames.FreezeTower,       new StructureDefinition(Resources.Load("Structures/Defense/Freeze Tower")       as GameObject,  new ResourceBundle(0,       100,     150)) },
+            { StructureNames.FrostTower,        new StructureDefinition(Resources.Load("Structures/Defense/Frost Tower")        as GameObject,  new ResourceBundle(0,       100,     150)) },
             { StructureNames.ShockwaveTower,    new StructureDefinition(Resources.Load("Structures/Defense/Shockwave Tower")    as GameObject,  new ResourceBundle(0,       100,     200)) },
             { StructureNames.LightningTower,    new StructureDefinition(Resources.Load("Structures/Defense/Lightning Tower")    as GameObject,  new ResourceBundle(0,       50,      200)) },
 
@@ -543,11 +559,6 @@ public class StructureManager : MonoBehaviour
             { StructureNames.MetalEnvironment,  new StructureDefinition(Resources.Load("Structures/Environment/Hills")          as GameObject,  new ResourceBundle(0,       0,       0)) },
             { StructureNames.FoodEnvironment,   new StructureDefinition(Resources.Load("Structures/Environment/Plains")         as GameObject,  new ResourceBundle(0,       0,       0)) },
         };
-    }
-
-    private void OnApplicationQuit()
-    {
-        SuperManager.GetInstance().SaveCurrentMatch();
     }
 
     public static string GetSaveDataPath()
@@ -1021,7 +1032,7 @@ public class StructureManager : MonoBehaviour
                 firstStructurePlaced = true;
             }
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (structure.IsStructure(StructureNames.FreezeTower))
+            if (structure.IsStructure(StructureNames.FrostTower))
             {
                 villWidget = false;
             }
@@ -1332,8 +1343,6 @@ public class StructureManager : MonoBehaviour
             }
         }
 
-        //Debug.Log("Starting Area grew to: " + startingAreaRadius.ToString() + " units away from the Longhaus.");
-
 
         // REMAINING GENERATION
 
@@ -1516,7 +1525,7 @@ public class StructureManager : MonoBehaviour
             playerStructureDict.Add(_saveData.ID, newStructure);
             StructureType structType = newStructure.GetStructureType();
             bool villWidget = structType == StructureType.Resource || structType == StructureType.Defense;
-            if (newStructure.IsStructure(StructureNames.FreezeTower))
+            if (newStructure.IsStructure(StructureNames.FrostTower))
             {
                 villWidget = false;
             }
@@ -1586,32 +1595,52 @@ public class StructureManager : MonoBehaviour
         return TileHighlight;
     }
 
+    public static GameObject GetBonusHighlight()
+    {
+        if (!BonusHighlight)
+        {
+            BonusHighlight = Resources.Load("BonusHighlight") as GameObject;
+        }
+        return BonusHighlight;
+    }
+
     private void SetPreview(TileBehaviour _hitTile)
     {
         ResourceStructure resStruct = structure.GetComponent<ResourceStructure>();
-        
         // if the structure is a ResourceStructure...
         if (resStruct)
         {
             ResourceType resourceType = resStruct.GetResourceType();
+            Structure attachedToTile = _hitTile.GetAttached();
+            resourceHighlights[4].gameObject.SetActive(false);
+            if (attachedToTile)
+            {
+                if (attachedToTile.GetStructureType() == StructureType.Environment)
+                {
+                    EnvironmentStructure environmentAttachedToTile = attachedToTile.GetComponent<EnvironmentStructure>();
+                    if (environmentAttachedToTile.GetResourceType() == resStruct.GetResourceType())
+                    {
+                        Vector3 highlightPos = _hitTile.transform.position;
+                        highlightPos.y = BonusHighlightSitHeight;
+                        resourceHighlights[4].position = highlightPos;
+                        // enable it
+                        resourceHighlights[4].gameObject.SetActive(true);
+                        SuperManager.SetBonusHighlightHeight(resourceHighlights[4], environmentAttachedToTile.GetBonusHighlightSitHeight());
+                    }
+                }
+            }
+
             Dictionary<TileBehaviour.TileCode, TileBehaviour> adjacents = _hitTile.GetAdjacentTiles();
             
             // for each tilecode
             for (int i = 0; i < 4; i++)
             {
+                resourceHighlights[i].gameObject.SetActive(false);
                 TileBehaviour.TileCode tileCode = (TileBehaviour.TileCode)i;
 
                 // if _hitTile has a tile in that direction...
                 if (adjacents.ContainsKey(tileCode))
                 {
-                    // move the corresponding tilehighligh to the tile's position
-                    Vector3 highlightPos = adjacents[tileCode].transform.position;
-                    highlightPos.y = HighlightSitHeight;
-                    resourceHighlights[i].position = highlightPos;
-
-                    // enable it
-                    resourceHighlights[i].gameObject.SetActive(true);
-
                     // set it to the right colour
                     Structure attached = adjacents[tileCode].GetAttached();
                     if (attached)
@@ -1622,33 +1651,20 @@ public class StructureManager : MonoBehaviour
                             // if the ResourceType of the structure being placed and the environment match
                             if (resourceType == attachedEnvironment.GetResourceType())
                             {
-                                if (attachedEnvironment.GetExploited())
+                                if (!attachedEnvironment.GetExploited())
                                 {
-                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                                }
-                                else
-                                {
-                                    resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                                    // enable it
+                                    resourceHighlights[i].gameObject.SetActive(true);
+                                    // move the corresponding tilehighligh to the tile's position
+                                    Vector3 highlightPos = adjacents[tileCode].transform.position;
+                                    highlightPos.y = BonusHighlightSitHeight;
+                                    resourceHighlights[i].position = highlightPos;
+                                    // set the shader height value
+                                    SuperManager.SetBonusHighlightHeight(resourceHighlights[i], attachedEnvironment.GetBonusHighlightSitHeight());
                                 }
                             }
-                            else
-                            {
-                                resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                            }
-                        }
-                        else
-                        {
-                            resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                         }
                     }
-                    else
-                    {
-                        resourceHighlights[i].GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                    }
-                }
-                else
-                {
-                    resourceHighlights[i].gameObject.SetActive(false);
                 }
             }
         }
@@ -1689,7 +1705,6 @@ public class StructureManager : MonoBehaviour
                 }
             }
             hoverEnvironment.SetOpacity(opacity);
-            //Debug.Log("Opacity: " + opacity.ToString());
         }
         else
         {
@@ -1782,13 +1797,6 @@ public class StructureManager : MonoBehaviour
                         tutMan.GoToNext();
                     }
                 }
-                else
-                {
-                    if (tutMan.State == TutorialManager.TutorialState.SelectLumberMill)
-                    {
-                        tutMan.GoToNext();
-                    }
-                }
                 break;
             case StructureNames.MetalResource:
                 if (_structureWasPlaced)
@@ -1798,9 +1806,13 @@ public class StructureManager : MonoBehaviour
                         tutMan.GoToNext();
                     }
                 }
-                else
+                break;
+            case StructureNames.FoodStorage:
+            case StructureNames.LumberStorage:
+            case StructureNames.MetalStorage:
+                if (_structureWasPlaced)
                 {
-                    if (tutMan.State == TutorialManager.TutorialState.SelectMine)
+                    if (tutMan.State == TutorialManager.TutorialState.Storages)
                     {
                         tutMan.GoToNext();
                     }
@@ -1808,6 +1820,10 @@ public class StructureManager : MonoBehaviour
                 break;
             case StructureNames.Ballista:
             case StructureNames.Barracks:
+            case StructureNames.Catapult:
+            case StructureNames.LightningTower:
+            case StructureNames.ShockwaveTower:
+            case StructureNames.FrostTower:
                 if (_structureWasPlaced)
                 {
                     if (tutMan.State == TutorialManager.TutorialState.SelectDefence)

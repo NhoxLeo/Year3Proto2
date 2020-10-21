@@ -12,6 +12,7 @@ public class ForestEnvironment : EnvironmentStructure
         base.Awake();
         resourceType = ResourceType.Wood;
         structureName = StructureNames.LumberEnvironment;
+        bonusHighlightSitHeight = SuperManager.GetInstance().GetSnow() ? 0.6f : 0.4f;
     }
 
     protected override void Start()
@@ -85,4 +86,6 @@ public class ForestEnvironment : EnvironmentStructure
         base.SetMaterials(_snow);
         transform.GetChild(0).GetComponent<MeshRenderer>().materials = StructureMaterials.Fetch(structureName + StructureNames.Alt, _snow).ToArray();
     }
+
+
 }

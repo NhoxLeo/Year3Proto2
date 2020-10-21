@@ -55,6 +55,8 @@ public abstract class ResourceStructure : Structure
     protected static GameObject TileHighlight = null;
     protected static GameObject Fencing = null;
     private GameObject[] villagers = new GameObject[3];
+    private List<GameObject> workingVillagers = new List<GameObject>();
+
     public virtual int GetProductionVolume()
     {
         return tileBonus * batchSize * allocatedVillagers;
@@ -89,6 +91,10 @@ public abstract class ResourceStructure : Structure
         {
             tileHighlights.Clear();
         }
+        if (workingVillagers != null)
+        {
+            workingVillagers.Clear();
+        }
 
         string adjStructType = StructureNames.LumberEnvironment;
         switch (resourceType)
@@ -113,19 +119,17 @@ public abstract class ResourceStructure : Structure
                 {
                     if (adjacentsToAttached[(TileBehaviour.TileCode)i].GetPlayable())
                     {
-                        GameObject newTileHighlight = Instantiate(StructureManager.GetTileHighlight(), transform);
-                        tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
-                        Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
-                        highlightPos.y = StructureManager.HighlightSitHeight;
-                        newTileHighlight.transform.position = highlightPos;
+                        
                         Structure adjStructure = adjacentsToAttached[(TileBehaviour.TileCode)i].GetAttached();
                         bool tileCounted = false;
+                        float height = 2f;
                         // If there is a structure on the tile...
                         if (adjStructure)
                         {
                             if (adjStructure.IsStructure(adjStructType))
                             {
                                 EnvironmentStructure envStructure = adjStructure.GetComponent<EnvironmentStructure>();
+                                height = envStructure.GetBonusHighlightSitHeight();
                                 if (!envStructure.GetExploited())
                                 {
                                     envStructure.SetExploited(true);
@@ -140,16 +144,23 @@ public abstract class ResourceStructure : Structure
                         }
                         if (tileCounted)
                         {
-                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                            workingVillagers.Add(transform.Find("Working Villager " + i.ToString()).gameObject);
+
+                            GameObject newTileHighlight = Instantiate(StructureManager.GetBonusHighlight(), transform);
+                            tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
+                            Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
+                            highlightPos.y = StructureManager.BonusHighlightSitHeight;
+                            newTileHighlight.transform.position = highlightPos;
+                            SuperManager.SetBonusHighlightHeight(newTileHighlight.transform, resourceType == ResourceType.Wood ? height * 0.5f : height);
+
                             tileBonus++;
                             AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, true);
+                            newTileHighlight.SetActive(false);
                         }
                         else
                         {
-                            newTileHighlight.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
                             AdjacentOnPlaceEvent((TileBehaviour.TileCode)i, false);
                         }
-                        newTileHighlight.SetActive(false);
                     }
                     else
                     {
@@ -162,11 +173,17 @@ public abstract class ResourceStructure : Structure
                 }
             }
         }
+        RefreshVillagers();
     }
 
     protected virtual void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
     {
 
+    }
+
+    protected virtual Vector3 GetWorkLocation()
+    {
+        return Vector3.zero;
     }
 
     public override void OnSelected()
@@ -278,10 +295,25 @@ public abstract class ResourceStructure : Structure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        //update villager models
+        RefreshVillagers();
+    }
+
+    public void RefreshVillagers()
+    {
+        int allocated = 0;
+        for (int i = 0; i < workingVillagers.Count; i++)
+        {
+            workingVillagers[i].SetActive(allocatedVillagers > i);
+            if (allocatedVillagers > i)
+            {
+                allocated++;
+            }
+        }
+        int remainingVillagers = allocatedVillagers - allocated;
+
         for (int i = 0; i < villagers.Length; i++)
         {
-            villagers[i].SetActive(allocatedVillagers > i);
+            villagers[i].SetActive(remainingVillagers > i);
         }
     }
 

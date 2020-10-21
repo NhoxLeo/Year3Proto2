@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using DG.Tweening;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -57,6 +59,7 @@ public class EnvironmentSystem : MonoBehaviour
     private int weatherIndex;
     private int ambientIndex;
     private bool loaded = false;
+    private ParticleSystem currentParticles;
 
     private void Awake()
     {
@@ -78,13 +81,14 @@ public class EnvironmentSystem : MonoBehaviour
                 if (weatherEvent.IsCompleted())
                 {
                     Destroy(weatherEvent.gameObject);
-                    weatherIndex = Random.Range(0, weatherEvents.Length);
-                    InvokeWeather();
+
+                    if(currentParticles)
+                    {
+                        currentParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+                    }
+
+                    InvokeWeather(true);
                 }
-            }
-            else
-            {
-                InvokeWeather();
             }
 
             if (ambientEvent)
@@ -95,9 +99,14 @@ public class EnvironmentSystem : MonoBehaviour
                     InvokeAmbient();
                 }
             }
-            else
+        }
+        else
+        {
+            if(!SuperManager.GetInstance().GetSavedMatch().match)
             {
-                InvokeWeather();
+                InvokeWeather(false);
+                InvokeAmbient();
+                loaded = true;
             }
         }
     }
@@ -109,33 +118,43 @@ public class EnvironmentSystem : MonoBehaviour
             .Invoke(false) as EnvironmentAmbientEvent;
     }
 
-    private void InvokeWeather()
+    private void InvokeWeather(bool _random)
     {
-        weatherIndex = Random.Range(0, weatherEvents.Length);
+        weatherIndex = Random.Range(0, 4);
+
+        weatherIndex = (weatherIndex < 1) ? (SuperManager.GetInstance().GetSnow() ? 2 : 1) : 0;
+        weatherIndex = _random ? weatherIndex : 0;
+
         weatherEvent = Instantiate(weatherEvents[weatherIndex], transform)
             .Invoke(false) as EnvironmentWeatherEvent;
+
+        if(weatherEvent.GetData().weather == 1)
+        {
+            SuperManager.GetInstance().GetRainAudio()
+                .DOFade(SuperManager.AmbientVolume, 6.0f)
+                .OnComplete(() => SuperManager.raining = true);
+        }
+        else
+        {
+            SuperManager.GetInstance().GetRainAudio()
+                .DOFade(0, 3.0f)
+                .OnComplete(() => SuperManager.raining = false);
+        }
+
+        StartCoroutine(ClearParticleEvent());
     }
 
     public void LoadData(SuperManager.MatchSaveData _data)
     {
-        if(_data.environmentAmbientData.Equals(default(EnvironmentAmbientData)))
-        {
-            InvokeAmbient();
-        } 
-        else
+        if(!_data.environmentAmbientData.Equals(default(EnvironmentAmbientData)))
         {
             ambientEvent = Instantiate(ambientEvents[_data.environmentAmbientData.index], transform)
                 .LoadData(_data.environmentAmbientData);
         }
 
-
-        if (_data.environmentWeatherData.Equals(default(EnvironmentWeatherData)))
-        {
-            InvokeWeather();
-        }
-        else
-        {
-            Instantiate(weatherEvents[_data.environmentWeatherData.index], transform)
+        if (!_data.environmentWeatherData.Equals(default(EnvironmentWeatherData)))
+        { 
+            weatherEvent = Instantiate(weatherEvents[_data.environmentWeatherData.index], transform)
                 .LoadData(_data.environmentWeatherData);
         }
 
@@ -151,5 +170,26 @@ public class EnvironmentSystem : MonoBehaviour
     public static EnvironmentSystem GetInstance()
     {
         return instance;
+    }
+
+    IEnumerator ClearParticleEvent()
+    {
+        ParticleSystem particleSystem = currentParticles;
+
+        currentParticles = weatherEvent.GetWeather();
+
+        if(currentParticles)
+        {
+            currentParticles.Play();
+        }
+
+        yield return new WaitForSeconds(3);
+
+        if(particleSystem)
+        {
+            Destroy(particleSystem.gameObject);
+        }
+
+        yield return null;
     }
 }

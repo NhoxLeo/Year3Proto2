@@ -255,7 +255,7 @@ public class TileBehaviour : MonoBehaviour
         {
             if (!adjacentTiles.ContainsKey((TileCode)i))
             {
-                GameObject cliffFace = Instantiate(GetCliffFace(), transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.Euler(0f, 90f + 90f * i, 0f), CliffFaceParent);
+                Instantiate(GetCliffFace(), transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.Euler(0f, 90f + 90f * i, 0f), CliffFaceParent);
             }
         }
     }

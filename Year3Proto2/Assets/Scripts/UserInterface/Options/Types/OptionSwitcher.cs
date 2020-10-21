@@ -106,4 +106,11 @@ public class OptionSwitcher : OptionObject, OptionDataBase
     {
         data = (OptionSwitcherData) _data;
     }
+
+    public override void Reset()
+    {
+        data.value = data.defaultValue;
+        value.text = data.values[data.value].ToString();
+        data.GetCallback().Invoke();
+    }
 }

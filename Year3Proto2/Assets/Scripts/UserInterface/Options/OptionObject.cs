@@ -50,4 +50,5 @@ public abstract class OptionObject : MonoBehaviour
     public abstract void SetData(OptionData _data);
     public abstract void Deserialize();
     public abstract void Serialize();
+    public abstract void Reset();
 }

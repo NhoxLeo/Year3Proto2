@@ -9,6 +9,8 @@ public abstract class EnvironmentStructure : Structure
     protected ResourceStructure gatherer = null;
     protected bool exploited = false;
     protected int exploiterID = -1;
+    protected float bonusHighlightSitHeight = 0.4f;
+    
 
     protected override void Awake()
     {
@@ -52,4 +54,9 @@ public abstract class EnvironmentStructure : Structure
     }
 
     public abstract void SetOpacity(float _opacity);
+
+    public float GetBonusHighlightSitHeight()
+    {
+        return bonusHighlightSitHeight;
+    }
 }

@@ -299,7 +299,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 190, y: 0}
   m_SizeDelta: {x: 272, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8985166433322870155
@@ -746,7 +746,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickSound: {fileID: 0}
 --- !u!1 &1062366387131099510
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,7 +1322,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickSound: {fileID: 0}
 --- !u!1 &4793796716679461700
 GameObject:
   m_ObjectHideFlags: 0
@@ -1384,7 +1382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14f47098328ebc249859a8506836d87f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialState: 0
   tutorialMessages:
   - heading: Welcome
     description: You're chief of this settlement on a floating island. However, this
@@ -1394,22 +1391,21 @@ MonoBehaviour:
     description: Select the Farm from the list of Production buildngs at the bottom
       of the screen. Farms produce Food, which is needed to feed your Villagers.
   - heading: Build a Farm (2/2)
-    description: Like all Production buildings, Farms gain a production bonus when
-      placed on a grassy Field tile. Every adjacent Field tile will increase the
-      bonus. Surround the Farm with Fields for maximum production.
-  - heading: Build a Lumber Mill (1/2)
-    description: You are now producing some Food! Now select the Lumber Mill. These
-      are used to produce Wood, which is needed to contruct all buildings.
-  - heading: Build a Lumber Mill (2/2)
-    description: Lumber Mills produce more if placed adjacent to Forests. Try to
-      surround the Mill with as many Forests as possible to maximise production.
-  - heading: Build a Mine (1/2)
-    description: Finally select the Mine. It produces Metal, which is used for building.
-      Metal is used a lot for defence.
-  - heading: Build a Mine (2/2)
-    description: Mines produce more Metal for every adjacent Hill. Where would be
-      the most optimal spot for one?
-  - heading: Villager Allocation
+    description: Farms gain a production bonus when placed on a Field tile. Every
+      adjacent Field tile will increase the bonus. However, each field tile can only
+      be used by one Farm.
+  - heading: Build a Lumber Mill
+    description: Now build the Lumber Mill, to produce Wood, which is needed for
+      construction. They will produce more Wood for every adjacent Forest, unless
+      another Lumber Mill has already exploited that tile.
+  - heading: Build a Mine
+    description: Finally build the Mine. It produces Metal, which is used a lot for
+      defence. The Mine will produce more Metal for every adjacent Hill, unless already
+      exploited by another Mine.
+  - heading: Storages
+    description: The price of each building will increase every time you build one.
+      Construct storages to increase the maximum amount of resources you can hold.
+  - heading: Villager Allocation.
     description: Almost every building needs Villagers to run them. The more Villagers,
       the better that building will perform. The strip of numbers on a selected building
       allows you to allocate Villagers. The dot indicates the number chosen by the
@@ -1418,12 +1414,11 @@ MonoBehaviour:
   - heading: Train a Villager
     description: You'll probably need more Villagers to run all the buildings you
       want. The button in the bottom-left lets you train a new Villager. Every Villager
-      consumes Food so make sure you are producing enough. Build more Farms if you're
-      short on Food.
+      consumes Food so make sure you are producing enough.
   - heading: Managing Villager Priority
-    description: The Villager Priority panel allows you to set how the automatic
-      system allocates Villagers between your buildings. Click or drag these cards
-      to adjust which resource is prioritised.
+    description: Villagers will try to find the best buildings to maximise production,
+      while also maintaining a minimum Food production so they don't starve. Click
+      or drag these cards to adjust the prioritisation of resources.
   - heading: Defend your Island!
     description: Invaders threaten to destroy your buildings and your Longhaus. Select
       and build a defensive structure from the Build Panel.
@@ -1503,7 +1498,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 190, y: 0}
   m_SizeDelta: {x: 272, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &2326660792074135772
@@ -2009,4 +2004,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickSound: {fileID: 0}
