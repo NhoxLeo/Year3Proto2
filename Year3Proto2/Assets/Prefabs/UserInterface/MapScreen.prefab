@@ -1685,6 +1685,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showTooltip: 1
+  interactable: 1
   width: 0
   height: 0
   toolSound: {fileID: 0}
@@ -2730,7 +2731,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d2bf5561e87f149bfaa2d1125b0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickSound: {fileID: 0}
 --- !u!1 &4403128572227237973
 GameObject:
   m_ObjectHideFlags: 0
@@ -3465,6 +3465,32 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f,
+        type: 2}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 514
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 315bd7d731b3f344499209e36fd529af, type: 3}
 --- !u!224 &8167554150971250953 stripped
@@ -3644,6 +3670,32 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f,
+        type: 2}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 514
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 315bd7d731b3f344499209e36fd529af, type: 3}
@@ -3985,6 +4037,32 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f,
+        type: 2}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 514
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 315bd7d731b3f344499209e36fd529af, type: 3}
 --- !u!224 &8167554152010187762 stripped
@@ -4164,6 +4242,32 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f,
+        type: 2}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 514
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 315bd7d731b3f344499209e36fd529af, type: 3}
@@ -4822,6 +4926,32 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LevelBadge
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4cb101f38e3982e46a978b948792b79f,
+        type: 2}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427870374063323601, guid: 315bd7d731b3f344499209e36fd529af,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 514
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 315bd7d731b3f344499209e36fd529af, type: 3}

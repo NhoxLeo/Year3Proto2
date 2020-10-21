@@ -71,6 +71,11 @@ public class ResearchScreen : MonoBehaviour
 
     private void Update()
     {
+
+    }
+
+    private void LateUpdate()
+    {
         if (Input.GetKeyDown(KeyCode.M))
         {
             RefreshCards();
@@ -108,10 +113,7 @@ public class ResearchScreen : MonoBehaviour
             }
             cardPanel.localPosition = localPos;
         }
-    }
 
-    private void LateUpdate()
-    {
         if (loadingFrameCounter < 20)
         {
             loadingFrameCounter++;
