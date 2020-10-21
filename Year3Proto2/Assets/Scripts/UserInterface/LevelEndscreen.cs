@@ -13,20 +13,6 @@ public class LevelEndscreen : MonoBehaviour
     public bool showingVictory = false;
     public bool showingDefeat = false;
 
-    void Update()
-    {
-        /*
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            ShowVictoryScreen();
-        }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            ShowDeafeatScreen();
-        }
-        */
-    }
 
     private void GetVictoryInfo()
     {
@@ -51,6 +37,7 @@ public class LevelEndscreen : MonoBehaviour
         GetComponent<Tooltip>().showTooltip = true;
         GetComponent<Image>().color = victoryColour;
         showingVictory = true;
+        Time.timeScale = 0f;
 
         FindObjectOfType<HUDManager>().doShowHUD = false;
         FindObjectOfType<EnemyManager>().SetSpawning(false);
@@ -63,6 +50,7 @@ public class LevelEndscreen : MonoBehaviour
         GetComponent<Tooltip>().showTooltip = true;
         GetComponent<Image>().color = defeatColour;
         showingDefeat = true;
+        Time.timeScale = 0f;
 
         FindObjectOfType<HUDManager>().doShowHUD = false;
         FindObjectOfType<EnemyManager>().SetSpawning(false);
@@ -75,7 +63,7 @@ public class LevelEndscreen : MonoBehaviour
         GetComponent<Tooltip>().showTooltip = false;
         showingVictory = false;
         showingDefeat = false;
-
+        Time.timeScale = 1f;
         FindObjectOfType<HUDManager>().doShowHUD = true;
         FindObjectOfType<EnemyManager>().SetSpawning(true);
     }

@@ -34,7 +34,6 @@ public class PauseMenu : MonoBehaviour
                 TogglePause();
             }
 
-            Time.timeScale = isPaused ? 0.0f : 1.0f;
         }
     }
 
@@ -112,6 +111,7 @@ public class PauseMenu : MonoBehaviour
                 }
             }
         }
+        Time.timeScale = isPaused ? 0.0f : 1.0f;
     }
 
     public void OnQuitToTitleScreen()
