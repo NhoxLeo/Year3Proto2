@@ -129,7 +129,6 @@ public abstract class Enemy : MonoBehaviour
             }
             slowCount--;
         }
-
     }
 
     public virtual void OnKill()
