@@ -23,6 +23,7 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         isHelp = false;
         isActive = false;
+        Time.timeScale = 1.0f;
     }
 
     private void Update()
@@ -34,7 +35,6 @@ public class PauseMenu : MonoBehaviour
                 TogglePause();
             }
 
-            Time.timeScale = isPaused ? 0.0f : 1.0f;
         }
     }
 
@@ -43,6 +43,7 @@ public class PauseMenu : MonoBehaviour
         if (_paused)
         {
             //SuperManager.GetInstance().OnPause();
+
         }
         else
         {
@@ -52,6 +53,7 @@ public class PauseMenu : MonoBehaviour
         tool.showElement = _paused;
         isPaused = _paused;
         GlobalData.isPaused = _paused;
+        Time.timeScale = isPaused ? 0.0f : 1.0f;
     }
 
     public void PausedButtons(bool _paused)
@@ -112,6 +114,7 @@ public class PauseMenu : MonoBehaviour
                 }
             }
         }
+        Time.timeScale = isPaused ? 0.0f : 1.0f;
     }
 
     public void OnQuitToTitleScreen()
