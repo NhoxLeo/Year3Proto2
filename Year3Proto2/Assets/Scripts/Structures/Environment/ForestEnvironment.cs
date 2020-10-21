@@ -12,6 +12,7 @@ public class ForestEnvironment : EnvironmentStructure
         base.Awake();
         resourceType = ResourceType.Wood;
         structureName = StructureNames.LumberEnvironment;
+        bonusHighlightSitHeight = SuperManager.GetInstance().GetSnow() ? 0.6f : 0.4f;
     }
 
     protected override void Start()

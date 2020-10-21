@@ -9,6 +9,7 @@ public class PlainsEnvironment : EnvironmentStructure
         base.Awake();
         resourceType = ResourceType.Food;
         structureName = StructureNames.FoodEnvironment;
+        bonusHighlightSitHeight = SuperManager.GetInstance().GetSnow() ? 0.45f : 0.3f;
     }
 
     public override float GetBaseMaxHealth()
