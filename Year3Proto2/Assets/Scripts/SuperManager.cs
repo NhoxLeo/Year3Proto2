@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SuperManager : MonoBehaviour
 {
-    public static bool DevMode = true;
+    public static bool DevMode = false;
     public static bool raining = false;
     public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
