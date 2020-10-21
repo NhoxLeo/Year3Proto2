@@ -42,6 +42,7 @@ public class PauseMenu : MonoBehaviour
         if (_paused)
         {
             //SuperManager.GetInstance().OnPause();
+
         }
         else
         {
@@ -51,6 +52,7 @@ public class PauseMenu : MonoBehaviour
         tool.showElement = _paused;
         isPaused = _paused;
         GlobalData.isPaused = _paused;
+        Time.timeScale = isPaused ? 0.0f : 1.0f;
     }
 
     public void PausedButtons(bool _paused)
