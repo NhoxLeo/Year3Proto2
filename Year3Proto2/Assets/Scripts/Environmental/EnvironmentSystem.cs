@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using DG.Tweening;
 
 // Bachelor of Software Engineering
 // Media Design School
@@ -80,7 +81,6 @@ public class EnvironmentSystem : MonoBehaviour
                 if (weatherEvent.IsCompleted())
                 {
                     Destroy(weatherEvent.gameObject);
-                    weatherIndex = Random.Range(0, weatherEvents.Length);
 
                     if(currentParticles)
                     {
@@ -120,9 +120,26 @@ public class EnvironmentSystem : MonoBehaviour
 
     private void InvokeWeather(bool _random)
     {
-        weatherIndex = _random ? Random.Range(0, weatherEvents.Length) : 0;
+        weatherIndex = Random.Range(0, 4);
+
+        weatherIndex = (weatherIndex < 1) ? (SuperManager.GetInstance().GetSnow() ? 2 : 1) : 0;
+        weatherIndex = _random ? weatherIndex : 0;
+
         weatherEvent = Instantiate(weatherEvents[weatherIndex], transform)
             .Invoke(false) as EnvironmentWeatherEvent;
+
+        if(weatherEvent.GetData().weather == 1)
+        {
+            SuperManager.GetInstance().GetRainAudio()
+                .DOFade(SuperManager.AmbientVolume, 6.0f)
+                .OnComplete(() => SuperManager.raining = true);
+        }
+        else
+        {
+            SuperManager.GetInstance().GetRainAudio()
+                .DOFade(0, 3.0f)
+                .OnComplete(() => SuperManager.raining = false);
+        }
 
         StartCoroutine(ClearParticleEvent());
     }

@@ -54,6 +54,7 @@ MonoBehaviour:
   sfVolumes:
   - {fileID: 2855267664643090465}
   - {fileID: 2375937954040469378}
+  - {fileID: 2375937954040469378}
   daylightColor: {r: 1, g: 0.9372549, b: 0.8392157, a: 0}
   weatherCurrent: 0
   weatherTarget: 0

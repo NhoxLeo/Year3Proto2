@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     public static bool DevMode = false;
+    public static bool raining = false;
     public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
     public static float AmbientVolume = 1.0f;
@@ -540,11 +541,13 @@ public class SuperManager : MonoBehaviour
     private Dictionary<int, AudioClip> GameMusic = new Dictionary<int, AudioClip>();
     private Dictionary<int, string> GameMusicDetails = new Dictionary<int, string>();
     private AudioClip windAmbience = null;
+    private AudioClip rainAmbience = null;
     private static AudioClip UIClick = null;
 
     // Audio sources
     private AudioSource musicAudio;
     private AudioSource windAmbienceAudio;
+    private AudioSource rainAmbienceAudio;
 
     // Management
     private const float MusicDelayMinimum = 5f;
@@ -599,6 +602,11 @@ public class SuperManager : MonoBehaviour
         windAmbienceAudio = sources[1];
         windAmbienceAudio.clip = windAmbience;
         windAmbienceAudio.loop = true;
+
+        rainAmbienceAudio = sources[2];
+        rainAmbienceAudio.clip = rainAmbience;
+        rainAmbienceAudio.loop = true;
+        rainAmbienceAudio.volume = 0.0f;
 
         if (saveData.gameVersion != Application.version)
         {
@@ -1392,6 +1400,7 @@ public class SuperManager : MonoBehaviour
         GameMusicDetails.Add(PyrrhicVictory, "Pyrrhic Victory - Lobo Loco");
 
         windAmbience = Resources.Load("Audio/SFX/sfxWindAmbience") as AudioClip;
+        rainAmbience = Resources.Load("Audio/SFX/sfxRain") as AudioClip;
         UIClick = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
     }
 
@@ -1440,6 +1449,10 @@ public class SuperManager : MonoBehaviour
         {
             musicAudio.volume = 0.4f * MusicVolume;
             windAmbienceAudio.volume = playWindAmbience ? 0.15f * AmbientVolume : 0f;
+            if(raining)
+            {
+                rainAmbienceAudio.volume = AmbientVolume;
+            }
         }
     }
 
@@ -1503,6 +1516,7 @@ public class SuperManager : MonoBehaviour
     {
         nextSongTimer = 0f;
         windAmbienceAudio.Play();
+        rainAmbienceAudio.Play();
         windAmbienceAudio.DOFade(0.1f * AmbientVolume, 0.5f);
         playWindAmbience = true;
         moderateVolume = false;
@@ -1513,7 +1527,8 @@ public class SuperManager : MonoBehaviour
 
     public void OnBackToMenus()
     {
-        windAmbienceAudio.DOFade(0f, 0.5f);
+        windAmbienceAudio.DOFade(0.0f, 0.5f);
+        rainAmbienceAudio.DOFade(0.0f, 0.5f);
         musicAudio.DOFade(0f, 0.5f);
         Invoke("PlayTitleScreenMusic", 0.5f);
         moderateVolume = false;
@@ -1527,6 +1542,7 @@ public class SuperManager : MonoBehaviour
     {
         // fade out music and play victory/loss music, then fade the music back in
         windAmbienceAudio.DOFade(0f, 0.2f);
+        rainAmbienceAudio.DOFade(0.0f, 0.2f);
         musicAudio.DOFade(0f, 0.2f);
         moderateVolume = false;
         string clipName = _victory ? "win" : "lose";
@@ -1583,6 +1599,11 @@ public class SuperManager : MonoBehaviour
         {
             windAmbienceAudio.Pause();
         }
+
+        if (rainAmbienceAudio.isPlaying)
+        {
+            rainAmbienceAudio.Pause();
+        }
     }
 
     public void OnResume()
@@ -1595,6 +1616,7 @@ public class SuperManager : MonoBehaviour
             }
         }
         windAmbienceAudio.Play();
+        rainAmbienceAudio.Play();
     }
 
     public static void UIClickSound()
@@ -1612,5 +1634,10 @@ public class SuperManager : MonoBehaviour
     public static void SetBonusHighlightHeight(Transform _bonusHighlight, float _height)
     {
         _bonusHighlight.GetComponent<MeshRenderer>().material.SetFloat("_Height", _height);
+    }
+
+    public AudioSource GetRainAudio()
+    {
+        return rainAmbienceAudio;
     }
 }
