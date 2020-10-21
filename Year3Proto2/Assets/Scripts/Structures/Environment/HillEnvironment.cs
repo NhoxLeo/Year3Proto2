@@ -9,6 +9,7 @@ public class HillEnvironment : EnvironmentStructure
         base.Awake();
         resourceType = ResourceType.Metal;
         structureName = StructureNames.MetalEnvironment;
+        bonusHighlightSitHeight = SuperManager.GetInstance().GetSnow() ? 0.45f : 0.3f;
     }
 
     protected override void Start()
