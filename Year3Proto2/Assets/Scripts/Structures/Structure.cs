@@ -125,9 +125,10 @@ public abstract class Structure : MonoBehaviour
         }
     }
 
-    public virtual void AutomaticallyAllocate()
+    public virtual bool AutomaticallyAllocate()
     {
         VillagerManager villMan = VillagerManager.GetInstance();
+        
         if (villMan.VillagerAvailable() && allocatedVillagers < villagerCapacity)
         {
             manualAllocation = false;
@@ -135,7 +136,9 @@ public abstract class Structure : MonoBehaviour
             RefreshWidget();
             OnAllocation();
             villMan.OnVillagerAllocated();
+            return true;
         }
+        return false;
     }
 
     public bool GetManualAllocation()

@@ -9,6 +9,8 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     public static bool DevMode = false;
+    public const string DevModePassword = "lollipop";
+    public static string runningString = "";
     public static bool raining = false;
     public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
@@ -463,7 +465,7 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
         new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages close enemies.", 0, true),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages close enemies.", 500, true),
     };
     public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
     {
@@ -613,16 +615,18 @@ public class SuperManager : MonoBehaviour
 
     private void Update()
     {
+
+
         // Hold both mouse buttons
         if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
-            // Press D
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                WipeReloadScene(false);
-            }
             if (DevMode)
             {
+                // Press D
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    WipeReloadScene(false);
+                }
                 // Press S
                 if (Input.GetKeyDown(KeyCode.S))
                 {
@@ -632,6 +636,8 @@ public class SuperManager : MonoBehaviour
                 }
             }
         }
+
+        CheckDevModePassword();
 
         MusicPlayerUpdate();
     }
@@ -888,6 +894,7 @@ public class SuperManager : MonoBehaviour
 
         HUDManager.GetInstance().UpdateVillagerWidgetMode();
 
+        villagerMan.RedistributeVillagers();
         return true;
     }
 
@@ -1633,5 +1640,34 @@ public class SuperManager : MonoBehaviour
     public AudioSource GetRainAudio()
     {
         return rainAmbienceAudio;
+    }
+
+    private void CheckDevModePassword()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            runningString += "l";
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            runningString += "o";
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            runningString += "p";
+            if (runningString == DevModePassword)
+            {
+                DevMode = true;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            runningString += "i";
+        }
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            runningString = "";
+            DevMode = false;
+        }
     }
 }
