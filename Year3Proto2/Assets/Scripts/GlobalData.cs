@@ -9,6 +9,7 @@ public class GlobalData
     public static bool isLoadingIn = false;
     public static bool isPaused;
     public static bool longhausDead = false;
+    public static bool gameEnd = false;
 
     public static List<string> loadingHint = new List<string>
     {

@@ -424,6 +424,11 @@ public class GameManager : MonoBehaviour
                 {
                     cheatAlwaysMaxed = !cheatAlwaysMaxed;
                 }
+                if (Input.GetKeyDown(KeyCode.V))
+                {
+                    victory = true;
+                    objectivesCompleted = objectives.Count;
+                }
             }
         }
 

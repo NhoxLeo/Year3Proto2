@@ -17,6 +17,7 @@ public class TitleScreen : MonoBehaviour
     private Sequence titleSequence;
 
     [SerializeField] TMP_Text version;
+    [SerializeField] UIAnimator gameEndscreen = null;
 
     private int loadingFrameCounter = 0;
 
@@ -24,7 +25,15 @@ public class TitleScreen : MonoBehaviour
     {
         Time.timeScale = 1.0f;
 
-        GetComponent<UIAnimator>().showElement = true;
+        if (GlobalData.gameEnd)
+        {
+            gameEndscreen.SetVisibility(true);
+            GlobalData.gameEnd = false;
+        }
+        else
+        {
+            GetComponent<UIAnimator>().SetVisibility(true);
+        }
 
         if (!SuperManager.TitleScreenAnimPlayed)
         {
