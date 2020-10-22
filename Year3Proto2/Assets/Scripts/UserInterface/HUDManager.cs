@@ -103,11 +103,14 @@ public class HUDManager : MonoBehaviour
     {
         animator.SetVisibility(doShowHUD);
 
-        if (Input.GetKeyDown(KeyCode.Backslash))
+        if (SuperManager.DevMode)
         {
-            if (!pauseMenu.isPaused && !pauseMenu.isHelp)
+            if (Input.GetKeyDown(KeyCode.Backslash))
             {
-                SetHUD(!doShowHUD);
+                if (!pauseMenu.isPaused && !pauseMenu.isHelp)
+                {
+                    SetHUD(!doShowHUD);
+                }
             }
         }
 

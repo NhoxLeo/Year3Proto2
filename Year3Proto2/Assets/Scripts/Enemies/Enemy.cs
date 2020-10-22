@@ -129,7 +129,6 @@ public abstract class Enemy : MonoBehaviour
             }
             slowCount--;
         }
-
     }
 
     public virtual void OnKill()
@@ -368,7 +367,7 @@ public abstract class Enemy : MonoBehaviour
 
     public bool Damage(float _damage)
     {
-        health -= (slowSuper && slowed ? 1.6f : 1.0f) *_damage;
+        health -= (slowSuper && slowed ? 1.25f : 1.0f) * _damage;
         if (healthbar)
         {
             if (health < GetTrueMaxHealth())

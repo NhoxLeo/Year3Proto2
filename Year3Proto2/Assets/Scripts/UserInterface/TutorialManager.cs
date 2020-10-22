@@ -89,6 +89,7 @@ public class TutorialManager : MonoBehaviour
 
     private void Update()
     {
+        /*
         if (Input.GetKeyDown(KeyCode.PageUp))
         {
             GoToNext();
@@ -102,6 +103,7 @@ public class TutorialManager : MonoBehaviour
         {
             AdvanceTutorialTo(TutorialState.Start, true);
         }
+        */
 
         focus.transform.localScale = Vector3.one * (1.0f + pulseScaleMagnitude + Mathf.Sin(Time.time * 6.0f) * pulseScaleMagnitude);
         if (focusTransform != null)

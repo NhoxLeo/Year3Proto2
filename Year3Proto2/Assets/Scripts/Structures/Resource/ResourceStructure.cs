@@ -55,6 +55,9 @@ public abstract class ResourceStructure : Structure
     protected static GameObject TileHighlight = null;
     protected static GameObject Fencing = null;
     private GameObject[] villagers = new GameObject[3];
+    private bool[] workingVillagersActive = new bool[4];
+    private List<int> validWorkingVillagers = new List<int>();
+
     public virtual int GetProductionVolume()
     {
         return tileBonus * batchSize * allocatedVillagers;
@@ -89,6 +92,10 @@ public abstract class ResourceStructure : Structure
         {
             tileHighlights.Clear();
         }
+        if (validWorkingVillagers != null)
+        {
+            validWorkingVillagers.Clear();
+        }
 
         string adjStructType = StructureNames.LumberEnvironment;
         switch (resourceType)
@@ -102,8 +109,6 @@ public abstract class ResourceStructure : Structure
             default:
                 break;
         }
-
-            
 
         if (attachedTile)
         {
@@ -140,6 +145,14 @@ public abstract class ResourceStructure : Structure
                         }
                         if (tileCounted)
                         {
+                            GameObject workingVillager = transform.Find("Working Villager " + i.ToString()).gameObject;
+                            if (!workingVillager.activeSelf)
+                            {
+                                workingVillager.SetActive(true);
+                            }
+                            validWorkingVillagers.Add(i);
+                            workingVillagersActive[i] = true;
+
                             GameObject newTileHighlight = Instantiate(StructureManager.GetBonusHighlight(), transform);
                             tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
                             Vector3 highlightPos = adjacentsToAttached[(TileBehaviour.TileCode)i].transform.position;
@@ -167,11 +180,17 @@ public abstract class ResourceStructure : Structure
                 }
             }
         }
+        RefreshVillagers();
     }
 
     protected virtual void AdjacentOnPlaceEvent(TileBehaviour.TileCode _side, bool _exploit)
     {
 
+    }
+
+    protected virtual Vector3 GetWorkLocation()
+    {
+        return Vector3.zero;
     }
 
     public override void OnSelected()
@@ -238,6 +257,10 @@ public abstract class ResourceStructure : Structure
         villagers[0] = transform.Find("Villager 1").gameObject;
         villagers[1] = transform.Find("Villager 2").gameObject;
         villagers[2] = transform.Find("Villager 3").gameObject;
+        transform.Find("Working Villager 0").GetComponent<VillagerAnimation>().SetID(0);
+        transform.Find("Working Villager 1").GetComponent<VillagerAnimation>().SetID(1);
+        transform.Find("Working Villager 2").GetComponent<VillagerAnimation>().SetID(2);
+        transform.Find("Working Villager 3").GetComponent<VillagerAnimation>().SetID(3);
     }
 
     protected override void Update()
@@ -283,10 +306,33 @@ public abstract class ResourceStructure : Structure
     public override void OnAllocation()
     {
         base.OnAllocation();
-        //update villager models
+        RefreshVillagers();
+    }
+
+    public void RefreshVillagers()
+    {
+        int allocated = 0;
+        workingVillagersActive[0] = false;
+        workingVillagersActive[1] = false;
+        workingVillagersActive[2] = false;
+        workingVillagersActive[3] = false;
+        for (int i = 0; i < validWorkingVillagers.Count; i++)
+        {
+            if (allocatedVillagers > i)
+            {
+                GameObject workingVillager = transform.Find("Working Villager " + validWorkingVillagers[i].ToString()).gameObject;
+                if (!workingVillager.activeSelf)
+                {
+                    workingVillager.SetActive(true);
+                }
+                workingVillagersActive[validWorkingVillagers[i]] = true;
+                allocated++;
+            }
+        }
+        int remainingVillagers = allocatedVillagers - allocated;
         for (int i = 0; i < villagers.Length; i++)
         {
-            villagers[i].SetActive(allocatedVillagers > i);
+            villagers[i].SetActive(remainingVillagers > i);
         }
     }
 
@@ -304,5 +350,14 @@ public abstract class ResourceStructure : Structure
         maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
+    }
+
+    public bool GetWorkingVillagerActive(int _id)
+    {
+        if (workingVillagersActive.Length > _id)
+        {
+            return workingVillagersActive[_id];
+        }
+        return false;
     }
 }
