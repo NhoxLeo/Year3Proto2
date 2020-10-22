@@ -613,6 +613,8 @@ public class SuperManager : MonoBehaviour
 
     private void Update()
     {
+
+
         // Hold both mouse buttons
         if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
@@ -1633,5 +1635,10 @@ public class SuperManager : MonoBehaviour
     public AudioSource GetRainAudio()
     {
         return rainAmbienceAudio;
+    }
+
+    private void CheckDevModePassword()
+    {
+
     }
 }
