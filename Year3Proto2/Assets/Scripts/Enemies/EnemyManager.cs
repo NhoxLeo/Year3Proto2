@@ -101,12 +101,14 @@ public struct EnemyDefinition
 {
     public float spawnChance;
     public int tokenCost;
+    public float airshipHousingSize;
     private GameObject prefab;
 
-    public EnemyDefinition(float _spawnChance, int _tokenCost)
+    public EnemyDefinition(float _spawnChance, int _tokenCost, float _airshipHousingSize)
     {
         spawnChance = _spawnChance;
         tokenCost = _tokenCost;
+        airshipHousingSize = _airshipHousingSize;
         prefab = null;
     }
 
@@ -173,7 +175,7 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Airships")]
     [SerializeField] private Transform airshipPrefab;
-    [SerializeField] private int enemiesPerAirship = 9;
+    [SerializeField] private float airshipCapacity = 12f;
     [SerializeField] private float radiusOffset;
     [SerializeField] private float distance = 0.0f;
 
@@ -186,11 +188,11 @@ public class EnemyManager : MonoBehaviour
 
     public static readonly Dictionary<string, EnemyDefinition> Enemies = new Dictionary<string, EnemyDefinition>()
     {
-        { EnemyNames.Invader, new EnemyDefinition(1.0f, 4) },
-        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 12) },
-        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 12) },
-        { EnemyNames.Petard, new EnemyDefinition(0.2f, 16) },
-        { EnemyNames.BatteringRam, new EnemyDefinition(0.15f, 24) },
+        { EnemyNames.Invader, new EnemyDefinition(1.0f, 4, 1f) },
+        { EnemyNames.HeavyInvader, new EnemyDefinition(0.25f, 12, 3f) },
+        { EnemyNames.FlyingInvader, new EnemyDefinition(0.25f, 12, 0f) },
+        { EnemyNames.Petard, new EnemyDefinition(0.2f, 16, 3f) },
+        { EnemyNames.BatteringRam, new EnemyDefinition(0.15f, 24, 9f) },
     };
     private readonly List<LevelSetting> levelSettings = new List<LevelSetting>
     {
@@ -570,30 +572,54 @@ public class EnemyManager : MonoBehaviour
     * @Parameter: Transform Array
     * @Return: List of Transform Arrays
     ***************************************/
-    private List<Transform[]> DedicateAirships(Transform[] enemies)
+    private List<Transform[]> DedicateAirships(Transform[] _enemies)
     {
         List<Transform[]> enemiesInAirships = new List<Transform[]>();
-        Transform[] currentBatch = new Transform[enemiesPerAirship];
+        List<(List<Transform>, float)> airshipsWithRoom = new List<(List<Transform>, float)>();
 
         // for every enemy
-        for (int i = 0; i < enemies.Length; i++)
+        for (int i = 0; i < _enemies.Length; i++)
         {
-            // add this enemy to the batch/ship
-            currentBatch[i % enemiesPerAirship] = enemies[i];
-            // if the batch/ship is full
-            if (((i + 1) % enemiesPerAirship) == 0)
+            // find an airship that has room 
+            bool airshipFound = false;
+            for (int j = 0; j < airshipsWithRoom.Count; j++)
             {
-                // add this batch/ship to the list 
-                enemiesInAirships.Add(currentBatch);
-                // define the next batch/ship 
-                currentBatch = new Transform[enemiesPerAirship];
+                // if this airship can fit the enemy
+                if (airshipsWithRoom[j].Item2 >= Enemies[_enemies[i].name].airshipHousingSize)
+                {
+                    // put the enemy on the airship
+                    (List<Transform>, float) airship = airshipsWithRoom[j];
+                    airship.Item1.Add(_enemies[i]);
+                    airship.Item2 -= Enemies[_enemies[i].name].airshipHousingSize;
+                    if (airship.Item2 == 0)
+                    {
+                        enemiesInAirships.Add(airship.Item1.ToArray());
+                        airshipsWithRoom.Remove(airshipsWithRoom[j]);
+                    }
+                    else
+                    {
+                        airshipsWithRoom[j] = airship;
+                    }
+                    airshipFound = true;
+                    break;
+                }
+            }
+            // if we couldn't find an airship with enough space
+            if (!airshipFound)
+            {
+                // make a new one.
+                (List<Transform>, float) newAirship;
+                newAirship.Item1 = new List<Transform>()
+                { _enemies[i] };
+                newAirship.Item2 = airshipCapacity - Enemies[_enemies[i].name].airshipHousingSize;
+                airshipsWithRoom.Add(newAirship);
             }
         }
-        // if the currentBatch has any enemies in it
-        if (currentBatch[0])
+
+        // for every airship that still has room
+        for (int i = 0; i < airshipsWithRoom.Count; i++)
         {
-            // add that batch as an airship
-            enemiesInAirships.Add(currentBatch);
+            enemiesInAirships.Add(airshipsWithRoom[i].Item1.ToArray());
         }
         return enemiesInAirships;
     }
