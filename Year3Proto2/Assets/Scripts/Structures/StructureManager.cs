@@ -164,6 +164,7 @@ public static class StructureMaterials
                 break;
             case StructureNames.Ballista:
                 paths.Add("Materials/Structures/Defense/mBallista" + (_key.Item2 ? "_Snow" : ""));
+                paths.Add("Materials/Structures/Defense/mBallistaGround" + (_key.Item2 ? "_Snow" : ""));
                 break;
             case StructureNames.Catapult:
                 paths.Add("Materials/Structures/Defense/mCatapult" + (_key.Item2 ? "_Snow" : ""));
