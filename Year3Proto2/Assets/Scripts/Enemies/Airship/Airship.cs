@@ -82,7 +82,7 @@ public class Airship : MonoBehaviour
 
                     if (heading.sqrMagnitude < distanceOffset * 4.0f)
                     {
-                        Destroy();
+                        Destroy(gameObject);
                     }
 
                     break;
@@ -222,7 +222,7 @@ public class Airship : MonoBehaviour
             return;
         }
 
-        Destroy();
+        Destroy(gameObject);
     }
 
     /**************************************
@@ -363,14 +363,5 @@ public class Airship : MonoBehaviour
         airshipState = _data.state;
         initialLocation = _data.initialLocation;
         spawnWave = _data.spawnWave;
-    }
-
-    private void Destroy()
-    {
-        GameObject puff = Instantiate(GameManager.GetPuffEffect());
-        puff.transform.position = transform.position;
-        puff.transform.localScale *= 2f;
-
-        Destroy(gameObject);
     }
 }
