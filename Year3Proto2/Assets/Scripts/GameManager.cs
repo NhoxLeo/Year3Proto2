@@ -496,6 +496,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void OnGUI()
+    {
+        if (SuperManager.DevMode)
+        {
+            GUI.Label(new Rect(10, 40, 100, 80), "DEV MODE ON", new GUIStyle());
+        }
+    }
+
     public void SaveMatch()
     {
         SuperManager.GetInstance().SaveCurrentMatch();

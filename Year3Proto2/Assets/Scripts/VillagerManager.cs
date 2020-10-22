@@ -44,7 +44,16 @@ public class VillagerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (availableVillagers < 0)
+        {
+            Debug.LogError("available villagers was negative...");
+            RefreshAllocStructs();
+            foreach (Structure structure in allocationStructures)
+            {
+                structure.DeallocateAll();
+            }
+            RedistributeVillagers();
+        }
     }
 
     public static string PriorityToString(Priority _priority)
@@ -114,41 +123,44 @@ public class VillagerManager : MonoBehaviour
         {
             structure.DeallocateAll();
         }
-
+        int autoAllocatedVillagers = 0;
         foreach (Priority priority in priorityOrder)
         {
             switch (priority)
             {
                 case Priority.Food:
                     // put all into food
-                    AAFillResourceType(ResourceType.Food);
+                    autoAllocatedVillagers += AAFillResourceType(ResourceType.Food);
                     break;
                 case Priority.Wood:
                     // first even out with food
-                    AAProduceMinimumFood();
+                    autoAllocatedVillagers += AAProduceMinimumFood();
 
                     // then put all into wood
-                    AAFillResourceType(ResourceType.Wood);
+                    autoAllocatedVillagers += AAFillResourceType(ResourceType.Wood);
                     break;
                 case Priority.Metal:
                     // first even out with food
-                    AAProduceMinimumFood();
+                    autoAllocatedVillagers += AAProduceMinimumFood();
 
                     // then put all into wood
-                    AAFillResourceType(ResourceType.Metal);
+                    autoAllocatedVillagers += AAFillResourceType(ResourceType.Metal);
                     break;
                 default:
                     break;
             }
         }
+        availableVillagers = villagers - (autoAllocatedVillagers + villagersManAllocated);
+
     }
 
-    private void AAProduceMinimumFood()
+    private int AAProduceMinimumFood()
     {
+        int villagersAllocated = 0;
         int villagersRemaining = GetAvailable();
         if (villagersRemaining == 0)
         {
-            return;
+            return 0;
         }
         // get the necessary amount of food for holding even
         float foodConsumptionPerSec = GetFoodConsumptionPerSec();
@@ -172,7 +184,7 @@ public class VillagerManager : MonoBehaviour
             }
             if (foodProductionPerSec >= foodConsumptionPerSec)
             {
-                return;
+                return 0;
             }
         }
         if (farms.Count > 0)
@@ -181,14 +193,17 @@ public class VillagerManager : MonoBehaviour
         }
         else
         {
-            return;
+            return 0;
         }
 
         foreach (Farm farm in farms)
         {
             for (int i = 0; i < 3; i++)
             {
-                farm.AutomaticallyAllocate();
+                if (farm.AutomaticallyAllocate())
+                {
+                    villagersAllocated++;
+                }
                 villagersRemaining--;
                 foodProductionPerSec += farm.GetRPSPerVillager();
                 if (foodProductionPerSec >= foodConsumptionPerSec || villagersRemaining == 0)
@@ -201,15 +216,17 @@ public class VillagerManager : MonoBehaviour
                 break;
             }
         }
+        return villagersAllocated;
     }
 
-    private void AAFillResourceType(ResourceType _resource)
+    private int AAFillResourceType(ResourceType _resource)
     {
+        int villagersAllocated = 0;
         // fill up the relevant structures until out of villagers or out of structures
         int villagersRemaining = GetAvailable();
         if (villagersRemaining == 0)
         {
-            return;
+            return 0;
         }
         List<ResourceStructure> resStructures = new List<ResourceStructure>();
         switch (_resource)
@@ -253,13 +270,16 @@ public class VillagerManager : MonoBehaviour
         }
         else
         {
-            return;
+            return 0;
         }
         foreach (ResourceStructure resStructure in resStructures)
         {
             for (int i = resStructure.GetAllocated(); i < 3; i++)
             {
-                resStructure.AutomaticallyAllocate();
+                if (resStructure.AutomaticallyAllocate())
+                {
+                    villagersAllocated++;
+                }
                 villagersRemaining--;
                 if (villagersRemaining == 0)
                 {
@@ -271,6 +291,7 @@ public class VillagerManager : MonoBehaviour
                 break;
             }
         }
+        return villagersAllocated;
     }
 
     //
@@ -504,17 +525,6 @@ public class VillagerManager : MonoBehaviour
 
     public void RemoveVillagers(int _villagers, bool _wereManual)
     {
-        if (availableVillagers > 0)
-        {
-            if (availableVillagers >= _villagers)
-            {
-                availableVillagers -= _villagers;
-            }
-            else
-            {
-                availableVillagers = 0;
-            }
-        }
         villagers -= _villagers;
         if (_wereManual)
         {
