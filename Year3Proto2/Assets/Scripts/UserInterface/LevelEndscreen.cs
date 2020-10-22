@@ -13,6 +13,13 @@ public class LevelEndscreen : MonoBehaviour
     public bool showingVictory = false;
     public bool showingDefeat = false;
 
+    private bool alreadyComplete = false;
+
+
+    private void Start()
+    {
+        alreadyComplete = GameManager.GetInstance().gameAlreadyWon;
+    }
 
     private void GetVictoryInfo()
     {
@@ -41,6 +48,11 @@ public class LevelEndscreen : MonoBehaviour
 
         FindObjectOfType<HUDManager>().doShowHUD = false;
         FindObjectOfType<EnemyManager>().SetSpawning(false);
+
+        if (SuperManager.GetInstance().GetCurrentLevel() == 3 && !alreadyComplete)
+        {
+            GlobalData.gameEnd = true;
+        }
     }
 
     public void ShowDeafeatScreen()
