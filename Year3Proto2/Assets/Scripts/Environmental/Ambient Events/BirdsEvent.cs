@@ -78,7 +78,7 @@ public class BirdsEvent : EnvironmentAmbientEvent
      * @Parameter: n/a
      * @Return: override void
      ***************************************/
-    public override EnvironmentEvent Invoke(bool _data)
+    public override void Invoke(bool _data)
     {
         if(_data)
         {
@@ -98,8 +98,7 @@ public class BirdsEvent : EnvironmentAmbientEvent
             origins = null;
             ambient = Instantiate(ambientPrefab, origin, Quaternion.identity, transform);
         }
-        return this;
-    } // End of scope will free array from memory.
+    } 
 
     /**************************************
      * Name of the Function: RandomFromArray
