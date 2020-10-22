@@ -1277,7 +1277,7 @@ MonoBehaviour:
   showElement: 0
   width: 0
   height: 0
-  entrance: 0
+  entrance: 1
   pulse: 0
   playAudio: 0
   toolSound: {fileID: 0}
