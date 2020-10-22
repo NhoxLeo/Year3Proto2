@@ -465,7 +465,7 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
         new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages close enemies.", 0, true),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages close enemies.", 500, true),
     };
     public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
     {
@@ -894,6 +894,7 @@ public class SuperManager : MonoBehaviour
 
         HUDManager.GetInstance().UpdateVillagerWidgetMode();
 
+        villagerMan.RedistributeVillagers();
         return true;
     }
 
