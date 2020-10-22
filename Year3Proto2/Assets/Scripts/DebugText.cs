@@ -15,20 +15,27 @@ public class DebugText : MonoBehaviour
     {
         backgroundElement = transform.GetChild(0).GetComponent<Image>();
         debugReadout = transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
-        if (!SuperManager.DevMode)
-        {
-            Destroy(gameObject);
-        }
     }
 
     void Update()
     {
-        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+        if (SuperManager.DevMode)
         {
-            if (Input.GetKeyDown(KeyCode.I))
+            if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
             {
-                debugTextEnabled = !debugTextEnabled;
-                backgroundElement.gameObject.SetActive(debugTextEnabled);
+                if (Input.GetKeyDown(KeyCode.I))
+                {
+                    debugTextEnabled = !debugTextEnabled;
+                    backgroundElement.gameObject.SetActive(debugTextEnabled);
+                }
+            }
+        }
+        else
+        {
+            if (debugTextEnabled)
+            {
+                debugTextEnabled = false;
+                backgroundElement.gameObject.SetActive(false);
             }
         }
         if (debugTextEnabled)

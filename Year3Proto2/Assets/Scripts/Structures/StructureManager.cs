@@ -744,7 +744,7 @@ public class StructureManager : MonoBehaviour
             // stop short
             return;
         }
-
+        /*
         // If the player presses the delete key...
         if (Input.GetKeyDown(KeyCode.Delete))
         {
@@ -758,6 +758,7 @@ public class StructureManager : MonoBehaviour
                 return;
             }
         }
+        */
 
         Vector3 highlightpos = selectedStructure.transform.position;
         highlightpos.y = HighlightSitHeight;
