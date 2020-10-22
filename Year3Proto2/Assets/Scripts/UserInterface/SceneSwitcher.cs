@@ -107,6 +107,9 @@ public class SceneSwitcher : MonoBehaviour
         StartFade();
         targetScene = scene;
         GlobalData.isLoadingIn = false;
+
+        SuperManager.raining = false;
+        SuperManager.GetInstance().GetRainAudio().DOFade(0.0f, 3.0f);
     }
 
 
@@ -136,7 +139,6 @@ public class SceneSwitcher : MonoBehaviour
                 source.clip = clickSound;
                 source.Play();
             }
-
         }
     }
 
