@@ -1103,6 +1103,7 @@ public class EnemyManager : MonoBehaviour
         FinalMultiplier *= TileBonusMultiplier;
         FinalMultiplier *= VillagersLostMultiplier;
         FinalMultiplier *= StructuresLostMultiplier;
+        FinalMultiplier = Mathf.Clamp(FinalMultiplier, 0.5f, 6f);
     }
 
     public string GetEnemySpawnInfo()
