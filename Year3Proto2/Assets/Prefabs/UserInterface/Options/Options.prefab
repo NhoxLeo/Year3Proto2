@@ -1210,7 +1210,7 @@ GameObject:
   - component: {fileID: 8887787932000282783}
   - component: {fileID: 8887787932000282778}
   - component: {fileID: 8887787932000282781}
-  - component: {fileID: 8887787932000282780}
+  - component: {fileID: 702727159313263742}
   - component: {fileID: 1699323966627358938}
   m_Layer: 5
   m_Name: Options
@@ -1261,7 +1261,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
---- !u!114 &8887787932000282780
+--- !u!114 &702727159313263742
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1270,13 +1270,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 8887787932000282782}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de9de13823930c34b8e2d4fefd5ab2d4, type: 3}
+  m_Script: {fileID: 11500000, guid: b8343d95189b3674bb84dcd8b228a592, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showTooltip: 0
   interactable: 1
+  showElement: 0
   width: 0
   height: 0
+  entrance: 0
+  pulse: 0
+  playAudio: 0
   toolSound: {fileID: 0}
 --- !u!114 &1699323966627358938
 MonoBehaviour:
@@ -2469,7 +2472,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 8887787932000282780}
+      objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -2722,7 +2725,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 8887787932000282780}
+      objectReference: {fileID: 0}
     - target: {fileID: 5871000445198671149, guid: bccad2a79d9fc164c8b0167db8f0a601,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
