@@ -49,11 +49,12 @@ public class Longhaus : Structure
             }
 
         }
-
+        /*
         if (Input.GetKeyDown(KeyCode.N) && StructureManager.GetInstance().StructureIsSelected(this))
         {
             VillagerManager.GetInstance().TrainVillager();
         }
+        */
     }
 
     public override Vector3 GetResourceDelta()
