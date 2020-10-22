@@ -22,7 +22,7 @@ public abstract class EnvironmentEvent : MonoBehaviour
      * @Parameter: n/a
      * @Return: abstract void
      ***************************************/
-    public abstract EnvironmentEvent Invoke(bool _data);
+    public abstract void Invoke(bool _data);
 
     /**************************************
      * Name of the Function: Update

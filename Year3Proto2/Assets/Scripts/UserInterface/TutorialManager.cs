@@ -36,32 +36,36 @@ public class TutorialManager : MonoBehaviour
         public string description;
     }
 
-    [SerializeField] private List<TutorialMessage> tutorialMessages;
+    [SerializeField] private List<TutorialMessage> tutorialMessages = null;
 
     [Header("Main")]
-    [SerializeField] private RectTransform focus;
-    [SerializeField] private RectTransform focusTransform;
-    [SerializeField] private UIAnimator messagePanel;
-    [SerializeField] private RectTransform messageTransform;
-    [SerializeField] private TMP_Text messageHeading;
-    [SerializeField] private TMP_Text messageDescription;
-    [SerializeField] private TMP_Text nextButtonText;
-    [SerializeField] private Image progressBar;
+    [SerializeField] private RectTransform focus = null;
+    [SerializeField] private RectTransform focusTransform = null;
+    [SerializeField] private UIAnimator messagePanel = null;
+    [SerializeField] private RectTransform messageTransform = null;
+    [SerializeField] private TMP_Text messageHeading = null;
+    [SerializeField] private TMP_Text messageDescription = null;
+    [SerializeField] private TMP_Text nextButtonText = null;
+    [SerializeField] private Image progressBar = null;
     private bool updateLayout = false;
+    private float focusPulseTime = 0f;
+    private bool doBeginPulse = true;
+    private float beginPulseTime = 0f;
 
     [Header("Transforms")]
-    [SerializeField] private RectTransform farmButton;
-    [SerializeField] private RectTransform woodButton;
-    [SerializeField] private RectTransform metalButton;
-    [SerializeField] private RectTransform storageButton;
-    [SerializeField] private RectTransform defenceButton;
-    [SerializeField] private RectTransform productionTab;
-    [SerializeField] private UIAnimator productionTabPanel;
-    [SerializeField] private RectTransform defenceTab;
-    [SerializeField] private UIAnimator defenceTabPanel;
-    [SerializeField] private RectTransform trainVillagerButton;
-    [SerializeField] private RectTransform villagerPriorityPanel;
-    [SerializeField] private RectTransform objectivePanel;
+    [SerializeField] private Transform beginButton = null;
+    [SerializeField] private RectTransform farmButton = null;
+    [SerializeField] private RectTransform woodButton = null;
+    [SerializeField] private RectTransform metalButton = null;
+    [SerializeField] private RectTransform storageButton = null;
+    [SerializeField] private RectTransform defenceButton = null;
+    [SerializeField] private RectTransform productionTab = null;
+    [SerializeField] private UIAnimator productionTabPanel = null;
+    [SerializeField] private RectTransform defenceTab = null;
+    [SerializeField] private UIAnimator defenceTabPanel = null;
+    [SerializeField] private RectTransform trainVillagerButton = null;
+    [SerializeField] private RectTransform villagerPriorityPanel = null;
+    [SerializeField] private RectTransform objectivePanel = null;
 
     private float pulseScaleMagnitude = 0.05f;
 
@@ -74,12 +78,14 @@ public class TutorialManager : MonoBehaviour
         tutorialLength = Enum.GetNames(typeof(TutorialState)).Length;
 
         bool showTutorial = SuperManager.GetInstance().GetShowTutorial();
+        doBeginPulse = showTutorial;
         AdvanceTutorialTo(showTutorial ? TutorialState.Start : TutorialState.End, true);
     }
 
     private void Start()
     {
         SetMessage((int)State);
+
     }
 
     public static TutorialManager GetInstance()
@@ -105,10 +111,20 @@ public class TutorialManager : MonoBehaviour
         }
         */
 
-        focus.transform.localScale = Vector3.one * (1.0f + pulseScaleMagnitude + Mathf.Sin(Time.time * 6.0f) * pulseScaleMagnitude);
+        focusPulseTime += Time.smoothDeltaTime;
+
+        focus.transform.localScale = Vector3.one * (1.0f + pulseScaleMagnitude + Mathf.Sin(focusPulseTime * 6.0f) * pulseScaleMagnitude);
         if (focusTransform != null)
         {
             focus.position = focusTransform.position;
+        }
+
+        beginPulseTime += Time.deltaTime;
+        if (beginPulseTime >= 1.0f && doBeginPulse)
+        {
+            beginButton.transform.DOKill(true);
+            beginButton.DOPunchPosition(Vector3.right * 4.0f, 0.3f, 1, 0.5f);
+            beginPulseTime = 0.0f;
         }
 
         switch (State)
@@ -227,6 +243,7 @@ public class TutorialManager : MonoBehaviour
             focus.sizeDelta = Vector2.one * 480.0f;
             focus.transform.DOKill(true);
             focus.DOSizeDelta(_rTrans.sizeDelta, 0.4f).SetEase(Ease.OutQuint);
+            focusPulseTime = 0.33f;
         }
 
         focusTransform = _rTrans;
@@ -248,6 +265,8 @@ public class TutorialManager : MonoBehaviour
             State++;
             SetMessage((int)State);
         }
+
+        doBeginPulse = false;
     }
 
     public void GoToPrevious()
