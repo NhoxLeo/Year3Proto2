@@ -36,7 +36,7 @@ public class Airship : MonoBehaviour
     private Vector3 controlPoint = Vector3.zero;
 
     [Header("Attributes")]
-    [SerializeField] private float height = 0.75f;
+    [SerializeField] private float height = 0.85f;
     [SerializeField] private float speed = 2.4f;
     [SerializeField] private float distanceOffset = 0.75f;
     [SerializeField] private Transform[] transforms;
@@ -62,21 +62,22 @@ public class Airship : MonoBehaviour
         {
             Vector3 heading;
             Vector3 direction;
+            float distance = (transform.position - target.position).magnitude;
+            float proximitySlow = 0.5f * ((distance < 2f) ? (2f - (2f - distance)) : 2f);
 
             switch (airshipState)
             {
                 case AirshipState.Depart:
                     Vector3 newLocation = initialLocation;
-                    newLocation.y = height;
-
+                    newLocation.y = height - ((distance - 1f) * 0.33f);
                     heading = newLocation - transform.position;
                     direction = heading.normalized;
 
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), speed * Time.deltaTime * 2.0f);
-                    transform.position += heading * Time.deltaTime * speed / 4.0f;
+                    transform.position += direction * Time.deltaTime * speed * proximitySlow;
 
                     Vector3 position = transform.position;
-                    position.y = height;
+                    position.y = height - ((distance - 1f) * 0.33f);
                     transform.position = position;
 
                     if (heading.sqrMagnitude < distanceOffset * 4.0f)
@@ -87,22 +88,21 @@ public class Airship : MonoBehaviour
                     break;
                 case AirshipState.Move:
                     Vector3 targetPosition = target.position;
-                    targetPosition.y = height;
-
+                    targetPosition.y = height - ((distance - 1f) * 0.33f);
                     heading = targetPosition - transform.position;
                     direction = heading.normalized;
 
 
                     // Update Airship Values
                     transform.rotation = Quaternion.LookRotation(direction);
-                    transform.position += heading * Time.deltaTime * speed;
+                    transform.position += direction * Time.deltaTime * speed * proximitySlow;
 
                     Vector3 newPosition = transform.position;
-                    newPosition.y = height;
+                    newPosition.y = height - ((distance - 1f) * 0.33f);
 
                     transform.position = newPosition;
 
-                    if (heading.sqrMagnitude < Mathf.Pow(distanceOffset, 2))
+                    if (distance < 1.1f)
                     {
                         airshipState = AirshipState.Deploy;
                         if (alert)
@@ -244,6 +244,7 @@ public class Airship : MonoBehaviour
 
         for (int i = 0; i < transforms.Length; i++)
         {
+            i %= 9;
             float xPosition = i % columns / 2.0f * xOffset;
             float yPosition = halfScale.y;
             float zPosition = i / columns / 2.0f * zOffset;
