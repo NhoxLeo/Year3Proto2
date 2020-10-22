@@ -37,12 +37,10 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
         return environmentWeatherData;
     }
 
-    public EnvironmentWeatherEvent LoadData(EnvironmentWeatherData _environmentWeatherData)
+    public void LoadData(EnvironmentWeatherData _environmentWeatherData)
     {
         time = _environmentWeatherData.time;
         environmentWeatherData = _environmentWeatherData;
-        Invoke(true);
-        return this;
     }
 
     /**************************************
@@ -51,7 +49,7 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
      * @Parameter: n/aW
      * @Return: override void
      ***************************************/
-    public override EnvironmentEvent Invoke(bool _data)
+    public override void Invoke(bool _data)
     {
         if(weatherPrefab != null)
         {
@@ -63,7 +61,6 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
             }
         }
         LightingManager.Instance().SetWeather((Weather)environmentWeatherData.weather);
-        return this;
     }
 
     /**************************************
