@@ -118,7 +118,6 @@ public class LevelEndscreen : MonoBehaviour
         SuperManager superMan = SuperManager.GetInstance();
         superMan.SaveCurrentMatch();
         superMan.OnBackToMenus();
-        GlobalData.gameEnd = false;
-        FindObjectOfType<SceneSwitcher>().SceneSwitch("ResearchTree");
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
     }
 }
