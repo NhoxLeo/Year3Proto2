@@ -27,18 +27,13 @@ public class VillagerManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        villagers = 5;
+        availableVillagers = 5;
     }
 
     public static VillagerManager GetInstance()
     {
         return instance;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        villagers = 5;
-        availableVillagers = 5;
     }
 
     // Update is called once per frame
@@ -679,7 +674,7 @@ public class VillagerManager : MonoBehaviour
         priorityOrder[0] = _priorities[0];
         priorityOrder[1] = _priorities[1];
         priorityOrder[2] = _priorities[2];
-        RedistributeVillagers();
+        //RedistributeVillagers();
         int food = 0;
         int wood = 0;
         int metal = 0;

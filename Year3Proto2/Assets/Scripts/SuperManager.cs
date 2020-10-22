@@ -894,6 +894,7 @@ public class SuperManager : MonoBehaviour
 
         HUDManager.GetInstance().UpdateVillagerWidgetMode();
 
+        villagerMan.RedistributeVillagers();
         return true;
     }
 

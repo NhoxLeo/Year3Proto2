@@ -55,7 +55,8 @@ public abstract class ResourceStructure : Structure
     protected static GameObject TileHighlight = null;
     protected static GameObject Fencing = null;
     private GameObject[] villagers = new GameObject[3];
-    private List<GameObject> workingVillagers = new List<GameObject>();
+    private bool[] workingVillagersActive = new bool[4];
+    private List<int> validWorkingVillagers = new List<int>();
 
     public virtual int GetProductionVolume()
     {
@@ -91,13 +92,9 @@ public abstract class ResourceStructure : Structure
         {
             tileHighlights.Clear();
         }
-        if (workingVillagers != null)
+        if (validWorkingVillagers != null)
         {
-            foreach (GameObject villager in workingVillagers)
-            {
-                villager.SetActive(false);
-            }
-            workingVillagers.Clear();
+            validWorkingVillagers.Clear();
         }
 
         string adjStructType = StructureNames.LumberEnvironment;
@@ -148,7 +145,13 @@ public abstract class ResourceStructure : Structure
                         }
                         if (tileCounted)
                         {
-                            workingVillagers.Add(transform.Find("Working Villager " + i.ToString()).gameObject);
+                            GameObject workingVillager = transform.Find("Working Villager " + i.ToString()).gameObject;
+                            if (!workingVillager.activeSelf)
+                            {
+                                workingVillager.SetActive(true);
+                            }
+                            validWorkingVillagers.Add(i);
+                            workingVillagersActive[i] = true;
 
                             GameObject newTileHighlight = Instantiate(StructureManager.GetBonusHighlight(), transform);
                             tileHighlights.Add((TileBehaviour.TileCode)i, newTileHighlight);
@@ -254,6 +257,10 @@ public abstract class ResourceStructure : Structure
         villagers[0] = transform.Find("Villager 1").gameObject;
         villagers[1] = transform.Find("Villager 2").gameObject;
         villagers[2] = transform.Find("Villager 3").gameObject;
+        transform.Find("Working Villager 0").GetComponent<VillagerAnimation>().SetID(0);
+        transform.Find("Working Villager 1").GetComponent<VillagerAnimation>().SetID(1);
+        transform.Find("Working Villager 2").GetComponent<VillagerAnimation>().SetID(2);
+        transform.Find("Working Villager 3").GetComponent<VillagerAnimation>().SetID(3);
     }
 
     protected override void Update()
@@ -305,16 +312,24 @@ public abstract class ResourceStructure : Structure
     public void RefreshVillagers()
     {
         int allocated = 0;
-        for (int i = 0; i < workingVillagers.Count; i++)
+        workingVillagersActive[0] = false;
+        workingVillagersActive[1] = false;
+        workingVillagersActive[2] = false;
+        workingVillagersActive[3] = false;
+        for (int i = 0; i < validWorkingVillagers.Count; i++)
         {
-            workingVillagers[i].SetActive(allocatedVillagers > i);
             if (allocatedVillagers > i)
             {
+                GameObject workingVillager = transform.Find("Working Villager " + validWorkingVillagers[i].ToString()).gameObject;
+                if (!workingVillager.activeSelf)
+                {
+                    workingVillager.SetActive(true);
+                }
+                workingVillagersActive[validWorkingVillagers[i]] = true;
                 allocated++;
             }
         }
         int remainingVillagers = allocatedVillagers - allocated;
-
         for (int i = 0; i < villagers.Length; i++)
         {
             villagers[i].SetActive(remainingVillagers > i);
@@ -335,5 +350,14 @@ public abstract class ResourceStructure : Structure
         maxHealth *= SuperManager.GetInstance().GetPoorTimberFactor();
 
         return maxHealth;
+    }
+
+    public bool GetWorkingVillagerActive(int _id)
+    {
+        if (workingVillagersActive.Length > _id)
+        {
+            return workingVillagersActive[_id];
+        }
+        return false;
     }
 }

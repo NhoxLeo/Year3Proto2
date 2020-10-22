@@ -1329,6 +1329,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4687334410231226516}
   - component: {fileID: 5150620673724614213}
+  - component: {fileID: 163343364243401523}
   m_Layer: 0
   m_Name: Working Villager 2
   m_TagString: Untagged
@@ -1379,6 +1380,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &163343364243401523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 594983321918038172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f398c079c0bf9144afea26ecce4b75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &678625124005795014
 GameObject:
   m_ObjectHideFlags: 0
@@ -3030,6 +3043,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8388580143468509740}
   - component: {fileID: 1332695468165862690}
+  - component: {fileID: 647392780020465235}
   m_Layer: 0
   m_Name: Working Villager 3
   m_TagString: Untagged
@@ -3080,6 +3094,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &647392780020465235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2230738928152352183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f398c079c0bf9144afea26ecce4b75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2233183386966160149
 GameObject:
   m_ObjectHideFlags: 0
@@ -4502,6 +4528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7617366765270439932}
   - component: {fileID: 8051945126986415828}
+  - component: {fileID: 1678560804669240756}
   m_Layer: 0
   m_Name: Working Villager 1
   m_TagString: Untagged
@@ -4552,6 +4579,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1678560804669240756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3740085390136701276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f398c079c0bf9144afea26ecce4b75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3780639091671505135
 GameObject:
   m_ObjectHideFlags: 0
@@ -10035,6 +10074,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2431854943637591550}
   - component: {fileID: 8554681896880290783}
+  - component: {fileID: 4104198810974423584}
   m_Layer: 0
   m_Name: Working Villager 0
   m_TagString: Untagged
@@ -10085,6 +10125,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4104198810974423584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7929300088933501735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f398c079c0bf9144afea26ecce4b75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7955880904202969916
 GameObject:
   m_ObjectHideFlags: 0
