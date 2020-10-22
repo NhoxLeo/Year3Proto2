@@ -27,12 +27,10 @@ public abstract class EnvironmentAmbientEvent : EnvironmentEvent
         return environmentAmbientData;
     }
 
-    public EnvironmentAmbientEvent LoadData(EnvironmentAmbientData _environmentAmbientData)
+    public void LoadData(EnvironmentAmbientData _environmentAmbientData)
     {
         destination = _environmentAmbientData.destination;
         transform.position = _environmentAmbientData.position;
-        Invoke(true);
-        return this;
     }
 
     public Vector3 GetDestination ()
