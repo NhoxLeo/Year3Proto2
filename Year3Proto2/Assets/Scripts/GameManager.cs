@@ -618,7 +618,7 @@ public class GameManager : MonoBehaviour
         {
             VillagerManager.GetInstance().TrainVillager();
         }
-        if (!EnemyManager.GetInstance().GetSpawnOnKeyMode())
+        if (!EnemyManager.GetInstance().GetSpawnOnKeyMode() || !SuperManager.DevMode)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {

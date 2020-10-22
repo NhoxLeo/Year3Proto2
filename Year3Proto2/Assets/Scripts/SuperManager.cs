@@ -9,6 +9,8 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     public static bool DevMode = false;
+    public const string DevModePassword = "lollipop";
+    public static string runningString = "";
     public static bool raining = false;
     public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
@@ -618,13 +620,13 @@ public class SuperManager : MonoBehaviour
         // Hold both mouse buttons
         if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
-            // Press D
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                WipeReloadScene(false);
-            }
             if (DevMode)
             {
+                // Press D
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    WipeReloadScene(false);
+                }
                 // Press S
                 if (Input.GetKeyDown(KeyCode.S))
                 {
@@ -634,6 +636,8 @@ public class SuperManager : MonoBehaviour
                 }
             }
         }
+
+        CheckDevModePassword();
 
         MusicPlayerUpdate();
     }
@@ -1639,6 +1643,30 @@ public class SuperManager : MonoBehaviour
 
     private void CheckDevModePassword()
     {
-
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            runningString += "l";
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            runningString += "o";
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            runningString += "p";
+            if (runningString == DevModePassword)
+            {
+                DevMode = true;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            runningString += "i";
+        }
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            runningString = "";
+            DevMode = false;
+        }
     }
 }
