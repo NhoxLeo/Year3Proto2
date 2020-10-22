@@ -947,6 +947,9 @@ public class SuperManager : MonoBehaviour
         EnemyManager.GetInstance().SaveSystemToData(ref save);
         EnvironmentSystem.GetInstance().SaveSystemToData(ref save);
 
+        raining = false;
+        rainAmbienceAudio.DOFade(0.0f, 3.0f);
+
 
         // not so easy stuff...
         // invaders
@@ -1450,10 +1453,11 @@ public class SuperManager : MonoBehaviour
         {
             musicAudio.volume = 0.4f * MusicVolume;
             windAmbienceAudio.volume = playWindAmbience ? 0.15f * AmbientVolume : 0f;
+
             if(raining)
             {
                 rainAmbienceAudio.volume = AmbientVolume;
-            }
+            } 
         }
     }
 

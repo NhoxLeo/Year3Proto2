@@ -114,8 +114,8 @@ public class EnvironmentSystem : MonoBehaviour
     private void InvokeAmbient()
     {
         ambientIndex = Random.Range(0, ambientEvents.Length);
-        ambientEvent = Instantiate(ambientEvents[ambientIndex], transform)
-            .Invoke(false) as EnvironmentAmbientEvent;
+        ambientEvent = Instantiate(ambientEvents[ambientIndex], transform);
+        ambientEvent.Invoke(false);
     }
 
     private void InvokeWeather(bool _random)
@@ -124,41 +124,33 @@ public class EnvironmentSystem : MonoBehaviour
 
         weatherIndex = (weatherIndex < 1) ? (SuperManager.GetInstance().GetSnow() ? 2 : 1) : 0;
         weatherIndex = _random ? weatherIndex : 0;
+        weatherEvent = Instantiate(weatherEvents[weatherIndex], transform);
+        weatherEvent.Invoke(false);
 
-        weatherEvent = Instantiate(weatherEvents[weatherIndex], transform)
-            .Invoke(false) as EnvironmentWeatherEvent;
-
-        if(weatherEvent.GetData().weather == 1)
-        {
-            SuperManager.GetInstance().GetRainAudio()
-                .DOFade(SuperManager.AmbientVolume, 6.0f)
-                .OnComplete(() => SuperManager.raining = true);
-        }
-        else
-        {
-            SuperManager.GetInstance().GetRainAudio()
-                .DOFade(0, 3.0f)
-                .OnComplete(() => SuperManager.raining = false);
-        }
-
-        StartCoroutine(ClearParticleEvent());
+        StartCoroutine(SimulateWeather());
     }
 
     public void LoadData(SuperManager.MatchSaveData _data)
     {
         if(!_data.environmentAmbientData.Equals(default(EnvironmentAmbientData)))
         {
-            ambientEvent = Instantiate(ambientEvents[_data.environmentAmbientData.index], transform)
-                .LoadData(_data.environmentAmbientData);
+            ambientIndex = _data.environmentAmbientData.index;
+            ambientEvent = Instantiate(ambientEvents[ambientIndex], transform);
+            ambientEvent.LoadData(_data.environmentAmbientData);
+            ambientEvent.Invoke(true);
         }
 
         if (!_data.environmentWeatherData.Equals(default(EnvironmentWeatherData)))
         { 
-            weatherEvent = Instantiate(weatherEvents[_data.environmentWeatherData.index], transform)
-                .LoadData(_data.environmentWeatherData);
+            weatherIndex = _data.environmentWeatherData.index;
+            weatherEvent = Instantiate(weatherEvents[weatherIndex], transform);
+            weatherEvent.LoadData(_data.environmentWeatherData);
+            weatherEvent.Invoke(true);
         }
 
         loaded = true;
+
+        StartCoroutine(SimulateWeather());
     }
 
     public void SaveSystemToData(ref SuperManager.MatchSaveData _data)
@@ -172,7 +164,7 @@ public class EnvironmentSystem : MonoBehaviour
         return instance;
     }
 
-    IEnumerator ClearParticleEvent()
+    IEnumerator SimulateWeather()
     {
         ParticleSystem particleSystem = currentParticles;
 
@@ -188,6 +180,19 @@ public class EnvironmentSystem : MonoBehaviour
         if(particleSystem)
         {
             Destroy(particleSystem.gameObject);
+        }
+
+        if (weatherEvent.GetData().weather == 1)
+        {
+            SuperManager.GetInstance().GetRainAudio()
+                .DOFade(SuperManager.AmbientVolume, 3.0f)
+                .OnComplete(() => SuperManager.raining = true);
+        }
+        else
+        {
+            SuperManager.GetInstance().GetRainAudio()
+                .DOFade(0, 3.0f)
+                .OnComplete(() => SuperManager.raining = false);
         }
 
         yield return null;
