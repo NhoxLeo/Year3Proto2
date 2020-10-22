@@ -161,8 +161,8 @@ MonoBehaviour:
   spawning: 0
   airshipPrefab: {fileID: 3056834929655612559, guid: 8eb991c5726be7640a78e32e6e27599e,
     type: 3}
-  enemiesPerAirship: 9
-  radiusOffset: 0
+  airshipCapacity: 12
+  radiusOffset: 5
   distance: 0
 --- !u!1001 &1934217215400905385
 PrefabInstance:
