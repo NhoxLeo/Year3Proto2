@@ -96,11 +96,11 @@ public class TitleScreen : MonoBehaviour
 
         version.text = "v" + Application.version;
 
-        SceneSwitcher switcher = FindObjectOfType<SceneSwitcher>();
-        if (switcher.GetLoadingScreenIsActive())
-        {
-            switcher.EndLoad();
-        }
+        //SceneSwitcher switcher = FindObjectOfType<SceneSwitcher>();
+        //if (switcher.GetLoadingScreenIsActive())
+        //{
+        //    switcher.EndLoad();
+        //}
     }
 
     private void LateUpdate()
