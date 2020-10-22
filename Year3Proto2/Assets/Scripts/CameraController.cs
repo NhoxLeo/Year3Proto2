@@ -83,7 +83,7 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if (!PauseMenu.GetInstance().isPaused)
+        if (!PauseMenu.GetInstance().isPaused || Time.timeScale != 0f)
         {
             inertia = Vector2.Lerp(inertia, Vector2.zero, inertiaFalloffSpeed * Time.smoothDeltaTime);
 

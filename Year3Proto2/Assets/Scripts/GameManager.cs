@@ -415,14 +415,19 @@ public class GameManager : MonoBehaviour
 
 
         // Hold both mouse buttons
-        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+        if (SuperManager.DevMode)
         {
-            if (SuperManager.DevMode)
+            if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
             {
                 // Press M
                 if (Input.GetKeyDown(KeyCode.M))
                 {
                     cheatAlwaysMaxed = !cheatAlwaysMaxed;
+                }
+                if (Input.GetKeyDown(KeyCode.V))
+                {
+                    victory = true;
+                    objectivesCompleted = objectives.Count;
                 }
             }
         }
@@ -488,6 +493,14 @@ public class GameManager : MonoBehaviour
                     SuperManager.GetInstance().PlayGameoverMusic(victory);
                 }
             }            
+        }
+    }
+
+    public void OnGUI()
+    {
+        if (SuperManager.DevMode)
+        {
+            GUI.Label(new Rect(10, 40, 100, 80), "DEV MODE ON", new GUIStyle());
         }
     }
 
@@ -598,27 +611,27 @@ public class GameManager : MonoBehaviour
             repairAll = true;
             RepairAll();
         }
-
+        /*
         if (Input.GetKeyDown(KeyCode.H))
         {
             ShowEnemyHealthbars = !ShowEnemyHealthbars;
         }
-
+        */
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             HUDManager.GetInstance().SwitchTabs();
         }
-
+        /*
         if (Input.GetKeyDown(KeyCode.V))
         {
             HUDManager.GetInstance().ToggleShowVillagers();
         }
-
-        if (Input.GetKeyDown(KeyCode.N))
+        */
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             VillagerManager.GetInstance().TrainVillager();
         }
-        if (!EnemyManager.GetInstance().GetSpawnOnKeyMode())
+        if (!EnemyManager.GetInstance().GetSpawnOnKeyMode() || !SuperManager.DevMode)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {

@@ -9,6 +9,9 @@ using UnityEngine.SceneManagement;
 public class SuperManager : MonoBehaviour
 {
     public static bool DevMode = false;
+    public const string DevModePassword = "lollipop";
+    public static string runningString = "";
+    public static bool raining = false;
     public static bool TitleScreenAnimPlayed = false;
     // SETTINGS
     public static float AmbientVolume = 1.0f;
@@ -92,24 +95,21 @@ public class SuperManager : MonoBehaviour
     public const int FrostTowerRange = 19;
     public const int FrostTowerSlowEffect = 20;
     public const int FrostTowerFortification = 21;
-    public const int FrostTowerEfficiency = 22;
-    public const int FrostTowerSuper = 23;
+    public const int FrostTowerSuper = 22;
 
     // LIGHTNING TOWER
-    public const int LightningTower = 24;
-    public const int LightningTowerRange = 25;
-    public const int LightningTowerPower = 26;
-    public const int LightningTowerFortification = 27;
-    public const int LightningTowerEfficiency = 28;
-    public const int LightningTowerSuper = 29;
+    public const int LightningTower = 23;
+    public const int LightningTowerRange = 24;
+    public const int LightningTowerPower = 25;
+    public const int LightningTowerFortification = 26;
+    public const int LightningTowerSuper = 27;
 
     // SHOCKWAVE TOWER
-    public const int ShockwaveTower = 30;
-    public const int ShockwaveTowerRange = 31;
-    public const int ShockwaveTowerStunDuration = 32;
-    public const int ShockwaveTowerFortification = 33;
-    public const int ShockwaveTowerEfficiency = 34;
-    public const int ShockwaveTowerSuper = 35;
+    public const int ShockwaveTower = 28;
+    public const int ShockwaveTowerRange = 29;
+    public const int ShockwaveTowerStunDuration = 30;
+    public const int ShockwaveTowerFortification = 31;
+    public const int ShockwaveTowerSuper = 32;
 
     // MUSIC
     public const int CloudLine = 0;
@@ -447,28 +447,25 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(CatapultPower, Catapult, "Power Shot", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(CatapultFortification, Catapult, "Fortification", "Improves building durability by 50%.", 200),
         new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
-        new ResearchElementDefinition(CatapultSuper, Catapult, "Cluster Bomb", "Smaller boulders erupt from the inital explosion.", 500, true),
+        new ResearchElementDefinition(CatapultSuper, Catapult, "Cluster Bomb", "Small bombs erupt from the explosion.", 500, true),
 
         new ResearchElementDefinition(FrostTower, NoRequirement, "Frost Tower", "The Frost Tower slows down enemies making it easier for other defenses to hit them.", 300),
         new ResearchElementDefinition(FrostTowerRange, FrostTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(FrostTowerSlowEffect, FrostTower, "Slow Effect", "Slows Enemies by +30%.", 200),
         new ResearchElementDefinition(FrostTowerFortification, FrostTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(FrostTowerEfficiency, FrostTower, "N/A", "Not yet implemented.", 0),
-        new ResearchElementDefinition(FrostTowerSuper, FrostTower, "Blizzard", "Frost effect makes enemies more vulnerable", 500, true),
+        new ResearchElementDefinition(FrostTowerSuper, FrostTower, "Blizzard", "Frost makes enemies more vulnerable", 500, true),
 
         new ResearchElementDefinition(LightningTower, NoRequirement, "Lightning Tower", "The Lightning Tower shoots bolts at enemies dealing heavy shock damage.", 300),
         new ResearchElementDefinition(LightningTowerRange, LightningTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(LightningTowerPower, LightningTower, "Power", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(LightningTowerFortification, LightningTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(LightningTowerEfficiency, LightningTower, "N/A", "Not yet implemented.", 0),
         new ResearchElementDefinition(LightningTowerSuper, LightningTower, "Chain Lightning", "Lightning jumps from enemy to enemy.", 500, true),
 
         new ResearchElementDefinition(ShockwaveTower, NoRequirement, "Shockwave Tower", "The Shockwave Tower releases high energy shockwaves that momentarily stun enemies.", 300),
         new ResearchElementDefinition(ShockwaveTowerRange, ShockwaveTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(ShockwaveTowerStunDuration, ShockwaveTower, "Stun Duration", "Enemy stun duration increased by 25%", 200),
         new ResearchElementDefinition(ShockwaveTowerFortification, ShockwaveTower, "Fortification", "Improves building durability by 50%.", 200),
-        new ResearchElementDefinition(ShockwaveTowerEfficiency, ShockwaveTower, "N/A", "Not yet implemented.", 0),
-        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages enemies based on how far from impact point.", 0, true),
+        new ResearchElementDefinition(ShockwaveTowerSuper, ShockwaveTower, "Bulldoze", "Damages close enemies.", 500, true),
     };
     public static List<LevelDefinition> LevelDefinitions = new List<LevelDefinition>()
     {
@@ -540,11 +537,13 @@ public class SuperManager : MonoBehaviour
     private Dictionary<int, AudioClip> GameMusic = new Dictionary<int, AudioClip>();
     private Dictionary<int, string> GameMusicDetails = new Dictionary<int, string>();
     private AudioClip windAmbience = null;
+    private AudioClip rainAmbience = null;
     private static AudioClip UIClick = null;
 
     // Audio sources
     private AudioSource musicAudio;
     private AudioSource windAmbienceAudio;
+    private AudioSource rainAmbienceAudio;
 
     // Management
     private const float MusicDelayMinimum = 5f;
@@ -600,6 +599,11 @@ public class SuperManager : MonoBehaviour
         windAmbienceAudio.clip = windAmbience;
         windAmbienceAudio.loop = true;
 
+        rainAmbienceAudio = sources[2];
+        rainAmbienceAudio.clip = rainAmbience;
+        rainAmbienceAudio.loop = true;
+        rainAmbienceAudio.volume = 0.0f;
+
         if (saveData.gameVersion != Application.version)
         {
             ClearCurrentMatch();
@@ -611,16 +615,18 @@ public class SuperManager : MonoBehaviour
 
     private void Update()
     {
+
+
         // Hold both mouse buttons
         if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
-            // Press D
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                WipeReloadScene(false);
-            }
             if (DevMode)
             {
+                // Press D
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    WipeReloadScene(false);
+                }
                 // Press S
                 if (Input.GetKeyDown(KeyCode.S))
                 {
@@ -630,6 +636,8 @@ public class SuperManager : MonoBehaviour
                 }
             }
         }
+
+        CheckDevModePassword();
 
         MusicPlayerUpdate();
     }
@@ -641,7 +649,10 @@ public class SuperManager : MonoBehaviour
             GameManager gameMan = GameManager.GetInstance();
             if (gameMan && !Application.isEditor)
             {
-                gameMan.AttemptPause();
+                if (!gameMan.GetGameLost())
+                {
+                    gameMan.AttemptPause();
+                }
             }
         }
     }
@@ -883,6 +894,7 @@ public class SuperManager : MonoBehaviour
 
         HUDManager.GetInstance().UpdateVillagerWidgetMode();
 
+        villagerMan.RedistributeVillagers();
         return true;
     }
 
@@ -1358,7 +1370,7 @@ public class SuperManager : MonoBehaviour
 
     public bool GetSnow()
     {
-        return currentLevel > 1;
+        return currentLevel == 1 || currentLevel == 3;
     }
 
     public SpawnerData GetCurrentLevelSpawnerData()
@@ -1389,6 +1401,7 @@ public class SuperManager : MonoBehaviour
         GameMusicDetails.Add(PyrrhicVictory, "Pyrrhic Victory - Lobo Loco");
 
         windAmbience = Resources.Load("Audio/SFX/sfxWindAmbience") as AudioClip;
+        rainAmbience = Resources.Load("Audio/SFX/sfxRain") as AudioClip;
         UIClick = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
     }
 
@@ -1436,7 +1449,11 @@ public class SuperManager : MonoBehaviour
         if (moderateVolume)
         {
             musicAudio.volume = 0.4f * MusicVolume;
-            windAmbienceAudio.volume = playWindAmbience ? 0.1f * AmbientVolume : 0f;
+            windAmbienceAudio.volume = playWindAmbience ? 0.15f * AmbientVolume : 0f;
+            if(raining)
+            {
+                rainAmbienceAudio.volume = AmbientVolume;
+            }
         }
     }
 
@@ -1500,6 +1517,7 @@ public class SuperManager : MonoBehaviour
     {
         nextSongTimer = 0f;
         windAmbienceAudio.Play();
+        rainAmbienceAudio.Play();
         windAmbienceAudio.DOFade(0.1f * AmbientVolume, 0.5f);
         playWindAmbience = true;
         moderateVolume = false;
@@ -1510,7 +1528,8 @@ public class SuperManager : MonoBehaviour
 
     public void OnBackToMenus()
     {
-        windAmbienceAudio.DOFade(0f, 0.5f);
+        windAmbienceAudio.DOFade(0.0f, 0.5f);
+        rainAmbienceAudio.DOFade(0.0f, 0.5f);
         musicAudio.DOFade(0f, 0.5f);
         Invoke("PlayTitleScreenMusic", 0.5f);
         moderateVolume = false;
@@ -1524,6 +1543,7 @@ public class SuperManager : MonoBehaviour
     {
         // fade out music and play victory/loss music, then fade the music back in
         windAmbienceAudio.DOFade(0f, 0.2f);
+        rainAmbienceAudio.DOFade(0.0f, 0.2f);
         musicAudio.DOFade(0f, 0.2f);
         moderateVolume = false;
         string clipName = _victory ? "win" : "lose";
@@ -1580,6 +1600,11 @@ public class SuperManager : MonoBehaviour
         {
             windAmbienceAudio.Pause();
         }
+
+        if (rainAmbienceAudio.isPlaying)
+        {
+            rainAmbienceAudio.Pause();
+        }
     }
 
     public void OnResume()
@@ -1592,6 +1617,7 @@ public class SuperManager : MonoBehaviour
             }
         }
         windAmbienceAudio.Play();
+        rainAmbienceAudio.Play();
     }
 
     public static void UIClickSound()
@@ -1609,5 +1635,39 @@ public class SuperManager : MonoBehaviour
     public static void SetBonusHighlightHeight(Transform _bonusHighlight, float _height)
     {
         _bonusHighlight.GetComponent<MeshRenderer>().material.SetFloat("_Height", _height);
+    }
+
+    public AudioSource GetRainAudio()
+    {
+        return rainAmbienceAudio;
+    }
+
+    private void CheckDevModePassword()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            runningString += "l";
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            runningString += "o";
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            runningString += "p";
+            if (runningString == DevModePassword)
+            {
+                DevMode = true;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            runningString += "i";
+        }
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            runningString = "";
+            DevMode = false;
+        }
     }
 }

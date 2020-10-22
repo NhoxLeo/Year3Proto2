@@ -484,6 +484,11 @@ public class StructureManager : MonoBehaviour
             return;
         }
 
+        if (GameManager.GetInstance().GetGameLost())
+        {
+            return;
+        }
+
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         //envInfo.SetVisibility(false);
@@ -649,6 +654,8 @@ public class StructureManager : MonoBehaviour
 
     private void UpdateSelecting(Ray _mouseRay)
     {
+
+        
         // if the right mouse button isn't being held down...
         if (!Input.GetMouseButton(1))
         {
@@ -737,7 +744,7 @@ public class StructureManager : MonoBehaviour
             // stop short
             return;
         }
-
+        /*
         // If the player presses the delete key...
         if (Input.GetKeyDown(KeyCode.Delete))
         {
@@ -751,6 +758,7 @@ public class StructureManager : MonoBehaviour
                 return;
             }
         }
+        */
 
         Vector3 highlightpos = selectedStructure.transform.position;
         highlightpos.y = HighlightSitHeight;

@@ -76,4 +76,9 @@ public class EnvironmentWeatherEvent : EnvironmentEvent
     {
         return weatherObject;
     }
+
+    public EnvironmentWeatherData GetData()
+    {
+        return environmentWeatherData;
+    }
 }
