@@ -74,7 +74,7 @@ public class Ballista : ProjectileDefenseStructure
                 targetPosition.z += projectileOffset;
             }
 
-            GameObject newArrow = Instantiate(arrowPrefab, ballista.transform.position, Quaternion.identity);
+            GameObject newArrow = Instantiate(arrowPrefab, projectileLocation.position, Quaternion.identity);
             BoltBehaviour arrowBehaviour = newArrow.GetComponent<BoltBehaviour>();
             arrowBehaviour.Initialize(targetPosition, damage, ArrowSpeed, arrowPierce);
             GameManager.CreateAudioEffect("arrow", transform.position, SoundType.SoundEffect, 0.6f);

@@ -244,6 +244,7 @@ public class Airship : MonoBehaviour
 
         for (int i = 0; i < transforms.Length; i++)
         {
+            i %= 9;
             float xPosition = i % columns / 2.0f * xOffset;
             float yPosition = halfScale.y;
             float zPosition = i / columns / 2.0f * zOffset;
