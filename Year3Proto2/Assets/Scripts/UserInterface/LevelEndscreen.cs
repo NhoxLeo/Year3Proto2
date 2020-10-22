@@ -10,9 +10,20 @@ public class LevelEndscreen : MonoBehaviour
     public Color victoryColour;
     public Color defeatColour;
 
+    [SerializeField] private GameObject keepPlayingButton = null;
+    [SerializeField] private GameObject researchButton = null;
+    [SerializeField] private GameObject gameEndTitleButton = null;
+
     public bool showingVictory = false;
     public bool showingDefeat = false;
 
+    private bool alreadyComplete = false;
+
+
+    private void Start()
+    {
+        alreadyComplete = GameManager.GetInstance().gameAlreadyWon;
+    }
 
     private void GetVictoryInfo()
     {
@@ -31,11 +42,29 @@ public class LevelEndscreen : MonoBehaviour
     public void ShowVictoryScreen()
     {
         GetVictoryInfo();
+        if (SuperManager.GetInstance().GetCurrentLevel() == 3 && !alreadyComplete)
+        {
+            GlobalData.gameEnd = true;
+        }
 
         transform.Find("Defeat").gameObject.SetActive(false);
         transform.Find("Victory").gameObject.SetActive(true);
         GetComponent<Tooltip>().showTooltip = true;
         GetComponent<Image>().color = victoryColour;
+
+        if (GlobalData.gameEnd)
+        {
+            keepPlayingButton.SetActive(false);
+            researchButton.SetActive(false);
+            gameEndTitleButton.SetActive(true);
+        }
+        else
+        {
+            keepPlayingButton.SetActive(true);
+            researchButton.SetActive(true);
+            gameEndTitleButton.SetActive(false);
+        }
+
         showingVictory = true;
         Time.timeScale = 0f;
 
@@ -82,5 +111,13 @@ public class LevelEndscreen : MonoBehaviour
         superMan.SaveCurrentMatch();
         superMan.OnBackToMenus();
         FindObjectOfType<SceneSwitcher>().SceneSwitch("ResearchTree");
+    }
+
+    public void VictoryGoToTitle()
+    {
+        SuperManager superMan = SuperManager.GetInstance();
+        superMan.SaveCurrentMatch();
+        superMan.OnBackToMenus();
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
     }
 }
