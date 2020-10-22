@@ -24,7 +24,7 @@ public class TitleScreen : MonoBehaviour
     {
         Time.timeScale = 1.0f;
 
-        GetComponent<Tooltip>().showTooltip = true;
+        GetComponent<UIAnimator>().showElement = true;
 
         if (!SuperManager.TitleScreenAnimPlayed)
         {
