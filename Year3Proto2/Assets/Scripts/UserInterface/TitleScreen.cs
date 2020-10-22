@@ -28,6 +28,7 @@ public class TitleScreen : MonoBehaviour
         if (GlobalData.gameEnd)
         {
             gameEndscreen.SetVisibility(true);
+            GlobalData.gameEnd = false;
         }
         else
         {
