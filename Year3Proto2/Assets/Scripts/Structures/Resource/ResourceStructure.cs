@@ -93,6 +93,10 @@ public abstract class ResourceStructure : Structure
         }
         if (workingVillagers != null)
         {
+            foreach (GameObject villager in workingVillagers)
+            {
+                villager.SetActive(false);
+            }
             workingVillagers.Clear();
         }
 
