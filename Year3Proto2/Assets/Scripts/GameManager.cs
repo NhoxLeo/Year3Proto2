@@ -500,7 +500,7 @@ public class GameManager : MonoBehaviour
     {
         if (SuperManager.DevMode)
         {
-            GUI.Label(new Rect(10, 40, 100, 80), "DEV MODE ON", new GUIStyle());
+            //GUI.Label(new Rect(10, 40, 100, 80), "DEV MODE ON", new GUIStyle());
         }
     }
 

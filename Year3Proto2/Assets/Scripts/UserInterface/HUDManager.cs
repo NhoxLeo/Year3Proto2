@@ -71,6 +71,7 @@ public class HUDManager : MonoBehaviour
 
     [Header("Pause Menu")]
     [SerializeField] private PauseMenu pauseMenu;
+    [SerializeField] private GameObject pauseButton;
 
     private bool nextWaveUpdate = false;
 
@@ -102,6 +103,10 @@ public class HUDManager : MonoBehaviour
     void LateUpdate()
     {
         animator.SetVisibility(doShowHUD);
+        if (pauseButton)
+        {
+            pauseButton.SetActive(doShowHUD);
+        }
 
         if (SuperManager.DevMode)
         {

@@ -85,7 +85,7 @@ public class ResearchScreen : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R))
             {
                 // give the player some research points, they've earned it
-                superMan.SetResearchPoints(9001);
+                superMan.SetResearchPoints(3000);
                 superMan.WriteGameData();
                 UpdateRPCounter();
             }

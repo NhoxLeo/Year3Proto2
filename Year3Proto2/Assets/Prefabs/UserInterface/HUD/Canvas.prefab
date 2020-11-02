@@ -2199,6 +2199,7 @@ MonoBehaviour:
   defenceCategory: {fileID: 8223280843856803603}
   resourceCategory: {fileID: 2910419395265176043}
   pauseMenu: {fileID: 7454480641238334669}
+  pauseButton: {fileID: 2186660119378521051}
 --- !u!114 &9028836154776136616
 MonoBehaviour:
   m_ObjectHideFlags: 0
