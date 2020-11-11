@@ -389,7 +389,6 @@ public class StructureManager : MonoBehaviour
     private GameObject buildingPuff;
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
-    private MessageBox messageBox;
 
     private const int PlainsInStartingArea = 24;
     private const int ForestsInStartingArea = 18;
@@ -419,7 +418,6 @@ public class StructureManager : MonoBehaviour
         panel = FindObjectOfType<BuildPanel>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         canvas = FindObjectOfType<Canvas>();
-        messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
         HealthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
@@ -984,7 +982,7 @@ public class StructureManager : MonoBehaviour
                 {
                     SelectStructure(structure);
                 }
-                messageBox.HideMessage();
+                MessageBox.GetInstance().HideMessage();
             }
         }
     }
@@ -1478,7 +1476,7 @@ public class StructureManager : MonoBehaviour
 
     private void ShowMessage(string _message, float _duration)
     {
-        messageBox.ShowMessage(_message, _duration);
+        MessageBox.GetInstance().ShowMessage(_message, _duration);
     }
 
     public void LoadBuilding(SuperManager.StructureSaveData _saveData)

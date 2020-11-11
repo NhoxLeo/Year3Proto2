@@ -493,7 +493,7 @@ public class VillagerManager : MonoBehaviour
                 }
             }
             RemoveVillagers(1, false);
-            FindObjectOfType<MessageBox>().ShowMessage("A villager just starved!", 2.5f);
+            MessageBox.GetInstance().ShowMessage("A villager just starved!", 2.5f);
         }
     }
 
