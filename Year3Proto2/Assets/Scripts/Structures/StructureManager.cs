@@ -309,14 +309,14 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
         { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
         { BuildPanel.Buildings.Barracks, "Spawns soldiers, who automatically attack enemies." },
-        { BuildPanel.Buildings.FrostTower, "Sprays enemies with ice to slow them down." },
-        { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
-        { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies." },
-        { BuildPanel.Buildings.Farm, "Collects Food from nearby field tiles. Bonus if constructed on field." },
+        { BuildPanel.Buildings.FrostTower, "Sprays enemies with ice to slow them down. Does not require Villagers." },
+        { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave that stuns enemies for a short time." },
+        { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies. Lightning casts increase with enemy count." },
+        { BuildPanel.Buildings.Farm, "Collects Food from nearby Field tiles. Bonus if constructed near Fields." },
         { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
-        { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
+        { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby Forest tiles. Bonus if constructed near Forests." },
         { BuildPanel.Buildings.LumberPile, "Increases maximum Wood storage capacity." },
-        { BuildPanel.Buildings.Mine, "Collects Metal from nearby rocky hill tiles. Bonus if constructed on hills." },
+        { BuildPanel.Buildings.Mine, "Collects Metal from nearby rocky Hill tiles. Bonus if constructed near Hills." },
         { BuildPanel.Buildings.MetalStorage, "Increases maximum Metal storage capacity." }
     };
 
