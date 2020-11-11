@@ -607,7 +607,7 @@ public class SuperManager : MonoBehaviour
         if (saveData.gameVersion != Application.version)
         {
             ClearCurrentMatch();
-            saveData.showTutorial = true;
+            //saveData.showTutorial = true;
         }
 
         saveData.gameVersion = Application.version;
