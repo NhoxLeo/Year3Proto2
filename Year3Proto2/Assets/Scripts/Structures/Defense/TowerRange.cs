@@ -51,8 +51,7 @@ public class TowerRange : MonoBehaviour
                             if (defenseParent.GetStructureName() != StructureNames.FrostTower)
                             {
                                 defenseParent.Alert();
-                                MessageBox messageBox = FindObjectOfType<MessageBox>();
-                                messageBox.ShowMessage(defenseParent.GetStructureName() + " has no allocated villagers.", 3.0f);
+                                MessageBox.GetInstance().ShowMessage(defenseParent.GetStructureName() + " has no allocated villagers.", 3.0f);
                             }
                         }
                     }

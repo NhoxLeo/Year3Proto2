@@ -179,7 +179,6 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float radiusOffset;
     [SerializeField] private float distance = 0.0f;
 
-    private MessageBox messageBox;
     private readonly List<Enemy> enemies = new List<Enemy>();
     private int enemiesKilled = 0;
     private int wave = 0;
@@ -376,8 +375,6 @@ public class EnemyManager : MonoBehaviour
     ***************************************/
     private void Start()
     {
-
-        messageBox = FindObjectOfType<MessageBox>();
         TileBehaviour[] tiles = FindObjectsOfType<TileBehaviour>();
         for (int i = 0; i < tiles.Length; i++)
         {
@@ -553,7 +550,7 @@ public class EnemyManager : MonoBehaviour
                         SpawnAirship(dedicatedAirships[i], enemyLevels);
                     }
 
-                    messageBox.ShowMessage("Invaders incoming!", 3.5f);
+                    MessageBox.GetInstance().ShowMessage("Invaders incoming!", 3.5f);
                 }
 
                 tokens = 0.0f;

@@ -428,7 +428,7 @@ public class SuperManager : MonoBehaviour
     public static List<ResearchElementDefinition> ResearchDefinitions = new List<ResearchElementDefinition>()
     {
         // ID, ID requirement, Name, Description, RP Cost, Special Upgrade (false by default)
-        new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns soldiers, which automatically chase down enemies.", 300),
+        new ResearchElementDefinition(Barracks, NoRequirement, "Barracks", "The Barracks spawns Soldiers, which automatically chase down enemies.", 300),
         new ResearchElementDefinition(BarracksSoldierDamage, Barracks, "Soldier Damage", "Damage improved by 30%.", 200),
         new ResearchElementDefinition(BarracksSoldierHealth, Barracks, "Soldier Health", "Health increased by 50%.", 200),
         new ResearchElementDefinition(BarracksSoldierSpeed, Barracks, "Soldier Speed", "Speed increased by 30%.", 200),
@@ -449,7 +449,7 @@ public class SuperManager : MonoBehaviour
         new ResearchElementDefinition(CatapultEfficiency, Catapult, "Efficiency", "Boulder cost reduced by 50%.", 200),
         new ResearchElementDefinition(CatapultSuper, Catapult, "Cluster Bomb", "Small bombs erupt from the explosion.", 500, true),
 
-        new ResearchElementDefinition(FrostTower, NoRequirement, "Frost Tower", "The Frost Tower slows down enemies making it easier for other defenses to hit them.", 300),
+        new ResearchElementDefinition(FrostTower, NoRequirement, "Frost Tower", "The Frost Tower slows down enemies making it easier for other defences to hit them.", 300),
         new ResearchElementDefinition(FrostTowerRange, FrostTower, "Range Boost", "Extends tower range by 25%.", 200),
         new ResearchElementDefinition(FrostTowerSlowEffect, FrostTower, "Slow Effect", "Slows Enemies by +30%.", 200),
         new ResearchElementDefinition(FrostTowerFortification, FrostTower, "Fortification", "Improves building durability by 50%.", 200),
@@ -607,7 +607,7 @@ public class SuperManager : MonoBehaviour
         if (saveData.gameVersion != Application.version)
         {
             ClearCurrentMatch();
-            saveData.showTutorial = true;
+            //saveData.showTutorial = true;
         }
 
         saveData.gameVersion = Application.version;

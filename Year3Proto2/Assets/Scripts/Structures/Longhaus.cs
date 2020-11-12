@@ -20,6 +20,9 @@ public class Longhaus : Structure
     private const int lumberGen = 6;
     private const int metalGen = 3;
 
+    private float attackWarningInterval = 10.0f;
+    private float attackWarningTimer = 0.0f;
+
 
     protected override void Awake()
     {
@@ -55,6 +58,18 @@ public class Longhaus : Structure
             VillagerManager.GetInstance().TrainVillager();
         }
         */
+
+        attackWarningTimer -= Time.deltaTime;
+    }
+
+    protected override void ShowAttackWarning()
+    {
+        base.ShowAttackWarning();
+        if (attackWarningTimer <= 0.0f)
+        {
+            MessageBox.GetInstance().ShowMessage("Your Longhaus is under attack!", 3.0f);
+            attackWarningTimer = attackWarningInterval;
+        }
     }
 
     public override Vector3 GetResourceDelta()

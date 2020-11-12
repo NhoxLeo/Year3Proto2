@@ -309,14 +309,14 @@ public class StructureManager : MonoBehaviour
         { BuildPanel.Buildings.Ballista, "Fires deadly bolts at individual targets." },
         { BuildPanel.Buildings.Catapult, "Fires a large flaming boulder. Damages enemies in a small area." },
         { BuildPanel.Buildings.Barracks, "Spawns soldiers, who automatically attack enemies." },
-        { BuildPanel.Buildings.FrostTower, "Sprays enemies with ice to slow them down." },
-        { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave to repulse enemies." },
-        { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies." },
-        { BuildPanel.Buildings.Farm, "Collects Food from nearby field tiles. Bonus if constructed on field." },
+        { BuildPanel.Buildings.FrostTower, "Sprays enemies with ice to slow them down. Does not require Villagers." },
+        { BuildPanel.Buildings.ShockwaveTower, "Creates a large shockwave that stuns enemies for a short time." },
+        { BuildPanel.Buildings.LightningTower, "Casts lightning on targeted enemies. Lightning casts increase with enemy count." },
+        { BuildPanel.Buildings.Farm, "Collects Food from nearby Field tiles. Bonus if constructed near Fields." },
         { BuildPanel.Buildings.Granary, "Increases maximum Food storage capacity." },
-        { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby forest tiles. Bonus if constructed on a forest." },
+        { BuildPanel.Buildings.LumberMill, "Collects Wood from nearby Forest tiles. Bonus if constructed near Forests." },
         { BuildPanel.Buildings.LumberPile, "Increases maximum Wood storage capacity." },
-        { BuildPanel.Buildings.Mine, "Collects Metal from nearby rocky hill tiles. Bonus if constructed on hills." },
+        { BuildPanel.Buildings.Mine, "Collects Metal from nearby rocky Hill tiles. Bonus if constructed near Hills." },
         { BuildPanel.Buildings.MetalStorage, "Increases maximum Metal storage capacity." }
     };
 
@@ -389,7 +389,6 @@ public class StructureManager : MonoBehaviour
     private GameObject buildingPuff;
     private BuildingInfo buildingInfo;
     private EnvInfo envInfo;
-    private MessageBox messageBox;
 
     private const int PlainsInStartingArea = 24;
     private const int ForestsInStartingArea = 18;
@@ -419,7 +418,6 @@ public class StructureManager : MonoBehaviour
         panel = FindObjectOfType<BuildPanel>();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         canvas = FindObjectOfType<Canvas>();
-        messageBox = FindObjectOfType<MessageBox>();
         envInfo = FindObjectOfType<EnvInfo>();
         HealthBarPrefab = Resources.Load("BuildingHP") as GameObject;
         villagerWidgetPrefab = Resources.Load("VillagerAllocationWidget") as GameObject;
@@ -984,7 +982,7 @@ public class StructureManager : MonoBehaviour
                 {
                     SelectStructure(structure);
                 }
-                messageBox.HideMessage();
+                MessageBox.GetInstance().HideMessage();
             }
         }
     }
@@ -1478,7 +1476,7 @@ public class StructureManager : MonoBehaviour
 
     private void ShowMessage(string _message, float _duration)
     {
-        messageBox.ShowMessage(_message, _duration);
+        MessageBox.GetInstance().ShowMessage(_message, _duration);
     }
 
     public void LoadBuilding(SuperManager.StructureSaveData _saveData)

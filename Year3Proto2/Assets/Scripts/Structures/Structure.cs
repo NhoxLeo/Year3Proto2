@@ -214,7 +214,14 @@ public abstract class Structure : MonoBehaviour
         }
         GameManager.CreateAudioEffect("buildingHit", transform.position, SoundType.SoundEffect, 0.6f);
 
+        ShowAttackWarning();
+
         return health <= 0f;
+    }
+
+    protected virtual void ShowAttackWarning()
+    {
+
     }
 
     public float GetHealth()
