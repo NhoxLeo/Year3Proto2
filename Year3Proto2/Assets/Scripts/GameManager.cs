@@ -138,7 +138,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool freePlay = false;
     private static int repairCount = 0;
-    private MessageBox messageBox;
     private BuildPanel buildPanel;
     [HideInInspector]
     public bool repairMessage = false;
@@ -321,11 +320,11 @@ public class GameManager : MonoBehaviour
             InfoManager.RecordNewAction();
             if (repairAll)
             {
-                messageBox.ShowMessage("All repairs done!", 1f);
+                MessageBox.GetInstance().ShowMessage("All repairs done!", 1f);
             }
             else if (repairsWereFailed)
             {
-                messageBox.ShowMessage("Couldn't repair everything...", 2f);
+                MessageBox.GetInstance().ShowMessage("Couldn't repair everything...", 2f);
             }
             HUDManager.GetInstance().ShowResourceDelta(total, true);
         }
@@ -333,11 +332,11 @@ public class GameManager : MonoBehaviour
         {
             if (repairsWereFailed)
             {
-                messageBox.ShowMessage("Couldn't repair anything...", 2f);
+                MessageBox.GetInstance().ShowMessage("Couldn't repair anything...", 2f);
             }
             else
             {
-                messageBox.ShowMessage("There was nothing to repair...", 2f);
+                MessageBox.GetInstance().ShowMessage("There was nothing to repair...", 2f);
             }
         }
         
@@ -373,7 +372,6 @@ public class GameManager : MonoBehaviour
     {
         playerResources = new PlayerResources(200, 500);
         CalculateStorageMaximum();
-        messageBox = FindObjectOfType<MessageBox>();
         buildPanel = FindObjectOfType<BuildPanel>();
     }
 
@@ -439,8 +437,8 @@ public class GameManager : MonoBehaviour
 
         if (repairCount > 5 && !repairMessage && !repairAll)
         {
-            messageBox.ShowMessage("You can press R to mass repair", 3f);
-            if (messageBox.GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
+            MessageBox.GetInstance().ShowMessage("You can press R to mass repair", 3f);
+            if (MessageBox.GetInstance().GetCurrentMessage() == "You can press R to mass repair") { repairMessage = true; }
         }
 
         if (!gameover)
@@ -449,7 +447,7 @@ public class GameManager : MonoBehaviour
             {
                 gameover = true;
                 victory = false;
-                messageBox.ShowMessage("You Lost!", 3f);
+                MessageBox.GetInstance().ShowMessage("You Lost!", 3f);
                 SuperManager.GetInstance().PlayGameoverMusic(victory);
                 FindObjectOfType<LevelEndscreen>().ShowDeafeatScreen();
             }
@@ -467,7 +465,7 @@ public class GameManager : MonoBehaviour
                         {
                             waveAtObjectiveStart = EnemyManager.GetInstance().GetWaveCurrent();
                         }
-                        FindObjectOfType<MessageBox>().ShowMessage("Objective Complete!", 1.5f);
+                        MessageBox.GetInstance().ShowMessage("Objective Complete!", 1.5f);
                         EnemyManager.GetInstance().OnObjectiveComplete();
                         foodSinceObjective = 0;
                         lumberSinceObjective = 0;
@@ -489,7 +487,7 @@ public class GameManager : MonoBehaviour
                     victory = true;
                     FindObjectOfType<LevelEndscreen>().ShowVictoryScreen();
                     SuperManager.GetInstance().OnLevelComplete();
-                    messageBox.ShowMessage("You Win!", 5f);
+                    MessageBox.GetInstance().ShowMessage("You Win!", 5f);
                     SuperManager.GetInstance().PlayGameoverMusic(victory);
                 }
             }            

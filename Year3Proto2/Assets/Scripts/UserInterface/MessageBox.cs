@@ -1,16 +1,25 @@
 ﻿using UnityEngine;
 using TMPro;
+using System.Runtime.CompilerServices;
 
 public class MessageBox : MonoBehaviour
 {
+    private static MessageBox instance;
+
     private Tooltip tool;
     private float timer;
     private bool timerMode;
 
     private TMP_Text displayText;
 
+    public static MessageBox GetInstance()
+    {
+        return instance;
+    }
+
     void Awake()
     {
+        instance = this;
         tool = GetComponent<Tooltip>();
         displayText = transform.GetComponentInChildren<TMP_Text>();
         timerMode = true;
