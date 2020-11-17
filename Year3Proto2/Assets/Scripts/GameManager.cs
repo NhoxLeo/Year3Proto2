@@ -707,7 +707,7 @@ public class GameManager : MonoBehaviour
                 case SuperManager.VillagersII:
                     return VillagerManager.GetInstance().GetVillagers() >= 40;
                 case SuperManager.VillagersIII:
-                    return VillagerManager.GetInstance().GetVillagers() >= 60;
+                    return VillagerManager.GetInstance().GetVillagers() >= 55;
                 default:
                     break;
             }

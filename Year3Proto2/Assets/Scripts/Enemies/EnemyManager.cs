@@ -1089,10 +1089,10 @@ public class EnemyManager : MonoBehaviour
         APMMultiplier = 1f + (0.001f * (APM == -1f ? 0f : APM));
 
         // Structures Placed
-        StructuresPlacedMultiplier = 1f + (0.01f * StructureManager.GetInstance().GetPlayerStructureCount());
+        StructuresPlacedMultiplier = 1f + (0.005f * StructureManager.GetInstance().GetPlayerStructureCount());
 
         // Villager Count
-        VillagerCountMultiplier = 1f + (0.01f * VillagerManager.GetInstance().GetVillagers());
+        VillagerCountMultiplier = 1f + (0.005f * VillagerManager.GetInstance().GetVillagers());
 
         // Resources Gained
         Vector3 resourceVelocity = gameMan.GetResourceVelocity();
@@ -1105,16 +1105,16 @@ public class EnemyManager : MonoBehaviour
         ResourceMultiplier = 0.9f + (0.00005f * trueResourceTotal);
 
         // Resources Spent Recently
-        ResourcesSpentMultiplier = 1f + (0.00005f * InfoManager.CalculatedRecentSpent);
+        ResourcesSpentMultiplier = 1f + (0.000067f * InfoManager.CalculatedRecentSpent);
 
         // Time Skipped
         TimeSkippedMultiplier = 1f + (0.005f * InfoManager.TimeSkipped);
 
         // Tile Bonus Average
-        TileBonusMultiplier = 0.92f + (0.05f * InfoManager.TileBonusAverage);
+        TileBonusMultiplier = 0.92f + (0.02f * InfoManager.TileBonusAverage);
 
         // Villagers Lost Recently
-        VillagersLostMultiplier = Mathf.Clamp(1f - (0.05f * InfoManager.VillagersLostGradual), 0.7f, 1f);
+        VillagersLostMultiplier = Mathf.Clamp(1f - (0.1f * InfoManager.VillagersLostGradual), 0.6f, 1f);
 
         // Structures Lost Recently
         StructuresLostMultiplier = Mathf.Clamp(1f - (0.05f * InfoManager.StructuresLostGradual), 0.7f, 1f);

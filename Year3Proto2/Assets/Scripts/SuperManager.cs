@@ -512,7 +512,7 @@ public class SuperManager : MonoBehaviour
 
         new WinConditionDefinition(Villagers, "Villagers", "Have a total of 20 villagers."),
         new WinConditionDefinition(VillagersII, "Villagers II", "Have a total of 40 villagers."),
-        new WinConditionDefinition(VillagersIII, "Villagers III", "Have a total of 60 villagers."),
+        new WinConditionDefinition(VillagersIII, "Villagers III", "Have a total of 55 villagers."),
     };
     public static Dictionary<int, (Vector4, Vector2)> CameraSettings = new Dictionary<int, (Vector4, Vector2)>()
     {
