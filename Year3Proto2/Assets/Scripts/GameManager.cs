@@ -349,6 +349,7 @@ public class GameManager : MonoBehaviour
         {
             { "horn", Resources.Load("Audio/SFX/sfxHorn") as AudioClip },
             { "build", Resources.Load("Audio/SFX/sfxBuild") as AudioClip },
+            { "select", Resources.Load("Audio/SFX/sfxBuildingSelect") as AudioClip },
             { "arrow", Resources.Load("Audio/SFX/sfxArrow") as AudioClip },
             { "buildingHit", Resources.Load("Audio/SFX/sfxBuildingHit") as AudioClip },
             { "buildingDestroy", Resources.Load("Audio/SFX/sfxBuildingDestroy") as AudioClip },

@@ -9,7 +9,7 @@ public class Barracks : DefenseStructure
     private List<Soldier> soldiers = new List<Soldier>();
     private float trainTime = 6f;
     private float timeTrained = 0f;
-    private const float BaseMaxHealth = 350f;
+    private const float BaseMaxHealth = 320f;
     private const float BaseSoldierDamage = 4f;
     private const float BaseSoldierHealth = 30f;
     private const float BaseSoldierMovementSpeed = 0.55f;

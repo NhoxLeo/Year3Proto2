@@ -99,25 +99,25 @@ public class LevelEndscreen : MonoBehaviour
 
     public void DefeatGoToLevelSelect()
     {
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("LevelSelect");
         SuperManager superMan = SuperManager.GetInstance();
         superMan.ClearCurrentMatch();
         superMan.OnBackToMenus();
-        FindObjectOfType<SceneSwitcher>().SceneSwitch("LevelSelect");
     }
 
     public void VictoryGoToLevelSelect()
     {
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("ResearchTree");
         SuperManager superMan = SuperManager.GetInstance();
         superMan.SaveCurrentMatch();
         superMan.OnBackToMenus();
-        FindObjectOfType<SceneSwitcher>().SceneSwitch("ResearchTree");
     }
 
     public void VictoryGoToTitle()
     {
+        FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
         SuperManager superMan = SuperManager.GetInstance();
         superMan.SaveCurrentMatch();
         superMan.OnBackToMenus();
-        FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
     }
 }

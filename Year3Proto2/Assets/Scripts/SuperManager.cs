@@ -539,6 +539,7 @@ public class SuperManager : MonoBehaviour
     private AudioClip windAmbience = null;
     private AudioClip rainAmbience = null;
     private static AudioClip UIClick = null;
+    private static AudioClip UITap = null;
 
     // Audio sources
     private AudioSource musicAudio;
@@ -1406,6 +1407,7 @@ public class SuperManager : MonoBehaviour
         windAmbience = Resources.Load("Audio/SFX/sfxWindAmbience") as AudioClip;
         rainAmbience = Resources.Load("Audio/SFX/sfxRain") as AudioClip;
         UIClick = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
+        UITap = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
     }
 
     private void MusicPlayerUpdate()
@@ -1633,6 +1635,18 @@ public class SuperManager : MonoBehaviour
         spawnAudioDestroy.SetUnscaledTime(true);
         spawnAudioComp.clip = UIClick;
         spawnAudioComp.volume = 0.825f * EffectsVolume;
+        spawnAudioComp.Play();
+    }
+
+    public static void UITapSound()
+    {
+        GameObject spawnAudio = new GameObject("TemporarySoundObject");
+        AudioSource spawnAudioComp = spawnAudio.AddComponent<AudioSource>();
+        DestroyMe spawnAudioDestroy = spawnAudio.AddComponent<DestroyMe>();
+        spawnAudioDestroy.SetLifetime(UIClick.length);
+        spawnAudioDestroy.SetUnscaledTime(true);
+        spawnAudioComp.clip = UITap;
+        spawnAudioComp.volume = 1.0f * EffectsVolume;
         spawnAudioComp.Play();
     }
 

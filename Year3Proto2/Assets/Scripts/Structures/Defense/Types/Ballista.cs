@@ -7,7 +7,7 @@ public class Ballista : ProjectileDefenseStructure
     [SerializeField] private GameObject arrowPrefab;
 
     private const int MetalCost = 2;
-    private const float BaseMaxHealth = 400f;
+    private const float BaseMaxHealth = 350f;
     private const float BaseDamage = 30f;
     private const float ArrowSpeed = 12.5f;
 

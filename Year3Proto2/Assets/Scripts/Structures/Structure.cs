@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 public enum StructureType
 {
     Resource,
@@ -36,6 +37,7 @@ public abstract class Structure : MonoBehaviour
     private bool manualAllocation = false;
     protected MeshRenderer meshRenderer;
     protected bool snowMatActive = false;
+    private bool playSelectSound = false;
 
     public void HandleAllocation(int _villagers)
     {
@@ -82,7 +84,7 @@ public abstract class Structure : MonoBehaviour
             // we are returning villagers to the manager's control.
             villMan.ReturnVillagers(-change, previousManualAllocation);
             allocatedVillagers = _villagers;
-            if (!previousManualAllocation) 
+            if (!previousManualAllocation)
             {
                 villMan.MarkVillagersAsManAlloc(allocatedVillagers);
             }
@@ -128,7 +130,7 @@ public abstract class Structure : MonoBehaviour
     public virtual bool AutomaticallyAllocate()
     {
         VillagerManager villMan = VillagerManager.GetInstance();
-        
+
         if (villMan.VillagerAvailable() && allocatedVillagers < villagerCapacity)
         {
             manualAllocation = false;
@@ -221,7 +223,6 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void ShowAttackWarning()
     {
-
     }
 
     public float GetHealth()
@@ -256,7 +257,6 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void OnAnyPlaced()
     {
-
     }
 
     public virtual void OnSelected()
@@ -270,6 +270,13 @@ public abstract class Structure : MonoBehaviour
             {
                 villagerWidget.SetVisibility(true);
             }
+
+            if (playSelectSound)
+            {
+                GameManager.CreateAudioEffect("select", transform.position, SoundType.SoundEffect, 0.67f);
+            }
+
+            playSelectSound = true;
         }
     }
 
@@ -297,9 +304,8 @@ public abstract class Structure : MonoBehaviour
         healthBar.gameObject.SetActive(false);
     }
 
-    public virtual void OnPlace() 
+    public virtual void OnPlace()
     {
-    
     }
 
     protected virtual void OnDestroyed()
@@ -328,7 +334,7 @@ public abstract class Structure : MonoBehaviour
             if (!_mass)
             {
                 InfoManager.RecordNewAction();
-                HUDManager.GetInstance().ShowResourceDelta(repairCost, true); 
+                HUDManager.GetInstance().ShowResourceDelta(repairCost, true);
             }
             gameMan.playerResources.DeductResourceBundle(repairCost);
             InfoManager.RecordResourcesSpent(repairCost);
@@ -350,6 +356,7 @@ public abstract class Structure : MonoBehaviour
 
     protected virtual void Awake()
     {
+        playSelectSound = false;
         health = GetTrueMaxHealth();
         buildingInfo = FindObjectOfType<BuildingInfo>();
         if (!DestructionEffect)
@@ -367,6 +374,8 @@ public abstract class Structure : MonoBehaviour
             {
                 hit.transform.gameObject.GetComponent<TileBehaviour>().Attach(this);
             }
+
+            playSelectSound = true;
         }
         if (structureType != StructureType.Environment)
         {
@@ -424,12 +433,10 @@ public abstract class Structure : MonoBehaviour
 
     public virtual void ShowRangeDisplay(bool _active)
     {
-
     }
 
     public virtual void OnAllocation()
     {
-
     }
 
     public abstract float GetBaseMaxHealth();
@@ -444,4 +451,3 @@ public abstract class Structure : MonoBehaviour
         meshRenderer.materials = StructureMaterials.Fetch(structureName, _snow).ToArray();
     }
 }
-

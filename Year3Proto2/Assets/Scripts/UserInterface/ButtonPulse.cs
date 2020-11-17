@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using DG.Tweening;
 
-public class ButtonPulse : MonoBehaviour
+public class ButtonPulse : MonoBehaviour, IPointerEnterHandler
 {
+    private Button button;
+
     public void ButtonClick()
     {
         transform.DOKill(true);
@@ -13,5 +17,24 @@ public class ButtonPulse : MonoBehaviour
         {
             SuperManager.UIClickSound();
         }
+    }
+
+    public void OnPointerEnter(PointerEventData _eventData)
+    {
+        /*
+        if (!button)
+        {
+            button = GetComponent<Button>();
+            Debug.Log("Getting Button");
+        }
+        
+        if (button)
+        {
+            if (button.interactable)
+            {
+                SuperManager.UITapSound();
+            }
+        }
+        */
     }
 }

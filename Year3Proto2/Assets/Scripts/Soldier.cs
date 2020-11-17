@@ -5,7 +5,7 @@ using System;
 
 public class Soldier : MonoBehaviour
 {
-    private const float DamageBonusAgainstBatteringRams = 4f;
+    private const float DamageBonusAgainstBatteringRams = 3.0f;
     private const float SearchDelay = 0.3f;
     private const float Avoidance = 0.005f;
 
